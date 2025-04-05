@@ -1,6 +1,15 @@
 cmake_minimum_required(VERSION 3.30)
 project(Capstone_RhythmGame)
 
+option(DISABLE_TEST
+    "Disable Unit Test"
+        FALSE
+)
+
+if (NOT DISABLE_TEST)
+    add_compile_definitions(_TESTING=1)
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
@@ -28,11 +37,6 @@ target_link_libraries(${PROJECT_NAME}
         dxgi
         dinput8
         winmm
-)
-
-option(DISABLE_TEST
-    "Disable Unit Test"
-        FALSE
 )
 
 if (NOT DISABLE_TEST)
