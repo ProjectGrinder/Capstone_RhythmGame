@@ -21,7 +21,7 @@
     <ClCompile Include="src\os.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="input_handler.cpp">
+    <ClCompile Include="src\input_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +29,7 @@
     <ClInclude Include="include\os.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="input_handler.h">
+    <ClInclude Include="include\input_handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

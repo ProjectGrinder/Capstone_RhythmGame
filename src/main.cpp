@@ -18,9 +18,6 @@ int WINAPI WinMain(
 
     /* Initialize */
 
-    /* Starting InputHandler */
-    error = InputHandler::run();
-
     if (error == ERROR_SUCCESS)
     {
         /* Starting OS Process */
