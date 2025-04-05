@@ -11,21 +11,22 @@
 #include <exception>
 #include <memory>
 
-namespace System {
-class OS 
+namespace System
 {
-private:
-    bool _is_running = false;
-    HINSTANCE _system_instance_handler = nullptr;
+    class OS 
+    {
+    private:
+        bool _is_running = false;
+        HINSTANCE _system_instance_handler = nullptr;
 
-    static OS _instance;
+        static OS _instance;
 
-    OS(){};
+        OS(){};
 
-public:
-    static int run();
-    static OS &instance();
-    static bool is_running();
-    static void stop();
-};
+    public:
+        static int run();
+        static OS &instance();
+        static bool is_running();
+        static void stop();
+    };
 }
