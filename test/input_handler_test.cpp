@@ -1,63 +1,70 @@
 #include "pch.h"
-#include "input_handler.h"
+#include "input.h"
+#include <Windows.h>
 
-TEST(InputHandler, instance_function_test)
+TEST(Input, instance_function_test)
 {
-    System::InputHandler& inputHandler1 = System::InputHandler::instance();
-    EXPECT_NE(&inputHandler1, nullptr) << "InputHandler::instance() returned a reference to nullptr!";
+    System::Input& inputHandler1 = System::Input::instance();
+    EXPECT_NE(&inputHandler1, nullptr) << "Input::instance() returned a reference to nullptr!";
 }
 
-TEST(InputHandler, singleton_test)
+TEST(Input, singleton_test)
 {
-    System::InputHandler& inputHandler1 = System::InputHandler::instance();
-    System::InputHandler& inputHandler2 = System::InputHandler::instance();
-    EXPECT_EQ(&inputHandler1, &inputHandler2) << "InputHandler::instance() returned a different reference!";
+    System::Input& inputHandler1 = System::Input::instance();
+    System::Input& inputHandler2 = System::Input::instance();
+    EXPECT_EQ(&inputHandler1, &inputHandler2) << "Input::instance() returned a different reference!";
 }
 
 class InputHandlerTest : public ::testing::Test {
 protected:
-    System::InputHandler& handler = System::InputHandler::instance();
-
     void SetUp() override {
         // before each test, every key is reset to up state
         for (int i = 0; i < 256; ++i) {
-            handler.handle(WM_KEYUP, static_cast<BYTE>(i));
+            System::Input::set_key_up(i);
         }
     }
 };
 
+TEST_F(InputHandlerTest, setup_test) {
+	// Check that input is initialized correctly
+	for (int i = 0; i < 256; ++i) {
+		EXPECT_FALSE(System::Input::is_key_down(i)) << "Key " << i << " should be up.";
+	}
+}
+
 TEST_F(InputHandlerTest, keydown_keyup_test) {
     BYTE testKey = VK_RETURN;
 
-    handler.handle(WM_KEYDOWN, testKey);
-    EXPECT_TRUE(handler.isKeyDown(testKey));
+    System::Input::set_key_down(testKey);
+    EXPECT_TRUE(System::Input::is_key_down(testKey));
 
-    handler.handle(WM_KEYUP, testKey);
-    EXPECT_FALSE(handler.isKeyDown(testKey));
+    System::Input::set_key_up(testKey);
+    EXPECT_FALSE(System::Input::is_key_down(testKey));
 }
 
 TEST_F(InputHandlerTest, keydown_autorepeat_test) {
     BYTE testKey = VK_SPACE;
-    handler.handle(WM_KEYDOWN, testKey);
-    EXPECT_TRUE(handler.isKeyDown(testKey));
-    handler.handle(WM_KEYDOWN, testKey);
-    EXPECT_TRUE(handler.isKeyDown(testKey));
-    handler.handle(WM_KEYUP, testKey);
-    EXPECT_FALSE(handler.isKeyDown(testKey));
+    System::Input::set_key_down(testKey);
+    EXPECT_TRUE(System::Input::is_key_down(testKey));
+    System::Input::set_key_down(testKey);
+    EXPECT_TRUE(System::Input::is_key_down(testKey));
+    System::Input::set_key_up(testKey);
+    EXPECT_FALSE(System::Input::is_key_down(testKey));
 }
 
-TEST_F(InputHandlerTest, syskeydown_syskeyup_test) {
-    BYTE testKey = VK_MENU;
-
-    handler.handle(WM_SYSKEYDOWN, testKey);
-    EXPECT_TRUE(handler.isKeyDown(testKey));
-
-    handler.handle(WM_SYSKEYUP, testKey);
-    EXPECT_FALSE(handler.isKeyDown(testKey));
-}
-
-TEST_F(InputHandlerTest, irrelevant_message_test) {
-    BYTE testKey = 'A';
-    handler.handle(WM_MOUSEMOVE, testKey);
-    EXPECT_FALSE(handler.isKeyDown(testKey));
+TEST_F(InputHandlerTest, multiple_keys_test) {
+	BYTE testKey1 = VK_UP;
+	BYTE testKey2 = VK_DOWN;
+    System::Input::set_key_down(testKey1);
+	EXPECT_TRUE(System::Input::is_key_down(testKey1));
+	EXPECT_FALSE(System::Input::is_key_down(testKey2));
+    System::Input::set_key_down(testKey2);
+	EXPECT_TRUE(System::Input::is_key_down(testKey1));
+	EXPECT_TRUE(System::Input::is_key_down(testKey2));
+    System::Input::set_key_up(testKey1);
+	EXPECT_FALSE(System::Input::is_key_down(testKey1));
+	EXPECT_TRUE(System::Input::is_key_down(testKey2));
+    System::Input::set_key_up(testKey2);
+	EXPECT_FALSE(System::Input::is_key_down(testKey1));
+	EXPECT_FALSE(System::Input::is_key_down(testKey2));
 }

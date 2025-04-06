@@ -1,8 +1,6 @@
 #include <Windows.h>
-#include <thread>
 
 #include "os.h"
-#include "input_handler.h"
 
 int WINAPI WinMain(
     _In_        HINSTANCE   hInstance,
@@ -14,7 +12,6 @@ int WINAPI WinMain(
     int error = ERROR_SUCCESS;
 
     using System::OS;
-    using System::InputHandler;
 
     /* Initialize */
 
