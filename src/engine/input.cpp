@@ -11,16 +11,17 @@ Input& Input::instance()
     return (_instance);
 }
 
-void System::Input::set_key_down(uint8_t vkCode)
+void System::Input::set_key_down(uint8_t vk_code)
 {
-	_instance._keyboard_state[vkCode] = 1;
+	_instance._keyboard_state[vk_code] = 1;
 }
 
-void System::Input::set_key_up(uint8_t vkCode)
+void System::Input::set_key_up(uint8_t vk_code)
 {
-	_instance._keyboard_state[vkCode] = 0;
+	_instance._keyboard_state[vk_code] = 0;
 }
 
-bool System::Input::is_key_down(uint8_t vkCode) {
-    return _instance._keyboard_state[vkCode];
+bool System::Input::is_key_down(uint8_t vk_code) 
+{
+    return _instance._keyboard_state[vk_code];
 }

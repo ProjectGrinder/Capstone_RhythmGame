@@ -16,8 +16,8 @@ namespace System
         Input() {};
     public:
         static Input& instance();
-		static void set_key_down(uint8_t vkCode);
-		static void set_key_up(uint8_t vkCode);
-        static bool is_key_down(uint8_t vkCode);
+		static void set_key_down(uint8_t vk_code);
+		static void set_key_up(uint8_t vk_code);
+        static bool is_key_down(uint8_t vk_code);
     };
 }
