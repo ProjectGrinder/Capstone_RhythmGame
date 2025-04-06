@@ -10,22 +10,15 @@
 
 namespace System
 {
-class InputHandler
-{
-private:
-    bool _is_running = false;
-    static InputHandler _instance;
-    std::array<BYTE, 256> _prev_keyboard_state{};
-    std::array<BYTE, 256> _current_keyboard_state{};
-    POINT _mouse_position{};
-    InputHandler() {};
-public:
-    static InputHandler &instance();
-    int poll();
-    bool key_pressed(BYTE);
-    bool key_held(BYTE);
-    bool key_released(BYTE);
-    POINT mouse_position(HWND);
-};
+    class InputHandler
+    {
+    private:
+        static InputHandler _instance;
+        std::array<BYTE, 256> _keyboard_state{};
+        InputHandler() {};
+    public:
+        static InputHandler& instance();
+        void handle(UINT message, BYTE vkCode);
+        bool isKeyDown(BYTE vkCode) const;
+    };
 }
-
