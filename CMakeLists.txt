@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.30)
 project(Capstone_RhythmGame)
 
+list(APPEND LIBS
+    engine
+)
+
 option(DISABLE_TEST
     "Disable Unit Test"
         FALSE
@@ -24,7 +28,7 @@ add_executable(${PROJECT_NAME}
 # Our Libs
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-        engine
+        ${LIBS}
 )
 
 # Windows Libs
