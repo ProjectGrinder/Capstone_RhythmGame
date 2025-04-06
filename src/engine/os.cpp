@@ -29,7 +29,7 @@ int OS::run()
 
         OutputDebugStringA(buffer.c_str());
     }
-
+#ifndef _TESTING
     if (error == ERROR_SUCCESS)
     {
         _instance._is_running = true;
@@ -49,8 +49,8 @@ int OS::run()
             Sleep(1);
         }
     }
+#endif
     return(error);
-
 }
 
 bool OS::is_running()
