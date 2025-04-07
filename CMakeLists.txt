@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.30)
 project(Capstone_RhythmGame)
 set(CMAKE_CXX_STANDARD 20)
+add_compile_definitions(PROJECT_NAME=${PROJECT_NAME})
 
 list(APPEND
     LIBS
+        utils
         engine
 )
 
@@ -55,5 +57,13 @@ add_executable(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-    ${LIBS}
+    PRIVATE
+        ${LIBS}
+        user32
+        gdi32
+        kernel32
+        d3d11
+        dxgi
+        dinput8
+        winmm:
 )
