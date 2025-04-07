@@ -77,3 +77,13 @@ TEST_F(InputHandlerTest, multiple_keys_test)
     EXPECT_FALSE(System::Input::is_key_down(test_key1));
     EXPECT_FALSE(System::Input::is_key_down(test_key2));
 }
+
+TEST(Input, mouse_position_test)
+{
+    uint16_t x = 100;
+    uint16_t y = 200;
+    System::Input::set_mouse_position(x, y);
+    Math::Vector2<uint16_t> mouse_position = System::Input::get_mouse_position();
+    EXPECT_EQ(mouse_position.x, x);
+    EXPECT_EQ(mouse_position.y, y);
+}
