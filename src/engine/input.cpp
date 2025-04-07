@@ -23,5 +23,5 @@ void System::Input::set_key_up(uint8_t vk_code)
 
 bool System::Input::is_key_down(uint8_t vk_code) 
 {
-    return _instance._keyboard_state[vk_code];
+    return (_instance._keyboard_state[vk_code]);
 }

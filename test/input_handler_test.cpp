@@ -1,6 +1,7 @@
+#include <Windows.h>
+
 #include "pch.h"
 #include "input.h"
-#include <Windows.h>
 
 TEST(Input, instance_function_test)
 {
