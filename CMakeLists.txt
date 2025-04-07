@@ -65,5 +65,5 @@ target_link_libraries(${PROJECT_NAME}
         d3d11
         dxgi
         dinput8
-        winmm:
+        winmm
 )

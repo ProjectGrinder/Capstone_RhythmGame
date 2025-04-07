@@ -14,6 +14,13 @@ target_link_libraries(unit_test
     PRIVATE
         ${LIBS}
         GTest::GTest GTest::Main
+        user32
+        gdi32
+        kernel32
+        d3d11
+        dxgi
+        dinput8
+        winmm
 )
 
 gtest_discover_tests(unit_test)
