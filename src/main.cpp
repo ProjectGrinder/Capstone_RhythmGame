@@ -1,6 +1,6 @@
 #include <Windows.h>
 
-#include "os.h"
+#include "system.h"
 
 int WINAPI WinMain(
     _In_        HINSTANCE   hInstance,
@@ -9,7 +9,7 @@ int WINAPI WinMain(
     _In_        int         nShowCmd
 )
 {
-    int error = ERROR_SUCCESS;
+    uint32_t error = ERROR_SUCCESS;
 
     using System::OS;
 
@@ -23,5 +23,5 @@ int WINAPI WinMain(
 
     /* Cleanup (Make sure this were run) */
 
-    return(error);
+    return((int)error);
 }
