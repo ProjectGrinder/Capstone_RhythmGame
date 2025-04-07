@@ -91,7 +91,7 @@ uint32_t OS::set_system_precision(int64_t ms)
         return(ERROR_SUCCESS);
     }
 
-    return ERROR_INVALID_STATE;
+    return(ERROR_INVALID_STATE);
 }
 
 uint32_t OS::_sleep()

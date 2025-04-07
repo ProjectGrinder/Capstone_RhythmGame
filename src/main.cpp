@@ -9,7 +9,7 @@ int WINAPI WinMain(
     _In_        int         nShowCmd
 )
 {
-    uint64_t error = ERROR_SUCCESS;
+    uint32_t error = ERROR_SUCCESS;
 
     using System::OS;
 
