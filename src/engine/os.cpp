@@ -1,5 +1,6 @@
 #include "system.h"
 #include "utils.h"
+#include "input.h"
 
 using System::OS;
 
@@ -131,14 +132,14 @@ uint32_t OS::_poll_event()
         switch (msg.message)
         {
         case WM_KEYDOWN:
-            // Call input key_down
-            if (msg.wParam == 'Q')
+            if (msg.wParam == VK_ESCAPE)
             {
                 stop();
             }
+            Input::set_key_down(msg.wParam);
             break;
         case WM_KEYUP:
-            // Call input key_up;
+            Input::set_key_up(msg.wParam);
             break;
         }
 
