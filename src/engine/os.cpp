@@ -14,7 +14,7 @@ OS::OS()
         Utils::print_debug
         (
             "engien/os.cpp",
-            "System::OS::OS",
+            __FUNCTION__,
             "Error code: {}, GetModuleHandle failed.",
             GetLastError()
         );
@@ -79,7 +79,7 @@ uint32_t OS::set_system_precision(int64_t ms)
         Utils::print_debug
         (
             "engine/os.cpp",
-            "OS::set_system_precision",
+            __FUNCTION__,
             "Error code: {}, Cannot set system time precision to value less or equal to 0.",
             ERROR_INVALID_PARAMETER
         );
@@ -140,6 +140,8 @@ uint32_t OS::_poll_event()
             break;
         case WM_KEYUP:
             Input::set_key_up(msg.wParam);
+            break;
+        case WM_MOUSEMOVE:
             break;
         }
 
