@@ -9,9 +9,8 @@ concept arithmetic = std::integral<T> || std::floating_point<T>;
 namespace Math
 {
     template <arithmetic T>
-    class Vector2
+    struct Vector2
     {
-    public:
         T x;
         T y;
         Vector2() : x(0), y(0) {}
@@ -19,25 +18,25 @@ namespace Math
         Vector2(const Vector2& other) : x(other.x), y(other.y) {}
         Vector2 operator+(const Vector2& other) const
         {
-            return Vector2(x + other.x, y + other.y);
+            return (Vector2(x + other.x, y + other.y));
         }
         Vector2 operator-(const Vector2& other) const
         {
-            return Vector2(x - other.x, y - other.y);
+            return (Vector2(x - other.x, y - other.y));
         }
         Vector2 operator*(T scalar) const
         {
-            return Vector2(x * scalar, y * scalar);
+            return (Vector2(x * scalar, y * scalar));
         }
         Vector2 operator/(T scalar) const
         {
             if (scalar != 0)
             {
-                return Vector2(x / scalar, y / scalar);
+                return (Vector2(x / scalar, y / scalar));
             }
             else
             {
-                throw std::runtime_error("Division by zero"); //catch this, jackass
+                throw (std::runtime_error("Division by zero"));
             }
         }
 
@@ -48,7 +47,7 @@ namespace Math
                 x = other.x;
                 y = other.y;
             }
-            return *this;
+            return (*this);
         }
 
         bool operator==(const Vector2& other) const
