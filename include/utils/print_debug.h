@@ -3,7 +3,6 @@
 #include <string>
 #include <format>
 #include <chrono>
-#include <ctime>
 #include <mutex>
 
 namespace Utils
