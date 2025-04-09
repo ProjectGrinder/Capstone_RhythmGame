@@ -11,13 +11,7 @@ OS::OS()
     _instance._system_instance_handler = GetModuleHandleA(NULL);
     if (_instance._system_instance_handler == nullptr)
     {
-        Utils::print_debug
-        (
-            "engien/os.cpp",
-            __FUNCTION__,
-            "Error code: {}, GetModuleHandle failed.",
-            GetLastError()
-        );
+        LOG_DEBUG("Error code: {}, GetModuleHandle failed.", GetLastError());
     }
 }
 
