@@ -32,7 +32,7 @@ namespace System
         static OS &instance();
         static bool is_running();
         static void stop();
-        static uint32_t set_system_precision(int64_t ms);
+        static uint32_t set_system_precision(int32_t ms);
         static uint16_t get_system_precision();
     };
 }

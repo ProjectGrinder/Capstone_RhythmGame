@@ -72,7 +72,7 @@ void OS::stop()
     _instance._is_running = false;
 }
 
-uint32_t OS::set_system_precision(int64_t ms)
+uint32_t OS::set_system_precision(int32_t ms)
 {
     if (ms <= 0)
     {
@@ -87,11 +87,9 @@ uint32_t OS::set_system_precision(int64_t ms)
     }
     else
     {
-        _instance._system_precision = ms;
+        _instance._system_precision = (uint16_t)ms;
         return(ERROR_SUCCESS);
     }
-
-    return(ERROR_INVALID_STATE);
 }
 
 uint32_t OS::_sleep()
@@ -132,16 +130,18 @@ uint32_t OS::_poll_event()
         switch (msg.message)
         {
         case WM_KEYDOWN:
+            /* Please remove this code after main is done*/
             if (msg.wParam == VK_ESCAPE)
             {
                 stop();
             }
-            Input::set_key_down(msg.wParam);
+            Input::set_key_down((uint8_t)msg.wParam);
             break;
         case WM_KEYUP:
-            Input::set_key_up(msg.wParam);
+            Input::set_key_up((uint8_t)msg.wParam);
             break;
         case WM_MOUSEMOVE:
+            Input::set_mouse_position((uint16_t)msg.pt.x, (uint16_t)msg.pt.y);
             break;
         }
 
