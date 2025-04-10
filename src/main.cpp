@@ -3,10 +3,10 @@
 #include "system.h"
 
 int WINAPI WinMain(
-    _In_        HINSTANCE   hInstance,
-    _In_opt_    HINSTANCE   hPrevInstance,
-    _In_        char        *lpCmdLine,
-    _In_        int         nShowCmd
+    _In_        [[maybe_unused]]HINSTANCE   hInstance,
+    _In_opt_    [[maybe_unused]]HINSTANCE   hPrevInstance,
+    _In_        [[maybe_unused]]char        *lpCmdLine,
+    _In_        [[maybe_unused]]int         nShowCmd
 )
 {
     uint32_t error = ERROR_SUCCESS;

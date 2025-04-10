@@ -3,12 +3,21 @@
 #include <string>
 #include <format>
 #include <chrono>
-#include <ctime>
-#include <mutex>
+
+#define FILE_PATH Utils::trim_src_path(__FILE__)
+#define LOG_DEBUG(fmt, ...) Utils::print_debug(FILE_PATH, __FUNCTION__, fmt, __VA_ARGS__)
 
 namespace Utils
 {
-    static std::mutex debug_mutex;
+    constexpr std::string_view trim_src_path(std::string_view path)
+    {
+        constexpr std::string_view key = R"(\src\)";
+        size_t pos = path.find(key);
+        return((pos != std::string_view::npos) ?
+                    path.substr(pos + key.size()) :
+                    path);
+    }
+
     /// <summary>
     /// Formatted Debug Printing
     /// </summary>
@@ -19,33 +28,26 @@ namespace Utils
     template<typename... args>
     void print_debug
     (
-        std::string file_path,
-        std::string func_name,
+        std::string_view file_path,
+        std::string_view func_name,
         std::format_string<args...> format,
         args&&... argv
     )
     {
-        std::lock_guard<std::mutex> lock(debug_mutex);
-
-        const std::chrono::time_point now = std::chrono::system_clock::now();
-        const std::time_t c_time = std::chrono::system_clock::to_time_t(now);
-        const std::string time_str = std::string(std::ctime(&c_time));
-        const std::string trimmed_time = time_str.substr(0, time_str.length() - 1);
+        const auto time_point_utc = std::chrono::system_clock::now();
+        const auto time = std::chrono::current_zone()->to_local(time_point_utc);
 
         const std::string message = std::format(format, std::forward<args>(argv)...);
         const std::string log =
             std::format
             (
-                "[ {} | {} | {} ] - {}""\n",
-                trimmed_time,
+                "[ {} | {} | {} ] - {}\n",
+                time,
                 file_path,
                 func_name,
                 message
-            ).c_str();
+            );
 
-        OutputDebugStringA
-        (
-            log.c_str()
-        );
+        OutputDebugStringA(log.c_str());
     }
 }

@@ -11,13 +11,7 @@ OS::OS()
     _instance._system_instance_handler = GetModuleHandleA(NULL);
     if (_instance._system_instance_handler == nullptr)
     {
-        Utils::print_debug
-        (
-            "engien/os.cpp",
-            "System::OS::OS",
-            "Error code: {}, GetModuleHandle failed.",
-            GetLastError()
-        );
+        LOG_DEBUG("Error code: {}, GetModuleHandle failed.", GetLastError());
     }
 }
 
@@ -72,14 +66,14 @@ void OS::stop()
     _instance._is_running = false;
 }
 
-uint32_t OS::set_system_precision(int64_t ms)
+uint32_t OS::set_system_precision(int32_t ms)
 {
     if (ms <= 0)
     {
         Utils::print_debug
         (
             "engine/os.cpp",
-            "OS::set_system_precision",
+            __FUNCTION__,
             "Error code: {}, Cannot set system time precision to value less or equal to 0.",
             ERROR_INVALID_PARAMETER
         );
@@ -87,11 +81,9 @@ uint32_t OS::set_system_precision(int64_t ms)
     }
     else
     {
-        _instance._system_precision = ms;
+        _instance._system_precision = (uint16_t)ms;
         return(ERROR_SUCCESS);
     }
-
-    return(ERROR_INVALID_STATE);
 }
 
 uint32_t OS::_sleep()
@@ -132,14 +124,18 @@ uint32_t OS::_poll_event()
         switch (msg.message)
         {
         case WM_KEYDOWN:
+            /* Please remove this code after main is done*/
             if (msg.wParam == VK_ESCAPE)
             {
                 stop();
             }
-            Input::set_key_down(msg.wParam);
+            Input::set_key_down((uint8_t)msg.wParam);
             break;
         case WM_KEYUP:
-            Input::set_key_up(msg.wParam);
+            Input::set_key_up((uint8_t)msg.wParam);
+            break;
+        case WM_MOUSEMOVE:
+            Input::set_mouse_position((uint16_t)msg.pt.x, (uint16_t)msg.pt.y);
             break;
         }
 
