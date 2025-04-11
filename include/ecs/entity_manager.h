@@ -6,9 +6,9 @@
 #include <unordered_set>
 #include <cstdint>
 
-#include "entity.h"
-
-namespace ECS {
+namespace ECS 
+{
+    using Entity = uint16_t;
 
     class EntityManager 
     {

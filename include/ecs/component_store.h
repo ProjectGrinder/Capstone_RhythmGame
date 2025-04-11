@@ -1,11 +1,10 @@
 #pragma once
 
 #include <unordered_map>
-#include "entity.h"
 
 namespace ECS 
 {
-    using Entity = ECS::Entity;
+    using Entity = uint16_t;
 
     class IComponentStore 
     {
