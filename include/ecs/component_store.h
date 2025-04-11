@@ -10,7 +10,7 @@ namespace ECS
     class IComponentStore 
     {
     public:
-        virtual ~IComponentStore() = default;
+        virtual ~IComponentStore();
         virtual void entity_destroyed(Entity entity) = 0;
     };
 

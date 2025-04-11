@@ -1,10 +1,12 @@
 #pragma once
 
 #include <unordered_map>
+#include <unordered_set>
 #include <memory>
 #include <typeindex>
 #include <typeinfo>
 #include <stdexcept>
+#include <ranges>
 #include "component_store.h"
 #include "utils.h"
 
@@ -44,7 +46,7 @@ namespace ECS
             }
             catch (const std::runtime_error& e)
             {
-                LOG_DEBUG("Error: {}", e.what());
+                LOG_DEBUG("Error getting Component {}: {}", typeid(T).name(), e.what());
                 return (nullptr);
             }
         }
@@ -55,19 +57,29 @@ namespace ECS
             return (get_store<T>().has(entity));
         }
 
+        template<typename... Components>
+        bool with_components(const std::unordered_set<Entity>& alive_entities, const ComponentStore<Components>&... stores)
+        {
+            return
+            (
+                alive_entities | 
+                std::views::filter
+                (
+                    [&](Entity e)
+                    {
+                        return (stores.has(e) && ...);
+                    }
+                )
+            );
+        }
+
         template<typename T>
         std::size_t get_component_type() 
         {
             return (component_types.at(typeid(T)));
         }
 
-        void entity_destroyed(Entity entity) 
-        {
-            for (auto& [_, store] : component_stores) 
-            {
-                store->entity_destroyed(entity);
-            }
-        }
+        void entity_destroyed(Entity entity);
 
     private:
         std::unordered_map<std::type_index, std::unique_ptr<IComponentStore>> component_stores;
@@ -80,10 +92,7 @@ namespace ECS
             auto it = component_stores.find(typeid(T));
             if (it == component_stores.end())
             {
-                throw std::runtime_error
-                (
-                    "No ComponentStore of type " + std::string(typeid(T).name()) + " in ComponentManager!"
-                );
+                throw (std::runtime_error("No ComponentStore of type " + std::string(typeid(T).name()) + " in ComponentManager!"));
             }
             return (*static_cast<ComponentStore<T>*>(it->second.get()));
         }
