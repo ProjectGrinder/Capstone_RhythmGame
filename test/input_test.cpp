@@ -34,9 +34,13 @@ class InputHandlerTest : public ::testing::Test
 
 TEST_F(InputHandlerTest, setup_test) 
 {
-    std::ranges::for_each(std::views::iota(0, 256), [](int test_key) { 
-       EXPECT_FALSE(System::Input::is_key_down((uint8_t)test_key));
-    });
+    std::ranges::for_each
+    (
+        std::views::iota(0, 256), [](int test_key) 
+        { 
+            EXPECT_FALSE(System::Input::is_key_down((uint8_t)test_key));
+        }
+    );
 }
 
 TEST_F(InputHandlerTest, keydown_keyup_test) 
