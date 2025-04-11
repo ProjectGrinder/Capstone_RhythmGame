@@ -1,4 +1,6 @@
 #include <Windows.h>
+#include <ranges>
+#include <algorithm>
 
 #include "pch.h"
 #include "input.h"
@@ -21,21 +23,20 @@ class InputHandlerTest : public ::testing::Test
     protected:
         void SetUp() override 
         {
-            // before each test, every key is reset to up state
-            for (int vk_code = 0; vk_code < 256; ++vk_code) 
-            {
-                System::Input::set_key_up(vk_code);
-            }
+            std::ranges::for_each
+            (
+                std::views::iota(0, 256) |
+                std::views::transform([](int key) {return (uint8_t)key;}),
+                System::Input::set_key_up
+            );
         }
 };
 
 TEST_F(InputHandlerTest, setup_test) 
 {
-    // Check that input is initialized correctly
-    for (int test_key = 0; test_key < 256; ++test_key) 
-    {
-        EXPECT_FALSE(System::Input::is_key_down(test_key)) << "Key " << test_key << " should be up.";
-    }
+    std::ranges::for_each(std::views::iota(0, 256), [](int test_key) { 
+       EXPECT_FALSE(System::Input::is_key_down((uint8_t)test_key));
+    });
 }
 
 TEST_F(InputHandlerTest, keydown_keyup_test) 
