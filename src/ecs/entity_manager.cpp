@@ -1,19 +1,18 @@
 #include "ecs.h"
 
-ECS::EntityManager::EntityManager(std::size_t max_entities)
-    : max_entities(max_entities), next_entity_id(0) {}
+ECS::EntityManager::EntityManager()
+    : next_entity_id(0) {}
 
 ECS::Entity ECS::EntityManager::create_entity()
 {
     Entity id;
-    if (!free_ids.empty()) {
+    if (!free_ids.empty()) 
+    {
         id = free_ids.front();
         free_ids.pop();
     }
-    else {
-        if (next_entity_id >= max_entities) {
-            throw std::runtime_error("Too many entities in use.");
-        }
+    else 
+    {
         id = next_entity_id++;
     }
     alive_entities.insert(id);
@@ -22,7 +21,8 @@ ECS::Entity ECS::EntityManager::create_entity()
 
 void ECS::EntityManager::destroy_entity(Entity entity)
 {
-    if (is_alive(entity)) {
+    if (is_alive(entity)) 
+    {
         free_ids.push(entity);
         alive_entities.erase(entity);
     }
