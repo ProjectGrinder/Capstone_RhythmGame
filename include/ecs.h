@@ -1,3 +1,5 @@
 #include "ecs/component_manager.h"
 #include "ecs/component_store.h"
 #include "ecs/entity_manager.h"
+#include "ecs/system.h"
+#include "ecs/system_manager.h"
