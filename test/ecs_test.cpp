@@ -4,6 +4,11 @@
 class ECSTest : public ::testing::Test
 {
 protected:
+    struct TestComponent {};
+    void test_system(ECS::Entity<TestComponent>&)
+    {
+		/* no-op */
+    }
     void SetUp() override
     {
         // To see if needed: ECS::initialize();
@@ -41,22 +46,12 @@ TEST_F(ECSTest, remove_entity_test)
 
 TEST_F(ECSTest, add_system_test)
 {
-    struct TestComponent {};
-
-    std::function<void(ECS::EntityView<TestComponent>&)> test_system =
-        [](ECS::EntityView<TestComponent>&)
-        {
-            /* no-op */
-        };
-
     ECS::add_system(test_system);
     EXPECT_TRUE(ECS::has_system(test_system)) << "System should exist in the world.";
 }
 
 TEST_F(ECSTest, remove_system_test)
 {
-    struct TestComponent {};
-
     std::function<void(ECS::EntityView<TestComponent>&)> test_system =
         [](ECS::EntityView<TestComponent>&)
         {
@@ -70,7 +65,6 @@ TEST_F(ECSTest, remove_system_test)
 
 TEST_F(ECSTest, add_component_test)
 {
-    struct TestComponent {};
     ECS::Entity test_entity = ECS::create_entity<>();
     ECS::add_component<TestComponent>(test_entity);
     EXPECT_TRUE(ECS::has_component<TestComponent>(test_entity)) << "Entity should have component after addition.";

@@ -1,9 +1,5 @@
 #pragma once
 
-/*	
- * OS polls this to get keyboard and mouse inputs
- * (or at least that's what I assume is happening)
- */
 #include <array>
 #include "maths/vector2.h"
 
