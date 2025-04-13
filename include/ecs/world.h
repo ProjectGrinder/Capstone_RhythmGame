@@ -13,6 +13,7 @@ namespace ECS
 {
     class World {
     private:
+        static World _instance;
         EntityGenerator _generator;
         std::unordered_set<Entity> _entities;
         std::unordered_map<std::type_index, std::any> _component_pools;
@@ -52,10 +53,15 @@ namespace ECS
         }
 
     public:
+        static World& instance()
+        {
+            return (_instance);
+        }
+
         template<typename... Components>
         Entity create_entity(Components&&... comps) 
         {
-            Entity entity = _generator.generate();
+            Entity entity = _generator.generate_entity();
             _entities.insert(entity);
             (add_component<Components>(entity, std::forward<Components>(comps)), ...);
             return (entity);
@@ -89,14 +95,14 @@ namespace ECS
         template<typename Component>
         void remove_component(Entity entity) 
         {
-			auto& pool = get_pool<Component>();
+            auto& pool = get_pool<Component>();
             pool.remove(entity);
-			if (pool.empty())
-			{
-				_component_pools.erase(std::type_index(typeid(Component)));
+            if (pool.empty())
+            {
+                _component_pools.erase(std::type_index(typeid(Component)));
                 _entity_removers.erase(std::type_index(typeid(Component)));
                 _entity_clearers.erase(std::type_index(typeid(Component)));
-			}
+            }
         }
 
         template<typename... Components>
@@ -109,7 +115,7 @@ namespace ECS
                 {
                     if ((has_component<Components>(entity) && ...)) 
                     {
-                        system(e, get_component<Components>(entity)...);
+                        system(entity, get_component<Components>(entity)...);
                     }
                 }
                 });
