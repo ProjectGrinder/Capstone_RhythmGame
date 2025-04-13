@@ -13,71 +13,71 @@ namespace ECS
 {
     class World {
     private:
-        EntityGenerator generator;
-        std::unordered_set<Entity> entities;
-        std::unordered_map<std::type_index, std::any> component_pools;
-        std::vector<std::function<void()>> systems;
-        std::unordered_map<std::type_index, std::function<void(Entity)>> entity_removers;
-        std::unordered_map<std::type_index, std::function<void()>> entity_clearers;
+        EntityGenerator _generator;
+        std::unordered_set<Entity> _entities;
+        std::unordered_map<std::type_index, std::any> _component_pools;
+        std::vector<std::function<void()>> _systems;
+        std::unordered_map<std::type_index, std::function<void(Entity)>> _entity_removers;
+        std::unordered_map<std::type_index, std::function<void()>> _entity_clearers;
 
         template<typename Component>
         ComponentPool<Component>& get_pool()
         {
             std::type_index index(typeid(Component));
-            if (component_pools.find(index) == component_pools.end())
+            if (_component_pools.find(index) == _component_pools.end())
             {
-                component_pools[index] = std::make_shared<ComponentPool<Component>>();
-                entity_removers[index] = [this](Entity e) 
+                _component_pools[index] = std::make_shared<ComponentPool<Component>>();
+                _entity_removers[index] = [this](Entity e) 
                 {
                     get_pool<Component>().remove(e);
                 };
-                entity_clearers[index] = [this]() 
+                _entity_clearers[index] = [this]() 
                 {
                     get_pool<Component>().clear();
                 };
             }
-            return (std::any_cast<ComponentPool<Component>&>(component_pools.at(index)));
+            return (std::any_cast<ComponentPool<Component>&>(_component_pools.at(index)));
         }
 
         template<typename Component>
         bool has_component(Entity e) 
         {
-            return get_pool<Component>().has(e);
+            return (get_pool<Component>().has(e));
         }
 
         template<typename Component>
         Component& get_component(Entity e) 
         {
-            return get_pool<Component>().get(e);
+            return (get_pool<Component>().get(e));
         }
 
     public:
         template<typename... Components>
         Entity create_entity(Components&&... comps) 
         {
-            Entity entity = generator.generate();
-            entities.insert(entity);
+            Entity entity = _generator.generate();
+            _entities.insert(entity);
             (add_component<Components>(entity, std::forward<Components>(comps)), ...);
-            return entity;
+            return (entity);
         }
 
-        Entity remove_entity(Entity e) 
+        Entity remove_entity(Entity entity) 
         {
-            for (auto& [_, remover] : entity_removers) 
+            for (auto& [_, remover] : _entity_removers) 
             {
-                remover(e);
+                remover(entity);
             }
-            entities.erase(e);
-            return e;
+            _entities.erase(entity);
+            return entity;
         }
 
         void clear_entities() 
         {
-            for (auto& [_, clearer] : entity_clearers) 
+            for (auto& [_, clearer] : _entity_clearers) 
             {
                 clearer();
             }
-            entities.clear();
+            _entities.clear();
         }
 
         template<typename Component>
@@ -93,21 +93,23 @@ namespace ECS
             pool.remove(entity);
 			if (pool.empty())
 			{
-				component_pools.erase(std::type_index(typeid(Component)));
-                entity_removers.erase(std::type_index(typeid(Component)));
-                entity_clearers.erase(std::type_index(typeid(Component)));
+				_component_pools.erase(std::type_index(typeid(Component)));
+                _entity_removers.erase(std::type_index(typeid(Component)));
+                _entity_clearers.erase(std::type_index(typeid(Component)));
 			}
         }
 
         template<typename... Components>
         void add_system(std::function<void(Entity, Components&...)> system) 
         {
-            systems.emplace_back([=, this]() 
+            _systems.emplace_back([=, this]() 
                 {
                 auto& pool = get_pool<std::tuple_element_t<0, std::tuple<Components...>>>();
-                for (auto& [e, _] : pool.all()) {
-                    if ((has_component<Components>(e) && ...)) {
-                        system(e, get_component<Components>(e)...);
+                for (auto& [entity, _] : pool.all()) 
+                {
+                    if ((has_component<Components>(entity) && ...)) 
+                    {
+                        system(e, get_component<Components>(entity)...);
                     }
                 }
                 });
@@ -115,7 +117,7 @@ namespace ECS
 
         void run_systems() 
         {
-            for (auto& sys : systems) {
+            for (auto& sys : _systems) {
                 sys();
             }
         }

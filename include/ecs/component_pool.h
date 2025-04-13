@@ -10,35 +10,35 @@ namespace ECS
     class ComponentPool
     {
     private:
-        std::unordered_map<Entity, Component> components;
+        std::unordered_map<Entity, Component> _components;
     public:
         void add(Entity entity, const Component& component)
         {
-            components[entity] = component;
+            _components[entity] = component;
         }
         void remove(Entity entity)
         {
-            components.erase(entity);
+            _components.erase(entity);
         }
         bool has(Entity entity) const
         {
-            return (components.find(entity) != components.end());
+            return (_components.find(entity) != _components.end());
         }
         const Component& get(Entity entity) const
         {
-            return (components.at(entity));
+            return (_components.at(entity));
         }
         std::unordered_map<Entity, Component>& all() 
         { 
-            return (components);
+            return (_components);
         }
         bool empty() const 
         { 
-            return (components.empty());
+            return (_components.empty());
         }
         void clear()
         {
-            components.clear();
+            _components.clear();
         }
     };
 }
