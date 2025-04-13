@@ -459,8 +459,6 @@ CMakeUserPresets.json
 *.user
 *.userosscache
 *.sln.docstates
-/vcpkg.json
-/vcpkg-configuration.json
 
 # fuzzing
 sync_dir*
