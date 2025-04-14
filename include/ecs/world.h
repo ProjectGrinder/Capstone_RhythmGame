@@ -16,7 +16,7 @@ namespace ECS
         static World _instance;
         EntityGenerator _generator;
         std::unordered_set<Entity> _entities;
-        std::unordered_map<std::type_index, std::any> _component_pools;
+        std::unordered_map<std::type_index, std::shared_ptr<void>> _component_pools;
         std::vector<std::function<void()>> _systems;
         std::unordered_map<std::type_index, std::function<void(Entity)>> _entity_removers;
         std::unordered_map<std::type_index, std::function<void()>> _entity_clearers;
@@ -30,14 +30,14 @@ namespace ECS
                 _component_pools[index] = std::make_shared<ComponentPool<Component>>();
                 _entity_removers[index] = [this](Entity e) 
                 {
-                    get_pool<Component>().remove(e);
+                    get_pool<Component>().erase(e);
                 };
                 _entity_clearers[index] = [this]() 
                 {
                     get_pool<Component>().clear();
                 };
             }
-            return (std::any_cast<ComponentPool<Component>&>(_component_pools.at(index)));
+            return (*std::static_pointer_cast<ComponentPool<Component>>(_component_pools.at(index)));
         }
 
         template<typename Component>

@@ -1,22 +1,27 @@
 #pragma once
 
 #include <unordered_map>
+#include <memory>
 
 namespace ECS
 {
     using Entity = uint32_t;
+    
+    struct ComponentBase {
+
+    };
 
     template <typename Component>
     class ComponentPool
     {
     private:
-        std::unordered_map<Entity, Component> _components;
+        std::unordered_map<Entity, std::unique_ptr<ComponentBase>> _components;
     public:
         void add(Entity entity, const Component& component)
         {
-            _components[entity] = component;
+            _components[entity] = std::make_unique<Component>(component);
         }
-        void remove(Entity entity)
+        void erase(Entity entity)
         {
             _components.erase(entity);
         }
@@ -26,7 +31,7 @@ namespace ECS
         }
         const Component& get(Entity entity) const
         {
-            return (_components.at(entity));
+            return (*static_cast<Component*>(_components.at(entity)));
         }
         std::unordered_map<Entity, Component>& all() 
         { 
