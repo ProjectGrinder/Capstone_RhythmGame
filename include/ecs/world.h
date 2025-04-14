@@ -13,31 +13,33 @@ namespace ECS
 {
     class World {
     private:
+        struct ComponentHandler
+        {
+            std::shared_ptr<void> pool;
+            std::function<void(Entity)> remove;
+            std::function<void()> clear;
+        };
+
         static World _instance;
         EntityGenerator _generator;
         std::unordered_set<Entity> _entities;
-        std::unordered_map<std::type_index, std::shared_ptr<void>> _component_pools;
+        std::unordered_map<std::type_index, ComponentHandler> _component_handlers;
         std::vector<std::function<void()>> _systems;
-        std::unordered_map<std::type_index, std::function<void(Entity)>> _entity_removers;
-        std::unordered_map<std::type_index, std::function<void()>> _entity_clearers;
 
         template<typename Component>
         ComponentPool<Component>& get_pool()
         {
             std::type_index index(typeid(Component));
-            if (_component_pools.find(index) == _component_pools.end())
+            if (_component_handlers.find(index) == _component_handlers.end())
             {
-                _component_pools[index] = std::make_shared<ComponentPool<Component>>();
-                _entity_removers[index] = [this](Entity e) 
-                {
-                    get_pool<Component>().erase(e);
-                };
-                _entity_clearers[index] = [this]() 
-                {
-                    get_pool<Component>().clear();
+                auto pool = std::make_shared<ComponentPool<Component>>();
+                _component_handlers[index] = ComponentHandler{
+                    pool,
+                    [pool](Entity e) { pool->remove(e); },
+                    [pool]() { pool->clear(); }
                 };
             }
-            return (*std::static_pointer_cast<ComponentPool<Component>>(_component_pools.at(index)));
+            return (*std::static_pointer_cast<ComponentPool<Component>>(_component_handlers.at(index).pool));
         }
 
         template<typename Component>
@@ -69,9 +71,9 @@ namespace ECS
 
         Entity remove_entity(Entity entity) 
         {
-            for (auto& [_, remover] : _entity_removers) 
+            for (auto& [_, handler] : _component_handlers)
             {
-                remover(entity);
+                handler.remove(entity);
             }
             _entities.erase(entity);
             return entity;
@@ -79,9 +81,9 @@ namespace ECS
 
         void clear_entities() 
         {
-            for (auto& [_, clearer] : _entity_clearers) 
+            for (auto& [_, handler] : _component_handlers) 
             {
-                clearer();
+                handler.clear();
             }
             _entities.clear();
         }
@@ -99,9 +101,7 @@ namespace ECS
             pool.remove(entity);
             if (pool.empty())
             {
-                _component_pools.erase(std::type_index(typeid(Component)));
-                _entity_removers.erase(std::type_index(typeid(Component)));
-                _entity_clearers.erase(std::type_index(typeid(Component)));
+                _component_handlers.erase(std::type_index(typeid(Component)));
             }
         }
 
@@ -126,6 +126,15 @@ namespace ECS
             for (auto& sys : _systems) {
                 sys();
             }
+        }
+
+        void reset()
+        {
+            
+            clear_entities();
+            _component_handlers.clear();
+            _systems.clear();
+            _generator.reset();
         }
     
     };

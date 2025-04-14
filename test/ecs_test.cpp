@@ -4,8 +4,8 @@
 class ECSTest : public ::testing::Test
 {
 protected:
-    struct TestComponent {};
-    void test_system(ECS::Entity<TestComponent>&)
+    struct TestComponent : public ECS::ComponentBase {};
+    void test_system(ECS::Entity e)
     {
 		/* no-op */
     }
