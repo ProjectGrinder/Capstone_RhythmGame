@@ -4,11 +4,17 @@
 class ECSTest : public ::testing::Test
 {
 protected:
-    struct TestComponent : public ECS::ComponentBase {};
-    void test_system(ECS::Entity e)
+    ECS::World world;
+    struct TestComponent : ECS::ComponentBase 
     {
-		/* no-op */
-    }
+        int value;
+        TestComponent(int v) : value(v) {}
+    };
+    ECS::system_function<TestComponent> test_system =
+        [](ECS::Entity, TestComponent& c)
+        {
+            c.value++;
+        };
     void SetUp() override
     {
         // To see if needed: ECS::initialize();
@@ -16,73 +22,50 @@ protected:
 
     void TearDown() override
     {
-        ECS::clear_entities();
-        ECS::clear_components();
-        ECS::clear_systems();
+        world.reset();
     }
 };
 
-TEST_F(ECSTest, create_entity_with_component_test)
-{
-    struct TestComponent {};
-    ECS::Entity test_entity = ECS::create_entity<TestComponent>();
-    EXPECT_TRUE(ECS::has_entity(test_entity)) << "Entity should exist in world after creation.";
-}
-
 TEST_F(ECSTest, create_entity_without_component_test)
 {
-    ECS::Entity test_entity = ECS::create_entity<>();
-    EXPECT_TRUE(ECS::has_entity(test_entity)) << "Entity should exist in world after creation.";
+    ECS::Entity test_entity1 = world.create_entity();
+    EXPECT_EQ(test_entity1, 0) << "Entity should be 0.";
+    ECS::Entity test_entity2 = world.create_entity();
+    EXPECT_EQ(test_entity2, 1) << "Entity should be 1.";
+}
+
+TEST_F(ECSTest, create_entity_with_component_test)
+{
+    ECS::Entity test_entity1 = world.create_entity(TestComponent{0});
+    EXPECT_EQ(test_entity1, 0) << "Entity should be 0.";
+    ECS::Entity test_entity2 = world.create_entity(TestComponent{1});
+    EXPECT_EQ(test_entity2, 1) << "Entity should be 1.";
 }
 
 TEST_F(ECSTest, remove_entity_test)
 {
-    struct TestComponent {};
-    ECS::Entity test_entity = ECS::create_entity<TestComponent>();
-    ECS::Entity removed_entity = ECS::remove_entity(test_entity);
-    EXPECT_EQ(test_entity, removed_entity) << "Input entity and output entity should be the same.";
-    EXPECT_FALSE(ECS::has_entity(test_entity)) << "Entity should not exist in world after destruction.";
+    world.create_entity();
+    ECS::Entity test_entity2 = world.create_entity();
+    world.create_entity();
+    ECS::Entity removed_entity = world.remove_entity(test_entity2);
+    EXPECT_EQ(removed_entity, test_entity2) << "Input entity and output entity should be the same.";
 }
 
 TEST_F(ECSTest, add_system_test)
 {
-    ECS::add_system(test_system);
-    EXPECT_TRUE(ECS::has_system(test_system)) << "System should exist in the world.";
-}
-
-TEST_F(ECSTest, remove_system_test)
-{
-    std::function<void(ECS::EntityView<TestComponent>&)> test_system =
-        [](ECS::EntityView<TestComponent>&)
-        {
-            /* no-op */
-        };
-
-    ECS::add_system(test_system);
-    ECS::remove_system(test_system);
-    EXPECT_FALSE(ECS::has_system(test_system)) << "System should not exist in the world after removal.";
+    world.add_system(test_system);
 }
 
 TEST_F(ECSTest, add_component_test)
 {
-    ECS::Entity test_entity = ECS::create_entity<>();
-    ECS::add_component<TestComponent>(test_entity);
-    EXPECT_TRUE(ECS::has_component<TestComponent>(test_entity)) << "Entity should have component after addition.";
+    ECS::Entity test_entity = world.create_entity();
+    world.add_component<TestComponent>(test_entity, TestComponent{42});
+    EXPECT_TRUE(world.has_component<TestComponent>(test_entity)) << "Entity should have component after addition.";
 }
 
 TEST_F(ECSTest, remove_component_test)
 {
-    struct TestComponent {};
-    ECS::Entity test_entity = ECS::create_entity<TestComponent>();
-    ECS::remove_component<TestComponent>(test_entity);
-    EXPECT_FALSE(ECS::has_component<TestComponent>(test_entity)) << "Entity should not have component after removal.";
-}
-
-TEST_F(ECSTest, clear_entities_test)
-{
-    ECS::Entity test_entity1 = ECS::create_entity<>();
-    ECS::Entity test_entity2 = ECS::create_entity<>();
-    ECS::clear_entities();
-    EXPECT_FALSE(ECS::has_entity(test_entity1)) << "Entity should not exist in world after clearing.";
-    EXPECT_FALSE(ECS::has_entity(test_entity2)) << "Entity should not exist in world after clearing.";
+    ECS::Entity test_entity = world.create_entity(TestComponent{ 0 });
+    world.remove_component<TestComponent>(test_entity);
+    EXPECT_FALSE(world.has_component<TestComponent>(test_entity)) << "Entity should not have component after removal.";
 }

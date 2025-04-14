@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <concepts>
 
 namespace ECS
 {
@@ -11,10 +12,14 @@ namespace ECS
 
     };
 
-    template <typename Component>
+    template<typename T>
+    concept ComponentType = std::derived_from<T, ComponentBase>;
+
+    template <ComponentType Component>
     class ComponentPool
     {
     private:
+        static_assert(std::derived_from<Component, ComponentBase>, "Component must inherit from ComponentBase");
         std::unordered_map<Entity, std::unique_ptr<ComponentBase>> _components;
     public:
         void add(Entity entity, const Component& component)
@@ -29,11 +34,11 @@ namespace ECS
         {
             return (_components.find(entity) != _components.end());
         }
-        const Component& get(Entity entity) const
+        Component& get(Entity entity) const
         {
-            return (*static_cast<Component*>(_components.at(entity)));
+            return (*static_cast<Component*>(_components.at(entity).get()));
         }
-        std::unordered_map<Entity, Component>& all() 
+        std::unordered_map<Entity, std::unique_ptr<ComponentBase>>& all()
         { 
             return (_components);
         }

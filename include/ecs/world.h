@@ -11,6 +11,9 @@
 
 namespace ECS
 {
+    template <typename... Components>
+    using system_function = std::function<void(ECS::Entity, Components&...)>;
+
     class World {
     private:
         struct ComponentHandler
@@ -20,7 +23,6 @@ namespace ECS
             std::function<void()> clear;
         };
 
-        static World _instance;
         EntityGenerator _generator;
         std::unordered_set<Entity> _entities;
         std::unordered_map<std::type_index, ComponentHandler> _component_handlers;
@@ -35,30 +37,15 @@ namespace ECS
                 auto pool = std::make_shared<ComponentPool<Component>>();
                 _component_handlers[index] = ComponentHandler{
                     pool,
-                    [pool](Entity e) { pool->remove(e); },
+                    [pool](Entity e) { pool->erase(e); },
                     [pool]() { pool->clear(); }
                 };
             }
             return (*std::static_pointer_cast<ComponentPool<Component>>(_component_handlers.at(index).pool));
         }
 
-        template<typename Component>
-        bool has_component(Entity e) 
-        {
-            return (get_pool<Component>().has(e));
-        }
-
-        template<typename Component>
-        Component& get_component(Entity e) 
-        {
-            return (get_pool<Component>().get(e));
-        }
-
     public:
-        static World& instance()
-        {
-            return (_instance);
-        }
+		World() = default;
 
         template<typename... Components>
         Entity create_entity(Components&&... comps) 
@@ -95,10 +82,22 @@ namespace ECS
         }
 
         template<typename Component>
+        bool has_component(Entity e)
+        {
+            return (get_pool<Component>().has(e));
+        }
+
+        template<typename Component>
+        Component& get_component(Entity e)
+        {
+            return (get_pool<Component>().get(e));
+        }
+
+        template<typename Component>
         void remove_component(Entity entity) 
         {
             auto& pool = get_pool<Component>();
-            pool.remove(entity);
+            pool.erase(entity);
             if (pool.empty())
             {
                 _component_handlers.erase(std::type_index(typeid(Component)));
