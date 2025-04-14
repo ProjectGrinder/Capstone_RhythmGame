@@ -88,24 +88,41 @@ namespace ECS
         template<ComponentType Component>
         void add_component(entity_id entity, Component component) 
         {
+            if (has_entity(entity) == false)
+            {
+                throw(std::out_of_range("Entity does not exist"));
+            }
             get_pool<Component>().add(entity, component);
         }
 
         template<ComponentType Component>
         bool has_component(entity_id e)
         {
+            if (has_entity(e) == false)
+            {
+                throw(std::out_of_range("Entity does not exist"));
+            }
             return (get_pool<Component>().has(e));
         }
 
         template<ComponentType Component>
         Component& get_component(entity_id e)
         {
+            if (has_entity(e) == false)
+            {
+                throw(std::out_of_range("Entity does not exist"));
+            }
             return (get_pool<Component>().get(e));
         }
 
         template<ComponentType Component>
         void remove_component(entity_id entity) 
         {
+            if (has_entity(entity) == false)
+            {
+                throw(std::out_of_range("Entity does not exist"));
+            }
+
             auto& pool = get_pool<Component>();
             pool.erase(entity);
             if (pool.empty())
@@ -142,7 +159,7 @@ namespace ECS
         }
 
         template <ComponentType... Components>
-        void remove_system()
+        void remove_system(void (*system)(entity_id, Components&...))
         {
             void* key = reinterpret_cast<void*>(system);
             auto it = _system_indices.find(key);
@@ -153,7 +170,7 @@ namespace ECS
             _system_indices.erase(it);
 
             // Recalculate indices
-            for (auto& [key, value] : _system_indices)
+            for (auto& [_, value] : _system_indices)
             {
                 if (value > index)
                 {
