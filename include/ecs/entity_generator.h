@@ -2,13 +2,13 @@
 #include <cstdint>
 namespace ECS
 {
-    using Entity = uint32_t;
+    using entity_id = uint32_t;
     class EntityGenerator
     {
     private:
-        Entity _next_entity_id = 0;
+        entity_id _next_entity_id = 0;
     public:
-        Entity generate_entity()
+        entity_id generate_entity()
         {
             return (_next_entity_id++);
         }

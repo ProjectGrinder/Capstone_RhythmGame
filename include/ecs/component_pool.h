@@ -6,7 +6,7 @@
 
 namespace ECS
 {
-    using Entity = uint32_t;
+    using entity_id = uint32_t;
     
     struct ComponentBase {
 
@@ -19,26 +19,25 @@ namespace ECS
     class ComponentPool
     {
     private:
-        static_assert(std::derived_from<Component, ComponentBase>, "Component must inherit from ComponentBase");
-        std::unordered_map<Entity, std::unique_ptr<ComponentBase>> _components;
+        std::unordered_map<entity_id, std::unique_ptr<ComponentBase>> _components;
     public:
-        void add(Entity entity, const Component& component)
+        void add(entity_id entity, const Component& component)
         {
             _components[entity] = std::make_unique<Component>(component);
         }
-        void erase(Entity entity)
+        void erase(entity_id entity)
         {
             _components.erase(entity);
         }
-        bool has(Entity entity) const
+        bool has(entity_id entity) const
         {
             return (_components.find(entity) != _components.end());
         }
-        Component& get(Entity entity) const
+        Component& get(entity_id entity) const
         {
             return (*static_cast<Component*>(_components.at(entity).get()));
         }
-        std::unordered_map<Entity, std::unique_ptr<ComponentBase>>& all()
+        std::unordered_map<entity_id, std::unique_ptr<ComponentBase>>& all()
         { 
             return (_components);
         }
