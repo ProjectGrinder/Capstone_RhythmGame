@@ -41,6 +41,6 @@ TEST(State, delete_test)
 {
 	System::Context context(new MockState());
 	System::State* state = context.get_state();
-	delete state;
+	delete (state);
 	EXPECT_EQ(context.get_state(), nullptr) << "Context::get_state() did not return a null pointer after deletion!";
 }

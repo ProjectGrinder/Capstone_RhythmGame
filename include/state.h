@@ -25,7 +25,7 @@ namespace System
 
 		std::string get_name()
 		{
-			return typeid(*this).name();
+            return (typeid(*this).name());
 		}
     };
 
