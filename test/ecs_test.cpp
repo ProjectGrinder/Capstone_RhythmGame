@@ -6,13 +6,28 @@ struct TestComponent : ECS::ComponentBase
     int value;
     TestComponent(int v) : value(v) {}
 };
-void test_system(ECS::entity_id, TestComponent& c)
+struct TestComponent2 : ECS::ComponentBase
 {
-    c.value++;
+    int value;
+    TestComponent2(int v) : value(v) {}
+};
+
+void test_system(std::map<ECS::entity_id, std::tuple<TestComponent&>> matched_entities)
+{
+    for (auto& [entity, components] : matched_entities)
+    {
+        auto& [test_component] = components;
+        test_component.value++;
+    }
 }
-void duplicate_test_system(ECS::entity_id, TestComponent& c)
+
+void duplicate_test_system(std::map<ECS::entity_id, std::tuple<TestComponent&>> matched_entities)
 {
-    c.value *= 2;
+    for (auto& [entity, components] : matched_entities)
+    {
+        auto& [test_component] = components;
+        test_component.value *= 2;
+    }
 }
 
 class ECSTest : public ::testing::Test

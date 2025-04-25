@@ -132,34 +132,41 @@ namespace ECS
         }
 
         template<ComponentType... Components>
-        void add_system(void (*system)(entity_id, Components&...))
+        void add_system(void (*system)(std::map<entity_id, std::tuple<Components&...>>))
         {
             void* key = reinterpret_cast<void*>(system);
-
+        
             if (_system_indices.find(key) != _system_indices.end())
             {
                 return;
             }
-
+        
             _system_indices[key] = _systems.size();
-
-            auto wrapper = [=, this]() 
+        
+            auto wrapper = [this, system]()
             {
-                auto& pool = get_pool<std::tuple_element_t<0, std::tuple<Components...>>>();
-                for (auto& [entity, _] : pool.all()) 
+                std::map<entity_id, std::tuple<Components&...>> matching_entities;
+
+                for (auto entity : _entities)
                 {
-                    if ((has_component<Components>(entity) && ...)) 
+                    if ((has_component<Components>(entity) && ...))
                     {
-                        system(entity, get_component<Components>(entity)...);
+                        matching_entities.emplace(
+                            std::piecewise_construct,
+                            std::forward_as_tuple(entity),
+                            std::forward_as_tuple(get_component<Components>(entity)...)
+                        );
                     }
                 }
+        
+                system(matching_entities);
             };
-
+        
             _systems.push_back(wrapper);
         }
 
         template <ComponentType... Components>
-        void remove_system(void (*system)(entity_id, Components&...))
+        void remove_system(void (*system)(std::map<entity_id, std::tuple<Components&...>>))
         {
             void* key = reinterpret_cast<void*>(system);
             auto it = _system_indices.find(key);
