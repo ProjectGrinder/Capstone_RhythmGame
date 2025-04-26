@@ -14,7 +14,7 @@ struct TestComponent2 : ECS::ComponentBase
 
 void test_system(std::map<ECS::entity_id, std::tuple<TestComponent&>> matched_entities)
 {
-    for (auto& [_, components] : matched_entities)
+    for (auto& [entity, components] : matched_entities)
     {
         auto& [test_component] = components;
         test_component.value++;
@@ -23,7 +23,7 @@ void test_system(std::map<ECS::entity_id, std::tuple<TestComponent&>> matched_en
 
 void duplicate_test_system(std::map<ECS::entity_id, std::tuple<TestComponent&>> matched_entities)
 {
-    for (auto& [_, components] : matched_entities)
+    for (auto& [entity, components] : matched_entities)
     {
         auto& [test_component] = components;
         test_component.value *= 2;
