@@ -35,10 +35,17 @@ namespace ECS
             if (_component_handlers.find(index) == _component_handlers.end())
             {
                 auto pool = std::make_shared<ComponentPool<Component>>();
-                _component_handlers[index] = ComponentHandler{
+                _component_handlers[index] = ComponentHandler
+                {
                     pool,
-                    [pool](entity_id e) { pool->erase(e); },
-                    [pool]() { pool->clear(); }
+                    [pool](entity_id e) 
+                    { 
+                        pool->erase(e); 
+                    },
+                    [pool]() 
+                    { 
+                        pool->clear(); 
+                    }
                 };
             }
             return (*std::static_pointer_cast<ComponentPool<Component>>(_component_handlers.at(index).pool));
@@ -193,7 +200,8 @@ namespace ECS
 
         void run_systems() 
         {
-            for (auto& sys : _systems) {
+            for (auto& sys : _systems) 
+            {
                 sys();
             }
         }
