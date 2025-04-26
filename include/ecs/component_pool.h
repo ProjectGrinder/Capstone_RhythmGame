@@ -3,17 +3,11 @@
 #include <unordered_map>
 #include <memory>
 #include <concepts>
+#include "ecs/component_base.h"
 
 namespace ECS
 {
     using entity_id = uint32_t;
-    
-    struct ComponentBase {
-
-    };
-
-    template<typename T>
-    concept ComponentType = std::derived_from<T, ComponentBase>;
 
     template <ComponentType Component>
     class ComponentPool
