@@ -14,6 +14,7 @@
 
 namespace System
 {
+    // TODO: Remove Window Class
     class OS 
     {
     private:
