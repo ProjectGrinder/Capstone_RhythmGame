@@ -63,7 +63,7 @@ namespace ECS
 
         size_t entity_count() const
         {
-            return _entities.size();
+            return (_entities.size());
         }
 
         entity_id remove_entity(entity_id entity) 
@@ -73,7 +73,7 @@ namespace ECS
                 handler.remove(entity);
             }
             _entities.erase(entity);
-            return entity;
+            return (entity);
         }
 
         void clear_entities() 
@@ -188,7 +188,7 @@ namespace ECS
 
         size_t system_count() const
         {
-            return _systems.size();
+            return (_systems.size());
         }
 
         void run_systems() 
