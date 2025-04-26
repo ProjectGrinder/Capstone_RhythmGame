@@ -8,9 +8,7 @@ namespace ECS
 {
     using entity_id = uint32_t;
     
-    struct ComponentBase {
-
-    };
+    struct ComponentBase;
 
     template<typename T>
     concept ComponentType = std::derived_from<T, ComponentBase>;
