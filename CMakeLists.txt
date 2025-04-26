@@ -6,6 +6,7 @@ add_compile_definitions(PROJECT_NAME=${PROJECT_NAME})
 
 list(APPEND
     LIBS
+        scene
         utils
         engine
 )

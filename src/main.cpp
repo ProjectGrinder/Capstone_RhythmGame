@@ -1,5 +1,6 @@
 #include <Windows.h>
 
+#include "scene.h"
 #include "system.h"
 
 int WINAPI WinMain(
@@ -11,10 +12,10 @@ int WINAPI WinMain(
 {
     uint32_t error = ERROR_SUCCESS;
 
-    using System::OS;
+    using System::OS, System::Game, Scene::SceneConfig::starting_scene;
+    Game::change_scene(starting_scene);
 
     /* Initialize */
-
     if (error == ERROR_SUCCESS)
     {
         /* Starting OS Process */

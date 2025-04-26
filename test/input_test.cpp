@@ -3,7 +3,7 @@
 #include <algorithm>
 
 #include "pch.h"
-#include "input.h"
+#include "system.h"
 
 TEST(Input, instance_function_test)
 {
