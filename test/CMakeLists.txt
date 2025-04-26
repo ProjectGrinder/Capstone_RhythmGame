@@ -8,7 +8,7 @@ file(GLOB
 
 add_executable(unit_test
     ${TEST_FILES}
- )
+)
 
 target_link_libraries(unit_test
     PRIVATE
