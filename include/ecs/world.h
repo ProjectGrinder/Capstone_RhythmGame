@@ -2,12 +2,12 @@
 
 #include <unordered_set>
 #include <typeindex>
-#include <any>
 
 #include "memory"
 #include "component_pool.h"
 #include "entity_generator.h"
 #include "functional"
+#include "system_function.h"
 
 namespace ECS
 {
@@ -139,7 +139,7 @@ namespace ECS
         }
 
         template<ComponentType... Components>
-        void add_system(void (*system)(std::map<entity_id, std::tuple<Components&...>>))
+        void add_system(SystemFunction<Components...> system)
         {
             void* key = reinterpret_cast<void*>(system);
         
@@ -173,7 +173,7 @@ namespace ECS
         }
 
         template <ComponentType... Components>
-        void remove_system(void (*system)(std::map<entity_id, std::tuple<Components&...>>))
+        void remove_system(SystemFunction<Components...> system)
         {
             void* key = reinterpret_cast<void*>(system);
             auto it = _system_indices.find(key);

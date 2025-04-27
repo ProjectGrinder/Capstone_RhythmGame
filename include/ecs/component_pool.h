@@ -2,7 +2,6 @@
 
 #include <unordered_map>
 #include <memory>
-#include <concepts>
 #include "ecs/component_base.h"
 
 namespace ECS
