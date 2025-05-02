@@ -57,6 +57,14 @@ namespace ECS
             return (*std::static_pointer_cast<ComponentPool<Component>>(_component_handlers.at(index).pool));
         }
 
+        void cleanup()
+        {
+            for (auto sys : _cleanup_systems)
+            {
+                sys();
+            }
+        }
+
     public:
         World() = default;
 
@@ -200,10 +208,12 @@ namespace ECS
 
         void reset()
         {
-            
+            cleanup();
             clear_entities();
             _component_handlers.clear();
             _update_systems.clear();
+            _cleanup_systems.clear();
+            _systems.clear();
             _generator.reset();
         }
     
