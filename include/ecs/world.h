@@ -32,7 +32,7 @@ namespace ECS
         std::unordered_map<std::type_index, ComponentHandler> _component_handlers;
         std::vector<std::function<void()>> _update_systems;
         std::vector<std::function<void()>> _cleanup_systems;
-        std::unordered_map<void*, size_t> _systems;
+        std::unordered_set<void*> _systems;
 
         template<ComponentType Component>
         ComponentPool<Component>& get_pool()
@@ -157,12 +157,12 @@ namespace ECS
         {
             void* key = reinterpret_cast<void*>(system);
         
-            if (_systems.find(key) != _systems.end())
+            if (_systems.contains(key))
             {
                 return;
             }
         
-            _systems[key] = _update_systems.size();
+            _systems.insert(key);
         
             auto wrapper = [this, system]()
             {
