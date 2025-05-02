@@ -172,27 +172,6 @@ namespace ECS
             _systems.push_back(wrapper);
         }
 
-        template <ComponentType... Components>
-        void remove_system(SystemFunction<Components...> system)
-        {
-            void* key = reinterpret_cast<void*>(system);
-            auto it = _system_indices.find(key);
-            if (it == _system_indices.end()) return;
-
-            size_t index = it->second;
-            _systems.erase(_systems.begin() + index);
-            _system_indices.erase(it);
-
-            // Recalculate indices
-            for (auto& [_, value] : _system_indices)
-            {
-                if (value > index)
-                {
-                    value--;
-                }
-            }
-        }
-
         size_t system_count() const
         {
             return (_systems.size());
