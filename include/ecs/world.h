@@ -11,6 +11,11 @@
 
 namespace ECS
 {
+    enum SystemType : bool  
+    {
+        UPDATE = false,  
+        CLEANUP = true  
+    };
 
     class World 
     {
@@ -25,8 +30,9 @@ namespace ECS
         EntityGenerator _generator;
         std::unordered_set<entity_id> _entities;
         std::unordered_map<std::type_index, ComponentHandler> _component_handlers;
-        std::vector<std::function<void()>> _systems;
-        std::unordered_map<void*, size_t> _system_indices;
+        std::vector<std::function<void()>> _update_systems;
+        std::vector<std::function<void()>> _cleanup_systems;
+        std::unordered_map<void*, size_t> _systems;
 
         template<ComponentType Component>
         ComponentPool<Component>& get_pool()
@@ -139,16 +145,16 @@ namespace ECS
         }
 
         template<ComponentType... Components>
-        void add_system(SystemFunction<Components...> system)
+        void add_system(SystemFunction<Components...> system, SystemType type)
         {
             void* key = reinterpret_cast<void*>(system);
         
-            if (_system_indices.find(key) != _system_indices.end())
+            if (_systems.find(key) != _systems.end())
             {
                 return;
             }
         
-            _system_indices[key] = _systems.size();
+            _systems[key] = _update_systems.size();
         
             auto wrapper = [this, system]()
             {
@@ -169,17 +175,24 @@ namespace ECS
                 system(matching_entities);
             };
         
-            _systems.push_back(wrapper);
+            if (type == CLEANUP)
+            {
+                _cleanup_systems.push_back(wrapper);
+            }
+            else
+            {
+                _update_systems.push_back(wrapper);
+            }
         }
 
         size_t system_count() const
         {
-            return (_systems.size());
+            return (_update_systems.size());
         }
 
         void run_systems() 
         {
-            for (auto& sys : _systems) 
+            for (auto& sys : _update_systems) 
             {
                 sys();
             }
@@ -190,7 +203,7 @@ namespace ECS
             
             clear_entities();
             _component_handlers.clear();
-            _systems.clear();
+            _update_systems.clear();
             _generator.reset();
         }
     
