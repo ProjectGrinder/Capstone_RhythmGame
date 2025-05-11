@@ -191,6 +191,8 @@ namespace ECS
             case UPDATE:
                 _update_systems.push_back(wrapper);
                 break;
+            default:
+                throw std::invalid_argument("Invalid system type");
             }
         }
 
