@@ -2,15 +2,20 @@
 
 #include <unordered_set>
 #include <typeindex>
-#include <any>
 
 #include "memory"
 #include "component_pool.h"
 #include "entity_generator.h"
 #include "functional"
+#include "system_function.h"
 
 namespace ECS
 {
+    enum SystemType : bool  
+    {
+        UPDATE = false,  
+        CLEANUP = true  
+    };
 
     class World 
     {
@@ -25,8 +30,9 @@ namespace ECS
         EntityGenerator _generator;
         std::unordered_set<entity_id> _entities;
         std::unordered_map<std::type_index, ComponentHandler> _component_handlers;
-        std::vector<std::function<void()>> _systems;
-        std::unordered_map<void*, size_t> _system_indices;
+        std::vector<std::function<void()>> _update_systems;
+        std::vector<std::function<void()>> _cleanup_systems;
+        std::unordered_set<void*> _systems;
 
         template<ComponentType Component>
         ComponentPool<Component>& get_pool()
@@ -49,6 +55,14 @@ namespace ECS
                 };
             }
             return (*std::static_pointer_cast<ComponentPool<Component>>(_component_handlers.at(index).pool));
+        }
+
+        void cleanup()
+        {
+            for (auto sys : _cleanup_systems)
+            {
+                sys();
+            }
         }
 
     public:
@@ -139,16 +153,16 @@ namespace ECS
         }
 
         template<ComponentType... Components>
-        void add_system(void (*system)(std::map<entity_id, std::tuple<Components&...>>))
+        void add_system(SystemFunction<Components...> system, SystemType type)
         {
             void* key = reinterpret_cast<void*>(system);
         
-            if (_system_indices.find(key) != _system_indices.end())
+            if (_systems.contains(key))
             {
                 return;
             }
         
-            _system_indices[key] = _systems.size();
+            _systems.insert(key);
         
             auto wrapper = [this, system]()
             {
@@ -168,39 +182,28 @@ namespace ECS
         
                 system(matching_entities);
             };
-        
-            _systems.push_back(wrapper);
-        }
 
-        template <ComponentType... Components>
-        void remove_system(void (*system)(std::map<entity_id, std::tuple<Components&...>>))
-        {
-            void* key = reinterpret_cast<void*>(system);
-            auto it = _system_indices.find(key);
-            if (it == _system_indices.end()) return;
-
-            size_t index = it->second;
-            _systems.erase(_systems.begin() + index);
-            _system_indices.erase(it);
-
-            // Recalculate indices
-            for (auto& [_, value] : _system_indices)
+            switch (type)
             {
-                if (value > index)
-                {
-                    value--;
-                }
+            case CLEANUP:
+                _cleanup_systems.push_back(wrapper);
+                break;
+            case UPDATE:
+                _update_systems.push_back(wrapper);
+                break;
+            default:
+                throw std::invalid_argument("Invalid system type");
             }
         }
 
         size_t system_count() const
         {
-            return (_systems.size());
+            return (_update_systems.size());
         }
 
         void run_systems() 
         {
-            for (auto& sys : _systems) 
+            for (auto& sys : _update_systems) 
             {
                 sys();
             }
@@ -208,9 +211,11 @@ namespace ECS
 
         void reset()
         {
-            
+            cleanup();
             clear_entities();
             _component_handlers.clear();
+            _update_systems.clear();
+            _cleanup_systems.clear();
             _systems.clear();
             _generator.reset();
         }

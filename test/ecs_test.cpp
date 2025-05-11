@@ -12,7 +12,7 @@ struct TestComponent2 : ECS::ComponentBase
     TestComponent2(int v) : value(v) {}
 };
 
-void test_system(std::map<ECS::entity_id, std::tuple<TestComponent&>> matched_entities)
+void test_system(ECS::EntityMap<TestComponent> matched_entities)
 {
     for (auto& [_, components] : matched_entities)
     {
@@ -21,7 +21,7 @@ void test_system(std::map<ECS::entity_id, std::tuple<TestComponent&>> matched_en
     }
 }
 
-void duplicate_test_system(std::map<ECS::entity_id, std::tuple<TestComponent&>> matched_entities)
+void duplicate_test_system(ECS::EntityMap<TestComponent> matched_entities)
 {
     for (auto& [_, components] : matched_entities)
     {
@@ -231,34 +231,14 @@ TEST_F(ECSTest, remove_component_from_entity_with_no_component_test)
 TEST_F(ECSTest, add_system_test)
 {
     EXPECT_EQ(world.system_count(), 0);
-    world.add_system(test_system);
+    world.add_system(test_system, ECS::SystemType::UPDATE);
     EXPECT_EQ(world.system_count(), 1);
-}
-
-TEST_F(ECSTest, remove_system_test)
-{
-    EXPECT_EQ(world.system_count(), 0);
-    world.add_system(test_system);
-    EXPECT_EQ(world.system_count(), 1);
-    world.remove_system(test_system);
-    EXPECT_EQ(world.system_count(), 0);
-}
-
-TEST_F(ECSTest, remove_nonexistent_system_test)
-{
-    EXPECT_EQ(world.system_count(), 0);
-    world.add_system(test_system);
-    EXPECT_EQ(world.system_count(), 1);
-    world.remove_system(test_system);
-    EXPECT_EQ(world.system_count(), 0);
-    world.remove_system(test_system);
-    EXPECT_EQ(world.system_count(), 0);
 }
 
 TEST_F(ECSTest, run_system_test)
 {
     ECS::entity_id entity = world.create_entity<TestComponent>(TestComponent(5));
-    world.add_system(test_system);
+    world.add_system(test_system, ECS::SystemType::UPDATE);
     EXPECT_EQ(world.system_count(), 1);
     EXPECT_EQ(world.get_component<TestComponent>(entity).value, 5);
     world.run_systems();
@@ -268,20 +248,19 @@ TEST_F(ECSTest, run_system_test)
 TEST_F(ECSTest, run_multiple_systems_in_order_test)
 {
     ECS::entity_id entity = world.create_entity<TestComponent>(TestComponent(5));
-    world.add_system(test_system);
-    world.add_system(duplicate_test_system);
+    world.add_system(test_system, ECS::SystemType::UPDATE);
+    world.add_system(duplicate_test_system, ECS::SystemType::UPDATE);
     EXPECT_EQ(world.system_count(), 2);
     EXPECT_EQ(world.get_component<TestComponent>(entity).value, 5);
     world.run_systems();
     EXPECT_EQ(world.get_component<TestComponent>(entity).value, 12); // (5 + 1) * 2
+}
 
-    world.remove_system(test_system);
-    world.remove_system(duplicate_test_system);
-    EXPECT_EQ(world.system_count(), 0);
-
-    world.add_component<TestComponent>(entity, TestComponent(5));
-    world.add_system(duplicate_test_system);
-    world.add_system(test_system);
+TEST_F(ECSTest, run_multiple_systems_in_other_order_test)
+{
+    ECS::entity_id entity = world.create_entity<TestComponent>(TestComponent(5));
+    world.add_system(duplicate_test_system, ECS::SystemType::UPDATE);
+    world.add_system(test_system, ECS::SystemType::UPDATE);
     EXPECT_EQ(world.system_count(), 2);
     EXPECT_EQ(world.get_component<TestComponent>(entity).value, 5);
     world.run_systems();
@@ -292,7 +271,7 @@ TEST_F(ECSTest, run_system_with_multiple_entities_test)
 {
     ECS::entity_id entity1 = world.create_entity<TestComponent>(TestComponent(5));
     ECS::entity_id entity2 = world.create_entity<TestComponent>(TestComponent(10));
-    world.add_system(test_system);
+    world.add_system(test_system, ECS::SystemType::UPDATE);
     EXPECT_EQ(world.system_count(), 1);
     EXPECT_EQ(world.get_component<TestComponent>(entity1).value, 5);
     EXPECT_EQ(world.get_component<TestComponent>(entity2).value, 10);
@@ -303,7 +282,7 @@ TEST_F(ECSTest, run_system_with_multiple_entities_test)
 
 TEST_F(ECSTest, run_system_with_component_added_later_test)
 {
-    world.add_system(test_system);
+    world.add_system(test_system, ECS::SystemType::UPDATE);
     ECS::entity_id entity1 = world.create_entity<TestComponent>(TestComponent(5));
     world.run_systems();
     EXPECT_EQ(world.get_component<TestComponent>(entity1).value, 6);
@@ -319,8 +298,8 @@ TEST_F(ECSTest, add_duplicate_systems)
 {
     ECS::entity_id entity = world.create_entity<TestComponent>(TestComponent(5));
     EXPECT_EQ(world.system_count(), 0);
-    world.add_system(test_system);
-    world.add_system(test_system);
+    world.add_system(test_system, ECS::SystemType::UPDATE);
+    world.add_system(test_system, ECS::SystemType::UPDATE);
     EXPECT_EQ(world.system_count(), 1);
     world.run_systems();
     EXPECT_EQ(world.get_component<TestComponent>(entity).value, 6);
