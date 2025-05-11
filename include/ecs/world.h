@@ -2,6 +2,8 @@
 
 #include <unordered_set>
 #include <typeindex>
+#include <ranges>
+#include <algorithm>
 
 #include "memory"
 #include "component_pool.h"
@@ -38,7 +40,7 @@ namespace ECS
         ComponentPool<Component>& get_pool()
         {
             std::type_index index(typeid(Component));
-            if (_component_handlers.find(index) == _component_handlers.end())
+            if (_component_handlers.contains(index))
             {
                 auto pool = std::make_shared<ComponentPool<Component>>();
                 _component_handlers[index] = ComponentHandler
@@ -166,21 +168,28 @@ namespace ECS
         
             auto wrapper = [this, system]()
             {
-                std::map<entity_id, std::tuple<Components&...>> matching_entities;
 
-                for (auto entity : _entities)
+                auto filter = [this](ECS::entity_id entity)
                 {
-                    if ((has_component<Components>(entity) && ...))
-                    {
-                        matching_entities.emplace(
-                            std::piecewise_construct,
-                            std::forward_as_tuple(entity),
-                            std::forward_as_tuple(get_component<Components>(entity)...)
-                        );
-                    }
-                }
-        
-                system(matching_entities);
+                    return(has_component<Components>(entity) && ...);
+                };
+
+                auto apply = [this, system](ECS::entity_id entity)
+                {
+                    std::map<entity_id, std::tuple<Components&...>> matching_entities;
+                    matching_entities.emplace(
+                        std::piecewise_construct,
+                        std::forward_as_tuple(entity),
+                        std::forward_as_tuple(get_component<Components>(entity)...)
+                    );
+                    system(matching_entities);
+                };
+
+                std::ranges::for_each
+                (
+                    _entities | std::views::filter(filter),
+                    apply
+                );
             };
 
             switch (type)
