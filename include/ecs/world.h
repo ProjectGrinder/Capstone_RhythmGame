@@ -182,14 +182,15 @@ namespace ECS
         
                 system(matching_entities);
             };
-        
-            if (type == CLEANUP)
+
+            switch (type)
             {
+            case CLEANUP:
                 _cleanup_systems.push_back(wrapper);
-            }
-            else
-            {
+                break;
+            case UPDATE:
                 _update_systems.push_back(wrapper);
+                break;
             }
         }
 
