@@ -1,6 +1,12 @@
 #include "system.h"
 #include "utils.h"
 
+#ifndef PROJECT_NAME
+#define PROJECT_NAME NO_NAME_PROJECT
+#endif
+#define STR(name) #name
+#define TO_STR(name) STR(name)
+
 using System::OS;
 
 OS OS::_instance;
@@ -21,16 +27,14 @@ OS& OS::instance()
 
 uint32_t OS::run()
 {
-    uint32_t error;
+    uint32_t error = ERROR_SUCCESS;
     if (_instance._system_instance_handler == nullptr)
     {
         error = ERROR_INVALID_STATE;
-        return(error);
+        goto exit;
     }
 
-    _instance._window = std::make_unique<Window>(_instance._system_instance_handler);
-    error = _instance._window->create_window();
-
+    error = _instance._create_window();
 #ifndef _TESTING
     if (error == ERROR_SUCCESS)
     {
@@ -39,7 +43,7 @@ uint32_t OS::run()
         while (_instance._is_running)
         {
             /*  Polling Event  */
-            OS::_poll_event();
+            _instance._poll_event();
             /*  Upadate Game  */
 
             /*  Render  */
@@ -48,10 +52,11 @@ uint32_t OS::run()
              *  Fix framerate delay
              *  TODO: Make this high precision
              */
-            OS::_sleep();
+            _instance._sleep();
         }
     }
 #endif
+exit:
     return(error);
 }
 
@@ -115,7 +120,7 @@ uint32_t OS::_poll_event()
         PeekMessage
         (
             &msg,
-            _instance._window->get_handle(),
+            _instance._window_handler,
             0,0, PM_REMOVE
         )
     )
@@ -146,4 +151,77 @@ uint32_t OS::_poll_event()
 uint16_t OS::get_system_precision()
 {
     return(_instance._system_precision);
+}
+
+uint32_t OS::_create_window()
+{
+    WNDCLASSEXA window_settings;
+    window_settings.cbSize = sizeof(WNDCLASSEXA);
+    window_settings.style = 0;
+    window_settings.lpfnWndProc = window_process;
+    window_settings.cbClsExtra = 0;
+    window_settings.cbWndExtra = 0;
+    window_settings.hInstance = _instance._system_instance_handler;
+    window_settings.hIcon = LoadIconA(NULL, IDI_APPLICATION);
+    window_settings.hIconSm = LoadIconA(NULL, IDI_APPLICATION);
+    window_settings.hCursor = LoadCursorA(NULL, IDC_ARROW);
+    window_settings.hbrBackground = CreateSolidBrush(RGB(0, 0, 0));
+    window_settings.lpszMenuName = nullptr;
+    window_settings.lpszClassName = TO_STR(PROJECT_NAME);
+
+    uint32_t error = ERROR_SUCCESS;
+
+    if (RegisterClassExA(&window_settings) == 0)
+    {
+        error = GetLastError();
+        Utils::print_debug
+        (
+            "engine/window.cpp",
+            "Window::create_window",
+            "Error code: {}, Failed to register window.",
+            error
+        );
+        return(error);
+    }
+    
+    this->_window_handler = CreateWindowExA
+    (
+        0, window_settings.lpszClassName, window_settings.lpszClassName,
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
+        640, 480, nullptr, nullptr, _instance._system_instance_handler, nullptr
+    );
+
+    if (this->_window_handler == nullptr)
+    {
+        error = GetLastError();
+        Utils::print_debug
+        (
+            "engine/window.cpp",
+            "Window::create_window",
+            "Error code: {}, Failed to create window.",
+            error
+        );
+        
+        return(error);
+    }
+    return(error);
+}
+
+static LRESULT CALLBACK System::window_process
+(
+    HWND hwnd,
+    UINT msg,
+    WPARAM w_param,
+    LPARAM l_param
+)
+{
+    switch(msg)
+    {
+    case WM_CLOSE:
+        OS::stop();
+        PostQuitMessage(0);
+        return(0);
+    default:
+        return(DefWindowProc(hwnd, msg, w_param, l_param));
+    }
 }

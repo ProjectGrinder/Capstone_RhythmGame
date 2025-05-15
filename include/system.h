@@ -2,5 +2,4 @@
 
 #include "system/input.h"
 #include "system/game.h"
-#include "system/window.h"
 #include "system/os.h"

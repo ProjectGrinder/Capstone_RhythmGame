@@ -14,20 +14,19 @@
 
 namespace System
 {
-    // TODO: Remove Window Class
     class OS 
     {
     private:
         bool _is_running = false;
         uint16_t _system_precision = 15;
         HINSTANCE _system_instance_handler = nullptr;
-        std::unique_ptr<Window> _window;
+        HWND _window_handler = nullptr;
         static OS _instance;
 
         OS();
-        static uint32_t _sleep();
-        static uint32_t _poll_event();
-
+        uint32_t _sleep();
+        uint32_t _poll_event();
+        uint32_t _create_window();
     public:
         static uint32_t run();
         static OS &instance();
@@ -36,4 +35,6 @@ namespace System
         static uint32_t set_system_precision(int32_t ms);
         static uint16_t get_system_precision();
     };
+
+    static LRESULT CALLBACK window_process(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param);
 }

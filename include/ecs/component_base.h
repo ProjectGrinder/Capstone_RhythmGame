@@ -3,7 +3,8 @@
 
 namespace ECS
 {
-	struct ComponentBase {
+	struct ComponentBase
+	{
 
 	};
 

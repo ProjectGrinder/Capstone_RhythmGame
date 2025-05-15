@@ -24,7 +24,7 @@ namespace ECS
         }
         bool has(entity_id entity) const
         {
-            return (_components.find(entity) != _components.end());
+            return (_components.contains(entity));
         }
         Component& get(entity_id entity) const
         {

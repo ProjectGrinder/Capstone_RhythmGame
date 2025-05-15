@@ -36,7 +36,8 @@ namespace Utils
     )
     {
         const auto time_point_utc = std::chrono::system_clock::now();
-        const auto time = std::chrono::current_zone()->to_local(time_point_utc);
+        static const auto *zone = std::chrono::current_zone();
+        const auto time = zone->to_local(time_point_utc);
 
         const std::string message = std::format(format, std::forward<args>(argv)...);
         const std::string log =
