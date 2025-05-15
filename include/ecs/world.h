@@ -169,6 +169,8 @@ namespace ECS
             auto wrapper = [this, system]()
             {
 
+                std::map<entity_id, std::tuple<Components&...>> matching_entities;
+
                 auto filter = [this](ECS::entity_id entity)
                 {
                     return(has_component<Components>(entity) && ...);
@@ -176,13 +178,11 @@ namespace ECS
 
                 auto apply = [this, system](ECS::entity_id entity)
                 {
-                    std::map<entity_id, std::tuple<Components&...>> matching_entities;
                     matching_entities.emplace(
                         std::piecewise_construct,
                         std::forward_as_tuple(entity),
                         std::forward_as_tuple(get_component<Components>(entity)...)
                     );
-                    system(matching_entities);
                 };
 
                 std::ranges::for_each
@@ -190,6 +190,8 @@ namespace ECS
                     _entities | std::views::filter(filter),
                     apply
                 );
+
+                system(matching_entities);
             };
 
             switch (type)
