@@ -169,7 +169,7 @@ namespace ECS
             auto wrapper = [this, system]()
             {
 
-                std::map<entity_id, std::tuple<Components&...>> matching_entities;
+                ECS::EntityMap matching_entities;
 
                 auto filter = [this](ECS::entity_id entity)
                 {
@@ -189,7 +189,7 @@ namespace ECS
                 (
                     _entities | std::views::filter(filter),
                     apply
-                );
+                );
 
                 system(matching_entities);
             };
