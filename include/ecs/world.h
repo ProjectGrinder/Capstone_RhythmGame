@@ -189,7 +189,7 @@ namespace ECS
                 (
                     _entities | std::views::filter(filter),
                     apply
-                );
+                );
 
                 system(matching_entities);
             };
