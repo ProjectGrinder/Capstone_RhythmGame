@@ -4,3 +4,4 @@
 #include "system/game.h"
 #include "system/window.h"
 #include "system/os.h"
+#include "system/asset_manager.h"
