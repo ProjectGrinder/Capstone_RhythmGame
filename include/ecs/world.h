@@ -169,14 +169,14 @@ namespace ECS
             auto wrapper = [this, system]()
             {
 
-                ECS::EntityMap matching_entities;
+                ECS::EntityMap<Components...> matching_entities;
 
                 auto filter = [this](ECS::entity_id entity)
                 {
                     return(has_component<Components>(entity) && ...);
                 };
 
-                auto apply = [this, system](ECS::entity_id entity)
+                auto apply = [this, &matching_entities, system](ECS::entity_id entity)
                 {
                     matching_entities.emplace(
                         std::piecewise_construct,

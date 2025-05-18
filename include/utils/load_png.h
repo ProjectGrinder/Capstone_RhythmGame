@@ -121,21 +121,22 @@ namespace Utils
                 {
                     state = READ_CHUNK_TYPE;
                     counter = 0;
+                    chunk_data.resize(length+4);
                 }
                 break;
             case READ_CHUNK_TYPE:
                 chunk_type = (chunk_type << 8) | byte;
+				chunk_data[counter] = byte;
                 counter++;
                 if (counter == PNG_CHUNK_TYPE_SIZE)
                 {
                     state = READ_CHUNK_DATA;
                     counter = 0;
-                    chunk_data.clear();
-                    chunk_data.resize(length);
+
                 }
                 break;
             case READ_CHUNK_DATA:
-                chunk_data[counter] = byte;
+                chunk_data[counter+4] = byte;
                 counter++;
                 if (counter == length)
                 {
