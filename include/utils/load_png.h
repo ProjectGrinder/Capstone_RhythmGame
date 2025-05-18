@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 #include "utils/load_file.h"
+#include "utils/crc.h"
 
 // Courtesy of https://evanhahn.com/worlds-smallest-png/
 #define SMALLEST_PNG_SIZE 67
@@ -14,43 +15,51 @@
 namespace Utils
 {
     /// <summary>
-    /// Decoded PNG data structure extended or collapsed to RGBA8.
+    /// Decoded PNG data structure.
     /// </summary>
     /// <param name="data">Decoded pixel data</param>
     /// <param name="width">Width of the image</param>
     /// <param name="height">Height of the image</param>
     struct PngData
     {
-        uint8_t* data;
+        std::vector<uint8_t> data;
         uint32_t width = 0;
         uint32_t height = 0;
-        ~PngData() { delete[] data; }
+        uint8_t bit_depth = 0;
+		uint8_t color_type = 0;
+		uint8_t compression_method = 0;
+		uint8_t filter_method = 0;
+		uint8_t interlace_method = 0;
 
-        PngData(const PngData&) = delete;
-        PngData& operator=(const PngData&) = delete;
-
-        PngData(PngData&& other) noexcept
-            : data(other.data), width(other.width), height(other.height)
+        PngData() = default;
+        ~PngData()
         {
-            other.data = nullptr;
+            if (data.size() > 0)
+            {
+                data.clear();
+            }
+		}
+        PngData(const PngData&) = delete; // Disable copy constructor
+		PngData& operator=(const PngData&) = delete; // Disable copy assignment operator
+        PngData(PngData&& other) noexcept : data(std::move(other.data)), width(other.width), height(other.height)
+        {
             other.width = 0;
             other.height = 0;
+            other.data.clear();
         }
-
         PngData& operator=(PngData&& other) noexcept
         {
-            if (this != &other) {
-                delete[] data;
-                data = other.data;
+            if (this != &other)
+            {
+                data = std::move(other.data);
                 width = other.width;
                 height = other.height;
-
-                other.data = nullptr;
                 other.width = 0;
                 other.height = 0;
+                other.data.clear();
             }
             return *this;
-        }
+		}
     };
 
     enum _png_parse_state
@@ -61,6 +70,45 @@ namespace Utils
         READ_CHUNK_DATA,
         READ_CHUNK_CRC
     };
+
+    bool _parse_chunk(const uint32_t chunk_type, const std::vector<uint8_t>& chunk_data, PngData& png_data)
+    {  
+        switch (chunk_type)
+        {
+            case 0x49484452: // IHDR
+                if (chunk_data.size() != PNG_CHUNK_TYPE_SIZE + 13)
+                {
+                    return false;
+                }
+                png_data.width = (chunk_data[4] << 24) | (chunk_data[5] << 16) | (chunk_data[6] << 8) | chunk_data[7];
+                png_data.height = (chunk_data[8] << 24) | (chunk_data[9] << 16) | (chunk_data[10] << 8) | chunk_data[11];
+                break;
+            case 0x49444154: // IDAT
+                if (chunk_data.size() <= PNG_CHUNK_TYPE_SIZE)
+                {
+                    return false;
+				}
+                if (png_data.data == nullptr)
+                {
+                    png_data.data = new uint8_t[png_data.width * png_data.height * 4];
+				}
+                uint32_t data_length = png_data.width * png_data.height * 4;
+                if (chunk_data.size() - PNG_CHUNK_TYPE_SIZE - PNG_CHUNK_CRC_SIZE > data_length)
+                {
+					return false;
+                    }
+                for (uint32_t i = 0; i < chunk_data.size() - PNG_CHUNK_LENGTH_SIZE - PNG_CHUNK_TYPE_SIZE - PNG_CHUNK_CRC_SIZE; i++)
+                {
+                    png_data.data[i] = chunk_data[i + PNG_CHUNK_LENGTH_SIZE + PNG_CHUNK_TYPE_SIZE];
+                }
+                break;
+            case 0x49454E44: // IEND
+                return true;
+            default:
+                // Ignore other chunks
+				break;
+        }
+    }
 
     /// <summary>
     /// Loads a PNG file from the specified path into memory.
@@ -126,7 +174,7 @@ namespace Utils
                 break;
             case READ_CHUNK_TYPE:
                 chunk_type = (chunk_type << 8) | byte;
-				chunk_data[counter] = byte;
+                chunk_data[counter] = byte;
                 counter++;
                 if (counter == PNG_CHUNK_TYPE_SIZE)
                 {
@@ -136,7 +184,7 @@ namespace Utils
                 }
                 break;
             case READ_CHUNK_DATA:
-                chunk_data[counter+4] = byte;
+                chunk_data[counter+PNG_CHUNK_TYPE_SIZE] = byte;
                 counter++;
                 if (counter == length)
                 {
@@ -151,8 +199,14 @@ namespace Utils
                 {
                     state = VERIFY_HEADER;
                     counter = 0;
-                    //TODO: CRC check
-                    //TODO: Process chunk data
+                    // CRC check
+                    if(generate_crc(chunk_data) != chunk_crc)
+                    {
+                        return false;
+                    }
+
+                    // TODO: Process chunk data
+                    _parse_chunk(chunk_type, chunk_data, data);
                 }
             }
         }
