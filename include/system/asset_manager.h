@@ -44,10 +44,8 @@ namespace System
                     std::shared_ptr<Asset> asset = iterator->second.lock();
                     if (asset)
                     {
-                        Utils::print_debug
+                        LOG_DEBUG
                         (
-                            "engine/asset_manager.h",
-                            "System::AssetManager::_AssetStore::unload",
                             "WARNING: Unloading asset {} while it is in use",
                             path
                         );
