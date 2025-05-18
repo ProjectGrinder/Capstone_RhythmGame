@@ -1,0 +1,1 @@
+#include "assets/asset_type.h"

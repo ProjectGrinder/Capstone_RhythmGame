@@ -3,10 +3,10 @@
 
 namespace ECS
 {
-	struct ComponentBase {
+    struct ComponentBase {
+        virtual ~ComponentBase() = default;
+    };
 
-	};
-
-	template<typename T>
-	concept ComponentType = std::derived_from<T, ComponentBase>;
+    template<typename T>
+    concept ComponentType = std::derived_from<T, ComponentBase>;
 }

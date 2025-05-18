@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <typeindex>
+#include "assets.h"
 
 namespace System
 {
@@ -16,26 +17,29 @@ namespace System
             virtual ~_BaseAssetStore() = default;
         };
 
-        template <typename T>
+        template <AssetType Asset>
         class _AssetStore : public _BaseAssetStore
         {
         private:
-            std::map<std::string, std::weak_ptr<T>> _assets;
+            std::map<std::string, std::weak_ptr<Asset>> _assets;
         public:
-            std::shared_ptr<T> load(const std::string& path)
+            std::shared_ptr<Asset> load(const std::string& path)
             {
-                // TODO:
-                // load the asset from the path
-                // store the asset in the map
-                // create a shared_ptr from the asset and return
+                // TODO: Compute absolute path relative to executable
+                std::string filepath = path;
+
+                std::shared_ptr<Asset> asset = Asset::load(filepath);
+
+                _assets[path] = asset;
+                return asset;
             }
 
-            std::shared_ptr<T> get(const std::string& path)
+            std::shared_ptr<Asset> get(const std::string& path)
             {
                 auto iterator = _assets.find(path);
                 if (iterator != _assets.end())
                 {
-                    std::shared_ptr<T> asset = iterator->second.lock();
+                    std::shared_ptr<Asset> asset = iterator->second.lock();
                     if (asset)
                     {
                         return (asset);
@@ -56,19 +60,19 @@ namespace System
     public:
         static AssetManager& instance();
 
-        template <typename T>
-        std::shared_ptr<T> get(const std::string& path)
+        template <AssetType Asset>
+        std::shared_ptr<Asset> get(const std::string& path)
         {
-            auto type_index = std::type_index(typeid(T));
+            auto type_index = std::type_index(typeid(Asset));
             auto iterator = _stores.find(type_index);
             if (iterator != _stores.end())
             {
-                auto store = static_cast<_AssetStore<T>*>(iterator->second.get());
+                auto store = static_cast<_AssetStore<Asset>*>(iterator->second.get());
                 return (store->get(path));
             }
             else
             {
-                auto store = std::make_unique<_AssetStore<T>>();
+                auto store = std::make_unique<_AssetStore<Asset>>();
                 auto asset = store->get(path);
                 _stores[type_index] = std::move(store);
                 return (asset);
