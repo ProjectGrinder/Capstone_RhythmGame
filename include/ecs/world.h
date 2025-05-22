@@ -40,7 +40,7 @@ namespace ECS
         ComponentPool<Component>& get_pool()
         {
             std::type_index index(typeid(Component));
-            if (_component_handlers.contains(index))
+            if (!_component_handlers.contains(index))
             {
                 auto pool = std::make_shared<ComponentPool<Component>>();
                 _component_handlers[index] = ComponentHandler
@@ -168,15 +168,14 @@ namespace ECS
         
             auto wrapper = [this, system]()
             {
+                ECS::EntityMap<Components...> matching_entities;
 
-                ECS::EntityMap matching_entities;
-
-                auto filter = [this](ECS::entity_id entity)
+                auto filter = [this](entity_id entity)
                 {
                     return(has_component<Components>(entity) && ...);
                 };
 
-                auto apply = [this, system](ECS::entity_id entity)
+                auto apply = [this, system, &matching_entities](entity_id entity)
                 {
                     matching_entities.emplace(
                         std::piecewise_construct,
