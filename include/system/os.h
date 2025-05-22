@@ -45,7 +45,7 @@ namespace System
         HINSTANCE _handler = nullptr;
 
         OS();
-        uint32_t _sleep();
+        uint32_t _sleep() const;
         uint32_t _poll_event() const;
         uint32_t _create_window();
         void _run();

@@ -69,7 +69,7 @@ uint32_t OS::set_system_precision(int32_t ms)
     }
 }
 
-uint32_t OS::_sleep()
+uint32_t OS::_sleep() const
 {
     LARGE_INTEGER start, end, frequency;
 
