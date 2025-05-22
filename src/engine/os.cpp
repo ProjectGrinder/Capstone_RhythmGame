@@ -123,11 +123,6 @@ uint32_t OS::_poll_event() const
         switch (msg.message)
         {
         case WM_KEYDOWN:
-            /* Please remove this code after main is done*/
-            if (msg.wParam == VK_ESCAPE)
-            {
-                stop();
-            }
             Input::set_key_down((uint8_t)msg.wParam);
             break;
         case WM_KEYUP:
