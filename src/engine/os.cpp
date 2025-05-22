@@ -213,14 +213,14 @@ uint32_t OS::_create_window()
 
     if (this->_window.width > this->_monitor.width || this->_window.height > this->_monitor.height)
     {
-        LOG_DEBUG("Either window width or window height is larger than monitor's value. Resetting");
+        LOG_DEBUG("Info: Either window width or window height is larger than monitor's value. Resetting");
 
         this->_window.width = this->_monitor.width;
         this->_window.height = this->_monitor.height;
     }
 
-    LOG_DEBUG("Monitor: {}x{}", this->_monitor.width, this->_monitor.height);
-    LOG_DEBUG("Window: {}x{}", this->_window.width, this->_window.height);
+    LOG_DEBUG("Info: Monitor: {}x{}", this->_monitor.width, this->_monitor.height);
+    LOG_DEBUG("Info: Window: {}x{}", this->_window.width, this->_window.height);
 
     switch (this->_window.display_type)
     {
