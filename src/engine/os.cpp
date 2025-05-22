@@ -15,7 +15,7 @@ OS::OS(): _monitor{ 0, 0 }, _window{ 1280, 720, 0, DisplayType::WINDOW, false }
     if (this->_handler == nullptr)
     {
         LOG_DEBUG("Error code: {}, GetModuleHandle failed.", GetLastError());
-        throw new std::runtime_error("Unable to get current instance handler.\nMore detail please check on logs");
+        throw std::runtime_error("Unable to get current instance handler.\nMore detail please check on logs");
     }
 }
 
