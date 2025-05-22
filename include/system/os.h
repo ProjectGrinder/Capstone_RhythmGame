@@ -14,19 +14,42 @@
 
 namespace System
 {
+    enum DisplayType
+    {
+        FULLSCREEN,
+        BORDERLESS,
+        WINDOW,
+    };
+
     class OS 
     {
     private:
-        bool _is_running = false;
+        struct Window
+        {
+            uint32_t width;
+            uint32_t height;
+            HWND handler;
+            DisplayType display_type;
+            bool is_running;
+        };
+
+        struct Monitor
+        {
+            uint32_t width;
+            uint32_t height;
+        };
+
+        Window _window;
+        Monitor _monitor;
         uint16_t _system_precision = 15;
-        HINSTANCE _system_instance_handler = nullptr;
-        HWND _window_handler = nullptr;
+        HINSTANCE _handler = nullptr;
         static OS _instance;
 
         OS();
         uint32_t _sleep();
-        uint32_t _poll_event();
+        uint32_t _poll_event() const;
         uint32_t _create_window();
+        void _run();
     public:
         static uint32_t run();
         static OS &instance();
@@ -34,6 +57,8 @@ namespace System
         static void stop();
         static uint32_t set_system_precision(int32_t ms);
         static uint16_t get_system_precision();
+
+        ~OS();
     };
 
     static LRESULT CALLBACK window_process(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param);
