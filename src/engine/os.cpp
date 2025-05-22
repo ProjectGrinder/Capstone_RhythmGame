@@ -103,10 +103,6 @@ void OS::_run()
 
         /*  Render  */
 
-        /*
-         *  Fix framerate delay
-         *  TODO: Make this high precision
-         */
         this->_sleep();
     }
 }
@@ -331,7 +327,7 @@ uint32_t OS::_create_window()
     default:
 
         error = ERROR_INVALID_PARAMETER;
-        LOG_DEBUG("Error code: {}, Unknown display type", error);
+        LOG_DEBUG("Error code: {}, Unknown display type.", error);
         goto Exit;
 
     }
@@ -361,7 +357,27 @@ static LRESULT CALLBACK System::window_process
     }
 }
 
-OS::~OS()
+uint32_t OS::clean_up()
 {
-    ChangeDisplaySettingsA(nullptr, 0);
+    uint32_t error = ERROR_SUCCESS;
+    if (DestroyWindow(instance()._window.handler) == 0)
+    {
+        error = GetLastError();
+
+        LOG_DEBUG("Error code: {}, Unable to destroy window.", error);
+    }
+
+    if (instance()._window.display_type != FULLSCREEN)
+    {
+        goto Exit;
+    }
+
+    error = ChangeDisplaySettingsA(nullptr, 0);
+    if (error != DISP_CHANGE_SUCCESSFUL)
+    {
+        LOG_DEBUG("Error code: {}, ChangeDisplaySetting failed.", error);
+    }
+
+Exit:
+    return(error);
 }

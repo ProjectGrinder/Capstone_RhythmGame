@@ -56,8 +56,7 @@ namespace System
         static void stop();
         static uint32_t set_system_precision(int32_t ms);
         static uint16_t get_system_precision();
-
-        ~OS();
+        static uint32_t clean_up();
     };
 
     static LRESULT CALLBACK window_process(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param);

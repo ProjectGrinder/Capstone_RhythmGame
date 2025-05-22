@@ -23,6 +23,7 @@ int WINAPI WinMain(
     }
 
     /* Cleanup (Make sure this were run) */
+    OS::clean_up();
 
     return((int)error);
 }
