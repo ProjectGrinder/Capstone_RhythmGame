@@ -9,12 +9,10 @@
 
 using System::OS;
 
-OS OS::_instance;
-
 OS::OS(): _monitor{ 0, 0 }, _window{ 1280, 720, 0, DisplayType::WINDOW, false }
 {
-    _instance._handler = GetModuleHandleA(NULL);
-    if (_instance._handler == nullptr)
+    this->_handler = GetModuleHandleA(NULL);
+    if (this->_handler == nullptr)
     {
         LOG_DEBUG("Error code: {}, GetModuleHandle failed.", GetLastError());
         throw new std::runtime_error("Unable to get current instance handler.\nMore detail please check on logs");
@@ -23,6 +21,7 @@ OS::OS(): _monitor{ 0, 0 }, _window{ 1280, 720, 0, DisplayType::WINDOW, false }
 
 OS& OS::instance()
 {
+    static OS _instance;
     return(_instance);
 }
 
@@ -30,11 +29,11 @@ uint32_t OS::run()
 {
     uint32_t error = ERROR_SUCCESS;
 
-    error = _instance._create_window();
+    error = instance()._create_window();
 #ifndef _TESTING
     if (error == ERROR_SUCCESS)
     {
-        _instance._run();
+        instance()._run();
     }
 #endif
     return(error);
@@ -42,12 +41,12 @@ uint32_t OS::run()
 
 bool OS::is_running()
 {
-    return(_instance._window.is_running);
+    return(instance()._window.is_running);
 }
 
 void OS::stop()
 {
-    _instance._window.is_running = false;
+    instance()._window.is_running = false;
 }
 
 uint32_t OS::set_system_precision(int32_t ms)
@@ -65,7 +64,7 @@ uint32_t OS::set_system_precision(int32_t ms)
     }
     else
     {
-        _instance._system_precision = (uint16_t)ms;
+        instance()._system_precision = (uint16_t)ms;
         return(ERROR_SUCCESS);
     }
 }
@@ -87,7 +86,7 @@ uint32_t OS::_sleep()
     (
         (end.QuadPart - start.QuadPart)
         * 1000 / frequency.QuadPart
-        < _instance._system_precision
+        < this->_system_precision
     );
     return(ERROR_SUCCESS);
 }
@@ -150,7 +149,7 @@ uint32_t OS::_poll_event() const
 
 uint16_t OS::get_system_precision()
 {
-    return(_instance._system_precision);
+    return(instance()._system_precision);
 }
 
 uint32_t OS::_create_window()

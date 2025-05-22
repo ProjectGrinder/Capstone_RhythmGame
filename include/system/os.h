@@ -43,7 +43,6 @@ namespace System
         Monitor _monitor;
         uint16_t _system_precision = 15;
         HINSTANCE _handler = nullptr;
-        static OS _instance;
 
         OS();
         uint32_t _sleep();
