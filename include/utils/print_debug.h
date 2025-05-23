@@ -3,7 +3,6 @@
 #include <Windows.h>
 #include <string>
 #include <format>
-#include <chrono>
 
 #define FILE_PATH Utils::trim_src_path(__FILE__)
 #define LOG_DEBUG(fmt, ...) Utils::print_debug(FILE_PATH, __FUNCTION__, fmt, __VA_ARGS__)
@@ -18,6 +17,8 @@ namespace Utils
                     path.substr(pos + key.size()) :
                     path);
     }
+
+    std::string get_local_time_string();
 
     /// <summary>
     /// Formatted Debug Printing
@@ -35,16 +36,14 @@ namespace Utils
         args&&... argv
     )
     {
-        const auto time_point_utc = std::chrono::system_clock::now();
-        static const auto *zone = std::chrono::current_zone();
-        const auto time = zone->to_local(time_point_utc);
 
         const std::string message = std::format(format, std::forward<args>(argv)...);
+        std::string time_str = get_local_time_string();
         const std::string log =
             std::format
             (
                 "[ {} | {} | {} ] - {}\n",
-                time,
+                time_str,
                 file_path,
                 func_name,
                 message

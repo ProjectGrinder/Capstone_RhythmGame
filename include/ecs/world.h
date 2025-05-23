@@ -13,13 +13,13 @@
 
 namespace ECS
 {
-    enum SystemType : bool  
+    enum SystemType : bool
     {
-        UPDATE = false,  
-        CLEANUP = true  
+        UPDATE = false,
+        CLEANUP = true
     };
 
-    class World 
+    class World
     {
     private:
         struct ComponentHandler
@@ -37,10 +37,10 @@ namespace ECS
         std::unordered_set<void*> _systems;
 
         template<ComponentType Component>
-        ComponentPool<Component>& get_pool()
+        ComponentPool<Component>& _get_pool()
         {
             std::type_index index(typeid(Component));
-            if (_component_handlers.contains(index))
+            if (!_component_handlers.contains(index))
             {
                 auto pool = std::make_shared<ComponentPool<Component>>();
                 _component_handlers[index] = ComponentHandler
@@ -59,7 +59,21 @@ namespace ECS
             return (*std::static_pointer_cast<ComponentPool<Component>>(_component_handlers.at(index).pool));
         }
 
-        void cleanup()
+        template<ComponentType... Components>
+        inline
+        bool _filter_by_components(entity_id entity)
+        {
+            return(has_component<Components>(entity) && ...);
+        }
+
+        template<ComponentType... Components>
+        inline
+        std::pair<entity_id, std::tuple<Components&...>> _to_pair(entity_id entity)
+        {
+            return(std::pair{ entity, std::tie(get_component<Components>(entity)...)});
+        }
+
+        void _cleanup()
         {
             for (auto sys : _cleanup_systems)
             {
@@ -115,7 +129,7 @@ namespace ECS
             {
                 throw(std::out_of_range("Entity does not exist"));
             }
-            get_pool<Component>().add(entity, component);
+            _get_pool<Component>().add(entity, component);
         }
 
         template<ComponentType Component>
@@ -125,7 +139,7 @@ namespace ECS
             {
                 throw(std::out_of_range("Entity does not exist"));
             }
-            return (get_pool<Component>().has(e));
+            return (_get_pool<Component>().has(e));
         }
 
         template<ComponentType Component>
@@ -135,7 +149,7 @@ namespace ECS
             {
                 throw(std::out_of_range("Entity does not exist"));
             }
-            return (get_pool<Component>().get(e));
+            return (_get_pool<Component>().get(e));
         }
 
         template<ComponentType Component>
@@ -146,12 +160,43 @@ namespace ECS
                 throw(std::out_of_range("Entity does not exist"));
             }
 
-            auto& pool = get_pool<Component>();
+            auto& pool = _get_pool<Component>();
             pool.erase(entity);
             if (pool.empty())
             {
                 _component_handlers.erase(std::type_index(typeid(Component)));
             }
+        }
+
+        template<typename... Components>
+        [[nodiscard]]
+        inline
+        ECS::EntityMap<Components...> query(World* world)
+        {
+            /*
+             *  If confused here is the ocaml reference
+             *  let result =
+             *      entities
+             *      |>  List.filter has_components
+             *      |>  List.map    to_pair
+             */
+
+            auto result =
+                world->_entities
+                | std::views::filter
+                    ([&](entity_id entity)
+                        {
+                            return(world->template _filter_by_components<Components...>(entity));
+                        }
+                    )
+                | std::views::transform
+                    ([&](entity_id entity)
+                        {
+                            return(world->template _to_pair<Components...>(entity));
+                        }
+                    );
+
+            return(ECS::EntityMap<Components...>(result.begin(), result.end()));
         }
 
         template<ComponentType... Components>
@@ -163,36 +208,15 @@ namespace ECS
             {
                 return;
             }
-        
+
             _systems.insert(key);
-        
-            auto wrapper = [this, system]()
-            {
 
-                ECS::EntityMap matching_entities;
-
-                auto filter = [this](ECS::entity_id entity)
+            auto wrapper =
+                [this, system]()
                 {
-                    return(has_component<Components>(entity) && ...);
+                    auto match = query<Components...>(this);
+                    return(system(match));
                 };
-
-                auto apply = [this, system](ECS::entity_id entity)
-                {
-                    matching_entities.emplace(
-                        std::piecewise_construct,
-                        std::forward_as_tuple(entity),
-                        std::forward_as_tuple(get_component<Components>(entity)...)
-                    );
-                };
-
-                std::ranges::for_each
-                (
-                    _entities | std::views::filter(filter),
-                    apply
-                );
-
-                system(matching_entities);
-            };
 
             switch (type)
             {
@@ -222,7 +246,7 @@ namespace ECS
 
         void reset()
         {
-            cleanup();
+            _cleanup();
             clear_entities();
             _component_handlers.clear();
             _update_systems.clear();
