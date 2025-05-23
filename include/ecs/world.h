@@ -60,12 +60,14 @@ namespace ECS
         }
 
         template<ComponentType... Components>
+        inline
         bool _filter_by_components(entity_id entity)
         {
             return(has_component<Components>(entity) && ...);
         }
 
         template<ComponentType... Components>
+        inline
         std::pair<entity_id, std::tuple<Components&...>> _to_pair(entity_id entity)
         {
             return(std::pair{ entity, std::tie(get_component<Components>(entity)...)});
@@ -167,6 +169,8 @@ namespace ECS
         }
 
         template<typename... Components>
+        [[nodiscard]]
+        inline
         ECS::EntityMap<Components...> query(World* world)
         {
             /*
