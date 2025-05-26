@@ -4,7 +4,6 @@
 #include <string>
 #include <unordered_map>
 #include <typeindex>
-#include "assets.h"
 #include "utils.h"
 
 namespace System
@@ -29,7 +28,8 @@ namespace System
             {
                 // TODO: Load the asset from the filesystem
                 // Nack get over here
-                T asset;
+                T asset = T(path);
+                // Used to make test cases, modify this once the asset loading is implemented
 
                 _assets[path] = asset;
                 return asset;
