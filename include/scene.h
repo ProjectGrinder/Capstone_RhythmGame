@@ -9,6 +9,7 @@ namespace Scene
     /* Include Your Scene Here */
     #include "scene/demo.h"
     #include "scene/demo2.h"
+    #include "scene/rhythm.h"
 
     /* Config Here (You can add more if you want to) */
     namespace SceneConfig
