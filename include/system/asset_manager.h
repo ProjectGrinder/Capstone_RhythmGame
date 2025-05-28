@@ -28,10 +28,7 @@ namespace System
             {
                 // TODO: Load the asset from the filesystem
                 // Nack get over here
-                T asset = T(path);
-                // Used to make test cases, modify this once the asset loading is implemented
-
-                _assets[path] = asset;
+                T asset;
                 return asset;
             }
 
@@ -65,6 +62,11 @@ namespace System
                     }
                 }
                 return (load(path));
+            }
+
+            bool contains(const std::string& path) const
+            {
+                return _assets.find(path) != _assets.end();
             }
 
             void clear() override
@@ -111,7 +113,7 @@ namespace System
             if (iterator != _stores.end())
             {
                 auto store = static_cast<_AssetStore<T>*>(iterator->second.get());
-                store->_assets.erase(path);
+                store->unload(path);
             }
         }
 
@@ -123,7 +125,7 @@ namespace System
             if (iterator != _stores.end())
             {
                 auto store = static_cast<_AssetStore<T>*>(iterator->second.get());
-                return (store->_assets.find(path) != store->_assets.end());
+                return (store->contains(path));
             }
             return (false);
         }
