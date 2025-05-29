@@ -25,7 +25,7 @@ namespace System
     {
         auto asset = std::make_shared<DummyAsset>(path);
         _assets[path] = asset;
-        return asset;
+        return (asset);
     }
 
     template <>
@@ -33,7 +33,7 @@ namespace System
     {
         auto asset = std::make_shared<SecondDummyAsset>(path);
         _assets[path] = asset;
-        return asset;
+        return (asset);
     }
 }
 
