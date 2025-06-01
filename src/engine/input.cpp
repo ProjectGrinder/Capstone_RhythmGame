@@ -4,35 +4,34 @@
 
 using System::Input;
 
-Input Input::_instance;
-
 Input& Input::instance()
 {
-    return (_instance);
+    static Input instance;
+    return instance;
 }
 
-void System::Input::set_key_down(uint8_t vk_code)
+void Input::set_key_down(uint8_t vk_code)
 {
-    _instance._keyboard_state[vk_code] = 1;
+    Input::instance()._keyboard_state[vk_code] = 1;
 }
 
-void System::Input::set_key_up(uint8_t vk_code)
+void Input::set_key_up(uint8_t vk_code)
 {
-    _instance._keyboard_state[vk_code] = 0;
+    Input::instance()._keyboard_state[vk_code] = 0;
 }
 
-bool System::Input::is_key_down(uint8_t vk_code) 
+bool Input::is_key_down(uint8_t vk_code) 
 {
-    return (_instance._keyboard_state[vk_code]);
+    return (Input::instance()._keyboard_state[vk_code]);
 }
 
-void System::Input::set_mouse_position(uint16_t x, uint16_t y)
+void Input::set_mouse_position(uint16_t x, uint16_t y)
 {
-    _instance.mouse_position.x = x;
-    _instance.mouse_position.y = y;
+    Input::instance().mouse_position.x = x;
+    Input::instance().mouse_position.y = y;
 }
 
-Math::Vector2<uint16_t> System::Input::get_mouse_position() 
+Math::Vector2<uint16_t> Input::get_mouse_position() 
 { 
-    return (_instance.mouse_position);
+    return (Input::instance().mouse_position);
 }

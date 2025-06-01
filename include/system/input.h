@@ -8,7 +8,6 @@ namespace System
     class Input
     {
     private:
-        static Input _instance;
         std::array<uint8_t, 256> _keyboard_state{};
         Math::Vector2<uint16_t> mouse_position;
         Input() {};
