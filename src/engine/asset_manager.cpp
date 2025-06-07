@@ -6,5 +6,5 @@ AssetManager AssetManager::_instance;
 
 AssetManager& System::AssetManager::instance()
 {
-	return _instance;
+	return (_instance);
 }
