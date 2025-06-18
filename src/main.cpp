@@ -8,6 +8,8 @@
 #include "scene.h"
 #include "system.h"
 
+struct TestA {};
+
 int WINAPI WinMain(
     _In_        [[maybe_unused]]HINSTANCE   hInstance,
     _In_opt_    [[maybe_unused]]HINSTANCE   hPrevInstance,

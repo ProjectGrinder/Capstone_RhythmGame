@@ -42,13 +42,13 @@ add_custom_target(unit_testing
 
 if (NOT DISABLE_TEST)
     add_custom_target(building_project
-        COMMAND "cmake --build ${CMAKE_BINARY_DIR}"
+        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}
         COMMENT "[${PROJECT_NAME}] - Building"
         DEPENDS unit_testing
     )
 else()
     add_custom_target(building_project
-        COMMAND "cmake --build ${CMAKE_BINARY_DIR}"
+        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}
         COMMENT "[${PROJECT_NAME}] - Building"
     )
 endif()
