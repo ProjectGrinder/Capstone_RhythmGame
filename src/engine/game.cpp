@@ -1,5 +1,4 @@
 #include <system.h>
-#include <ecs.h>
 
 using System::Game;
 

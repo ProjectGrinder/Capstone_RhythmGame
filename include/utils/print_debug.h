@@ -3,12 +3,15 @@
 #include <Windows.h>
 #include <string>
 #include <format>
+#include <mutex>
 
 #define FILE_PATH Utils::trim_src_path(__FILE__)
 #define LOG_DEBUG(fmt, ...) Utils::print_debug(FILE_PATH, __FUNCTION__, fmt, __VA_ARGS__)
 
 namespace Utils
 {
+    inline std::mutex log_mutex;
+
     constexpr std::string_view trim_src_path(std::string_view path)
     {
         constexpr std::string_view key = R"(\src\)";
@@ -36,6 +39,7 @@ namespace Utils
         args&&... argv
     )
     {
+        std::lock_guard lock(log_mutex);
 
         const std::string message = std::format(format, std::forward<args>(argv)...);
         std::string time_str = get_local_time_string();
