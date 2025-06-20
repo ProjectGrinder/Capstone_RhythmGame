@@ -6,8 +6,6 @@
 #include <stdexcept>
 #include <algorithm>
 #include <execution>
-#include <mutex>
-#include <atomic>
 
 namespace System
 {

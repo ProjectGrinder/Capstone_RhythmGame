@@ -1,6 +1,4 @@
 #include "system.h"
-#include <string>
-#include <format>
 
 using System::Input;
 

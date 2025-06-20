@@ -1,7 +1,6 @@
+#pragma once
 #include <concepts>
 #include <stdexcept>
-
-#include "utils.h"
 
 template <typename T>
 concept arithmetic = std::integral<T> || std::floating_point<T>;

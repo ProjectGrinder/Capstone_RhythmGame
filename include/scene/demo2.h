@@ -1,3 +1,4 @@
+#pragma once
 #include "creation_tools/tools.h"
 
 SCENE(Demo2)

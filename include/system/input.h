@@ -11,7 +11,7 @@ namespace System
         static Input _instance;
         std::array<uint8_t, 256> _keyboard_state{};
         Math::Vector2<uint16_t> mouse_position;
-        Input() {};
+        Input() = default;
     public:
         static Input& instance();
         static void set_key_down(uint8_t vk_code);

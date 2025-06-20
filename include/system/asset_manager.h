@@ -79,7 +79,7 @@ namespace System
 
         static AssetManager _instance;
         std::unordered_map<std::type_index, std::unique_ptr<_BaseAssetStore>> _stores;
-        AssetManager() {};
+        AssetManager() = default;
 
     public:
         static AssetManager &instance();
