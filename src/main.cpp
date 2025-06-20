@@ -8,8 +8,6 @@
 #include "scene.h"
 #include "system.h"
 
-struct TestA {};
-
 int WINAPI WinMain(
     _In_        [[maybe_unused]]HINSTANCE   hInstance,
     _In_opt_    [[maybe_unused]]HINSTANCE   hPrevInstance,
@@ -40,5 +38,5 @@ int WINAPI WinMain(
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG); 
     _CrtDumpMemoryLeaks();
 #endif
-    return((int)error);
+    return(static_cast<int>(error));
 }

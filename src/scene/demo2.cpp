@@ -17,9 +17,8 @@ namespace Scene::Demo2
         int b;
     };
 
-    void demo2_system([[maybe_unused]]System::pid id, [[maybe_unused]]demo2 &demo, [[maybe_unused]]demo3 &val)
-    {
-    }
+    void demo2_system([[maybe_unused]] System::pid id, [[maybe_unused]] demo2 &demo, [[maybe_unused]] demo3 &val)
+    {}
 
     void Demo2()
     {
@@ -34,4 +33,4 @@ namespace Scene::Demo2
     {
         LOG_DEBUG("Info: test2 called!");
     }
-}
+} // namespace Scene::Demo2
