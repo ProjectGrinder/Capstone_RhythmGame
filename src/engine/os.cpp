@@ -9,7 +9,7 @@
 
 using System::OS;
 
-OS::OS(): _monitor{ 0, 0 }, _window{ 1280, 720, 0, DisplayType::WINDOW, false }
+OS::OS(): _window{ 1280, 720, nullptr, DisplayType::WINDOW, false }, _monitor{ 0, 0 }
 {
     this->_handler = GetModuleHandleA(NULL);
     if (this->_handler == nullptr)
@@ -201,20 +201,27 @@ void OS::_run()
     while (this->_window.is_running)
     {
         /*  Polling Event  */
-        this->_poll_event();
-        /*  Upadate Game  */
+        if (uint32_t error = this->_poll_event(); error != ERROR_SUCCESS)
+        {
+            LOG_DEBUG("Failed to polling input: Error={}",error);
+            break;
+        }
+        /*  Update Game  */
 
         /*  Render  */
         _renderer.context->ClearRenderTargetView(_renderer.render_target_view.Get(), clear_color);
 
-        HRESULT hr = _renderer.swap_chain->Present(1, 0);
-        if (FAILED(hr))
+        if (HRESULT hr = _renderer.swap_chain->Present(1, 0); FAILED(hr))
         {
             LOG_DEBUG("Failed to present swap chain: HRESULT=0x{:X}", hr);
             break;
         }
 
-        this->_sleep();
+        if (uint32_t error = this->_sleep(); error != ERROR_SUCCESS)
+        {
+            LOG_DEBUG("Failed to sleep: Error={}",error);
+            break;
+        }
     }
 }
 
@@ -241,6 +248,8 @@ uint32_t OS::_poll_event() const
             break;
         case WM_MOUSEMOVE:
             Input::set_mouse_position((uint16_t)msg.pt.x, (uint16_t)msg.pt.y);
+            break;
+        default:
             break;
         }
 

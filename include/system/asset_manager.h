@@ -2,8 +2,8 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <typeindex>
+#include <unordered_map>
 #include "utils.h"
 
 namespace System
@@ -18,13 +18,14 @@ namespace System
             virtual ~_BaseAssetStore() = default;
         };
 
-        template <typename T>
+        template<typename T>
         class _AssetStore : public _BaseAssetStore
         {
         private:
             std::map<std::string, std::weak_ptr<T>> _assets;
+
         public:
-            std::shared_ptr<T> load(const std::string& path)
+            std::shared_ptr<T> load(const std::string &path)
             {
                 // TODO: Load the asset from the filesystem
                 // Nack get over here
@@ -32,7 +33,7 @@ namespace System
                 return asset;
             }
 
-            void unload(const std::string& path)
+            void unload(const std::string &path)
             {
                 auto iterator = _assets.find(path);
                 if (iterator != _assets.end())
@@ -40,17 +41,13 @@ namespace System
                     std::shared_ptr<T> asset = iterator->second.lock();
                     if (asset)
                     {
-                        LOG_DEBUG
-                        (
-                            "WARNING: Unloading asset {} while it is in use",
-                            path
-                        );
+                        LOG_DEBUG("WARNING: Unloading asset {} while it is in use", path);
                     }
                     _assets.erase(iterator);
                 }
             }
 
-            std::shared_ptr<T> get(const std::string& path)
+            std::shared_ptr<T> get(const std::string &path)
             {
                 auto iterator = _assets.find(path);
                 if (iterator != _assets.end())
@@ -64,7 +61,7 @@ namespace System
                 return (load(path));
             }
 
-            bool contains(const std::string& path) const
+            bool contains(const std::string &path) const
             {
                 return _assets.find(path) != _assets.end();
             }
@@ -83,17 +80,18 @@ namespace System
         static AssetManager _instance;
         std::unordered_map<std::type_index, std::unique_ptr<_BaseAssetStore>> _stores;
         AssetManager() {};
-    public:
-        static AssetManager& instance();
 
-        template <typename T>
-        std::shared_ptr<T> get(const std::string& path)
+    public:
+        static AssetManager &instance();
+
+        template<typename T>
+        std::shared_ptr<T> get(const std::string &path)
         {
             auto type_index = std::type_index(typeid(T));
             auto iterator = _stores.find(type_index);
             if (iterator != _stores.end())
             {
-                auto store = static_cast<_AssetStore<T>*>(iterator->second.get());
+                auto store = static_cast<_AssetStore<T> *>(iterator->second.get());
                 return (store->get(path));
             }
             else
@@ -105,49 +103,49 @@ namespace System
             }
         }
 
-        template <typename T>
-        void unload(const std::string& path)
+        template<typename T>
+        void unload(const std::string &path)
         {
             auto type_index = std::type_index(typeid(T));
             auto iterator = _stores.find(type_index);
             if (iterator != _stores.end())
             {
-                auto store = static_cast<_AssetStore<T>*>(iterator->second.get());
+                auto store = static_cast<_AssetStore<T> *>(iterator->second.get());
                 store->unload(path);
             }
         }
 
-        template <typename T>
-        bool is_loaded(const std::string& path)
+        template<typename T>
+        bool is_loaded(const std::string &path)
         {
             auto type_index = std::type_index(typeid(T));
             auto iterator = _stores.find(type_index);
             if (iterator != _stores.end())
             {
-                auto store = static_cast<_AssetStore<T>*>(iterator->second.get());
+                auto store = static_cast<_AssetStore<T> *>(iterator->second.get());
                 return (store->contains(path));
             }
             return (false);
         }
 
-        template <typename T>
+        template<typename T>
         void clear()
         {
             auto type_index = std::type_index(typeid(T));
             auto iterator = _stores.find(type_index);
             if (iterator != _stores.end())
             {
-                auto store = static_cast<_AssetStore<T>*>(iterator->second.get());
+                auto store = static_cast<_AssetStore<T> *>(iterator->second.get());
                 store->clear();
             }
         }
 
         void clear_all()
         {
-            for (auto& store : _stores)
+            for (auto &store: _stores)
             {
                 store.second->clear();
             }
         }
     };
-}
+} // namespace System
