@@ -18,11 +18,12 @@ namespace System
 
     template <std::size_t MaxResource, typename Resource>
     class ResourcePool;
-
     template <std::size_t MaxResource, typename... Resources>
     class ResourceManager;
     template<typename Registry, auto... Task>
     class TaskManager;
+    template<size_t MaxResource, typename... Resources>
+    class Syscall;
 
     template <std::size_t MaxResource, typename Resource>
     class ResourcePool
@@ -165,6 +166,13 @@ namespace System
             pool.add(id, std::forward<Resource>(component));
         }
 
+        template<typename Resource>
+        void remove_resource(pid id)
+        {
+            auto &pool = query<Resource>();
+            maybe_remove(pool, id);
+        }
+
         void delete_entity(pid id)
         {
             std::apply(
@@ -256,5 +264,57 @@ namespace System
         {
             (_run(Tasks), ...);
         }
+    };
+
+    template<size_t MaxResource, typename... Resources>
+    class Syscall
+    {
+    private:
+        ResourceManager<MaxResource, Resources> _to_add_components{};
+        std::tuple<std::bitset<MaxResource>...> _to_remove_components{};
+
+        // index_of helper, could go into utils?
+        template<typename T, typename... Ts>
+        constexpr std::size_t index_of() {
+            return []<std::size_t... I>(std::index_sequence<I...>) {
+                std::size_t result = 0;
+                ((std::is_same_v<T, Ts> ? (result = I, true) : false) || ...);
+                return result;
+            }(std::index_sequence_for<Ts...>{});
+        }
+
+    public:
+        Syscall() = default;
+
+        template<typename Component>
+        void add_component(pid id, Component &&component)
+        {
+            _to_add_components.add(id, std::forward<Component>(component));
+        }
+
+        template<typename Component>
+        void remove_component(pid id) 
+        {
+            constexpr std::size_t idx = index_of<Component, Resources...>();
+            std::get<idx>(_to_remove_components).set(id);
+        }
+
+        template<typename... Components>
+        void create_entity(ResourceManager<MaxResource, Resources> &rm, Components&&... components)
+        {
+            pid id = rm.add_process();
+            (add_component(id, std::forward<Components>(components)), ...);
+        }
+
+        void remove_entity(pid id)
+        {
+            (remove_component<Resources>(id), ...);
+        }
+
+        void exec(ResourceManager<MaxResource, Resources> &rm)
+        {
+            
+        }
+
     };
 }
