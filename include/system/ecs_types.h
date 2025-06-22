@@ -44,7 +44,7 @@ namespace System
             using reference = value_type&;
 
             Iterator() : _pool(nullptr), _idx(SIZE_MAX) {}
-            Iterator(ResourcePool<MaxResource, Resource> *pool, size_t idx = 0): _pool(pool), _idx(idx){}
+            explicit Iterator(ResourcePool *pool, size_t idx = 0): _pool(pool), _idx(idx){}
 
             value_type operator*()
             {
@@ -60,7 +60,7 @@ namespace System
             bool operator!=(const Iterator& other) const { return !(*this == other); }
 
         private:
-            ResourcePool<MaxResource, Resource> *_pool;
+            ResourcePool *_pool;
             size_t _idx = 0;
         };
 
@@ -75,7 +75,7 @@ namespace System
             return(_data[_id_to_index.at(id)]);
         }
 
-        bool has(pid id) const noexcept
+        [[nodiscard]] bool has(pid id) const noexcept
         {
             return(id < _id_to_index.size() && _has_component.test(id));
         }
@@ -149,7 +149,7 @@ namespace System
         }
 
         template<typename ResourcePool>
-        void maybe_remove(ResourcePool& pool, pid id)
+        static void _remove_if_exists(ResourcePool& pool, pid id)
         {
             if (pool.has(id)) pool.remove(id);
         }
@@ -161,7 +161,7 @@ namespace System
             (
                 [&] {
                     using Resource = std::tuple_element_t<I, std::tuple<Resources...>>;
-                    auto& pool = this->template query<Resource>();
+                    auto& pool = this->query<Resource>();
                     const auto& bitset = std::get<I>(to_remove);
                     for (size_t id = 0; id < MaxResource; ++id) {
                         if (bitset.test(id) && pool.has(id)) {
@@ -201,7 +201,7 @@ namespace System
         void remove_resource(pid id)
         {
             auto &pool = query<Resource>();
-            maybe_remove(pool, id);
+            _remove_if_exists(pool, id);
         }
 
         void delete_entity(pid id)
@@ -209,7 +209,7 @@ namespace System
             std::apply(
                 [&](auto&... pool)
                 {
-                    (maybe_remove(pool,id),...);
+                    (_remove_if_exists(pool,id),...);
                 },
                 _pools
             );
@@ -231,12 +231,12 @@ namespace System
         void import(ResourceManager& other)
         {
             std::apply(
-            [this, &other](auto&... pools)
+            [this, &other]<typename... PoolTypes>([[maybe_unused]] PoolTypes &... pools)
             {
                 (
                     [&] 
                     {
-                        using PoolType = std::remove_reference_t<decltype(pools)>;
+                        using PoolType = std::remove_reference_t<PoolTypes>;
                         using Resource = typename PoolType::resource_type;
                         auto& target_pool = this->query<Resource>();
                         auto& source_pool = other.query<Resource>();
@@ -337,7 +337,7 @@ namespace System
     class Syscall
     {
     private:
-
+        ResourceManager<MaxResource, Resources...>& _rm;
         ResourceManager<MaxResource, Resources...> _to_add_components{};
         std::tuple<decltype((void)sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components;
 
@@ -350,7 +350,7 @@ namespace System
         }
 
     public:
-        Syscall() = default;
+        explicit Syscall(ResourceManager<MaxResource, Resources...>& rm) : _rm(rm) {};
 
         template<typename Component>
         void add_component(pid id, Component &&component)
@@ -365,23 +365,23 @@ namespace System
         }
 
         template<typename... Components>
-        pid create_entity(ResourceManager<MaxResource, Resources...> &rm, Components&&... components)
+        pid create_entity(Components&&... components)
         {
-            pid id = rm.add_process();
+            pid id = _rm.add_process();
             (add_component(id, std::forward<Components>(components)), ...);
             return id;
         }
 
-        void remove_entity(pid id)
+        void remove_entity(const pid id)
         {
             (remove_component<Resources>(id), ...);
         }
 
-        void exec(ResourceManager<MaxResource, Resources...>& rm)
+        void exec()
         {
-            rm.import(_to_add_components);
-            rm.remove_marked(_to_remove_components);
-            // Clear _to_add_components and reset _to_remove_components
+            _rm.import(_to_add_components);
+            _rm.remove_marked(_to_remove_components);
+
             _to_add_components.clear();
             std::apply([](auto&... bitsets) { (bitsets.reset(), ...); }, _to_remove_components);
         }
