@@ -11,7 +11,7 @@ using System::OS;
 
 OS::OS(): _window{ 1280, 720, nullptr, DisplayType::WINDOW, false }, _monitor{ 0, 0 }
 {
-    this->_handler = GetModuleHandleA(NULL);
+    this->_handler = GetModuleHandleA(nullptr);
     if (this->_handler == nullptr)
     {
         LOG_DEBUG("Error code: {}, GetModuleHandle failed.", GetLastError());
@@ -166,13 +166,14 @@ uint32_t OS::set_system_precision(int32_t ms)
     }
     else
     {
-        instance()._system_precision = (uint16_t)ms;
+        instance()._system_precision = static_cast<uint16_t>(ms);
         return(ERROR_SUCCESS);
     }
 }
 
-uint32_t OS::_sleep() const
+void OS::_sleep() const
 {
+    /* This function will always succeed after Win XP */
     LARGE_INTEGER start, end, frequency;
 
     QueryPerformanceFrequency(&frequency);
@@ -190,22 +191,40 @@ uint32_t OS::_sleep() const
         * 1000 / frequency.QuadPart
         < this->_system_precision
     );
-    return(ERROR_SUCCESS);
 }
+
+struct Vertex
+{
+    float position[3];
+    float color[4];
+};
 
 void OS::_run()
 {
     this->_window.is_running = true;
     float clear_color[4] = { 0.39f, 0.58f, 0.93f, 1.0f };
 
+    constexpr Vertex vertices[] = {
+        { {  0.0f,  0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } }, // Top - Red
+        { {  0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } }, // Right - Green
+        { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }  // Left - Blue
+    };
+
+    D3D11_BUFFER_DESC bd = {};
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(vertices);
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = vertices;
+
+    Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
+    instance()._renderer.device->CreateBuffer(&bd, &initData, &vertexBuffer);
+
     while (this->_window.is_running)
     {
         /*  Polling Event  */
-        if (uint32_t error = this->_poll_event(); error != ERROR_SUCCESS)
-        {
-            LOG_DEBUG("Failed to polling input: Error={}",error);
-            break;
-        }
+        this->_poll_event();
         /*  Update Game  */
 
         /*  Render  */
@@ -217,15 +236,11 @@ void OS::_run()
             break;
         }
 
-        if (uint32_t error = this->_sleep(); error != ERROR_SUCCESS)
-        {
-            LOG_DEBUG("Failed to sleep: Error={}",error);
-            break;
-        }
+        this->_sleep();
     }
 }
 
-uint32_t OS::_poll_event() const
+void OS::_poll_event() const
 {
     MSG msg;
     while
@@ -241,13 +256,13 @@ uint32_t OS::_poll_event() const
         switch (msg.message)
         {
         case WM_KEYDOWN:
-            Input::set_key_down((uint8_t)msg.wParam);
+            Input::set_key_down(static_cast<uint8_t>(msg.wParam));
             break;
         case WM_KEYUP:
-            Input::set_key_up((uint8_t)msg.wParam);
+            Input::set_key_up(static_cast<uint8_t>(msg.wParam));
             break;
         case WM_MOUSEMOVE:
-            Input::set_mouse_position((uint16_t)msg.pt.x, (uint16_t)msg.pt.y);
+            Input::set_mouse_position(static_cast<uint16_t>(msg.pt.x), static_cast<uint16_t>(msg.pt.y));
             break;
         default:
             break;
@@ -255,7 +270,6 @@ uint32_t OS::_poll_event() const
 
         DispatchMessageA(&msg);
     }
-    return(ERROR_SUCCESS);
 }
 
 uint16_t OS::get_system_precision()
@@ -267,9 +281,9 @@ uint32_t OS::_create_window()
 {
     MONITORINFO monitor_info = { 0 };
     WNDCLASSEXA window_settings = { 0 };
-    DEVMODEA devmode_screen_settings = { 0 };
+    DEVMODEA devmode_screen_settings = {0};
 
-    DWORD style_flags = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP;
+    constexpr DWORD style_flags = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP;
 
     window_settings.cbSize = sizeof(WNDCLASSEXA);
     window_settings.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -277,10 +291,10 @@ uint32_t OS::_create_window()
     window_settings.cbClsExtra = 0;
     window_settings.cbWndExtra = 0;
     window_settings.hInstance = this->_handler;
-    window_settings.hIcon = LoadIconA(NULL, IDI_WINLOGO);
-    window_settings.hIconSm = LoadIconA(NULL, IDI_WINLOGO);
-    window_settings.hCursor = LoadCursorA(NULL, IDC_ARROW);
-    window_settings.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    window_settings.hIcon = LoadIconA(nullptr, IDI_WINLOGO);
+    window_settings.hIconSm = LoadIconA(nullptr, IDI_WINLOGO);
+    window_settings.hCursor = LoadCursorA(nullptr, IDC_ARROW);
+    window_settings.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
     window_settings.lpszMenuName = nullptr;
     window_settings.lpszClassName = TO_STR(PROJECT_NAME);
 
@@ -463,6 +477,7 @@ static LRESULT CALLBACK System::window_process
 {
     switch(msg)
     {
+    case WM_DESTROY:
     case WM_CLOSE:
         OS::stop();
         PostQuitMessage(0);
