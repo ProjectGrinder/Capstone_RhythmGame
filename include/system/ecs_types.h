@@ -1,11 +1,12 @@
 #pragma once
 #include <array>
 #include <vector>
-#include <deque>
+#include <tuple>
 #include <bitset>
 #include <stdexcept>
 #include <algorithm>
 #include <execution>
+#include <ranges>
 
 namespace System
 {
@@ -129,6 +130,9 @@ namespace System
             _id_to_index.assign(MaxResource, SIZE_MAX);
             _has_component.reset();
         }
+
+        // type hints bless thee
+        using resource_type = Resource;
     };
 
     template <std::size_t MaxResource, typename... Resources>
@@ -148,6 +152,25 @@ namespace System
         void maybe_remove(ResourcePool& pool, pid id)
         {
             if (pool.has(id)) pool.remove(id);
+        }
+
+        using _remove_tuple_t = std::tuple<decltype((void)sizeof(Resources), std::bitset<MaxResource>{})...>;
+
+        template <std::size_t... I>
+        void _remove_marked_impl(const _remove_tuple_t& to_remove, std::index_sequence<I...>) {
+            (
+                [&] {
+                    using Resource = std::tuple_element_t<I, std::tuple<Resources...>>;
+                    auto& pool = this->template query<Resource>();
+                    const auto& bitset = std::get<I>(to_remove);
+                    for (size_t id = 0; id < MaxResource; ++id) {
+                        if (bitset.test(id) && pool.has(id)) {
+                            pool.remove(id);
+                        }
+                    }
+                }(),
+                ...
+            );
         }
 
     public:
@@ -205,21 +228,21 @@ namespace System
         }
 
         // Import matching components from another ResourceManager
-        void import(const ResourceManager& other)
+        void import(ResourceManager& other)
         {
             std::apply(
-            [this, &other]<typename... T0>(T0&... pools)
+            [this, &other](auto&... pools)
             {
                 (
                     [&] 
                     {
-                        using PoolType = std::remove_reference_t<T0>;
-                        using Resource = typename PoolType::value_type;
+                        using PoolType = std::remove_reference_t<decltype(pools)>;
+                        using Resource = typename PoolType::resource_type;
                         auto& target_pool = this->query<Resource>();
-                        const auto& source_pool = other.query<Resource>();
-                        for (auto it = source_pool.begin(); it != source_pool.end(); ++it) {
-                            auto [id, component] = *it;
-                            if (!target_pool.has(id)) 
+                        auto& source_pool = other.query<Resource>();
+                        for (auto it = source_pool.begin(); it != source_pool.end(); ++it)
+                        {
+                            if (auto [id, component] = *it; !target_pool.has(id))
                             {
                                 target_pool.add(id, component);
                             }
@@ -230,29 +253,8 @@ namespace System
             }, _pools);
         }
 
-        void remove_marked(const std::tuple<std::bitset<MaxResource>...>& to_remove) 
-        {
-            std::apply([this, to_remove](auto&... bitsets)
-            {
-                (
-                    [&] 
-                    {
-                        using Resource = std::tuple_element_t<
-                            &bitsets - &std::get<0>(to_remove),
-                            std::tuple<Resources...>
-                        >;
-                        auto& pool = this->query<Resource>();
-                        for (size_t id = 0; id < MaxResource; ++id) 
-                        {
-                            if (bitsets.test(id) && pool.has(id)) 
-                            {
-                                pool.remove(id);
-                            }
-                        }
-                    }(),
-                    ...
-                );
-            }, to_remove);
+        void remove_marked(const _remove_tuple_t& to_remove) {
+            _remove_marked_impl(to_remove, std::make_index_sequence<sizeof...(Resources)>{});
         }
 
         void clear() 
@@ -335,18 +337,16 @@ namespace System
     class Syscall
     {
     private:
-        ResourceManager<MaxResource, Resources> _to_add_components{};
-        std::tuple<std::bitset<MaxResource>...> _to_remove_components{};
 
-        // index_of helper, could go into utils?
-        template<typename T, typename... Ts>
-        [[nodiscard]]
-        constexpr std::size_t index_of() const {
-            return []<std::size_t... I>(std::index_sequence<I...>) {
-                std::size_t result = 0;
-                ((std::is_same_v<T, Ts> ? (result = I, true) : false) || ...);
-                return result;
-            }(std::index_sequence_for<Ts...>{});
+        ResourceManager<MaxResource, Resources...> _to_add_components{};
+        std::tuple<decltype((void)sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components;
+
+        template<typename Component, std::size_t... I>
+        void _remove_component_impl(pid id, std::index_sequence<I...>)
+        {
+            (..., (std::is_same_v<Component, std::tuple_element_t<I, std::tuple<Resources...>>>
+                ? (std::get<I>(_to_remove_components).set(id), void())
+                : void()));
         }
 
     public:
@@ -355,20 +355,21 @@ namespace System
         template<typename Component>
         void add_component(pid id, Component &&component)
         {
-            _to_add_components.add(id, std::forward<Component>(component));
+            _to_add_components.add_resource(id, std::forward<Component>(component));
         }
 
         template<typename Component>
         void remove_component(pid id) 
         {
-            std::get<index_of<Component, Resources...>()>(_to_remove_components).set(id);
+            _remove_component_impl<Component>(id, std::make_index_sequence<sizeof...(Resources)>{});
         }
 
         template<typename... Components>
-        void create_entity(ResourceManager<MaxResource, Resources> &rm, Components&&... components)
+        pid create_entity(ResourceManager<MaxResource, Resources...> &rm, Components&&... components)
         {
             pid id = rm.add_process();
             (add_component(id, std::forward<Components>(components)), ...);
+            return id;
         }
 
         void remove_entity(pid id)
@@ -376,7 +377,7 @@ namespace System
             (remove_component<Resources>(id), ...);
         }
 
-        void exec(ResourceManager<MaxResource, Resources>& rm)
+        void exec(ResourceManager<MaxResource, Resources...>& rm)
         {
             rm.import(_to_add_components);
             rm.remove_marked(_to_remove_components);
