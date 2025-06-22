@@ -121,6 +121,14 @@ namespace System
             _id_to_index[id] = SIZE_MAX;
             _has_component.reset(id);
         }
+
+        void clear() 
+        {
+            _data.clear();
+            _index_to_id.clear();
+            _id_to_index.assign(MaxResource, SIZE_MAX);
+            _has_component.reset();
+        }
     };
 
     template <std::size_t MaxResource, typename... Resources>
@@ -194,6 +202,63 @@ namespace System
              */
             _id = (_id+1)%MaxResource;
             return(_id);
+        }
+
+        // Import matching components from another ResourceManager
+        void import(const ResourceManager& other)
+        {
+            std::apply(
+            [this, &other]<typename... T0>(T0&... pools)
+            {
+                (
+                    [&] 
+                    {
+                        using PoolType = std::remove_reference_t<T0>;
+                        using Resource = typename PoolType::value_type;
+                        auto& target_pool = this->query<Resource>();
+                        const auto& source_pool = other.query<Resource>();
+                        for (auto it = source_pool.begin(); it != source_pool.end(); ++it) {
+                            auto [id, component] = *it;
+                            if (!target_pool.has(id)) 
+                            {
+                                target_pool.add(id, component);
+                            }
+                        }
+                    }(),
+                    ...
+                );
+            }, _pools);
+        }
+
+        void remove_marked(const std::tuple<std::bitset<MaxResource>...>& to_remove) 
+        {
+            std::apply([this, to_remove](auto&... bitsets)
+            {
+                (
+                    [&] 
+                    {
+                        using Resource = std::tuple_element_t<
+                            &bitsets - &std::get<0>(to_remove),
+                            std::tuple<Resources...>
+                        >;
+                        auto& pool = this->query<Resource>();
+                        for (size_t id = 0; id < MaxResource; ++id) 
+                        {
+                            if (bitsets.test(id) && pool.has(id)) 
+                            {
+                                pool.remove(id);
+                            }
+                        }
+                    }(),
+                    ...
+                );
+            }, to_remove);
+        }
+
+        void clear() 
+        {
+            std::apply([](auto&... pools) { (pools.clear(), ...); }, _pools);
+            _id = 0;
         }
     };
 
@@ -275,7 +340,8 @@ namespace System
 
         // index_of helper, could go into utils?
         template<typename T, typename... Ts>
-        constexpr std::size_t index_of() {
+        [[nodiscard]]
+        constexpr std::size_t index_of() const {
             return []<std::size_t... I>(std::index_sequence<I...>) {
                 std::size_t result = 0;
                 ((std::is_same_v<T, Ts> ? (result = I, true) : false) || ...);
@@ -295,8 +361,7 @@ namespace System
         template<typename Component>
         void remove_component(pid id) 
         {
-            constexpr std::size_t idx = index_of<Component, Resources...>();
-            std::get<idx>(_to_remove_components).set(id);
+            std::get<index_of<Component, Resources...>()>(_to_remove_components).set(id);
         }
 
         template<typename... Components>
@@ -311,9 +376,13 @@ namespace System
             (remove_component<Resources>(id), ...);
         }
 
-        void exec(ResourceManager<MaxResource, Resources> &rm)
+        void exec(ResourceManager<MaxResource, Resources>& rm)
         {
-            
+            rm.import(_to_add_components);
+            rm.remove_marked(_to_remove_components);
+            // Clear _to_add_components and reset _to_remove_components
+            _to_add_components.clear();
+            std::apply([](auto&... bitsets) { (bitsets.reset(), ...); }, _to_remove_components);
         }
 
     };
