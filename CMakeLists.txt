@@ -31,6 +31,8 @@ foreach(SRC_FOLDER ${SRC_FOLDERS})
     endif()
 endforeach()
 
+add_subdirectory(shaders)
+
 enable_testing()
 add_subdirectory("test")
 
@@ -69,3 +71,5 @@ target_link_libraries(${PROJECT_NAME}
         dinput8
         winmm
 )
+
+add_dependencies(${PROJECT_NAME} compile_shaders)
