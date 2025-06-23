@@ -23,8 +23,10 @@ namespace Scene::Demo2
     void Demo2()
     {
         using DemoResource = System::ResourceManager<1000, demo2, demo3>;
+        using DemoSyscall = System::Syscall<1000, demo2, demo3>;
         DemoResource resource;
-        System::TaskManager<DemoResource, demo2_system> task_manager(resource);
+        DemoSyscall syscall{resource};
+        System::TaskManager<DemoResource, DemoSyscall, demo2_system> task_manager(resource, syscall);
         LOG_DEBUG("Info: Demo2 called!");
         test2();
     }

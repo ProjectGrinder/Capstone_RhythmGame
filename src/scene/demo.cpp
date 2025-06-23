@@ -14,8 +14,10 @@ namespace Scene::Demo
     void Demo()
     {
         using DemoResource = System::ResourceManager<1000, test_component>;
+        using DemoSyscall = System::Syscall<1000, test_component>;
         DemoResource resource;
-        System::TaskManager<DemoResource, please_work> task_manager(resource);
+        DemoSyscall syscall{resource};
+        System::TaskManager<DemoResource, DemoSyscall, please_work> task_manager(resource, syscall);
         task_manager.run_all();
         LOG_DEBUG("Info: Demo call!");
         test();

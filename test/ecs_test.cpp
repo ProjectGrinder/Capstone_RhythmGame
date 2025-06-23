@@ -136,10 +136,12 @@ TEST(ECS, exec_remove_entity)
 TEST(ECS, system_run_test)
 {
     using TestResource = System::ResourceManager<1000, test_component>;
+    using TestSyscall = System::Syscall<1000, test_component>;
     TestResource resource;
+    TestSyscall syscall{resource};
     const System::pid id_1 = resource.add_process();
     resource.add_resource<test_component>(id_1, test_component{1});
-    System::TaskManager<TestResource, test_system> task_manager(resource);
+    System::TaskManager<TestResource, TestSyscall, test_system> task_manager(resource, syscall);
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
     task_manager.run_all();
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 2);
@@ -148,10 +150,12 @@ TEST(ECS, system_run_test)
 TEST(ECS, system_sequence_test)
 {
     using TestResource = System::ResourceManager<1000, test_component>;
+    using TestSyscall = System::Syscall<1000, test_component>;
     TestResource resource;
+    TestSyscall syscall{resource};
     const System::pid id_1 = resource.add_process();
     resource.add_resource<test_component>(id_1, test_component{1});
-    System::TaskManager<TestResource, test_system, test_system_2> task_manager(resource);
+    System::TaskManager<TestResource, TestSyscall, test_system, test_system_2> task_manager(resource, syscall);
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
     task_manager.run_all();
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 4); // (1+1)*2
