@@ -162,6 +162,21 @@ namespace System
             if (pool.has(id)) pool.remove(id);
         }
 
+        template <typename PoolType>
+        void _import_pool(ResourceManager& other)
+        {
+            using Resource = typename PoolType::resource_type;
+            auto& target_pool = this->query<Resource>();
+            auto& source_pool = other.query<Resource>();
+            for (auto it = source_pool.begin(); it != source_pool.end(); ++it)
+            {
+                if (auto [id, component] = *it; !target_pool.has(id))
+                {
+                    target_pool.add(id, component);
+                }
+            }
+        }
+
         using _remove_tuple_t = std::tuple<decltype((void)sizeof(Resources), std::bitset<MaxResource>{})...>;
 
         template <std::size_t... I>
@@ -235,33 +250,19 @@ namespace System
             return(_id);
         }
 
-        // Import matching components from another ResourceManager
         void import(ResourceManager& other)
         {
             std::apply(
-            [this, &other]<typename... PoolTypes>([[maybe_unused]] PoolTypes &... pools)
-            {
-                (
-                    [&] 
-                    {
-                        using PoolType = std::remove_reference_t<PoolTypes>;
-                        using Resource = typename PoolType::resource_type;
-                        auto& target_pool = this->query<Resource>();
-                        auto& source_pool = other.query<Resource>();
-                        for (auto it = source_pool.begin(); it != source_pool.end(); ++it)
-                        {
-                            if (auto [id, component] = *it; !target_pool.has(id))
-                            {
-                                target_pool.add(id, component);
-                            }
-                        }
-                    }(),
-                    ...
-                );
-            }, _pools);
+                [this, &other]<typename... PoolTypes>([[maybe_unused]] PoolTypes &... pools)
+                {
+                    (_import_pool<std::remove_reference_t<PoolTypes>>(other), ...);
+                },
+                _pools);
         }
 
-        void remove_marked(const _remove_tuple_t& to_remove) {
+
+        void remove_marked(const _remove_tuple_t& to_remove)
+        {
             _remove_marked_impl(to_remove, std::make_index_sequence<sizeof...(Resources)>{});
         }
 
@@ -313,34 +314,40 @@ namespace System
 
         template<typename Func, std::size_t... I>
         inline void _run_impl(Func system, std::index_sequence<I...>) const noexcept
+        {
+            using FnTraits = function_traits<Func>;
+            using ComponentTuple = typename FnTraits::component_tuple;
+
+            using First = std::remove_reference_t<std::tuple_element_t<0, ComponentTuple>>;
+            auto& main_pool = _resource_manager.template query<First>();
+            auto cached_pools = std::tie(
+                _resource_manager.template query<std::remove_reference_t<std::tuple_element_t<I, ComponentTuple>>>()...
+            );
+
+            if constexpr (FnTraits::has_syscall)
             {
-                using FnTraits = function_traits<Func>;
-                using ComponentTuple = typename FnTraits::component_tuple;
-
-                using First = std::remove_reference_t<std::tuple_element_t<0, ComponentTuple>>;
-                auto& main_pool = _resource_manager.template query<First>();
-                auto cached_pools = std::tie(
-                    _resource_manager.template query<std::remove_reference_t<std::tuple_element_t<I, ComponentTuple>>>()...
-                );
-
-                if constexpr (FnTraits::has_syscall) {
-                    std::for_each(std::execution::par, main_pool.begin(), main_pool.end(),
-                        [this, cached_pools, system](auto pair) {
-                            auto id = pair.first;
-                            if ((... && std::get<I>(cached_pools).has(id))) {
-                                system(id, _syscall, std::get<I>(cached_pools).get(id)...);
-                            }
-                        });
-                } else {
-                    std::for_each(std::execution::par, main_pool.begin(), main_pool.end(),
-                        [cached_pools, system](auto pair) {
-                            auto id = pair.first;
-                            if ((... && std::get<I>(cached_pools).has(id))) {
-                                system(id, std::get<I>(cached_pools).get(id)...);
-                            }
-                        });
-                }
+                std::for_each(std::execution::par, main_pool.begin(), main_pool.end(),
+                    [this, cached_pools, system](auto pair)
+                    {
+                        auto id = pair.first;
+                        if ((... && std::get<I>(cached_pools).has(id)))
+                        {
+                            system(id, _syscall, std::get<I>(cached_pools).get(id)...);
+                        }
+                    });
+            } else
+            {
+                std::for_each(std::execution::par, main_pool.begin(), main_pool.end(),
+                    [cached_pools, system](auto pair)
+                    {
+                        auto id = pair.first;
+                        if ((... && std::get<I>(cached_pools).has(id)))
+                        {
+                            system(id, std::get<I>(cached_pools).get(id)...);
+                        }
+                    });
             }
+        }
 
         template<typename Func>
         inline void _run(Func system) const noexcept
