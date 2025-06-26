@@ -1,11 +1,12 @@
 #pragma once
 #include <array>
 #include <vector>
-#include <deque>
+#include <tuple>
 #include <bitset>
 #include <stdexcept>
 #include <algorithm>
 #include <execution>
+#include <ranges>
 
 namespace System
 {
@@ -16,13 +17,22 @@ namespace System
         uint32_t x, y;
     };
 
+    template<typename T>
+    concept SyscallType = requires(T t) {
+            { t.exec() } -> std::same_as<void>;
+    };
+
     template <std::size_t MaxResource, typename Resource>
     class ResourcePool;
-
     template <std::size_t MaxResource, typename... Resources>
     class ResourceManager;
-    template<typename Registry, auto... Task>
+    template<typename Registry, SyscallType Syscall, auto... Task>
     class TaskManager;
+    template<size_t MaxResource, typename... Resources>
+    class Syscall;
+
+
+
 
     template <std::size_t MaxResource, typename Resource>
     class ResourcePool
@@ -42,7 +52,7 @@ namespace System
             using reference = value_type&;
 
             Iterator() : _pool(nullptr), _idx(SIZE_MAX) {}
-            Iterator(ResourcePool<MaxResource, Resource> *pool, size_t idx = 0): _pool(pool), _idx(idx){}
+            explicit Iterator(ResourcePool *pool, size_t idx = 0): _pool(pool), _idx(idx){}
 
             value_type operator*()
             {
@@ -58,7 +68,7 @@ namespace System
             bool operator!=(const Iterator& other) const { return !(*this == other); }
 
         private:
-            ResourcePool<MaxResource, Resource> *_pool;
+            ResourcePool *_pool;
             size_t _idx = 0;
         };
 
@@ -73,7 +83,7 @@ namespace System
             return(_data[_id_to_index.at(id)]);
         }
 
-        bool has(pid id) const noexcept
+        [[nodiscard]] bool has(pid id) const noexcept
         {
             return(id < _id_to_index.size() && _has_component.test(id));
         }
@@ -120,6 +130,17 @@ namespace System
             _id_to_index[id] = SIZE_MAX;
             _has_component.reset(id);
         }
+
+        void clear() 
+        {
+            _data.clear();
+            _index_to_id.clear();
+            _id_to_index.assign(MaxResource, SIZE_MAX);
+            _has_component.reset();
+        }
+
+        // type hints bless thee
+        using resource_type = Resource;
     };
 
     template <std::size_t MaxResource, typename... Resources>
@@ -136,9 +157,43 @@ namespace System
         }
 
         template<typename ResourcePool>
-        void maybe_remove(ResourcePool& pool, pid id)
+        static void _remove_if_exists(ResourcePool& pool, pid id)
         {
             if (pool.has(id)) pool.remove(id);
+        }
+
+        template <typename PoolType>
+        void _import_pool(ResourceManager& other)
+        {
+            using Resource = typename PoolType::resource_type;
+            auto& target_pool = this->query<Resource>();
+            auto& source_pool = other.query<Resource>();
+            for (auto it = source_pool.begin(); it != source_pool.end(); ++it)
+            {
+                if (auto [id, component] = *it; !target_pool.has(id))
+                {
+                    target_pool.add(id, component);
+                }
+            }
+        }
+
+        using _remove_tuple_t = std::tuple<decltype((void)sizeof(Resources), std::bitset<MaxResource>{})...>;
+
+        template <std::size_t... I>
+        void _remove_marked_impl(const _remove_tuple_t& to_remove, std::index_sequence<I...>) {
+            (
+                [&] {
+                    using Resource = std::tuple_element_t<I, std::tuple<Resources...>>;
+                    auto& pool = this->query<Resource>();
+                    const auto& bitset = std::get<I>(to_remove);
+                    for (size_t id = 0; id < MaxResource; ++id) {
+                        if (bitset.test(id) && pool.has(id)) {
+                            pool.remove(id);
+                        }
+                    }
+                }(),
+                ...
+            );
         }
 
     public:
@@ -165,12 +220,19 @@ namespace System
             pool.add(id, std::forward<Resource>(component));
         }
 
+        template<typename Resource>
+        void remove_resource(pid id)
+        {
+            auto &pool = query<Resource>();
+            _remove_if_exists(pool, id);
+        }
+
         void delete_entity(pid id)
         {
             std::apply(
                 [&](auto&... pool)
                 {
-                    (maybe_remove(pool,id),...);
+                    (_remove_if_exists(pool,id),...);
                 },
                 _pools
             );
@@ -187,12 +249,35 @@ namespace System
             _id = (_id+1)%MaxResource;
             return(_id);
         }
+
+        void import(ResourceManager& other)
+        {
+            std::apply(
+                [this, &other]<typename... PoolTypes>([[maybe_unused]] PoolTypes &... pools)
+                {
+                    (_import_pool<std::remove_reference_t<PoolTypes>>(other), ...);
+                },
+                _pools);
+        }
+
+
+        void remove_marked(const _remove_tuple_t& to_remove)
+        {
+            _remove_marked_impl(to_remove, std::make_index_sequence<sizeof...(Resources)>{});
+        }
+
+        void clear() 
+        {
+            std::apply([](auto&... pools) { (pools.clear(), ...); }, _pools);
+            _id = 0;
+        }
     };
 
-    template<typename ResourceManager, auto... Tasks>
+    template<typename ResourceManager, SyscallType Syscall, auto... Tasks>
     class TaskManager
     {
         ResourceManager& _resource_manager;
+        Syscall& _syscall;
 
         template<typename...>
         using void_t = void;
@@ -200,19 +285,28 @@ namespace System
         template<typename Func>
         struct function_traits;
 
-        template<typename Ret, typename Entity, typename... Args>
-        struct function_traits<Ret(Entity, Args...)>
+        template<typename Ret, typename Entity, typename First, typename... Rest>
+        struct function_traits<Ret(Entity, First, Rest...)>
         {
+            static_assert(!SyscallType<std::remove_reference_t<First>>,
+             "Regular function trait matched with Syscall parameter - use specialized version");
             using return_type = Ret;
-            using component_tuple = std::tuple<Args...>;
+            using component_tuple = std::tuple<First, Rest...>;
+            static constexpr bool has_syscall = false;
         };
 
-        template<typename Ret, typename Entity, typename... Args>
-        struct function_traits<Ret(*)(Entity, Args...)>
+        template<typename Ret, typename Entity, SyscallType S, typename... Rest>
+        struct function_traits<Ret(Entity, S&, Rest...)>
         {
             using return_type = Ret;
-            using component_tuple = std::tuple<Args...>;
+            using component_tuple = std::tuple<Rest...>;
+            static constexpr bool has_syscall = true;
         };
+
+        template<typename Ret, typename Entity, typename First, typename... Rest>
+        struct function_traits<Ret(*)(Entity, First, Rest...)>
+            : function_traits<Ret(Entity, First, Rest...)> {};
+
 
         template<typename Func>
         struct function_traits
@@ -226,17 +320,33 @@ namespace System
 
             using First = std::remove_reference_t<std::tuple_element_t<0, ComponentTuple>>;
             auto& main_pool = _resource_manager.template query<First>();
-
             auto cached_pools = std::tie(
                 _resource_manager.template query<std::remove_reference_t<std::tuple_element_t<I, ComponentTuple>>>()...
             );
 
-            std::for_each(std::execution::par, main_pool.begin(), main_pool.end(),
-                [cached_pools, system](auto pair) {
-                    auto id = pair.first;
-                    if ((... && std::get<I>(cached_pools).has(id)))
-                        system(id, std::get<I>(cached_pools).get(id)...);
-                });
+            if constexpr (FnTraits::has_syscall)
+            {
+                std::for_each(std::execution::par, main_pool.begin(), main_pool.end(),
+                    [this, cached_pools, system](auto pair)
+                    {
+                        auto id = pair.first;
+                        if ((... && std::get<I>(cached_pools).has(id)))
+                        {
+                            system(id, _syscall, std::get<I>(cached_pools).get(id)...);
+                        }
+                    });
+            } else
+            {
+                std::for_each(std::execution::par, main_pool.begin(), main_pool.end(),
+                    [cached_pools, system](auto pair)
+                    {
+                        auto id = pair.first;
+                        if ((... && std::get<I>(cached_pools).has(id)))
+                        {
+                            system(id, std::get<I>(cached_pools).get(id)...);
+                        }
+                    });
+            }
         }
 
         template<typename Func>
@@ -249,12 +359,68 @@ namespace System
         }
 
     public:
-        explicit TaskManager(ResourceManager& reg)
-        : _resource_manager(reg) {}
+        explicit TaskManager(ResourceManager& reg, Syscall& syscall)
+        : _resource_manager(reg), _syscall(syscall) {}
 
         inline void run_all() const
         {
             (_run(Tasks), ...);
+            _syscall.exec();
         }
+    };
+
+    template<size_t MaxResource, typename... Resources>
+    class Syscall
+    {
+    private:
+        ResourceManager<MaxResource, Resources...>& _rm;
+        ResourceManager<MaxResource, Resources...> _to_add_components{};
+        std::tuple<decltype((void)sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components;
+
+        template<typename Component, std::size_t... I>
+        void _remove_component_impl(pid id, std::index_sequence<I...>)
+        {
+            (..., (std::is_same_v<Component, std::tuple_element_t<I, std::tuple<Resources...>>>
+                ? (std::get<I>(_to_remove_components).set(id), void())
+                : void()));
+        }
+
+    public:
+        explicit Syscall(ResourceManager<MaxResource, Resources...>& rm) : _rm(rm) {};
+
+        template<typename Component>
+        void add_component(pid id, Component &&component)
+        {
+            _to_add_components.add_resource(id, std::forward<Component>(component));
+        }
+
+        template<typename Component>
+        void remove_component(pid id) 
+        {
+            _remove_component_impl<Component>(id, std::make_index_sequence<sizeof...(Resources)>{});
+        }
+
+        template<typename... Components>
+        pid create_entity(Components&&... components)
+        {
+            pid id = _rm.add_process();
+            (add_component(id, std::forward<Components>(components)), ...);
+            return id;
+        }
+
+        void remove_entity(const pid id)
+        {
+            (remove_component<Resources>(id), ...);
+        }
+
+        void exec()
+        {
+            _rm.import(_to_add_components);
+            _rm.remove_marked(_to_remove_components);
+
+            _to_add_components.clear();
+            std::apply([](auto&... bitsets) { (bitsets.reset(), ...); }, _to_remove_components);
+        }
+
     };
 }

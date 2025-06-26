@@ -27,6 +27,8 @@ void test_system_2([[maybe_unused]] System::pid id, test_component& comp)
     comp.value *= 2;
 }
 
+// Test ResourceManager
+
 TEST(ECS, add_component_test)
 {
     using TestResource = System::ResourceManager<1000, test_component>;
@@ -47,6 +49,17 @@ TEST(ECS, add_multiple_components_test)
     resource.add_resource<test_component>(id_2, test_component{2});
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
     EXPECT_EQ(resource.query<test_component>().get(id_2).value, 2);
+}
+
+TEST(ECS, remove_component_test)
+{
+    using TestResource = System::ResourceManager<1000, test_component>;
+    TestResource resource;
+    const System::pid id = resource.add_process();
+    resource.add_resource<test_component>(id, test_component{1});
+    EXPECT_TRUE(resource.query<test_component>().has(id));
+    resource.remove_resource<test_component>(id);
+    EXPECT_FALSE(resource.query<test_component>().has(id));
 }
 
 TEST(ECS, layer_components_test)
@@ -74,13 +87,72 @@ TEST(ECS, delete_resource_test)
     EXPECT_FALSE(resource.query<test_component_2>().has(id_1));
 }
 
-TEST(ECS, system_run_test)
+// Test Syscall
+
+TEST(ECS, exec_add_component)
 {
     using TestResource = System::ResourceManager<1000, test_component>;
     TestResource resource;
+    System::Syscall syscall{resource};
+    const System::pid id_1 = resource.add_process();
+    syscall.add_component(id_1, test_component{1});
+    EXPECT_FALSE(resource.query<test_component>().has(id_1));
+    syscall.exec();
+    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
+    EXPECT_TRUE(resource.query<test_component>().has(id_1));
+}
+
+TEST(ECS, exec_create_entity)
+{
+    using TestResource = System::ResourceManager<1000, test_component>;
+    TestResource resource;
+    System::Syscall syscall{resource};
+    const System::pid id_1 = syscall.create_entity(test_component{1});
+    EXPECT_FALSE(resource.query<test_component>().has(id_1));
+    syscall.exec();
+    EXPECT_TRUE(resource.query<test_component>().has(id_1));
+}
+
+TEST(ECS, exec_remove_component)
+{
+    using TestResource = System::ResourceManager<1000, test_component>;
+    TestResource resource;
+    System::Syscall syscall{resource};
     const System::pid id_1 = resource.add_process();
     resource.add_resource<test_component>(id_1, test_component{1});
-    System::TaskManager<TestResource, test_system> task_manager(resource);
+    syscall.remove_component<test_component>(id_1);
+    EXPECT_TRUE(resource.query<test_component>().has(id_1));
+    syscall.exec();
+    EXPECT_FALSE(resource.query<test_component>().has(id_1));
+}
+
+TEST(ECS, exec_remove_entity)
+{
+    using TestResource = System::ResourceManager<1000, test_component, test_component_2>;
+    TestResource resource;
+    System::Syscall syscall{resource};
+    const System::pid id_1 = resource.add_process();
+    resource.add_resource<test_component>(id_1, test_component{1});
+    resource.add_resource<test_component_2>(id_1, test_component_2{2});
+    syscall.remove_entity(id_1);
+    EXPECT_TRUE(resource.query<test_component>().has(id_1));
+    EXPECT_TRUE(resource.query<test_component_2>().has(id_1));
+    syscall.exec();
+    EXPECT_FALSE(resource.query<test_component>().has(id_1));
+    EXPECT_FALSE(resource.query<test_component_2>().has(id_1));
+}
+
+// Test TaskManager
+
+TEST(ECS, system_run_test)
+{
+    using TestResource = System::ResourceManager<1000, test_component>;
+    using TestSyscall = System::Syscall<1000, test_component>;
+    TestResource resource;
+    TestSyscall syscall{resource};
+    const System::pid id_1 = resource.add_process();
+    resource.add_resource<test_component>(id_1, test_component{1});
+    System::TaskManager<TestResource, TestSyscall, test_system> task_manager(resource, syscall);
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
     task_manager.run_all();
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 2);
@@ -89,11 +161,33 @@ TEST(ECS, system_run_test)
 TEST(ECS, system_sequence_test)
 {
     using TestResource = System::ResourceManager<1000, test_component>;
+    using TestSyscall = System::Syscall<1000, test_component>;
     TestResource resource;
+    TestSyscall syscall{resource};
     const System::pid id_1 = resource.add_process();
     resource.add_resource<test_component>(id_1, test_component{1});
-    System::TaskManager<TestResource, test_system, test_system_2> task_manager(resource);
+    System::TaskManager<TestResource, TestSyscall, test_system, test_system_2> task_manager(resource, syscall);
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
     task_manager.run_all();
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 4); // (1+1)*2
+}
+
+void test_system_3(System::pid id, System::Syscall<1000, test_component> &syscall, [[maybe_unused]] test_component& comp)
+{
+    syscall.remove_component<test_component>(id);
+}
+
+TEST(ECS, system_defer_syscall_test)
+{
+    using TestResource = System::ResourceManager<1000, test_component>;
+    using TestSyscall = System::Syscall<1000, test_component>;
+    TestResource resource;
+    TestSyscall syscall{resource};
+    // remove component goes first, but is deferred until exec() triggers
+    System::TaskManager<TestResource, TestSyscall, test_system_3, test_system_2, test_system> task_manager(resource, syscall);
+    const System::pid id_1 = resource.add_process();
+    resource.add_resource<test_component>(id_1, test_component{1});
+    EXPECT_TRUE(resource.query<test_component>().has(id_1));
+    task_manager.run_all();
+    EXPECT_FALSE(resource.query<test_component>().has(id_1));
 }
