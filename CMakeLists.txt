@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 project(Capstone_RhythmGame)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 add_compile_options(/W4 /WX)
 add_compile_definitions(PROJECT_NAME=${PROJECT_NAME})
 

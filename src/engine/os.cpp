@@ -1,15 +1,72 @@
+#include <assert.h>
 #include "system.h"
 #include "utils.h"
 
 #ifndef PROJECT_NAME
-#define PROJECT_NAME NO_NAME_PROJECT
+    #define PROJECT_NAME NO_NAME_PROJECT
 #endif
 #define STR(name) #name
 #define TO_STR(name) STR(name)
 
+std::vector<char> read_shader(const std::string_view path)
+{
+    std::vector<char> data;
+    uint32_t error = ERROR_SUCCESS;
+    LARGE_INTEGER size = {0};
+    DWORD bytesRead = 0;
+
+    const HANDLE hFile = CreateFileA(
+            path.data(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        error = GetLastError();
+        LOG_DEBUG("Error code: {}, CreateFileA failed", error);
+        goto Exit;
+    }
+
+    if (GetFileSizeEx(hFile, &size) == 0)
+    {
+        error = GetLastError();
+        LOG_DEBUG("Error code: {}, GetFileSizeEx failed", error);
+        goto Error;
+    }
+
+    if (size.QuadPart == 0)
+    {
+        error = ERROR_EMPTY;
+        LOG_DEBUG("File is empty");
+        goto Error;
+    }
+
+    if (size.QuadPart > SIZE_MAX)
+    {
+        error = ERROR_FILE_TOO_LARGE;
+        LOG_DEBUG("Error code: {}, File is too large", error);
+        goto Error;
+    }
+
+    data.resize(static_cast<size_t>(size.QuadPart));
+
+    if (ReadFile(hFile, data.data(), static_cast<DWORD>(size.QuadPart), &bytesRead, nullptr) == 0 ||
+        bytesRead != static_cast<DWORD>(size.QuadPart))
+    {
+        error = GetLastError();
+        LOG_DEBUG("Error code: {}, ReadFile failed", error);
+        goto Error;
+    }
+Error:
+    if (CloseHandle(hFile) != 0)
+    {
+        error = GetLastError();
+        LOG_DEBUG("Error code: {}, CloseHandle failed", error);
+    }
+Exit:
+    return (data);
+}
+
 using System::OS;
 
-OS::OS(): _window{ 1280, 720, nullptr, DisplayType::WINDOW, false }, _monitor{ 0, 0 }
+OS::OS() : _window{1280, 720, nullptr, DisplayType::WINDOW, false}, _monitor{0, 0}
 {
     this->_handler = GetModuleHandleA(nullptr);
     if (this->_handler == nullptr)
@@ -23,13 +80,12 @@ OS::OS(): _window{ 1280, 720, nullptr, DisplayType::WINDOW, false }, _monitor{ 0
         LOG_DEBUG("timeBeginPeriod failed.");
         throw std::runtime_error("Unable to set time resolution.\nMore detail please check on logs");
     }
-    
 }
 
-OS& OS::instance()
+OS &OS::instance()
 {
     static OS _instance;
-    return(_instance);
+    return (_instance);
 }
 
 uint32_t OS::run()
@@ -37,15 +93,17 @@ uint32_t OS::run()
     uint32_t error = ERROR_SUCCESS;
 
     error = instance()._create_window();
-    if (error != ERROR_SUCCESS) goto Exit;
+    if (error != ERROR_SUCCESS)
+        goto Exit;
 
     error = instance()._initialize_directx();
-    if (error != ERROR_SUCCESS) goto Exit;
+    if (error != ERROR_SUCCESS)
+        goto Exit;
 
-	instance()._run();
+    instance()._run();
 
 Exit:
-    return(error);
+    return (error);
 }
 
 uint32_t OS::_initialize_directx()
@@ -66,10 +124,10 @@ uint32_t OS::_initialize_directx()
     ComPtr<ID3D11RenderTargetView> rtv;
 
     D3D_FEATURE_LEVEL level = {};
-    D3D_FEATURE_LEVEL feature_levels[] = { D3D_FEATURE_LEVEL_11_0 };
+    D3D_FEATURE_LEVEL feature_levels[] = {D3D_FEATURE_LEVEL_11_0};
 
-    DXGI_SWAP_CHAIN_DESC1 sc_desc = { 0 };
-    DXGI_SWAP_CHAIN_FULLSCREEN_DESC fs_desc = { 0 };
+    DXGI_SWAP_CHAIN_DESC1 sc_desc = {0};
+    DXGI_SWAP_CHAIN_FULLSCREEN_DESC fs_desc = {0};
 
     sc_desc.BufferCount = 3; // <- Triple buffering
     sc_desc.Width = _window.width;
@@ -85,52 +143,62 @@ uint32_t OS::_initialize_directx()
 
     fs_desc.Windowed = _window.display_type == DisplayType::WINDOW;
 
-    #ifdef _DEBUG
-    error = D3D11CreateDevice
-    (
-        nullptr, D3D_DRIVER_TYPE_HARDWARE,
-        nullptr, D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_SINGLETHREADED,
-        feature_levels, _countof(feature_levels), D3D11_SDK_VERSION,
-        &device, &level, &context
-    );
-    #else
-    error = D3D11CreateDevice
-    (
-        nullptr, D3D_DRIVER_TYPE_HARDWARE,
-        nullptr, D3D11_CREATE_DEVICE_SINGLETHREADED,
-        feature_levels, _countof(feature_levels), D3D11_SDK_VERSION,
-        &device, &level, &context
-    );
-    #endif
-    if (FAILED(error)) goto Exit;
+#ifdef _DEBUG
+    error = D3D11CreateDevice(
+            nullptr,
+            D3D_DRIVER_TYPE_HARDWARE,
+            nullptr,
+            D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_SINGLETHREADED,
+            feature_levels,
+            _countof(feature_levels),
+            D3D11_SDK_VERSION,
+            &device,
+            &level,
+            &context);
+#else
+    error = D3D11CreateDevice(
+            nullptr,
+            D3D_DRIVER_TYPE_HARDWARE,
+            nullptr,
+            D3D11_CREATE_DEVICE_SINGLETHREADED,
+            feature_levels,
+            _countof(feature_levels),
+            D3D11_SDK_VERSION,
+            &device,
+            &level,
+            &context);
+#endif
+    if (FAILED(error))
+        goto Exit;
 
     error = device.As(&dxgi_device);
-    if (FAILED(error)) goto Exit;
+    if (FAILED(error))
+        goto Exit;
 
     error = dxgi_device->GetAdapter(&adapter);
-    if (FAILED(error)) goto Exit;
+    if (FAILED(error))
+        goto Exit;
 
-    error = adapter->GetParent(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(factory.GetAddressOf()));
-    if (FAILED(error)) goto Exit;
+    error = adapter->GetParent(__uuidof(IDXGIFactory2), reinterpret_cast<void **>(factory.GetAddressOf()));
+    if (FAILED(error))
+        goto Exit;
 
-    error = factory->CreateSwapChainForHwnd(
-        device.Get(),
-        _window.handler,
-        &sc_desc,
-        &fs_desc,
-        nullptr,
-        &swap_chain1
-    );
-    if (FAILED(error)) goto Exit;
+    error = factory->CreateSwapChainForHwnd(device.Get(), _window.handler, &sc_desc, &fs_desc, nullptr, &swap_chain1);
+    if (FAILED(error))
+        goto Exit;
 
     error = swap_chain1.As(&final_swap_chain);
-    if (FAILED(error)) goto Exit;
+    if (FAILED(error))
+        goto Exit;
 
-    error = final_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backbuffer.GetAddressOf()));
-    if (FAILED(error)) goto Exit;
+    error = final_swap_chain->GetBuffer(
+            0, __uuidof(ID3D11Texture2D), reinterpret_cast<void **>(backbuffer.GetAddressOf()));
+    if (FAILED(error))
+        goto Exit;
 
     error = device->CreateRenderTargetView(backbuffer.Get(), nullptr, &rtv);
-    if (FAILED(error)) goto Exit;
+    if (FAILED(error))
+        goto Exit;
 
     _renderer.device = device;
     _renderer.context = context;
@@ -138,12 +206,12 @@ uint32_t OS::_initialize_directx()
     _renderer.render_target_view = rtv;
 
 Exit:
-    return(error);
+    return (error);
 }
 
 bool OS::is_running()
 {
-    return(instance()._window.is_running);
+    return (instance()._window.is_running);
 }
 
 void OS::stop()
@@ -155,19 +223,17 @@ uint32_t OS::set_system_precision(int32_t ms)
 {
     if (ms <= 0)
     {
-        Utils::print_debug
-        (
-            "engine/os.cpp",
-            __FUNCTION__,
-            "Error code: {}, Cannot set system time precision to value less or equal to 0.",
-            ERROR_INVALID_PARAMETER
-        );
-        return(ERROR_INVALID_PARAMETER);
+        Utils::print_debug(
+                "engine/os.cpp",
+                __FUNCTION__,
+                "Error code: {}, Cannot set system time precision to value less or equal to 0.",
+                ERROR_INVALID_PARAMETER);
+        return (ERROR_INVALID_PARAMETER);
     }
     else
     {
         instance()._system_precision = static_cast<uint16_t>(ms);
-        return(ERROR_SUCCESS);
+        return (ERROR_SUCCESS);
     }
 }
 
@@ -185,12 +251,7 @@ void OS::_sleep() const
         QueryPerformanceCounter(&end);
         Sleep(0);
     }
-    while
-    (
-        (end.QuadPart - start.QuadPart)
-        * 1000 / frequency.QuadPart
-        < this->_system_precision
-    );
+    while ((end.QuadPart - start.QuadPart) * 1000 / frequency.QuadPart < this->_system_precision);
 }
 
 struct Vertex
@@ -201,13 +262,13 @@ struct Vertex
 
 void OS::_run()
 {
-    this->_window.is_running = true;
-    float clear_color[4] = { 0.39f, 0.58f, 0.93f, 1.0f };
+    _window.is_running = true;
+    constexpr float clear_color[4] = {0.39f, 0.58f, 0.93f, 1.0f};
 
     constexpr Vertex vertices[] = {
-        { {  0.0f,  0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } }, // Top - Red
-        { {  0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } }, // Right - Green
-        { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }  // Left - Blue
+            {{0.0f, 0.5f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+            {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+            {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
     };
 
     D3D11_BUFFER_DESC bd = {};
@@ -215,20 +276,63 @@ void OS::_run()
     bd.ByteWidth = sizeof(vertices);
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-    D3D11_SUBRESOURCE_DATA initData = {};
+    D3D11_SUBRESOURCE_DATA initData = {nullptr};
     initData.pSysMem = vertices;
 
-    Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
-    instance()._renderer.device->CreateBuffer(&bd, &initData, &vertexBuffer);
+    using namespace Microsoft::WRL;
+    ComPtr<ID3D11Buffer> vertexBuffer;
+    assert(SUCCEEDED(_renderer.device->CreateBuffer(&bd, &initData, &vertexBuffer)));
 
-    while (this->_window.is_running)
+    ComPtr<ID3D11VertexShader> vertex_shader = nullptr;
+    ComPtr<ID3D11PixelShader> pixel_shader = nullptr;
+
+    std::vector<char> vertex_shader_code = read_shader("shaders/vs/rainbow.cso");
+    std::vector<char> pixel_shader_code = read_shader("shaders/ps/rainbow.cso");
+
+    assert(SUCCEEDED(_renderer.device->CreateVertexShader(vertex_shader_code.data(), vertex_shader_code.size(), nullptr, &vertex_shader)));
+    assert(SUCCEEDED(_renderer.device->CreatePixelShader(pixel_shader_code.data(), pixel_shader_code.size(), nullptr, &pixel_shader)));
+
+    D3D11_INPUT_ELEMENT_DESC layout[] = {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(Vertex, position), D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(Vertex, color), D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+
+    ComPtr<ID3D11InputLayout> inputLayout;
+    _renderer.device->CreateInputLayout(
+        layout, ARRAYSIZE(layout),
+        vertex_shader_code.data(), vertex_shader_code.size(),
+        &inputLayout
+    );
+
+    while (_window.is_running)
     {
         /*  Polling Event  */
-        this->_poll_event();
+        _poll_event();
         /*  Update Game  */
 
         /*  Render  */
         _renderer.context->ClearRenderTargetView(_renderer.render_target_view.Get(), clear_color);
+
+        D3D11_VIEWPORT viewport = {};
+        viewport.TopLeftX = 0.0f;
+        viewport.TopLeftY = 0.0f;
+        viewport.Width = static_cast<float>(_window.width);
+        viewport.Height = static_cast<float>(_window.height);
+        viewport.MinDepth = 0.0f;
+        viewport.MaxDepth = 1.0f;
+        _renderer.context->RSSetViewports(1, &viewport);
+
+        _renderer.context->OMSetRenderTargets(1, _renderer.render_target_view.GetAddressOf(), nullptr);
+
+        UINT stride = sizeof(Vertex);
+        UINT offset = 0;
+
+        _renderer.context->IASetInputLayout(inputLayout.Get());
+        _renderer.context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+        _renderer.context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        _renderer.context->VSSetShader(vertex_shader.Get(), nullptr, 0);
+        _renderer.context->PSSetShader(pixel_shader.Get(), nullptr, 0);
+        _renderer.context->Draw(3, 0);
 
         if (HRESULT hr = _renderer.swap_chain->Present(1, 0); FAILED(hr))
         {
@@ -236,22 +340,14 @@ void OS::_run()
             break;
         }
 
-        this->_sleep();
+        _sleep();
     }
 }
 
 void OS::_poll_event() const
 {
     MSG msg;
-    while
-    (
-        PeekMessage
-        (
-            &msg,
-            this->_window.handler,
-            0, 0, PM_REMOVE
-        )
-    )
+    while (PeekMessage(&msg, this->_window.handler, 0, 0, PM_REMOVE))
     {
         switch (msg.message)
         {
@@ -274,13 +370,13 @@ void OS::_poll_event() const
 
 uint16_t OS::get_system_precision()
 {
-    return(instance()._system_precision);
+    return (instance()._system_precision);
 }
 
 uint32_t OS::_create_window()
 {
-    MONITORINFO monitor_info = { 0 };
-    WNDCLASSEXA window_settings = { 0 };
+    MONITORINFO monitor_info = {0};
+    WNDCLASSEXA window_settings = {0};
     DEVMODEA devmode_screen_settings = {0};
 
     constexpr DWORD style_flags = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP;
@@ -309,12 +405,19 @@ uint32_t OS::_create_window()
         goto Exit;
     }
 
-    this->_window.handler = CreateWindowExA
-    (
-        0, window_settings.lpszClassName, window_settings.lpszClassName,
-        style_flags, CW_USEDEFAULT, CW_USEDEFAULT,
-        0, 0, nullptr, nullptr, this->_handler, nullptr
-    );
+    this->_window.handler = CreateWindowExA(
+            0,
+            window_settings.lpszClassName,
+            window_settings.lpszClassName,
+            style_flags,
+            CW_USEDEFAULT,
+            CW_USEDEFAULT,
+            0,
+            0,
+            nullptr,
+            nullptr,
+            this->_handler,
+            nullptr);
 
     if (this->_window.handler == nullptr)
     {
@@ -324,7 +427,7 @@ uint32_t OS::_create_window()
     }
 
     /* We can do this because MonitorFromWindow Guarantee the return value */
-    if (GetMonitorInfoA(MonitorFromWindow(this->_window.handler, MONITOR_DEFAULTTOPRIMARY),&monitor_info) == 0)
+    if (GetMonitorInfoA(MonitorFromWindow(this->_window.handler, MONITOR_DEFAULTTOPRIMARY), &monitor_info) == 0)
     {
         error = ERROR_MONITOR_NO_DESCRIPTOR;
 
@@ -375,16 +478,14 @@ uint32_t OS::_create_window()
             goto Exit;
         }
 
-        if
-        (
-            SetWindowPos
-            (
-                this->_window.handler, HWND_TOP,
-                monitor_info.rcMonitor.left, monitor_info.rcMonitor.top,
-                this->_window.width, this->_window.height,
-                SWP_NOOWNERZORDER | SWP_FRAMECHANGED
-            ) == 0
-        )
+        if (SetWindowPos(
+                    this->_window.handler,
+                    HWND_TOP,
+                    monitor_info.rcMonitor.left,
+                    monitor_info.rcMonitor.top,
+                    this->_window.width,
+                    this->_window.height,
+                    SWP_NOOWNERZORDER | SWP_FRAMECHANGED) == 0)
         {
             error = GetLastError();
 
@@ -396,16 +497,14 @@ uint32_t OS::_create_window()
 
     case BORDERLESS:
 
-        if
-        (
-            SetWindowPos
-            (
-                this->_window.handler, HWND_TOP,
-                monitor_info.rcMonitor.left, monitor_info.rcMonitor.top,
-                this->_monitor.width, this->_monitor.height,
-                SWP_NOOWNERZORDER | SWP_FRAMECHANGED
-            ) == 0
-        )
+        if (SetWindowPos(
+                    this->_window.handler,
+                    HWND_TOP,
+                    monitor_info.rcMonitor.left,
+                    monitor_info.rcMonitor.top,
+                    this->_monitor.width,
+                    this->_monitor.height,
+                    SWP_NOOWNERZORDER | SWP_FRAMECHANGED) == 0)
         {
             error = GetLastError();
 
@@ -417,33 +516,23 @@ uint32_t OS::_create_window()
 
     case WINDOW:
 
-        if
-        (
-            SetWindowLongPtrA
-            (
-                this->_window.handler,
-                GWL_STYLE,
-                (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)
-            ) == 0
-        )
+        if (SetWindowLongPtrA(
+                    this->_window.handler, GWL_STYLE, (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)) == 0)
         {
             error = GetLastError();
-            
+
             LOG_DEBUG("Error code: {}, SetWindowLongPtr failed.", error);
             goto Exit;
         }
 
-        if
-        (
-            SetWindowPos
-            (
-                this->_window.handler, HWND_TOP,
-                (this->_monitor.width - this->_window.width) / 2,
-                (this->_monitor.height - this->_window.height) / 2,
-                this->_window.width, this->_window.height,
-                SWP_NOOWNERZORDER | SWP_FRAMECHANGED
-            ) == 0
-        )
+        if (SetWindowPos(
+                    this->_window.handler,
+                    HWND_TOP,
+                    (this->_monitor.width - this->_window.width) / 2,
+                    (this->_monitor.height - this->_window.height) / 2,
+                    this->_window.width,
+                    this->_window.height,
+                    SWP_NOOWNERZORDER | SWP_FRAMECHANGED) == 0)
         {
             error = GetLastError();
 
@@ -458,32 +547,25 @@ uint32_t OS::_create_window()
         error = ERROR_INVALID_PARAMETER;
         LOG_DEBUG("Error code: {}, Unknown display type.", error);
         goto Exit;
-
     }
 
     ShowWindow(this->_window.handler, SW_SHOW);
 
 Exit:
-    return(error);
+    return (error);
 }
 
-static LRESULT CALLBACK System::window_process
-(
-    HWND hwnd,
-    UINT msg,
-    WPARAM w_param,
-    LPARAM l_param
-)
+static LRESULT CALLBACK System::window_process(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param)
 {
-    switch(msg)
+    switch (msg)
     {
     case WM_DESTROY:
     case WM_CLOSE:
         OS::stop();
         PostQuitMessage(0);
-        return(0);
+        return (0);
     default:
-        return(DefWindowProc(hwnd, msg, w_param, l_param));
+        return (DefWindowProc(hwnd, msg, w_param, l_param));
     }
 }
 
@@ -514,5 +596,5 @@ uint32_t OS::clean_up()
     }
 
 Exit:
-    return(error);
+    return (error);
 }
