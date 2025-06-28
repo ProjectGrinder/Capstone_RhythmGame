@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 project(Capstone_RhythmGame)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 add_compile_options(/W4 /WX)
 add_compile_definitions(PROJECT_NAME=${PROJECT_NAME})
 
@@ -30,6 +31,8 @@ foreach(SRC_FOLDER ${SRC_FOLDERS})
         add_subdirectory("${PROJECT_SOURCE_DIR}/src/${SRC_FOLDER}")
     endif()
 endforeach()
+
+add_subdirectory(shaders)
 
 enable_testing()
 add_subdirectory("test")
@@ -69,3 +72,5 @@ target_link_libraries(${PROJECT_NAME}
         dinput8
         winmm
 )
+
+add_dependencies(${PROJECT_NAME} compile_shaders)

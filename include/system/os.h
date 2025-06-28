@@ -7,13 +7,10 @@
  */
 
 #include <Windows.h>
-#include <optional>
-#include <exception>
-#include <memory>
 #include <cstdint>
 #include <d3d11.h>
-#include <dxgi.h>
 #include <dxgi1_4.h>
+#include <optional>
 #include <wrl/client.h>
 
 namespace System
@@ -30,8 +27,8 @@ namespace System
     private:
         struct Window
         {
-            uint32_t width;
-            uint32_t height;
+            int width;
+            int height;
             HWND handler;
             DisplayType display_type;
             bool is_running;
@@ -39,8 +36,8 @@ namespace System
 
         struct Monitor
         {
-            uint32_t width;
-            uint32_t height;
+            int width;
+            int height;
         };
 
         struct Renderer
@@ -58,8 +55,8 @@ namespace System
         HINSTANCE _handler = nullptr;
 
         OS();
-        uint32_t _sleep() const;
-        uint32_t _poll_event() const;
+        void _sleep() const;
+        void _poll_event() const;
         uint32_t _create_window();
         uint32_t _initialize_directx();
         void _run();
