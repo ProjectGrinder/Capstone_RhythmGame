@@ -10,7 +10,6 @@
 #include <cstdint>
 #include <d3d11.h>
 #include <dxgi1_4.h>
-#include <optional>
 #include <wrl/client.h>
 
 namespace System
@@ -32,6 +31,7 @@ namespace System
             HWND handler;
             DisplayType display_type;
             bool is_running;
+            bool is_minimized;
         };
 
         struct Monitor
@@ -63,6 +63,7 @@ namespace System
     public:
         static uint32_t run();
         static OS &instance();
+        static void minimized(bool value);
         static bool is_running();
         static void stop();
         static uint32_t set_system_precision(int32_t ms);

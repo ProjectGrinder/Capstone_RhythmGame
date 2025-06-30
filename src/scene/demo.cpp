@@ -1,6 +1,6 @@
 #include "scene.h"
-#include "utils.h"
 #include "system.h"
+#include "utils.h"
 
 namespace Scene::Demo
 {
@@ -11,24 +11,19 @@ namespace Scene::Demo
         LOG_DEBUG("Info: WE WIN THIS!!!");
     }
 
-    void Demo()
+    System::Render2D render_test_component(test_component& comp)
     {
-        using DemoResource = System::ResourceManager<1000, test_component>;
-        using DemoSyscall = System::Syscall<1000, test_component>;
-        DemoResource resource;
-        DemoSyscall syscall{resource};
-        System::TaskManager<DemoResource, DemoSyscall, please_work> task_manager(resource, syscall);
-        task_manager.run_all();
-        LOG_DEBUG("Info: Demo call!");
-        test();
     }
 
-    void test()
+    System::Render3D render_test_component2(test_component& comp)
     {
-        test_component val;
-        val.number = 1;
-        LOG_DEBUG("Info: test call with val = {}", val.number);
-
-        System::Game::change_scene(Demo2::Demo2);
     }
+
+    struct Demo
+    {
+        using Resource = System::ResourceManager<1000, test_component>;
+        using Syscall = System::Syscall<1000, test_component>;
+        using Manager = System::TaskManager<Resource, Syscall, please_work>;
+        using Renderer = System::Renderer<Resource, render_test_component, render_test_component2>;
+    };
 }

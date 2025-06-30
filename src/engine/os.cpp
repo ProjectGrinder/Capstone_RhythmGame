@@ -55,7 +55,7 @@ std::vector<char> read_shader(const std::string_view path)
         goto Error;
     }
 Error:
-    if (CloseHandle(hFile) != 0)
+    if (CloseHandle(hFile) == 0)
     {
         error = GetLastError();
         LOG_DEBUG("Error code: {}, CloseHandle failed", error);
@@ -66,7 +66,7 @@ Exit:
 
 using System::OS;
 
-OS::OS() : _window{1280, 720, nullptr, DisplayType::WINDOW, false}, _monitor{0, 0}
+OS::OS() : _window{1920, 1080, nullptr, DisplayType::FULLSCREEN, false, false}, _monitor{0, 0}
 {
     this->_handler = GetModuleHandleA(nullptr);
     if (this->_handler == nullptr)
@@ -104,6 +104,11 @@ uint32_t OS::run()
 
 Exit:
     return (error);
+}
+
+void OS::minimized(const bool value)
+{
+    instance()._window.is_minimized = value;
 }
 
 uint32_t OS::_initialize_directx()
@@ -306,6 +311,7 @@ void OS::_run()
 
     while (_window.is_running)
     {
+        if (_window.is_minimized) continue;
         /*  Polling Event  */
         _poll_event();
         /*  Update Game  */
@@ -559,14 +565,25 @@ static LRESULT CALLBACK System::window_process(HWND hwnd, UINT msg, WPARAM w_par
 {
     switch (msg)
     {
-    case WM_DESTROY:
     case WM_CLOSE:
         OS::stop();
+        return (0);
+    case WM_DESTROY:
         PostQuitMessage(0);
         return (0);
+    case WM_SIZE:
+        if (w_param == SIZE_MINIMIZED)
+        {
+            OS::minimized(true);
+        }
+        else
+        {
+            OS::minimized(false);
+        }
     default:
-        return (DefWindowProc(hwnd, msg, w_param, l_param));
+        break;
     }
+    return (DefWindowProc(hwnd, msg, w_param, l_param));
 }
 
 uint32_t OS::clean_up()
