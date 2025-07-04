@@ -2,17 +2,9 @@
 
 #include <functional>
 
-namespace Scene
+#include "scene/demo.h"
+
+namespace Scene::SceneConfig
 {
-    using SceneType = std::function<void()>;
-
-    /* Include Your Scene Here */
-    #include "scene/demo.h"
-    #include "scene/demo2.h"
-
-    /* Config Here (You can add more if you want to) */
-    namespace SceneConfig
-    {
-        const SceneType starting_scene = Demo::Demo;
-    }
+    using starting_scene = Demo::Demo;
 }

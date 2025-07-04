@@ -23,7 +23,7 @@ int WINAPI WinMain(
     LOG_DEBUG("Info: Initialization...");
     using System::OS, System::Game, Scene::SceneConfig::starting_scene;
 
-    Game::change_scene(starting_scene);
+    Game::change_scene<starting_scene>();
 
     LOG_DEBUG("Info: Starting...");
     if (error == ERROR_SUCCESS)

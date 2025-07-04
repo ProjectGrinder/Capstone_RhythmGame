@@ -1,8 +1,8 @@
 #pragma once
 
 #define SCENE(x)\
-namespace x\
+namespace Scene::x\
 {\
-    void x();\
+    struct x;\
 }\
-namespace x
+namespace Scene::x

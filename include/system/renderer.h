@@ -23,7 +23,7 @@ namespace System
     template<typename ResourceManager, auto... RenderFunction>
     struct Renderer
     {
-        explicit Renderer(const ResourceManager &resource_manager) : _resource_manager{resource_manager} {};
+        explicit Renderer(ResourceManager &resource_manager) : _resource_manager{resource_manager} {};
 
         std::vector<RenderItem> render_snapshot()
         {
@@ -31,7 +31,7 @@ namespace System
         }
 
     private:
-        const ResourceManager &_resource_manager;
+        ResourceManager &_resource_manager;
 
         template<typename Func>
         struct function_traits;

@@ -1,16 +1,24 @@
 #pragma once
 
-#include <functional>
-
 namespace System
 {
-    using SceneType = std::function<void()>;
+    // template<typename Scene>
+    // concept SceneTraits = requires
+    // {
+    //     // {Scene::MaxEntity} -> std::convertible_to<std::size_t>;
+    //     //
+    //     // typename Scene::Components;
+    //     // typename Scene::OnInit;
+    //     // typename Scene::OnUpdate;
+    //     // typename Scene::OnRender;
+    // };
 
     class Game
     {
-    private:
-        static Game _instance;
     public:
-        static void change_scene(SceneType scene);
+        template<typename Scene>
+        static void change_scene()
+        {
+        }
     };
 }

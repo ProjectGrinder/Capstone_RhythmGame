@@ -12,11 +12,6 @@ namespace System
 {
     using pid = uint64_t;
 
-    struct RenderComponent
-    {
-        uint32_t x, y;
-    };
-
     template<typename T>
     concept SyscallType = requires(T t) {
         { t.exec() } -> std::same_as<void>;
@@ -154,13 +149,13 @@ namespace System
     {
     private:
         pid _id = 0;
-        std::tuple<ResourcePool<MaxResource, RenderComponent>, ResourcePool<MaxResource, Resources>...> _pools;
+        std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
 
         template<std::size_t... Index>
         auto _create_pools(std::index_sequence<Index...>)
         {
             return (std::make_tuple(
-                    ResourcePool<MaxResource, RenderComponent>(), ResourcePool<MaxResource, Resources>()...));
+                    ResourcePool<MaxResource, Resources>()...));
         }
 
         template<typename ResourcePool>
@@ -329,16 +324,16 @@ namespace System
 
             if constexpr (FnTraits::has_syscall)
             {
+                auto &syscall = this->_syscall;
                 std::for_each(
                         std::execution::par,
                         main_pool.begin(),
                         main_pool.end(),
-                        [this, cached_pools, system](auto pair)
+                        [cached_pools, system, &syscall](auto pair)
                         {
-                            auto id = pair.first;
-                            if ((... && std::get<I>(cached_pools).has(id)))
+                            if (auto id = pair.first;(... && std::get<I>(cached_pools).has(id)))
                             {
-                                system(id, _syscall, std::get<I>(cached_pools).get(id)...);
+                                system(id, syscall, std::get<I>(cached_pools).get(id)...);
                             }
                         });
             }
@@ -350,8 +345,7 @@ namespace System
                         main_pool.end(),
                         [cached_pools, system](auto pair)
                         {
-                            auto id = pair.first;
-                            if ((... && std::get<I>(cached_pools).has(id)))
+                            if (auto id = pair.first;(... && std::get<I>(cached_pools).has(id)))
                             {
                                 system(id, std::get<I>(cached_pools).get(id)...);
                             }
@@ -369,13 +363,10 @@ namespace System
         }
 
     public:
-        explicit TaskManager(ResourceManager &reg, Syscall &syscall) : _resource_manager(reg), _syscall(syscall)
-        {}
-
+        explicit TaskManager(ResourceManager &rm, Syscall &syscall): _resource_manager(rm), _syscall(_syscall) {}
         inline void run_all() const
         {
             (_run(Tasks), ...);
-            _syscall.exec();
         }
     };
 
@@ -433,4 +424,4 @@ namespace System
             std::apply([](auto &...bitsets) { (bitsets.reset(), ...); }, _to_remove_components);
         }
     };
-} // namespace System
+}
