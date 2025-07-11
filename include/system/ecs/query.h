@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iterator>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -10,78 +9,42 @@ namespace System::ECS
 {
 
     template<typename... Components>
-    struct Query
+    class Query
     {
-        std::tuple<std::vector<pid>, std::vector<Components &>...> data;
-        std::size_t size() const
-        {
-            return std::get<0>(data).size();
-        }
+    public:
+        using ComponentTuple = std::tuple<Components...>;
+        using StoredTuple = std::tuple<std::reference_wrapper<Components>...>;
 
-        struct Iterator
-        {
-            using difference_type = std::ptrdiff_t;
-            using value_type = std::tuple<pid, Components &...>;
-            using pointer = value_type *;
-            using reference = value_type &;
-            using iterator_category = std::forward_iterator_tag;
+        struct QueryEntry {
+            pid id;
+            StoredTuple components;
 
-            std::size_t idx;
-            Query *query;
-            mutable value_type cache; // mutable so operator* can update it
-
-            Iterator(Query *q, const std::size_t i) : idx(i), query(q)
-            {}
-
-            reference operator*() const
-            {
-                auto &pid_vector = std::get<0>(query->data);
-                auto get_ref = [this](auto &vec) -> auto & { return vec[this->idx]; };
-                cache = std::tuple_cat(
-                        std::make_tuple(pid_vector[idx]),
-                        std::forward_as_tuple(get_ref(std::get<std::vector<Components &>>(query->data))...));
-                return cache;
-            }
-
-            Iterator &operator++()
-            {
-                ++idx;
-                return *this;
-            }
-            Iterator operator++(int)
-            {
-                Iterator tmp = *this;
-                ++(*this);
-                return tmp;
-            }
-            bool operator==(const Iterator &other) const
-            {
-                return idx == other.idx;
-            }
-            bool operator!=(const Iterator &other) const
-            {
-                return !(*this == other);
+            template<size_t I = 0>
+            decltype(auto) get() {
+                if constexpr (I == 0) {
+                    return id;
+                } else {
+                    return std::get<I-1>(components).get();
+                }
             }
         };
 
-        Iterator begin()
-        {
-            return Iterator(this, 0);
-        }
-        Iterator end()
-        {
-            return Iterator(this, this->size());
-        }
+    private:
+        mutable std::vector<QueryEntry> _entries;
 
-        void add(pid id, const Components &... components)
-        {
-            std::get<0>(data).push_back(id);
-            std::get<std::vector<Components &>>(data).push_back(components);
+    public:
+        template<typename... Comps>
+            requires (std::is_convertible_v<Comps&, Components&> && ...)
+        void add(pid id, Comps&... components) const {
+            _entries.emplace_back(QueryEntry{id, StoredTuple{std::ref(components)...}});
         }
 
-        Query() : data(std::make_tuple(std::vector<pid>(), std::vector<Components &>()...))
-        {}
+        auto begin() { return _entries.begin(); }
+        auto end() { return _entries.end(); }
+        auto begin() const { return _entries.begin(); }
+        auto end() const { return _entries.end(); }
 
+        void clear() { _entries.clear(); }
     };
 
 

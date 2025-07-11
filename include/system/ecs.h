@@ -4,3 +4,4 @@
 #include "ecs/resource_pool.h"
 #include "ecs/task_manager.h"
 #include "ecs/syscall.h"
+#include "ecs/query.h"

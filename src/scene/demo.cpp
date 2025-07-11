@@ -5,10 +5,14 @@
 namespace Scene::Demo
 {
 
-    void please_work([[maybe_unused]]System::ECS::pid id, test_component& comp)
+    void please_work([[maybe_unused]]System::ECS::Syscall<1000, test_component> &S, System::ECS::Query<test_component>& query)
     {
-        comp.number = 1;
-        LOG_DEBUG("Info: WE WIN THIS!!!");
+        for (auto& entry : query)
+        {
+            auto& comp = entry.get<1>();
+            comp.number = 1;
+            LOG_DEBUG("Info: WE WIN THIS!!!");
+        }
     }
 
     void Demo()

@@ -24,21 +24,41 @@ struct test_component_2
     int value;
 };
 
-void test_system([[maybe_unused]] pid id, test_component& comp)
+
+
+using TestResource = ResourceManager<1000, test_component, test_component_2>;
+using TestSyscall = Syscall<1000, test_component, test_component_2>;
+
+void test_system([[maybe_unused]] TestSyscall& S, System::ECS::Query<test_component>& query)
 {
-    comp.value += 1;
+    for (auto& entry: query)
+    {
+        auto& comp = entry.get<1>();
+        comp.value++;
+    }
 }
 
-void test_system_2([[maybe_unused]] pid id, test_component& comp)
+void test_system_2([[maybe_unused]] TestSyscall& S, System::ECS::Query<test_component>& query)
 {
-    comp.value *= 2;
+    for (auto& entry: query)
+    {
+        auto& comp = entry.get<1>();
+        comp.value *= 2;
+    }
+}
+
+void test_system_3(TestSyscall& S, System::ECS::Query<test_component>& query)
+{
+    for (auto& entry: query)
+    {
+        S.remove_component<test_component>(entry.id);
+    }
 }
 
 // Test ResourceManager
 
 TEST(ECS, add_component_test)
 {
-    using TestResource = ResourceManager<1000, test_component>;
     TestResource resource;
     const pid id = resource.add_process();
     resource.add_resource<test_component>(id, test_component{1});
@@ -48,7 +68,6 @@ TEST(ECS, add_component_test)
 
 TEST(ECS, add_multiple_components_test)
 {
-    using TestResource = ResourceManager<1000, test_component>;
     TestResource resource;
     const pid id_1 = resource.add_process();
     resource.add_resource<test_component>(id_1, test_component{1});
@@ -60,7 +79,6 @@ TEST(ECS, add_multiple_components_test)
 
 TEST(ECS, remove_component_test)
 {
-    using TestResource = ResourceManager<1000, test_component>;
     TestResource resource;
     const pid id = resource.add_process();
     resource.add_resource<test_component>(id, test_component{1});
@@ -71,7 +89,6 @@ TEST(ECS, remove_component_test)
 
 TEST(ECS, layer_components_test)
 {
-    using TestResource = ResourceManager<1000, test_component, test_component_2>;
     TestResource resource;
     const pid id_1 = resource.add_process();
     resource.add_resource<test_component>(id_1, test_component{1});
@@ -82,7 +99,6 @@ TEST(ECS, layer_components_test)
 
 TEST(ECS, delete_resource_test)
 {
-    using TestResource = ResourceManager<1000, test_component, test_component_2>;
     TestResource resource;
     const pid id_1 = resource.add_process();
     resource.add_resource<test_component>(id_1, test_component{1});
@@ -98,9 +114,8 @@ TEST(ECS, delete_resource_test)
 
 TEST(ECS, exec_add_component)
 {
-    using TestResource = ResourceManager<1000, test_component>;
     TestResource resource;
-    Syscall syscall{resource};
+    TestSyscall syscall{resource};
     const pid id_1 = resource.add_process();
     syscall.add_component(id_1, test_component{1});
     EXPECT_FALSE(resource.query<test_component>().has(id_1));
@@ -111,9 +126,8 @@ TEST(ECS, exec_add_component)
 
 TEST(ECS, exec_create_entity)
 {
-    using TestResource = ResourceManager<1000, test_component>;
     TestResource resource;
-    Syscall syscall{resource};
+    TestSyscall syscall{resource};
     const pid id_1 = syscall.create_entity(test_component{1});
     EXPECT_FALSE(resource.query<test_component>().has(id_1));
     syscall.exec();
@@ -122,9 +136,8 @@ TEST(ECS, exec_create_entity)
 
 TEST(ECS, exec_remove_component)
 {
-    using TestResource = ResourceManager<1000, test_component>;
     TestResource resource;
-    Syscall syscall{resource};
+    TestSyscall syscall{resource};
     const pid id_1 = resource.add_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     syscall.remove_component<test_component>(id_1);
@@ -135,9 +148,8 @@ TEST(ECS, exec_remove_component)
 
 TEST(ECS, exec_remove_entity)
 {
-    using TestResource = ResourceManager<1000, test_component, test_component_2>;
     TestResource resource;
-    Syscall syscall{resource};
+    TestSyscall syscall{resource};
     const pid id_1 = resource.add_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     resource.add_resource<test_component_2>(id_1, test_component_2{2});
@@ -153,8 +165,6 @@ TEST(ECS, exec_remove_entity)
 
 TEST(ECS, system_run_test)
 {
-    using TestResource = ResourceManager<1000, test_component>;
-    using TestSyscall = Syscall<1000, test_component>;
     TestResource resource;
     TestSyscall syscall{resource};
     const pid id_1 = resource.add_process();
@@ -167,8 +177,6 @@ TEST(ECS, system_run_test)
 
 TEST(ECS, system_sequence_test)
 {
-    using TestResource = ResourceManager<1000, test_component>;
-    using TestSyscall = Syscall<1000, test_component>;
     TestResource resource;
     TestSyscall syscall{resource};
     const pid id_1 = resource.add_process();
@@ -179,15 +187,8 @@ TEST(ECS, system_sequence_test)
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 4); // (1+1)*2
 }
 
-void test_system_3(pid id, Syscall<1000, test_component> &syscall, [[maybe_unused]] test_component& comp)
-{
-    syscall.remove_component<test_component>(id);
-}
-
 TEST(ECS, system_defer_syscall_test)
 {
-    using TestResource = ResourceManager<1000, test_component>;
-    using TestSyscall = Syscall<1000, test_component>;
     TestResource resource;
     TestSyscall syscall{resource};
     // the remove component goes first but is deferred until exec() triggers

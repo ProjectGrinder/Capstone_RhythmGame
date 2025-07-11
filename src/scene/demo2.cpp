@@ -17,8 +17,13 @@ namespace Scene::Demo2
         int b;
     };
 
-    void demo2_system([[maybe_unused]] System::ECS::pid id, [[maybe_unused]] demo2 &demo, [[maybe_unused]] demo3 &val)
-    {}
+    void demo2_system([[maybe_unused]] System::ECS::Syscall<1000, demo2, demo3> &S, [[maybe_unused]] System::ECS::Query<demo2, demo3> &query)
+    {
+        for ([[maybe_unused]] auto& entry : query)
+        {
+
+        }
+    }
 
     void Demo2()
     {
