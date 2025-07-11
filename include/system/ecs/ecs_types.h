@@ -1,7 +1,8 @@
 #pragma once
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
-#include <concepts>
+#include <vector>
 
 namespace System::ECS
 {
@@ -17,11 +18,32 @@ namespace System::ECS
     class Syscall;
 
     template<typename T>
-    concept SyscallType = requires(T t) {
-            { t.exec() } -> std::same_as<void>;
-    };
+    struct is_syscall : std::false_type
+    {};
+
+    template<size_t MaxResource, typename... Resources>
+    struct is_syscall<Syscall<MaxResource, Resources...>> : std::true_type
+    {};
+
+    template<typename T>
+    concept SyscallType = is_syscall<std::remove_cvref_t<T>>::value;
+
+    template<typename... Components>
+    struct Query;
+
+    template<typename T>
+    struct is_query : std::false_type
+    {};
+
+    template<typename... Components>
+    struct is_query<Query<Components...>> : std::true_type
+    {};
+
+    template<typename T>
+    concept QueryType = is_query<std::remove_cvref_t<T>>::value;
 
     template<typename Registry, SyscallType Syscall, auto... Task>
     class TaskManager;
+
 
 }

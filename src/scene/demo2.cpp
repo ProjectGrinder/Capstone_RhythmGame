@@ -17,16 +17,16 @@ namespace Scene::Demo2
         int b;
     };
 
-    void demo2_system([[maybe_unused]] System::pid id, [[maybe_unused]] demo2 &demo, [[maybe_unused]] demo3 &val)
+    void demo2_system([[maybe_unused]] System::ECS::pid id, [[maybe_unused]] demo2 &demo, [[maybe_unused]] demo3 &val)
     {}
 
     void Demo2()
     {
-        using DemoResource = System::ResourceManager<1000, demo2, demo3>;
-        using DemoSyscall = System::Syscall<1000, demo2, demo3>;
+        using DemoResource = System::ECS::ResourceManager<1000, demo2, demo3>;
+        using DemoSyscall = System::ECS::Syscall<1000, demo2, demo3>;
         DemoResource resource;
         DemoSyscall syscall{resource};
-        System::TaskManager<DemoResource, DemoSyscall, demo2_system> task_manager(resource, syscall);
+        System::ECS::TaskManager<DemoResource, DemoSyscall, demo2_system> task_manager(resource, syscall);
         LOG_DEBUG("Info: Demo2 called!");
         test2();
     }
