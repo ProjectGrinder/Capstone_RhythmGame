@@ -55,6 +55,19 @@ void test_system_3(TestSyscall& S, System::ECS::Query<test_component>& query)
     }
 }
 
+void test_system_4([[maybe_unused]] TestSyscall& S, System::ECS::Query<test_component>& query, System::ECS::Query<test_component_2>& query_2)
+{
+    for (auto& entry: query)
+    {
+        int sum = 0;
+        for (auto& entry_2 : query_2)
+        {
+            sum += entry_2.get<test_component_2>().value;
+        }
+        entry.get<test_component>().value = sum;
+    }
+}
+
 // Test ResourceManager
 
 TEST(ECS, add_component_test)
@@ -198,4 +211,33 @@ TEST(ECS, system_defer_syscall_test)
     EXPECT_TRUE(resource.query<test_component>().has(id_1));
     task_manager.run_all();
     EXPECT_FALSE(resource.query<test_component>().has(id_1));
+}
+
+TEST(ECS, system_interaction_test)
+{
+    TestResource resource;
+    TestSyscall syscall{resource};
+    TaskManager<TestResource, TestSyscall, test_system_4> task_manager(resource, syscall);
+
+    const pid id_1 = resource.add_process();
+    resource.add_resource<test_component>(id_1, test_component{999});
+
+    // No test_component_2 in TaskManager: component should yield 0
+    task_manager.run_all();
+    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 0);
+
+    const pid id_2 = resource.add_process();
+    resource.add_resource<test_component_2>(id_2, test_component_2{1});
+
+    // component should yield 1
+    task_manager.run_all();
+    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
+
+    const pid id_3 = resource.add_process();
+    resource.add_resource<test_component_2>(id_3, test_component_2{2});
+
+    // component should yield 3
+    task_manager.run_all();
+    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 3);
+
 }
