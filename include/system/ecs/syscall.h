@@ -9,20 +9,21 @@ namespace System::ECS
     class Syscall
     {
     private:
-        ResourceManager<MaxResource, Resources...>& _rm;
+        ResourceManager<MaxResource, Resources...> &_rm;
         ResourceManager<MaxResource, Resources...> _to_add_components{};
-        std::tuple<decltype((void)sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components;
+        std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components;
 
         template<typename Component, std::size_t... I>
         void _remove_component_impl(pid id, std::index_sequence<I...>)
         {
-            (..., (std::is_same_v<Component, std::tuple_element_t<I, std::tuple<Resources...>>>
-                ? (std::get<I>(_to_remove_components).set(id), void())
-                : void()));
+            (...,
+             (std::is_same_v<Component, std::tuple_element_t<I, std::tuple<Resources...>>>
+                      ? (std::get<I>(_to_remove_components).set(id), void())
+                      : void()));
         }
 
     public:
-        explicit Syscall(ResourceManager<MaxResource, Resources...>& rm) : _rm(rm) {};
+        explicit Syscall(ResourceManager<MaxResource, Resources...> &rm) : _rm(rm) {};
 
         template<typename Component>
         void add_component(pid id, Component &&component)
@@ -37,7 +38,7 @@ namespace System::ECS
         }
 
         template<typename... Components>
-        pid create_entity(Components&&... components)
+        pid create_entity(Components &&...components)
         {
             pid id = _rm.add_process();
             (add_component(id, std::forward<Components>(components)), ...);
@@ -55,8 +56,7 @@ namespace System::ECS
             _rm.remove_marked(_to_remove_components);
 
             _to_add_components.clear();
-            std::apply([](auto&... bitsets) { (bitsets.reset(), ...); }, _to_remove_components);
+            std::apply([](auto &...bitsets) { (bitsets.reset(), ...); }, _to_remove_components);
         }
-
     };
-}
+} // namespace System::ECS

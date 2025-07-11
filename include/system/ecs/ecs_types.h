@@ -6,10 +6,10 @@ namespace System::ECS
 {
     using pid = std::uint64_t;
 
-    template <std::size_t MaxResource, typename Resource>
+    template<std::size_t MaxResource, typename Resource>
     class ResourcePool;
 
-    template <std::size_t MaxResource, typename... Resources>
+    template<std::size_t MaxResource, typename... Resources>
     class ResourceManager;
 
     template<size_t MaxResource, typename... Resources>
@@ -60,7 +60,8 @@ namespace System::ECS
     {};
 
     template<typename T>
-    concept TaskConcept = requires { typename function_traits<std::remove_cvref_t<T>>::args_tuple; } && []<typename F>(F *)
+    concept TaskConcept =
+            requires { typename function_traits<std::remove_cvref_t<T>>::args_tuple; } && []<typename F>(F *)
     {
         using traits = function_traits<std::remove_cvref_t<F>>;
         using args = typename traits::args_tuple;
@@ -89,4 +90,4 @@ namespace System::ECS
         requires(TaskConcept<decltype(Tasks)> && ...)
     class TaskManager;
 
-}
+} // namespace System::ECS

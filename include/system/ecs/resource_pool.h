@@ -8,7 +8,7 @@
 
 namespace System::ECS
 {
-    template <std::size_t MaxResource, typename Resource>
+    template<std::size_t MaxResource, typename Resource>
     class ResourcePool
     {
         std::vector<Resource> _data;
@@ -20,26 +20,34 @@ namespace System::ECS
         struct Iterator
         {
             using iterator_category = std::forward_iterator_tag;
-            using value_type = std::pair<pid, Resource&>;
+            using value_type = std::pair<pid, Resource &>;
             using difference_type = std::ptrdiff_t;
-            using pointer = value_type*;
-            using reference = value_type&;
+            using pointer = value_type *;
+            using reference = value_type &;
 
-            Iterator() : _pool(nullptr), _idx(SIZE_MAX) {}
-            explicit Iterator(ResourcePool *pool, size_t idx = 0): _pool(pool), _idx(idx){}
+            Iterator() : _pool(nullptr), _idx(SIZE_MAX)
+            {}
+            explicit Iterator(ResourcePool *pool, size_t idx = 0) : _pool(pool), _idx(idx)
+            {}
 
             value_type operator*()
             {
-                return { _pool->_index_to_id[_idx], _pool->_data[_idx] };
+                return {_pool->_index_to_id[_idx], _pool->_data[_idx]};
             }
 
-            Iterator& operator++()
+            Iterator &operator++()
             {
                 ++_idx;
                 return (*this);
             }
-            bool operator==(const Iterator& other) const { return (_idx == other._idx); }
-            bool operator!=(const Iterator& other) const { return !(*this == other); }
+            bool operator==(const Iterator &other) const
+            {
+                return (_idx == other._idx);
+            }
+            bool operator!=(const Iterator &other) const
+            {
+                return !(*this == other);
+            }
 
         private:
             ResourcePool *_pool;
@@ -52,27 +60,27 @@ namespace System::ECS
             _id_to_index.resize(MaxResource, SIZE_MAX);
         }
 
-        Resource& get(pid id)
+        Resource &get(pid id)
         {
-            return(_data[_id_to_index.at(id)]);
+            return (_data[_id_to_index.at(id)]);
         }
 
         [[nodiscard]] bool has(pid id) const noexcept
         {
-            return(id < _id_to_index.size() && _has_component.test(id));
+            return (id < _id_to_index.size() && _has_component.test(id));
         }
 
         Iterator begin()
         {
-            return(Iterator(this));
+            return (Iterator(this));
         }
 
         Iterator end()
         {
-            return(Iterator(this, _data.size()));
+            return (Iterator(this, _data.size()));
         }
 
-        void add(pid id, const Resource& value)
+        void add(pid id, const Resource &value)
         {
             if (_has_component.test(id))
             {
@@ -116,4 +124,4 @@ namespace System::ECS
         // type hints bless thee
         using resource_type = Resource;
     };
-}
+} // namespace System::ECS

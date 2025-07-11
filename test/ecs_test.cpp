@@ -1,16 +1,17 @@
-#include "pch.h"
 #include "system/ecs.h"
+#include "pch.h"
 
 using System::ECS::pid;
-using System::ECS::Syscall;
-using System::ECS::TaskManager;
 using System::ECS::ResourceManager;
 using System::ECS::ResourcePool;
+using System::ECS::Syscall;
 using System::ECS::SyscallType;
+using System::ECS::TaskManager;
 
 struct test_component
 {
-    test_component(): value(0){}
+    test_component() : value(0)
+    {}
     explicit test_component(const int value) : value(value)
     {}
     int value;
@@ -18,49 +19,52 @@ struct test_component
 
 struct test_component_2
 {
-    test_component_2(): value(0){}
+    test_component_2() : value(0)
+    {}
     explicit test_component_2(const int value) : value(value)
     {}
     int value;
 };
 
 
-
 using TestResource = ResourceManager<1000, test_component, test_component_2>;
 using TestSyscall = Syscall<1000, test_component, test_component_2>;
 
-void test_system([[maybe_unused]] TestSyscall& syscall, System::ECS::Query<test_component>& query)
+void test_system([[maybe_unused]] TestSyscall &syscall, System::ECS::Query<test_component> &query)
 {
-    for (auto& entry: query)
+    for (auto &entry: query)
     {
-        auto& comp = entry.get<test_component>();
+        auto &comp = entry.get<test_component>();
         comp.value++;
     }
 }
 
-void test_system_2([[maybe_unused]] TestSyscall& syscall, System::ECS::Query<test_component>& query)
+void test_system_2([[maybe_unused]] TestSyscall &syscall, System::ECS::Query<test_component> &query)
 {
-    for (auto& entry: query)
+    for (auto &entry: query)
     {
-        auto& comp = entry.get<test_component>();
+        auto &comp = entry.get<test_component>();
         comp.value *= 2;
     }
 }
 
-void test_system_3(TestSyscall& syscall, System::ECS::Query<test_component>& query)
+void test_system_3(TestSyscall &syscall, System::ECS::Query<test_component> &query)
 {
-    for (auto& entry: query)
+    for (auto &entry: query)
     {
         syscall.remove_component<test_component>(entry.id);
     }
 }
 
-void test_system_4([[maybe_unused]] TestSyscall& syscall, System::ECS::Query<test_component>& query, System::ECS::Query<test_component_2>& query_2)
+void test_system_4(
+        [[maybe_unused]] TestSyscall &syscall,
+        System::ECS::Query<test_component> &query,
+        System::ECS::Query<test_component_2> &query_2)
 {
-    for (auto& entry: query)
+    for (auto &entry: query)
     {
         int sum = 0;
-        for (auto& entry_2 : query_2)
+        for (auto &entry_2: query_2)
         {
             sum += entry_2.get<test_component_2>().value;
         }
@@ -239,5 +243,4 @@ TEST(ECS, system_interaction_test)
     // component should yield 3
     task_manager.run_all();
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 3);
-
 }
