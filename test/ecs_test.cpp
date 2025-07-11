@@ -1,5 +1,5 @@
-#include "system/ecs.h"
 #include "pch.h"
+#include "system/ecs.h"
 
 using System::ECS::pid;
 using System::ECS::Syscall;
@@ -29,7 +29,7 @@ struct test_component_2
 using TestResource = ResourceManager<1000, test_component, test_component_2>;
 using TestSyscall = Syscall<1000, test_component, test_component_2>;
 
-void test_system([[maybe_unused]] TestSyscall& S, System::ECS::Query<test_component>& query)
+void test_system([[maybe_unused]] TestSyscall& syscall, System::ECS::Query<test_component>& query)
 {
     for (auto& entry: query)
     {
@@ -38,7 +38,7 @@ void test_system([[maybe_unused]] TestSyscall& S, System::ECS::Query<test_compon
     }
 }
 
-void test_system_2([[maybe_unused]] TestSyscall& S, System::ECS::Query<test_component>& query)
+void test_system_2([[maybe_unused]] TestSyscall& syscall, System::ECS::Query<test_component>& query)
 {
     for (auto& entry: query)
     {
@@ -47,15 +47,15 @@ void test_system_2([[maybe_unused]] TestSyscall& S, System::ECS::Query<test_comp
     }
 }
 
-void test_system_3(TestSyscall& S, System::ECS::Query<test_component>& query)
+void test_system_3(TestSyscall& syscall, System::ECS::Query<test_component>& query)
 {
     for (auto& entry: query)
     {
-        S.remove_component<test_component>(entry.id);
+        syscall.remove_component<test_component>(entry.id);
     }
 }
 
-void test_system_4([[maybe_unused]] TestSyscall& S, System::ECS::Query<test_component>& query, System::ECS::Query<test_component_2>& query_2)
+void test_system_4([[maybe_unused]] TestSyscall& syscall, System::ECS::Query<test_component>& query, System::ECS::Query<test_component_2>& query_2)
 {
     for (auto& entry: query)
     {

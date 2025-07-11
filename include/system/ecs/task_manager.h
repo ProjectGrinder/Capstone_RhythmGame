@@ -20,7 +20,8 @@ namespace System::ECS
             using ComponentTuple = typename QueryObject::ComponentTuple;
             using First = std::remove_reference_t<std::tuple_element_t<0, ComponentTuple>>;
             auto& main_pool = _resource_manager.template query<First>();
-            auto cached_pools = std::tie(
+            auto cached_pools = std::tie
+            (
                 _resource_manager.template query<std::remove_reference_t<std::tuple_element_t<I, ComponentTuple>>>()...
             );
             QueryObject query;
@@ -32,14 +33,14 @@ namespace System::ECS
                     query.add(id, std::get<I>(cached_pools).get(id)...);
                 }
             }
-            return query;
+            return (query);
         }
 
         template<QueryType QueryRef>
         auto _make_query() const
         {
             constexpr std::size_t N = std::tuple_size_v<typename std::remove_reference_t<QueryRef>::ComponentTuple>;
-            return _make_query_impl<QueryRef>(std::make_index_sequence<N>{});
+            return (_make_query_impl<QueryRef>(std::make_index_sequence<N>{}));
         }
 
         template<auto Task>

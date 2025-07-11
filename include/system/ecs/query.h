@@ -14,7 +14,7 @@ namespace std
         {
             return ((std::is_same_v<T, std::tuple_element_t<I, Tuple>> ? I : 0) + ...);
         };
-        return helper(std::make_index_sequence<std::tuple_size_v<Tuple>>{});
+        return (helper(std::make_index_sequence<std::tuple_size_v<Tuple>>{}));
     }();
 
 }
@@ -29,7 +29,8 @@ namespace System::ECS
         using ComponentTuple = std::tuple<Components...>;
         using StoredTuple = std::tuple<std::reference_wrapper<Components>...>;
 
-        struct QueryEntry {
+        struct QueryEntry
+        {
             pid id;
             StoredTuple components;
 
@@ -38,20 +39,21 @@ namespace System::ECS
             {
                 if constexpr (I == 0) 
                 {
-                    return id;
+                    return (id);
                 } 
                 else 
                 {
-                    return std::get<I-1>(components).get();
+                    return (std::get<I-1>(components).get());
                 }
             }
 
             template<typename Component>
             decltype(auto) get() {
-                if constexpr (std::is_same_v<Component, pid>) {
-                    return id;
+                if constexpr (std::is_same_v<Component, pid>)
+                {
+                    return (id);
                 } else {
-                    return std::get<std::tuple_find_v<Component, std::tuple<Components...>>>(components).get();
+                    return (std::get<std::tuple_find_v<Component, std::tuple<Components...>>>(components).get());
                 }
             }
 
@@ -63,17 +65,15 @@ namespace System::ECS
     public:
         template<typename... Comps>
             requires (std::is_convertible_v<Comps&, Components&> && ...)
-        void add(pid id, Comps&... components) const {
+        void add(pid id, Comps&... components) const
+        {
             _entries.emplace_back(QueryEntry{id, StoredTuple{std::ref(components)...}});
         }
 
-        auto begin() { return _entries.begin(); }
-        auto end() { return _entries.end(); }
-        auto begin() const { return _entries.begin(); }
-        auto end() const { return _entries.end(); }
-
-        void clear() { _entries.clear(); }
+        auto begin() { return (_entries.begin()); }
+        auto end() { return (_entries.end()); }
+        auto begin() const { return (_entries.begin()); }
+        auto end() const { return (_entries.end()); }
     };
-
 
 }

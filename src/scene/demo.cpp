@@ -5,7 +5,7 @@
 namespace Scene::Demo
 {
 
-    void please_work([[maybe_unused]]System::ECS::Syscall<1000, test_component> &S, System::ECS::Query<test_component>& query)
+    void please_work([[maybe_unused]]System::ECS::Syscall<1000, test_component> &syscall, System::ECS::Query<test_component>& query)
     {
         for (auto& entry : query)
         {
