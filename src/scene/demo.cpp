@@ -9,7 +9,7 @@ namespace Scene::Demo
     {
         for (auto& entry : query)
         {
-            auto& comp = entry.get<1>();
+            auto& comp = entry.get<test_component>();
             comp.number = 1;
             LOG_DEBUG("Info: WE WIN THIS!!!");
         }

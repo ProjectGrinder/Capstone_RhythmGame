@@ -33,7 +33,7 @@ void test_system([[maybe_unused]] TestSyscall& S, System::ECS::Query<test_compon
 {
     for (auto& entry: query)
     {
-        auto& comp = entry.get<1>();
+        auto& comp = entry.get<test_component>();
         comp.value++;
     }
 }
@@ -42,7 +42,7 @@ void test_system_2([[maybe_unused]] TestSyscall& S, System::ECS::Query<test_comp
 {
     for (auto& entry: query)
     {
-        auto& comp = entry.get<1>();
+        auto& comp = entry.get<test_component>();
         comp.value *= 2;
     }
 }
