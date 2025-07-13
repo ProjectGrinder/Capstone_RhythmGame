@@ -5,7 +5,7 @@
 #include <vector>
 #include "ecs_types.h"
 
-namespace std
+namespace System::ECS::Utils
 {
     template<typename T, typename Tuple>
     constexpr std::size_t tuple_find_v = []()
@@ -15,7 +15,7 @@ namespace std
         return (helper(std::make_index_sequence<std::tuple_size_v<Tuple>>{}));
     }();
 
-} // namespace std
+} // namespace System::ECS::Utils
 
 namespace System::ECS
 {
@@ -25,25 +25,22 @@ namespace System::ECS
     {
     public:
         using ComponentTuple = std::tuple<Components...>;
-        using StoredTuple = std::tuple<std::reference_wrapper<Components>...>;
+
+        struct StoredTuple
+        {
+            std::tuple<std::reference_wrapper<Components>...> components{};
+
+            template<typename Component>
+            decltype(auto) get()
+            {
+                return (std::get<Utils::tuple_find_v<Component, std::tuple<Components...>>>(components).get());
+            }
+        };
 
         struct QueryEntry
         {
-            pid id;
+            pid id{};
             StoredTuple components;
-
-            template<size_t I = 0>
-            decltype(auto) get()
-            {
-                if constexpr (I == 0)
-                {
-                    return (id);
-                }
-                else
-                {
-                    return (std::get<I - 1>(components).get());
-                }
-            }
 
             template<typename Component>
             decltype(auto) get()
@@ -54,7 +51,7 @@ namespace System::ECS
                 }
                 else
                 {
-                    return (std::get<std::tuple_find_v<Component, std::tuple<Components...>>>(components).get());
+                    return components.template get<Component>();
                 }
             }
         };

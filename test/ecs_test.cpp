@@ -41,9 +41,9 @@ void test_system([[maybe_unused]] TestSyscall &syscall, System::ECS::Query<test_
 
 void test_system_2([[maybe_unused]] TestSyscall &syscall, System::ECS::Query<test_component> &query)
 {
-    for (auto &entry: query)
+    for (auto &[id, comps]: query)
     {
-        auto &comp = entry.get<test_component>();
+        auto &comp = comps.get<test_component>();
         comp.value *= 2;
     }
 }
