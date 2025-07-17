@@ -57,12 +57,12 @@ namespace System::ECS
         };
 
     private:
-        mutable std::vector<QueryEntry> _entries;
+        std::vector<QueryEntry> _entries;
 
     public:
         template<typename... Comps>
             requires(std::is_convertible_v<Comps &, Components &> && ...)
-        void add(pid id, Comps &...components) const
+        void add(pid id, Comps &...components)
         {
             _entries.emplace_back(QueryEntry{id, StoredTuple{std::ref(components)...}});
         }
