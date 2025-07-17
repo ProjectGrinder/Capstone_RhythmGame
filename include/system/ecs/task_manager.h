@@ -69,7 +69,7 @@ namespace System::ECS
             }(this, std::make_index_sequence<N - 1>{});
             */
 
-            std::apply([&](auto &&...q) { Task(_syscall, std::forward<decltype(q)>(q)...); }, queries);
+            std::apply([&syscall = _syscall](auto &&...q) { Task(syscall, std::forward<decltype(q)>(q)...); }, queries);
         }
 
     public:
