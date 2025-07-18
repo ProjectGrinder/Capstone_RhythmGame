@@ -13,6 +13,7 @@ namespace System::ECS
     private:
         pid _id = 0;
         std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
+        std::array<std::size_t, MaxResource> _component_count;
 
         template<std::size_t... Index>
         auto _create_pools(std::index_sequence<Index...>)
@@ -24,7 +25,9 @@ namespace System::ECS
         static void _remove_if_exists(ResourcePool &pool, pid id)
         {
             if (pool.has(id))
+            {
                 pool.remove(id);
+            }
         }
 
         template<typename Resource>
@@ -37,6 +40,7 @@ namespace System::ECS
                 if (auto [id, component] = *it; !target_pool.has(id))
                 {
                     target_pool.add(id, component);
+                    ++_component_count[id];
                 }
             }
         }
@@ -58,6 +62,7 @@ namespace System::ECS
                 if (bitset.test(id) && pool.has(id))
                 {
                     pool.remove(id);
+                    --_component_count[id];
                 }
             }
         }
@@ -89,18 +94,23 @@ namespace System::ECS
         {
             auto &pool = query<Resource>();
             pool.add(id, std::forward<Resource>(component));
+            ++_component_count[id];
         }
 
         template<typename Resource>
         void remove_resource(pid id)
         {
-            auto &pool = query<Resource>();
-            _remove_if_exists(pool, id);
+            if (auto &pool = query<Resource>(); pool.has(id))
+            {
+                pool.remove(id);
+                --_component_count[id];
+            }
         }
 
         void delete_entity(pid id)
         {
             std::apply([&](auto &...pool) { (_remove_if_exists(pool, id), ...); }, _pools);
+            _component_count[id] = 0;
         }
 
         pid add_process()
@@ -111,7 +121,15 @@ namespace System::ECS
              *       Don't forget to update the component pool
              *       Might using dirty mark so we kept O(1) system.
              */
-            _id = (_id + 1) % MaxResource;
+            const pid _old_id = _id;
+            while (_component_count[_id] != 0)
+            {
+                _id = (_id + 1) % MaxResource;
+                if (_id == _old_id)
+                {
+                    throw std::runtime_error("No free slot");
+                }
+            }
             return (_id);
         }
 
@@ -136,6 +154,7 @@ namespace System::ECS
         void clear()
         {
             std::apply([](auto &...pools) { (pools.clear(), ...); }, _pools);
+            _component_count.fill(0);
             _id = 0;
         }
     };
