@@ -1,9 +1,7 @@
 #pragma once
 #include <algorithm>
-#include <array>
 #include <bitset>
 #include <execution>
-#include <ranges>
 #include "ecs_types.h"
 
 namespace System::ECS

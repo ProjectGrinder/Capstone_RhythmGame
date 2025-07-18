@@ -44,24 +44,23 @@ namespace System::ECS
 
         using _remove_tuple_t = std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...>;
 
+        template<typename Resource>
+        void _remove_marked_in_pool(const std::bitset<MaxResource> &bitset)
+        {
+            auto &pool = this->query<Resource>();
+            for (size_t id = 0; id < MaxResource; ++id)
+            {
+                if (bitset.test(id) && pool.has(id))
+                {
+                    pool.remove(id);
+                }
+            }
+        }
+
         template<std::size_t... I>
         void _remove_marked_impl(const _remove_tuple_t &to_remove, std::index_sequence<I...>)
         {
-            (
-                    [&]
-                    {
-                        using Resource = std::tuple_element_t<I, std::tuple<Resources...>>;
-                        auto &pool = this->query<Resource>();
-                        const auto &bitset = std::get<I>(to_remove);
-                        for (size_t id = 0; id < MaxResource; ++id)
-                        {
-                            if (bitset.test(id) && pool.has(id))
-                            {
-                                pool.remove(id);
-                            }
-                        }
-                    }(),
-                    ...);
+            (_remove_marked_in_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(std::get<I>(to_remove)), ...);
         }
 
     public:
