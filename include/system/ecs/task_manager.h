@@ -48,28 +48,25 @@ namespace System::ECS
             return (_make_query_impl<QueryRef>(std::make_index_sequence<N>{}));
         }
 
+        template<typename ArgsTuple, std::size_t... I>
+        auto _run_impl(std::index_sequence<I...>) const
+        {
+            return std::make_tuple(_make_query<std::tuple_element_t<I + 1, ArgsTuple>>()...);
+        }
+
         template<auto Task>
         void _run() const
         {
             using TaskType = decltype(Task);
-            using args_tuple = typename function_traits<TaskType>::args_tuple;
-            constexpr std::size_t N = std::tuple_size_v<args_tuple>;
+            using ArgsTuple = typename function_traits<TaskType>::args_tuple;
+            constexpr std::size_t N = std::tuple_size_v<ArgsTuple>;
 
-            // lambda capture approach
-            auto queries = [&]<std::size_t... I>(std::index_sequence<I...>)
-            {
-                return std::make_tuple(_make_query<std::tuple_element_t<I + 1, args_tuple>>()...);
-            }(std::make_index_sequence<N - 1>{});
+            auto queries = _run_impl<ArgsTuple>(std::make_index_sequence<N - 1>{});
 
-            // this capture approach
-            /*
-            auto queries = []<std::size_t... I>(const TaskManager *self, std::index_sequence<I...>)
-            {
-                return std::make_tuple(self->_make_query<std::tuple_element_t<I + 1, args_tuple>>()...);
-            }(this, std::make_index_sequence<N - 1>{});
-            */
-
-            std::apply([&syscall = _syscall](auto &&...q) { Task(syscall, std::forward<decltype(q)>(q)...); }, queries);
+            std::apply(
+                    [&syscall = _syscall]<typename... QueryTypes>(QueryTypes &&...q)
+                    { Task(syscall, std::forward<QueryTypes>(q)...); },
+                    queries);
         }
 
     public:
