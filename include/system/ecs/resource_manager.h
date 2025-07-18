@@ -13,7 +13,7 @@ namespace System::ECS
     private:
         pid _id = 0;
         std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
-        std::array<std::size_t, MaxResource> _component_count;
+        std::array<std::size_t, MaxResource> _component_count{};
 
         template<std::size_t... Index>
         auto _create_pools(std::index_sequence<Index...>)
