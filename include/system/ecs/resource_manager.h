@@ -27,10 +27,9 @@ namespace System::ECS
                 pool.remove(id);
         }
 
-        template<typename PoolType>
+        template<typename Resource>
         void _import_pool(ResourceManager &other)
         {
-            using Resource = typename PoolType::resource_type;
             auto &target_pool = this->query<Resource>();
             auto &source_pool = other.query<Resource>();
             for (auto it = source_pool.begin(); it != source_pool.end(); ++it)
@@ -40,6 +39,12 @@ namespace System::ECS
                     target_pool.add(id, component);
                 }
             }
+        }
+
+        template <size_t... I>
+        void _import_impl(ResourceManager &other, std::index_sequence<I...>)
+        {
+            (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other), ...);
         }
 
         using _remove_tuple_t = std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...>;
@@ -112,16 +117,20 @@ namespace System::ECS
 
         void import(ResourceManager &other)
         {
-            std::apply(
-                    [this, &other]<typename... PoolTypes>([[maybe_unused]] PoolTypes &...pools)
-                    { (_import_pool<std::remove_reference_t<PoolTypes>>(other), ...); },
-                    _pools);
+            _import_impl(other, std::make_index_sequence<sizeof...(Resources)>{});
         }
 
-
-        void remove_marked(const _remove_tuple_t &to_remove)
+        void remove_marked(const _remove_tuple_t &to_remove, const std::bitset<MaxResource> &to_remove_entities)
         {
             _remove_marked_impl(to_remove, std::make_index_sequence<sizeof...(Resources)>{});
+
+            for (size_t id = 0; id < MaxResource; ++id)
+            {
+                if (to_remove_entities.test(id))
+                {
+                    delete_entity(id);
+                }
+            }
         }
 
         void clear()

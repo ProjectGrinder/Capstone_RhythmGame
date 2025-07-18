@@ -92,6 +92,26 @@ namespace System::ECS
             _has_component.set(id);
         }
 
+        void rebind(pid old_pid, pid new_pid)
+        {
+            if (_has_component.test(old_pid) == false)
+            {
+                throw std::runtime_error("Old pid not bound to Resource");
+            }
+
+            if (_has_component.test(new_pid))
+            {
+                throw std::runtime_error("New pid already bound to Resource");
+            }
+
+            size_t idx = _id_to_index.at(old_pid);
+            _id_to_index[new_pid] = idx;
+            _index_to_id[idx] = new_pid;
+            _id_to_index[old_pid] = SIZE_MAX;
+            _has_component.reset(old_pid);
+            _has_component.set(new_pid);
+        }
+
         void remove(pid id)
         {
             size_t index = _id_to_index.at(id);

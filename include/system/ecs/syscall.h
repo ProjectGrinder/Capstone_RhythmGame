@@ -12,6 +12,7 @@ namespace System::ECS
         ResourceManager<MaxResource, Resources...> &_rm;
         ResourceManager<MaxResource, Resources...> _to_add_components{};
         std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components;
+        std::bitset<MaxResource> _to_remove_entities{};
 
         template<typename Component, std::size_t... I>
         void _remove_component_impl(pid id, std::index_sequence<I...>)
@@ -47,15 +48,16 @@ namespace System::ECS
 
         void remove_entity(const pid id)
         {
-            (remove_component<Resources>(id), ...);
+            _to_remove_entities.set(id);
         }
 
         void exec()
         {
             _rm.import(_to_add_components);
-            _rm.remove_marked(_to_remove_components);
+            _rm.remove_marked(_to_remove_components, _to_remove_entities);
 
             _to_add_components.clear();
+            _to_remove_entities.reset();
             std::apply([](auto &...bitsets) { (bitsets.reset(), ...); }, _to_remove_components);
         }
     };
