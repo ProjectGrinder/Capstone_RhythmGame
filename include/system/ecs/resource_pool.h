@@ -105,9 +105,8 @@ namespace System::ECS
             }
 
             size_t idx = _id_to_index.at(old_pid);
-            _id_to_index[new_pid] = idx;
+            std::swap(_id_to_index[new_pid], _id_to_index[old_pid]);
             _index_to_id[idx] = new_pid;
-            _id_to_index[old_pid] = SIZE_MAX;
             _has_component.reset(old_pid);
             _has_component.set(new_pid);
         }

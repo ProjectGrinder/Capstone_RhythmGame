@@ -45,7 +45,7 @@ namespace System::ECS
             }
         }
 
-        template <size_t... I>
+        template<size_t... I>
         void _import_impl(ResourceManager &other, std::index_sequence<I...>)
         {
             (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other), ...);
@@ -71,6 +71,43 @@ namespace System::ECS
         void _remove_marked_impl(const _remove_tuple_t &to_remove, std::index_sequence<I...>)
         {
             (_remove_marked_in_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(std::get<I>(to_remove)), ...);
+        }
+
+        void _rebind(pid old_id, pid new_id)
+        {
+            std::apply([&](auto &...pool) { (pool.rebind(old_id, new_id), ...); }, _pools);
+            std::swap(_component_count[old_id], _component_count[new_id]);
+        }
+
+        pid _compact()
+        {
+            pid empty_id = 0;
+            pid full_id = MaxResource - 1;
+
+            while (empty_id < full_id)
+            {
+                // Find the next empty slot from the front
+                while (empty_id < full_id && _component_count[empty_id] != 0)
+                    ++empty_id;
+
+                // Find the next full slot from the back
+                while (empty_id < full_id && _component_count[full_id] == 0)
+                    --full_id;
+
+                if (empty_id >= full_id)
+                    break;
+
+                _rebind(full_id, empty_id);
+
+                ++empty_id;
+                --full_id;
+            }
+
+            // Scan for the first empty slot, starting from empty_pid
+            while (empty_id < MaxResource && _component_count[empty_id] != 0)
+                ++empty_id;
+
+            return empty_id;
         }
 
     public:
@@ -117,18 +154,19 @@ namespace System::ECS
         {
             /*
              * Using circular model
-             * TODO: Make this into compact array
-             *       Don't forget to update the component pool
-             *       Might using dirty mark so we kept O(1) system.
              */
-            const pid _old_id = _id;
-            while (_component_count[_id] != 0)
+            while (_id < MaxResource)
             {
-                _id = (_id + 1) % MaxResource;
-                if (_id == _old_id)
+                _id++;
+                if (_component_count[_id] == 0)
                 {
-                    throw std::runtime_error("No free slot");
+                    return (_id);
                 }
+            }
+            _id = _compact();
+            if (_id == MaxResource)
+            {
+                throw std::runtime_error("No free pid slot available");
             }
             return (_id);
         }
