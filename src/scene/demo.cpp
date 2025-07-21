@@ -5,19 +5,23 @@
 namespace Scene::Demo
 {
 
-    void please_work([[maybe_unused]]System::pid id, test_component& comp)
+    void please_work([[maybe_unused]]System::ECS::Syscall<1000, test_component> &syscall, System::ECS::Query<test_component>& query)
     {
-        comp.number = 1;
-        LOG_DEBUG("Info: WE WIN THIS!!!");
+        for (auto& entry : query)
+        {
+            auto& comp = entry.get<test_component>();
+            comp.number = 1;
+            LOG_DEBUG("Info: WE WIN THIS!!!");
+        }
     }
 
     void Demo()
     {
-        using DemoResource = System::ResourceManager<1000, test_component>;
-        using DemoSyscall = System::Syscall<1000, test_component>;
+        using DemoResource = System::ECS::ResourceManager<1000, test_component>;
+        using DemoSyscall = System::ECS::Syscall<1000, test_component>;
         DemoResource resource;
         DemoSyscall syscall{resource};
-        System::TaskManager<DemoResource, DemoSyscall, please_work> task_manager(resource, syscall);
+        System::ECS::TaskManager<DemoResource, DemoSyscall, please_work> task_manager(resource, syscall);
         task_manager.run_all();
         LOG_DEBUG("Info: Demo call!");
         test();
