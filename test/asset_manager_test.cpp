@@ -25,18 +25,31 @@ namespace System
     std::shared_ptr<DummyAsset> AssetStore<DummyAsset>::load(const std::string& path)
     {
         auto asset = std::make_shared<DummyAsset>(path);
-        _assets[path] = asset;
-        return (asset);
+        const size_t new_id = _paths.size();
+
+        _paths.push_back(path);
+        _assets.push_back(asset);  // Store the weak_ptr of the new asset
+        _index_to_id.push_back(new_id);
+        _id_to_index.push_back(new_id);
+
+        return asset;
     }
 
     template <>
     std::shared_ptr<SecondDummyAsset> AssetStore<SecondDummyAsset>::load(const std::string& path)
     {
         auto asset = std::make_shared<SecondDummyAsset>(path);
-        _assets[path] = asset;
-        return (asset);
+        const size_t new_id = _paths.size();
+
+        _paths.push_back(path);
+        _assets.push_back(asset);  // Store the weak_ptr of the new asset
+        _index_to_id.push_back(new_id);
+        _id_to_index.push_back(new_id);
+
+        return asset;
     }
 }
+
 
 TEST(AssetManager, get_asset_test)
 {
