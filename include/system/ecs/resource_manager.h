@@ -33,22 +33,26 @@ namespace System::ECS
         }
 
         template<typename Resource>
-        void _import_pool(ResourceManager &other)
+        void _import_pool(SyscallResource<MaxResource, Resources...> &other)
         {
             auto &target_pool = this->query<Resource>();
-            auto &source_pool = other.query<Resource>();
+            auto &source_pool = other.template query<Resource>();
             for (auto it = source_pool.begin(); it != source_pool.end(); ++it)
             {
                 if (auto [id, component] = *it; !target_pool.has(id))
                 {
                     target_pool.add(id, component);
                     ++_component_count[id];
+                    if (_dirty.test(id))
+                    {
+                        _dirty.reset(id);
+                    }
                 }
             }
         }
 
         template<size_t... I>
-        void _import_impl(ResourceManager &other, std::index_sequence<I...>)
+        void _import_impl(SyscallResource<MaxResource, Resources...> &other, std::index_sequence<I...>)
         {
             (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other), ...);
         }
@@ -158,7 +162,7 @@ namespace System::ECS
             _component_count[id] = 0;
         }
 
-        pid add_process()
+        pid reserve_process()
         {
             _id++;
             if (_id == MaxResource && !overfilled)
@@ -191,7 +195,7 @@ namespace System::ECS
             throw std::runtime_error("No free pid slot available");
         }
 
-        void import(ResourceManager &other)
+        void import(SyscallResource<MaxResource, Resources...> &other)
         {
             _import_impl(other, std::make_index_sequence<sizeof...(Resources)>{});
         }
