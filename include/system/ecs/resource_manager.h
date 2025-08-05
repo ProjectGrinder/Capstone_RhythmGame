@@ -14,6 +14,8 @@ namespace System::ECS
         pid _id = 0;
         std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
         std::array<std::size_t, MaxResource> _component_count{};
+        std::bitset<MaxResource> _dirty{};
+        bool overfilled = false;
 
         template<std::size_t... Index>
         auto _create_pools(std::index_sequence<Index...>)
@@ -150,11 +152,32 @@ namespace System::ECS
             _component_count[id] = 0;
         }
 
+        void remove_entity(pid id)
+        {
+            _dirty.set(id);
+            _component_count[id] = 0;
+        }
+
         pid add_process()
         {
-            /*
-             * Using circular model
-             */
+            _id++;
+            if (_id == MaxResource && !overfilled)
+            {
+                overfilled = true;
+                _id = 0;
+            }
+            else if (_id >= MaxResource)
+            {
+                throw std::runtime_error("No free pid slot available");
+            }
+
+            // if clean loop, this returns as O(1)
+            if (_component_count[_id] == 0)
+            {
+                return (_id);
+            }
+
+            // if dirty loop, this returns as O(N)
             while (_id < MaxResource)
             {
                 _id++;
@@ -163,12 +186,9 @@ namespace System::ECS
                     return (_id);
                 }
             }
-            _id = _compact();
-            if (_id == MaxResource)
-            {
-                throw std::runtime_error("No free pid slot available");
-            }
-            return (_id);
+
+            // if no available slot after the dirty loop, throw exception
+            throw std::runtime_error("No free pid slot available");
         }
 
         void import(ResourceManager &other)
@@ -186,6 +206,11 @@ namespace System::ECS
                 {
                     delete_entity(id);
                 }
+            }
+
+            if (overfilled)
+            {
+                _id = _compact();
             }
         }
 

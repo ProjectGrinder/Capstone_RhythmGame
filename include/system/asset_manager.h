@@ -1,9 +1,9 @@
 #pragma once
+#include <fstream>
 #include <map>
 #include <memory>
 #include <string>
 #include <typeindex>
-#include <unordered_map>
 #include "utils.h"
 
 namespace System
@@ -27,7 +27,7 @@ namespace System
         {
             // TODO: Load the asset from the filesystem
             // Nack get over here
-            T asset;
+            T asset();
             const size_t new_id = _paths.size();
 
             _paths.push_back(path);
