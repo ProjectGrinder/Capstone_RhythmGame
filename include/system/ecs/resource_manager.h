@@ -32,30 +32,60 @@ namespace System::ECS
             }
         }
 
+    private:
         template<typename Resource>
-        void _import_pool(SyscallResource<MaxResource, Resources...> &other)
+        void _import_pool(SyscallResource<MaxResource, Resources...> &other, pid id,
+                         bool &has_any_component)
         {
             auto &target_pool = this->query<Resource>();
-            auto &source_pool = other.template query<Resource>();
-            for (auto it = source_pool.begin(); it != source_pool.end(); ++it)
+
+            if (auto &source_pool = other.template query<Resource>(); source_pool.has(id))
             {
-                if (auto [id, component] = *it; !target_pool.has(id))
+                has_any_component = true;
+                if (target_pool.has(id))
                 {
-                    target_pool.add(id, component);
-                    ++_component_count[id];
-                    if (_dirty.test(id))
-                    {
-                        _dirty.reset(id);
-                    }
+                    // Case: Both source and target have the component
+                    // Update the existing component
+                    target_pool.set(id, source_pool.get(id));
                 }
+                else
+                {
+                    // Case: Source has component, target doesn't
+                    target_pool.add(id, source_pool.get(id));
+                    ++_component_count[id];
+                }
+            }
+            else if (_dirty.test(id) && target_pool.has(id))
+            {
+                // Case 1: Target has component but source doesn't
+                target_pool.remove(id);
             }
         }
 
         template<size_t... I>
         void _import_impl(SyscallResource<MaxResource, Resources...> &other, std::index_sequence<I...>)
         {
-            (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other), ...);
+            for (pid id = 0; id < MaxResource; ++id)
+            {
+                if (_dirty.test(id))
+                {
+                    bool has_any_component = false;
+                    (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other, id, has_any_component), ...);
+
+                    if (has_any_component)
+                    {
+                        _dirty.reset(id);
+                    }
+                }
+                else
+                {
+                    // For non-dirty entities, only import if they don't exist in target
+                    bool has_any_component = false;
+                    (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other, id, has_any_component), ...);
+                }
+            }
         }
+
 
         using _remove_tuple_t = std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...>;
 
