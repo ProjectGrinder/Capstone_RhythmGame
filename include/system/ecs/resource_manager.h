@@ -14,6 +14,8 @@ namespace System::ECS
         pid _id = 0;
         std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
         std::array<std::size_t, MaxResource> _component_count{};
+        std::bitset<MaxResource> _dirty{};
+        bool overfilled = false;
 
         template<std::size_t... Index>
         auto _create_pools(std::index_sequence<Index...>)
@@ -30,26 +32,60 @@ namespace System::ECS
             }
         }
 
+    private:
         template<typename Resource>
-        void _import_pool(ResourceManager &other)
+        void _import_pool(SyscallResource<MaxResource, Resources...> &other, pid id,
+                         bool &has_any_component)
         {
             auto &target_pool = this->query<Resource>();
-            auto &source_pool = other.query<Resource>();
-            for (auto it = source_pool.begin(); it != source_pool.end(); ++it)
+
+            if (auto &source_pool = other.template query<Resource>(); source_pool.has(id))
             {
-                if (auto [id, component] = *it; !target_pool.has(id))
+                has_any_component = true;
+                if (target_pool.has(id))
                 {
-                    target_pool.add(id, component);
+                    // Case: Both source and target have the component
+                    // Update the existing component
+                    target_pool.set(id, source_pool.get(id));
+                }
+                else
+                {
+                    // Case: Source has component, target doesn't
+                    target_pool.add(id, source_pool.get(id));
                     ++_component_count[id];
                 }
+            }
+            else if (_dirty.test(id) && target_pool.has(id))
+            {
+                // Case 1: Target has component but source doesn't
+                target_pool.remove(id);
             }
         }
 
         template<size_t... I>
-        void _import_impl(ResourceManager &other, std::index_sequence<I...>)
+        void _import_impl(SyscallResource<MaxResource, Resources...> &other, std::index_sequence<I...>)
         {
-            (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other), ...);
+            for (pid id = 0; id < MaxResource; ++id)
+            {
+                if (_dirty.test(id))
+                {
+                    bool has_any_component = false;
+                    (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other, id, has_any_component), ...);
+
+                    if (has_any_component)
+                    {
+                        _dirty.reset(id);
+                    }
+                }
+                else
+                {
+                    // For non-dirty entities, only import if they don't exist in target
+                    bool has_any_component = false;
+                    (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other, id, has_any_component), ...);
+                }
+            }
         }
+
 
         using _remove_tuple_t = std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...>;
 
@@ -150,11 +186,32 @@ namespace System::ECS
             _component_count[id] = 0;
         }
 
-        pid add_process()
+        void remove_entity(pid id)
         {
-            /*
-             * Using circular model
-             */
+            _dirty.set(id);
+            _component_count[id] = 0;
+        }
+
+        pid reserve_process()
+        {
+            _id++;
+            if (_id == MaxResource && !overfilled)
+            {
+                overfilled = true;
+                _id = 0;
+            }
+            else if (_id >= MaxResource)
+            {
+                throw std::runtime_error("No free pid slot available");
+            }
+
+            // if clean loop, this returns as O(1)
+            if (_component_count[_id] == 0)
+            {
+                return (_id);
+            }
+
+            // if dirty loop, this returns as O(N)
             while (_id < MaxResource)
             {
                 _id++;
@@ -163,15 +220,12 @@ namespace System::ECS
                     return (_id);
                 }
             }
-            _id = _compact();
-            if (_id == MaxResource)
-            {
-                throw std::runtime_error("No free pid slot available");
-            }
-            return (_id);
+
+            // if no available slot after the dirty loop, throw exception
+            throw std::runtime_error("No free pid slot available");
         }
 
-        void import(ResourceManager &other)
+        void import(SyscallResource<MaxResource, Resources...> &other)
         {
             _import_impl(other, std::make_index_sequence<sizeof...(Resources)>{});
         }
@@ -186,6 +240,11 @@ namespace System::ECS
                 {
                     delete_entity(id);
                 }
+            }
+
+            if (overfilled)
+            {
+                _id = _compact();
             }
         }
 

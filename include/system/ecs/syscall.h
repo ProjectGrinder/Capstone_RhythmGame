@@ -6,11 +6,87 @@
 namespace System::ECS
 {
     template<size_t MaxResource, typename... Resources>
+    class SyscallResource
+    {
+        pid _id = 0;
+        std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
+
+        template<std::size_t... Index>
+        auto _create_pools(std::index_sequence<Index...>)
+        {
+            return (std::make_tuple(ResourcePool<MaxResource, Resources>()...));
+        }
+
+        template<typename ResourcePool>
+        static void _remove_if_exists(ResourcePool &pool, pid id)
+        {
+            if (pool.has(id))
+            {
+                pool.remove(id);
+            }
+        }
+
+    public:
+        explicit SyscallResource() : _pools(_create_pools(std::index_sequence_for<Resources...>{}))
+        {}
+
+        template<typename Resource>
+        ResourcePool<MaxResource, Resource> &query()
+        {
+            return (std::get<ResourcePool<MaxResource, Resource>>(_pools));
+        }
+
+        template<typename Resource>
+        const ResourcePool<MaxResource, Resource> &query() const
+        {
+            return (std::get<ResourcePool<MaxResource, Resource>>(_pools));
+        }
+
+        template<typename Resource>
+        void add_resource(pid id, Resource &&component)
+        {
+            auto &pool = query<Resource>();
+            pool.add(id, std::forward<Resource>(component));
+        }
+
+        template<typename Resource>
+        void remove_resource(pid id)
+        {
+            auto &pool = query<Resource>();
+            if (pool.has(id))
+            {
+                pool.remove(id);
+            }
+        }
+
+        void delete_entity(pid id)
+        {
+            std::apply([&](auto &...pool) { (_remove_if_exists(pool, id), ...); }, _pools);
+        }
+
+        pid reserve_process()
+        {
+            _id++;
+            if (_id == MaxResource)
+            {
+                throw std::runtime_error("No free pid slot available");
+            }
+            return (_id);
+        }
+
+        void clear()
+        {
+            std::apply([](auto &...pools) { (pools.clear(), ...); }, _pools);
+            _id = 0;
+        }
+    };
+
+    template<size_t MaxResource, typename... Resources>
     class Syscall
     {
     private:
         ResourceManager<MaxResource, Resources...> &_rm;
-        ResourceManager<MaxResource, Resources...> _to_add_components{};
+        SyscallResource<MaxResource, Resources...> _to_add_components{};
         std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components;
         std::bitset<MaxResource> _to_remove_entities{};
 
@@ -41,7 +117,7 @@ namespace System::ECS
         template<typename... Components>
         pid create_entity(Components &&...components)
         {
-            pid id = _rm.add_process();
+            pid id = _rm.reserve_process();
             (add_component(id, std::forward<Components>(components)), ...);
             return id;
         }

@@ -12,7 +12,10 @@ namespace System::ECS
     template<std::size_t MaxResource, typename... Resources>
     class ResourceManager;
 
-    template<size_t MaxResource, typename... Resources>
+    template<std::size_t MaxResource, typename... Resources>
+    class SyscallResource;
+
+    template<std::size_t MaxResource, typename... Resources>
     class Syscall;
 
     template<typename T>
