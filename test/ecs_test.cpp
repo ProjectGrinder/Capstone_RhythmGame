@@ -77,7 +77,7 @@ void test_system_4(
 TEST(ECS, add_component_test)
 {
     TestResource resource;
-    const pid id = resource.add_process();
+    const pid id = resource.reserve_process();
     resource.add_resource<test_component>(id, test_component{1});
     EXPECT_EQ(resource.query<test_component>().get(id).value, 1);
     EXPECT_TRUE(resource.query<test_component>().has(id));
@@ -86,9 +86,9 @@ TEST(ECS, add_component_test)
 TEST(ECS, add_multiple_components_test)
 {
     TestResource resource;
-    const pid id_1 = resource.add_process();
+    const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{1});
-    const pid id_2 = resource.add_process();
+    const pid id_2 = resource.reserve_process();
     resource.add_resource<test_component>(id_2, test_component{2});
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
     EXPECT_EQ(resource.query<test_component>().get(id_2).value, 2);
@@ -97,7 +97,7 @@ TEST(ECS, add_multiple_components_test)
 TEST(ECS, remove_component_test)
 {
     TestResource resource;
-    const pid id = resource.add_process();
+    const pid id = resource.reserve_process();
     resource.add_resource<test_component>(id, test_component{1});
     EXPECT_TRUE(resource.query<test_component>().has(id));
     resource.remove_resource<test_component>(id);
@@ -107,7 +107,7 @@ TEST(ECS, remove_component_test)
 TEST(ECS, layer_components_test)
 {
     TestResource resource;
-    const pid id_1 = resource.add_process();
+    const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     resource.add_resource<test_component_2>(id_1, test_component_2{2});
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
@@ -117,7 +117,7 @@ TEST(ECS, layer_components_test)
 TEST(ECS, delete_resource_test)
 {
     TestResource resource;
-    const pid id_1 = resource.add_process();
+    const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     resource.add_resource<test_component_2>(id_1, test_component_2{2});
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
@@ -133,7 +133,7 @@ TEST(ECS, exec_add_component)
 {
     TestResource resource;
     TestSyscall syscall{resource};
-    const pid id_1 = resource.add_process();
+    const pid id_1 = resource.reserve_process();
     syscall.add_component(id_1, test_component{1});
     EXPECT_FALSE(resource.query<test_component>().has(id_1));
     syscall.exec();
@@ -155,7 +155,7 @@ TEST(ECS, exec_remove_component)
 {
     TestResource resource;
     TestSyscall syscall{resource};
-    const pid id_1 = resource.add_process();
+    const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     syscall.remove_component<test_component>(id_1);
     EXPECT_TRUE(resource.query<test_component>().has(id_1));
@@ -167,7 +167,7 @@ TEST(ECS, exec_remove_entity)
 {
     TestResource resource;
     TestSyscall syscall{resource};
-    const pid id_1 = resource.add_process();
+    const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     resource.add_resource<test_component_2>(id_1, test_component_2{2});
     syscall.remove_entity(id_1);
@@ -184,7 +184,7 @@ TEST(ECS, system_run_test)
 {
     TestResource resource;
     TestSyscall syscall{resource};
-    const pid id_1 = resource.add_process();
+    const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     TaskManager<TestResource, TestSyscall, test_system> task_manager(resource, syscall);
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
@@ -196,7 +196,7 @@ TEST(ECS, system_sequence_test)
 {
     TestResource resource;
     TestSyscall syscall{resource};
-    const pid id_1 = resource.add_process();
+    const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     TaskManager<TestResource, TestSyscall, test_system, test_system_2> task_manager(resource, syscall);
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
@@ -210,7 +210,7 @@ TEST(ECS, system_defer_syscall_test)
     TestSyscall syscall{resource};
     // the remove component goes first but is deferred until exec() triggers
     TaskManager<TestResource, TestSyscall, test_system_3, test_system_2, test_system> task_manager(resource, syscall);
-    const pid id_1 = resource.add_process();
+    const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     EXPECT_TRUE(resource.query<test_component>().has(id_1));
     task_manager.run_all();
@@ -223,21 +223,21 @@ TEST(ECS, system_interaction_test)
     TestSyscall syscall{resource};
     TaskManager<TestResource, TestSyscall, test_system_4> task_manager(resource, syscall);
 
-    const pid id_1 = resource.add_process();
+    const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{999});
 
     // No test_component_2 in TaskManager: component should yield 0
     task_manager.run_all();
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 0);
 
-    const pid id_2 = resource.add_process();
+    const pid id_2 = resource.reserve_process();
     resource.add_resource<test_component_2>(id_2, test_component_2{1});
 
     // component should yield 1
     task_manager.run_all();
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
 
-    const pid id_3 = resource.add_process();
+    const pid id_3 = resource.reserve_process();
     resource.add_resource<test_component_2>(id_3, test_component_2{2});
 
     // component should yield 3

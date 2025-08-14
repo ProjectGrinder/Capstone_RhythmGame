@@ -111,6 +111,20 @@ namespace System::ECS
             _has_component.set(new_pid);
         }
 
+        void set(pid id, Resource data)
+        {
+            if (_has_component.test(id))
+            {
+                // If component exists, update it in place
+                _data[_id_to_index[id]] = std::move(data);
+            }
+            else
+            {
+                // If component doesn't exist, add it
+                add(id, std::move(data));
+            }
+        }
+
         void remove(pid id)
         {
             size_t index = _id_to_index.at(id);
