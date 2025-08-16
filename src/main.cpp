@@ -23,6 +23,8 @@ int WINAPI WinMain(
     LOG_DEBUG("Info: Initialization...");
     using System::OS;
 
+    // TODO: INIT SCENE MANAGER HERE
+
     LOG_DEBUG("Info: Starting...");
     if (error == ERROR_SUCCESS)
     {
