@@ -11,6 +11,10 @@ namespace Utils
         using type = std::tuple<Ts...>;
     };
 
+    /// <summary>
+    /// Tuple unpacking for template parameters
+    /// </summary>
+    /// <param name="T">the tuple to unpack</param>
     template<typename T>
     using from_tuple_t = typename from_tuple<T>::type;
 }

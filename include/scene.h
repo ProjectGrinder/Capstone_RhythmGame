@@ -8,10 +8,13 @@
 // define configuration items
 namespace Scene::Config
 {
+    // starting scene
     using StartingScene = Demo;
+
+    // list of scenes to use
     using SceneTuple = std::tuple<Demo>;
-    using SceneType = Utils::from_tuple_t<SceneTuple>;
+
+    using SceneListT = Utils::from_tuple_t<SceneTuple>;
 }
 
-// declare SceneManager here, which sees the Scene::Config namespace
 #include "scene/scene_manager.h"

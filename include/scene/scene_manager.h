@@ -4,6 +4,10 @@ namespace Scene
 {
     class SceneManager
     {
-        std::variant<std::monostate, Config::SceneType> _current_scene;
+        std::variant<std::monostate, Utils::from_tuple_t<Config::SceneListT>> _current_scene_template;
+        static SceneManager _instance;
+    public:
+        template<typename T>
+        static void change_scene();
     };
 }
