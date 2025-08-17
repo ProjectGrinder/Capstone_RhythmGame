@@ -55,7 +55,7 @@ std::vector<char> read_shader(const std::string_view path)
         goto Error;
     }
 Error:
-    if (CloseHandle(hFile) != 0)
+    if (CloseHandle(hFile) == 0)
     {
         error = GetLastError();
         LOG_DEBUG("Error code: {}, CloseHandle failed", error);
