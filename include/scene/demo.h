@@ -9,6 +9,7 @@ namespace Scene
 {
     struct Demo
     {
+        constexpr static auto name = "Demo";
         // declare scene parameters
         constexpr static size_t MaxResource = 1000;
         using ComponentTuple = std::tuple<test_component>;
