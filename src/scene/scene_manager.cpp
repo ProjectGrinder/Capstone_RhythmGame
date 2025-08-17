@@ -1,3 +1,7 @@
 #include "scene.h"
 
-Scene::SceneManager Scene::SceneManager::_instance;
+Scene::SceneManager &Scene::SceneManager::instance()
+{
+    static Scene::SceneManager instance;
+    return instance;
+}

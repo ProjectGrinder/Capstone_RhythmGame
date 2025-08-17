@@ -5,8 +5,20 @@ struct test_component
 {
     int number;
 };
+
 namespace Scene
 {
+    template <typename T>
+    void please_work([[maybe_unused]] T &syscall, System::ECS::Query<test_component>& query)
+    {
+        for (auto& entry : query)
+        {
+            auto& comp = entry.get<test_component>();
+            comp.number = 1;
+            LOG_DEBUG("Info: WE WIN THIS!!!");
+        }
+    }
+
     struct Demo
     {
         constexpr static auto name = "Demo";
@@ -20,8 +32,7 @@ namespace Scene
 
         // declare functions
         static void test();
-        static void please_work(Syscall &syscall, System::ECS::Query<test_component>& query);
 
-        using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall, please_work>;
+        using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall, please_work<Syscall>>;
     };
 }
