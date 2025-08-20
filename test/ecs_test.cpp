@@ -182,65 +182,66 @@ TEST(ECS, exec_remove_entity)
 
 TEST(ECS, system_run_test)
 {
-    TestResource resource;
-    TestSyscall syscall{resource};
-    const pid id_1 = resource.reserve_process();
-    resource.add_resource<test_component>(id_1, test_component{1});
-    TaskManager<TestResource, TestSyscall, test_system> task_manager(resource, syscall);
-    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
+
+    TaskManager<TestResource, TestSyscall, test_system> task_manager(TestResource{});
+    TestResource *resource = task_manager.get_rm();
+
+    const pid id_1 = resource->reserve_process();
+    resource->add_resource<test_component>(id_1, test_component{1});
+
+    EXPECT_EQ(resource->query<test_component>().get(id_1).value, 1);
     task_manager.run_all();
-    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 2);
+    EXPECT_EQ(resource->query<test_component>().get(id_1).value, 2);
 }
 
 TEST(ECS, system_sequence_test)
 {
-    TestResource resource;
-    TestSyscall syscall{resource};
-    const pid id_1 = resource.reserve_process();
-    resource.add_resource<test_component>(id_1, test_component{1});
-    TaskManager<TestResource, TestSyscall, test_system, test_system_2> task_manager(resource, syscall);
-    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
+    TaskManager<TestResource, TestSyscall, test_system, test_system_2> task_manager(TestResource{});
+    TestResource *resource = task_manager.get_rm();
+
+    const pid id_1 = resource->reserve_process();
+    resource->add_resource<test_component>(id_1, test_component{1});
+
+    EXPECT_EQ(resource->query<test_component>().get(id_1).value, 1);
     task_manager.run_all();
-    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 4); // (1+1)*2
+    EXPECT_EQ(resource->query<test_component>().get(id_1).value, 4); // (1+1)*2
 }
 
 TEST(ECS, system_defer_syscall_test)
 {
-    TestResource resource;
-    TestSyscall syscall{resource};
-    // the remove component goes first but is deferred until exec() triggers
-    TaskManager<TestResource, TestSyscall, test_system_3, test_system_2, test_system> task_manager(resource, syscall);
-    const pid id_1 = resource.reserve_process();
-    resource.add_resource<test_component>(id_1, test_component{1});
-    EXPECT_TRUE(resource.query<test_component>().has(id_1));
+    TaskManager<TestResource, TestSyscall, test_system_3, test_system_2, test_system> task_manager(TestResource{});
+    TestResource *resource = task_manager.get_rm();
+
+    const pid id_1 = resource->reserve_process();
+    resource->add_resource<test_component>(id_1, test_component{1});
+    EXPECT_TRUE(resource->query<test_component>().has(id_1));
     task_manager.run_all();
-    EXPECT_FALSE(resource.query<test_component>().has(id_1));
+    EXPECT_FALSE(resource->query<test_component>().has(id_1));
 }
 
 TEST(ECS, system_interaction_test)
 {
-    TestResource resource;
-    TestSyscall syscall{resource};
-    TaskManager<TestResource, TestSyscall, test_system_4> task_manager(resource, syscall);
+    TaskManager<TestResource, TestSyscall, test_system_4> task_manager(TestResource{});
+    TestResource *resource = task_manager.get_rm();
 
-    const pid id_1 = resource.reserve_process();
-    resource.add_resource<test_component>(id_1, test_component{999});
+    const pid id_1 = resource->reserve_process();
+    resource->add_resource<test_component>(id_1, test_component{999});
 
     // No test_component_2 in TaskManager: component should yield 0
     task_manager.run_all();
-    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 0);
+    EXPECT_EQ(resource->query<test_component>().get(id_1).value, 0);
 
-    const pid id_2 = resource.reserve_process();
-    resource.add_resource<test_component_2>(id_2, test_component_2{1});
+    const pid id_2 = resource->reserve_process();
+    resource->add_resource<test_component_2>(id_2, test_component_2{1});
 
     // component should yield 1
     task_manager.run_all();
-    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
+    EXPECT_EQ(resource->query<test_component>().get(id_1).value, 1);
 
-    const pid id_3 = resource.reserve_process();
-    resource.add_resource<test_component_2>(id_3, test_component_2{2});
+    const pid id_3 = resource->reserve_process();
+    resource->add_resource<test_component_2>(id_3, test_component_2{2});
 
     // component should yield 3
     task_manager.run_all();
-    EXPECT_EQ(resource.query<test_component>().get(id_1).value, 3);
+    EXPECT_EQ(resource->query<test_component>().get(id_1).value, 3);
 }

@@ -12,11 +12,11 @@ namespace System::ECS
         requires(TaskConcept<decltype(Tasks)> && ...)
     class TaskManager
     {
-        ResourceManager &_resource_manager;
-        Syscall &_syscall;
+        ResourceManager _resource_manager;
+        Syscall _syscall;
 
         template<QueryType QueryRef, std::size_t... I>
-        auto _make_query_impl(std::index_sequence<I...>) const
+        auto _make_query_impl(std::index_sequence<I...>)
         {
             using QueryObject = std::remove_reference_t<QueryRef>;
             using ComponentTuple = typename QueryObject::ComponentTuple;
@@ -42,20 +42,20 @@ namespace System::ECS
         }
 
         template<QueryType QueryRef>
-        auto _make_query() const
+        auto _make_query()
         {
             constexpr std::size_t N = std::tuple_size_v<typename std::remove_reference_t<QueryRef>::ComponentTuple>;
             return (_make_query_impl<QueryRef>(std::make_index_sequence<N>{}));
         }
 
         template<typename ArgsTuple, std::size_t... I>
-        auto _run_impl(std::index_sequence<I...>) const
+        auto _run_impl(std::index_sequence<I...>)
         {
             return std::make_tuple(_make_query<std::tuple_element_t<I + 1, ArgsTuple>>()...);
         }
 
         template<auto Task>
-        void _run() const
+        void _run()
         {
             using TaskType = decltype(Task);
             using ArgsTuple = typename function_traits<TaskType>::args_tuple;
@@ -70,13 +70,20 @@ namespace System::ECS
         }
 
     public:
-        explicit TaskManager(ResourceManager &reg, Syscall &syscall) : _resource_manager(reg), _syscall(syscall)
+        explicit TaskManager(ResourceManager&& reg)
+            : _resource_manager(std::move(reg))
+            , _syscall(_resource_manager)  // Now Syscall gets reference to the moved-to ResourceManager
         {}
 
-        inline void run_all() const
+        inline void run_all()
         {
             (_run<Tasks>(), ...);
             _syscall.exec();
+        }
+
+        auto get_rm()
+        {
+            return &(_resource_manager);
         }
     };
 } // namespace System::ECS
