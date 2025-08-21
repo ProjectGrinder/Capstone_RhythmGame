@@ -17,7 +17,7 @@ namespace Scene
             comp.number += 1;
             if (comp.number > 10)
             {
-                throw std::runtime_error("Iterations confirmed.");
+                comp.number = 0;
             }
         }
     }

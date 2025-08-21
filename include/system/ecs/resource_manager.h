@@ -15,6 +15,7 @@ namespace System::ECS
         std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
         std::array<std::size_t, MaxResource> _component_count{};
         std::bitset<MaxResource> _dirty{};
+        std::bitset<MaxResource> _occupied{};
         bool overfilled = false;
 
         template<std::size_t... Index>
@@ -32,10 +33,9 @@ namespace System::ECS
             }
         }
 
-    private:
+
         template<typename Resource>
-        void _import_pool(SyscallResource<MaxResource, Resources...> &other, pid id,
-                         bool &has_any_component)
+        void _import_pool(SyscallResource<MaxResource, Resources...> &other, pid id, bool &has_any_component)
         {
             auto &target_pool = this->query<Resource>();
 
@@ -44,20 +44,21 @@ namespace System::ECS
                 has_any_component = true;
                 if (target_pool.has(id))
                 {
-                    // Case: Both source and target have the component
-                    // Update the existing component
+                    // UNUSED: dirty mark is not implemented in the current algorithm
+                    // Case: Both source and target have the component -> Update the existing component
                     target_pool.set(id, source_pool.get(id));
                 }
                 else
                 {
-                    // Case: Source has component, target doesn't
+                    // Case: Source has a component, target doesn't -> Add the new component
                     target_pool.add(id, source_pool.get(id));
                     ++_component_count[id];
                 }
             }
             else if (_dirty.test(id) && target_pool.has(id))
             {
-                // Case 1: Target has component but source doesn't
+                // UNUSED: dirty mark is not implemented in the current algorithm
+                // Case 1: Target has a component but the source doesn't -> Remove the old component
                 target_pool.remove(id);
             }
         }
@@ -69,8 +70,10 @@ namespace System::ECS
             {
                 if (_dirty.test(id))
                 {
+                    // UNUSED: dirty mark is not implemented in the current algorithm
                     bool has_any_component = false;
-                    (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other, id, has_any_component), ...);
+                    (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other, id, has_any_component),
+                     ...);
 
                     if (has_any_component)
                     {
@@ -81,7 +84,8 @@ namespace System::ECS
                 {
                     // For non-dirty entities, only import if they don't exist in target
                     bool has_any_component = false;
-                    (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other, id, has_any_component), ...);
+                    (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other, id, has_any_component),
+                     ...);
                 }
             }
         }
@@ -109,12 +113,14 @@ namespace System::ECS
             (_remove_marked_in_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(std::get<I>(to_remove)), ...);
         }
 
+        // UNUSED: compaction is not used in the current algorithm
         void _rebind(pid old_id, pid new_id)
         {
             std::apply([&](auto &...pool) { (pool.rebind(old_id, new_id), ...); }, _pools);
             std::swap(_component_count[old_id], _component_count[new_id]);
         }
 
+        // UNUSED: compaction is not used in the current algorithm
         pid _compact()
         {
             pid empty_id = 0;
@@ -186,42 +192,40 @@ namespace System::ECS
             _component_count[id] = 0;
         }
 
-        void remove_entity(pid id)
-        {
-            _dirty.set(id);
-            _component_count[id] = 0;
-        }
-
         pid reserve_process()
         {
-            _id++;
-            if (_id == MaxResource && !overfilled)
-            {
-                overfilled = true;
-                _id = 0;
-            }
-            else if (_id >= MaxResource)
-            {
-                throw std::runtime_error("No free pid slot available");
-            }
-
-            // if clean loop, this returns as O(1)
-            if (_component_count[_id] == 0)
-            {
-                return (_id);
-            }
-
-            // if dirty loop, this returns as O(N)
+            // increment _id until finds unoccupied space
             while (_id < MaxResource)
             {
-                _id++;
-                if (_component_count[_id] == 0)
+                if (_occupied.test(_id))
                 {
-                    return (_id);
+                    _id++;
+                }
+                else
+                {
+                    _occupied.set(_id);
+                    return _id++;
                 }
             }
 
-            // if no available slot after the dirty loop, throw exception
+            // did not find available slot forward, mark as overfilled and retry from the start
+            overfilled = true;
+            _id = 0;
+
+            while (_id < MaxResource)
+            {
+                if (_occupied.test(_id))
+                {
+                    _id++;
+                }
+                else
+                {
+                    _occupied.set(_id);
+                    return _id++;
+                }
+            }
+
+            // if no available slot, throw exception
             throw std::runtime_error("No free pid slot available");
         }
 
@@ -240,11 +244,6 @@ namespace System::ECS
                 {
                     delete_entity(id);
                 }
-            }
-
-            if (overfilled)
-            {
-                _id = _compact();
             }
         }
 

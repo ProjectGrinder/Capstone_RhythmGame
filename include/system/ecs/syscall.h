@@ -8,7 +8,6 @@ namespace System::ECS
     template<size_t MaxResource, typename... Resources>
     class SyscallResource
     {
-        pid _id = 0;
         std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
 
         template<std::size_t... Index>
@@ -64,20 +63,9 @@ namespace System::ECS
             std::apply([&](auto &...pool) { (_remove_if_exists(pool, id), ...); }, _pools);
         }
 
-        pid reserve_process()
-        {
-            _id++;
-            if (_id == MaxResource)
-            {
-                throw std::runtime_error("No free pid slot available");
-            }
-            return (_id);
-        }
-
         void clear()
         {
             std::apply([](auto &...pools) { (pools.clear(), ...); }, _pools);
-            _id = 0;
         }
     };
 
