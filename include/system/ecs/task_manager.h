@@ -70,9 +70,9 @@ namespace System::ECS
         }
 
     public:
-        explicit TaskManager(ResourceManager&& reg)
-            : _resource_manager(std::move(reg))
-            , _syscall(_resource_manager)  // Now Syscall gets reference to the moved-to ResourceManager
+        explicit TaskManager()
+            : _resource_manager()
+            , _syscall(_resource_manager)
         {}
 
         inline void run_all()

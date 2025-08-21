@@ -14,8 +14,11 @@ namespace Scene
         for (auto& entry : query)
         {
             auto& comp = entry.get<test_component>();
-            comp.number = 1;
-            LOG_DEBUG("Info: WE WIN THIS!!!");
+            comp.number += 1;
+            if (comp.number > 10)
+            {
+                throw std::runtime_error("Iterations confirmed.");
+            }
         }
     }
 

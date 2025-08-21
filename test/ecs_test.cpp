@@ -183,7 +183,7 @@ TEST(ECS, exec_remove_entity)
 TEST(ECS, system_run_test)
 {
 
-    TaskManager<TestResource, TestSyscall, test_system> task_manager(TestResource{});
+    TaskManager<TestResource, TestSyscall, test_system> task_manager{};
     TestResource *resource = task_manager.get_rm();
 
     const pid id_1 = resource->reserve_process();
@@ -196,7 +196,7 @@ TEST(ECS, system_run_test)
 
 TEST(ECS, system_sequence_test)
 {
-    TaskManager<TestResource, TestSyscall, test_system, test_system_2> task_manager(TestResource{});
+    TaskManager<TestResource, TestSyscall, test_system, test_system_2> task_manager{};
     TestResource *resource = task_manager.get_rm();
 
     const pid id_1 = resource->reserve_process();
@@ -209,7 +209,7 @@ TEST(ECS, system_sequence_test)
 
 TEST(ECS, system_defer_syscall_test)
 {
-    TaskManager<TestResource, TestSyscall, test_system_3, test_system_2, test_system> task_manager(TestResource{});
+    TaskManager<TestResource, TestSyscall, test_system_3, test_system_2, test_system> task_manager{};
     TestResource *resource = task_manager.get_rm();
 
     const pid id_1 = resource->reserve_process();
@@ -221,7 +221,7 @@ TEST(ECS, system_defer_syscall_test)
 
 TEST(ECS, system_interaction_test)
 {
-    TaskManager<TestResource, TestSyscall, test_system_4> task_manager(TestResource{});
+    TaskManager<TestResource, TestSyscall, test_system_4> task_manager{};
     TestResource *resource = task_manager.get_rm();
 
     const pid id_1 = resource->reserve_process();

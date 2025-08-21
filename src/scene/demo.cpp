@@ -15,8 +15,9 @@ void Scene::Demo::test()
 
 Scene::Demo::TaskManager Scene::Demo::Init()
 {
-    ResourceManager resource_manager;
-    return TaskManager(std::move(resource_manager));
+    auto tm = TaskManager{};
+    tm.run_all();
+    return tm;
 }
 
 std::vector<Scene::Demo::ComponentTuple> Scene::Demo::Exit()

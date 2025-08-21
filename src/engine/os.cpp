@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "scene/scene_manager.h"
 #include "system.h"
 #include "utils.h"
 
@@ -309,7 +310,7 @@ void OS::_run()
         /*  Polling Event  */
         _poll_event();
         /*  Update Game  */
-
+        Scene::SceneManager::update();
         /*  Render  */
         _renderer.context->ClearRenderTargetView(_renderer.render_target_view.Get(), clear_color);
 
