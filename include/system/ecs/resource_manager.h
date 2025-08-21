@@ -183,6 +183,10 @@ namespace System::ECS
             {
                 pool.remove(id);
                 --_component_count[id];
+                if (_component_count[id] == 0)
+                {
+                    _occupied.reset(id); // Only called in sequence by Syscall, so there's nothing left.
+                }
             }
         }
 
@@ -190,6 +194,7 @@ namespace System::ECS
         {
             std::apply([&](auto &...pool) { (_remove_if_exists(pool, id), ...); }, _pools);
             _component_count[id] = 0;
+            _occupied.reset(id);
         }
 
         pid reserve_process()
