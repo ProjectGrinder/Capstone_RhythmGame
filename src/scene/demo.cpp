@@ -8,14 +8,14 @@ Scene::Demo Scene::Demo::instance()
 
 void Scene::Demo::test()
 {
-    test_component val;
-    val.number = 1;
+    test_component val{1};
     LOG_DEBUG("Info: test call with val = {}", val.number);
 }
 
 Scene::Demo::TaskManager Scene::Demo::Init()
 {
     auto tm = TaskManager{};
+    tm.create_entity(test_component{1});
     tm.run_all();
     return tm;
 }

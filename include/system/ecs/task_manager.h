@@ -70,15 +70,39 @@ namespace System::ECS
         }
 
     public:
-        explicit TaskManager()
-            : _resource_manager()
-            , _syscall(_resource_manager)
-        {}
+        TaskManager()
+        {
+            _resource_manager = ResourceManager();
+            _syscall = Syscall();
+        }
 
         inline void run_all()
         {
             (_run<Tasks>(), ...);
-            _syscall.exec();
+            _syscall.exec(_resource_manager);
+        }
+
+        template <typename Component>
+        void add_component(pid id, Component &&component)
+        {
+            _syscall.template add_component<Component>(id, std::forward<Component>(component));
+        }
+
+        template<typename Component>
+        void remove_component(pid id)
+        {
+            _syscall.template remove_component<Component>(id);
+        }
+
+        template<typename... Components>
+        pid create_entity(Components &&...components)
+        {
+            return _syscall.template create_entity<Components...>(_resource_manager, std::forward<Components>(components)...);
+        }
+
+        void remove_entity(const pid id)
+        {
+            _syscall.remove_entity(id);
         }
 
         auto get_rm()

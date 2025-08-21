@@ -38,7 +38,7 @@ namespace Scene
                         if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
                         {
                             using SceneType = std::decay_t<S>;
-                            auto manager = std::any_cast<typename SceneType::TaskManager>(instance()._current_manager);
+                            auto &manager = std::any_cast<typename SceneType::TaskManager&>(instance()._current_manager);
                             manager.run_all();
                         }
                         else
