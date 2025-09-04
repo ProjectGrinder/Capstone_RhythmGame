@@ -12,11 +12,11 @@ namespace System::ECS
         requires(TaskConcept<decltype(Tasks)> && ...)
     class TaskManager
     {
-        ResourceManager &_resource_manager;
-        Syscall &_syscall;
+        ResourceManager _resource_manager;
+        Syscall _syscall;
 
         template<QueryType QueryRef, std::size_t... I>
-        auto _make_query_impl(std::index_sequence<I...>) const
+        auto _make_query_impl(std::index_sequence<I...>)
         {
             using QueryObject = std::remove_reference_t<QueryRef>;
             using ComponentTuple = typename QueryObject::ComponentTuple;
@@ -42,20 +42,20 @@ namespace System::ECS
         }
 
         template<QueryType QueryRef>
-        auto _make_query() const
+        auto _make_query()
         {
             constexpr std::size_t N = std::tuple_size_v<typename std::remove_reference_t<QueryRef>::ComponentTuple>;
             return (_make_query_impl<QueryRef>(std::make_index_sequence<N>{}));
         }
 
         template<typename ArgsTuple, std::size_t... I>
-        auto _run_impl(std::index_sequence<I...>) const
+        auto _run_impl(std::index_sequence<I...>)
         {
             return std::make_tuple(_make_query<std::tuple_element_t<I + 1, ArgsTuple>>()...);
         }
 
         template<auto Task>
-        void _run() const
+        void _run()
         {
             using TaskType = decltype(Task);
             using ArgsTuple = typename function_traits<TaskType>::args_tuple;
@@ -70,13 +70,44 @@ namespace System::ECS
         }
 
     public:
-        explicit TaskManager(ResourceManager &reg, Syscall &syscall) : _resource_manager(reg), _syscall(syscall)
-        {}
+        TaskManager()
+        {
+            _resource_manager = ResourceManager();
+            _syscall = Syscall();
+        }
 
-        inline void run_all() const
+        inline void run_all()
         {
             (_run<Tasks>(), ...);
-            _syscall.exec();
+            _syscall.exec(_resource_manager);
+        }
+
+        template <typename Component>
+        void add_component(pid id, Component &&component)
+        {
+            _syscall.template add_component<Component>(id, std::forward<Component>(component));
+        }
+
+        template<typename Component>
+        void remove_component(pid id)
+        {
+            _syscall.template remove_component<Component>(id);
+        }
+
+        template<typename... Components>
+        pid create_entity(Components &&...components)
+        {
+            return _syscall.template create_entity<Components...>(_resource_manager, std::forward<Components>(components)...);
+        }
+
+        void remove_entity(const pid id)
+        {
+            _syscall.remove_entity(id);
+        }
+
+        auto get_rm()
+        {
+            return &(_resource_manager);
         }
     };
 } // namespace System::ECS

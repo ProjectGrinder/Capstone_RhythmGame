@@ -21,9 +21,9 @@ int WINAPI WinMain(
     uint32_t error = ERROR_SUCCESS;
 
     LOG_DEBUG("Info: Initialization...");
-    using System::OS, System::Game, Scene::SceneConfig::starting_scene;
+    using System::OS, Scene::SceneManager;
 
-    Game::change_scene(starting_scene);
+    SceneManager::change_scene<Scene::Config::StartingScene>();
 
     LOG_DEBUG("Info: Starting...");
     if (error == ERROR_SUCCESS)

@@ -8,7 +8,6 @@ namespace System::ECS
     template<size_t MaxResource, typename... Resources>
     class SyscallResource
     {
-        pid _id = 0;
         std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
 
         template<std::size_t... Index>
@@ -64,20 +63,9 @@ namespace System::ECS
             std::apply([&](auto &...pool) { (_remove_if_exists(pool, id), ...); }, _pools);
         }
 
-        pid reserve_process()
-        {
-            _id++;
-            if (_id == MaxResource)
-            {
-                throw std::runtime_error("No free pid slot available");
-            }
-            return (_id);
-        }
-
         void clear()
         {
             std::apply([](auto &...pools) { (pools.clear(), ...); }, _pools);
-            _id = 0;
         }
     };
 
@@ -85,7 +73,6 @@ namespace System::ECS
     class Syscall
     {
     private:
-        ResourceManager<MaxResource, Resources...> &_rm;
         SyscallResource<MaxResource, Resources...> _to_add_components{};
         std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components;
         std::bitset<MaxResource> _to_remove_entities{};
@@ -100,7 +87,7 @@ namespace System::ECS
         }
 
     public:
-        explicit Syscall(ResourceManager<MaxResource, Resources...> &rm) : _rm(rm) {};
+        Syscall() = default;
 
         template<typename Component>
         void add_component(pid id, Component &&component)
@@ -115,9 +102,9 @@ namespace System::ECS
         }
 
         template<typename... Components>
-        pid create_entity(Components &&...components)
+        pid create_entity(ResourceManager<MaxResource, Resources...> &rm, Components &&...components)
         {
-            pid id = _rm.reserve_process();
+            pid id = rm.reserve_process();
             (add_component(id, std::forward<Components>(components)), ...);
             return id;
         }
@@ -127,10 +114,10 @@ namespace System::ECS
             _to_remove_entities.set(id);
         }
 
-        void exec()
+        void exec(ResourceManager<MaxResource, Resources...> &rm)
         {
-            _rm.import(_to_add_components);
-            _rm.remove_marked(_to_remove_components, _to_remove_entities);
+            rm.import(_to_add_components);
+            rm.remove_marked(_to_remove_components, _to_remove_entities);
 
             _to_add_components.clear();
             _to_remove_entities.reset();

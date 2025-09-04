@@ -1,18 +1,16 @@
 #pragma once
 
-#include <functional>
+#include "utils.h"
 
-namespace Scene
+// declare scene templates here
+#include "scene/demo.h"
+
+// define configuration items
+namespace Scene::Config
 {
-    using SceneType = std::function<void()>;
+    // starting scene
+    using StartingScene = Demo;
 
-    /* Include Your Scene Here */
-    #include "scene/demo.h"
-    #include "scene/demo2.h"
-
-    /* Config Here (You can add more if you want to) */
-    namespace SceneConfig
-    {
-        const SceneType starting_scene = Demo::Demo;
-    }
 }
+
+#include "scene/scene_manager.h"

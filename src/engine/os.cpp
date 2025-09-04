@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "scene/scene_manager.h"
 #include "system.h"
 #include "utils.h"
 
@@ -55,7 +56,7 @@ std::vector<char> read_shader(const std::string_view path)
         goto Error;
     }
 Error:
-    if (CloseHandle(hFile) != 0)
+    if (CloseHandle(hFile) == 0)
     {
         error = GetLastError();
         LOG_DEBUG("Error code: {}, CloseHandle failed", error);
@@ -309,7 +310,7 @@ void OS::_run()
         /*  Polling Event  */
         _poll_event();
         /*  Update Game  */
-
+        Scene::SceneManager::update();
         /*  Render  */
         _renderer.context->ClearRenderTargetView(_renderer.render_target_view.Get(), clear_color);
 
