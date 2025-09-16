@@ -3,5 +3,5 @@
 Scene::SceneManager &Scene::SceneManager::instance()
 {
     static Scene::SceneManager instance;
-    return instance;
+    return(instance);
 }

@@ -14,11 +14,21 @@ namespace Utils
 
     constexpr std::string_view trim_src_path(std::string_view path)
     {
-        constexpr std::string_view key = R"(\src\)";
-        size_t pos = path.find(key);
-        return((pos != std::string_view::npos) ?
-                    path.substr(pos + key.size()) :
-                    path);
+        constexpr std::string_view src_key = R"(\src\)";
+        constexpr std::string_view include_key = R"(\include\)";
+
+        size_t pos = path.find(src_key);
+
+        if (pos != std::string_view::npos) {
+            return(path.substr(pos + src_key.size()));
+        }
+
+        pos = path.find(include_key);
+        if (pos != std::string_view::npos) {
+            return(path.substr(pos + include_key.size()));
+        }
+
+        return(path);
     }
 
     std::string get_local_time_string();
@@ -39,6 +49,7 @@ namespace Utils
         args&&... argv
     )
     {
+        #if _DEBUG
         std::lock_guard lock(log_mutex);
 
         const std::string message = std::format(format, std::forward<args>(argv)...);
@@ -54,5 +65,6 @@ namespace Utils
             );
 
         OutputDebugStringA(log.c_str());
+        #endif
     }
 }
