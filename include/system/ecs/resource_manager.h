@@ -258,5 +258,11 @@ namespace System::ECS
             _component_count.fill(0);
             _id = 0;
         }
+
+        template<typename T>
+        [[nodiscard]]constexpr bool has_resource_type() const
+        {
+            return(contains_type_v<T, Resources...>);
+        }
     };
 } // namespace System::ECS

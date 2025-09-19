@@ -47,6 +47,12 @@ namespace System::ECS
     struct function_traits;
 
     template<typename Ret, typename... Args>
+    struct function_traits<Ret (Args...)>
+    {
+        using args_tuple = std::tuple<Args...>;
+    };
+
+    template<typename Ret, typename... Args>
     struct function_traits<Ret (*)(Args...)>
     {
         using args_tuple = std::tuple<Args...>;
@@ -88,9 +94,10 @@ namespace System::ECS
                 })(std::make_index_sequence<N - 1>{});
     }(static_cast<T *>(nullptr));
 
+    template<typename T, typename... Ts>
+    constexpr bool contains_type_v = (std::is_same_v<T, Ts> || ...);
 
     template<typename Registry, SyscallType Syscall, auto... Tasks>
         requires(TaskConcept<decltype(Tasks)> && ...)
     class TaskManager;
-
 } // namespace System::ECS

@@ -8,6 +8,7 @@
 #endif
 #define STR(name) #name
 #define TO_STR(name) STR(name)
+#define TEST(name) #name
 
 std::vector<char> read_shader(const std::string_view path)
 {
