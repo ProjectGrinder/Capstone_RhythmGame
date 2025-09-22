@@ -30,6 +30,8 @@ namespace System::ECS
         {
             std::tuple<std::reference_wrapper<Components>...> components{};
 
+            explicit StoredTuple(Components&... comps) : components(std::ref(comps)...) {}  // Add constructor
+
             template<typename Component>
             decltype(auto) get()
             {
@@ -41,6 +43,8 @@ namespace System::ECS
         {
             pid id{};
             StoredTuple components;
+
+
 
             template<typename Component>
             decltype(auto) get()

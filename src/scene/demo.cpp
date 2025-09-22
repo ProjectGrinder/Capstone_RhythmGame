@@ -8,14 +8,14 @@ Scene::Demo Scene::Demo::instance()
 
 void Scene::Demo::test()
 {
-    test_component val{1};
-    LOG_DEBUG("Info: test call with val = {}", val.number);
+    Game::Rotation val{1};
+    LOG_DEBUG("Info: test call with val = {}", val.angle);
 }
 
 Scene::Demo::TaskManager Scene::Demo::Init()
 {
     auto tm = TaskManager{};
-    tm.create_entity(test_component{1});
+    tm.create_entity(Game::Rotation{0}, Game::AngularVelocity{1});
     tm.run_all();
     return tm;
 }
