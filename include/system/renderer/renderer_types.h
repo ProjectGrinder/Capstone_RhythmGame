@@ -10,7 +10,12 @@ namespace System::Renderer
 
     struct Render3D{};
 
-    struct RenderItem{};
+    struct RenderItem
+    {
+    public:
+        RenderItem(Render2D render_2d);
+        RenderItem(Render3D render_3d);
+    };
 
     template<typename ResourceManager>
     std::priority_queue<RenderItem> create_render_items(ResourceManager &resource_manager)
@@ -24,6 +29,7 @@ namespace System::Renderer
             {
                 auto &render2d_comp = query.template get<Render2D>();
                 /* Create RenderItem (i.e. snapshot) */
+                render_items.push(RenderItem(render2d_comp));
             }
         }
 
@@ -32,8 +38,9 @@ namespace System::Renderer
         {
             for (auto &query = resource_manager.template query<Render3D>(); auto &item : query)
             {
-                auto &render2d_comp = query.template get<Render3D>();
+                auto &render3d_comp = query.template get<Render3D>();
                 /* Create RenderItem (i.e. snapshot) */
+                render_items.push(RenderItem(render3d_comp));
             }
         }
 
