@@ -31,4 +31,10 @@ namespace System::Renderer
 
     return (render_items);
   }
+
+  template<RendererConcept Renderer>
+  void render(Renderer renderer, std::priority_queue<RenderItem> queue)
+  {
+
+  }
 }

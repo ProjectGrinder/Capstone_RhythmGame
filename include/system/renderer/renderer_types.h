@@ -1,4 +1,6 @@
 #pragma once
+
+#include <concepts>
 #include <queue>
 
 namespace System::Renderer
@@ -13,10 +15,19 @@ namespace System::Renderer
     struct RenderItem
     {
     public:
-        RenderItem(Render2D render_2d);
-        RenderItem(Render3D render_3d);
+        explicit RenderItem(Render2D render_2d);
+        explicit RenderItem(Render3D render_3d);
     };
 
     template<typename ResourceManager>
     std::priority_queue<RenderItem> create_render_items(ResourceManager &resource_manager);
+
+    template<typename T>
+    concept RendererConcept = requires(T renderer, RenderItem item)
+    {
+        { renderer.render(item) } -> std::same_as<void>;
+    };
+
+    template<RendererConcept Renderer>
+    void render(Renderer renderer, std::priority_queue<RenderItem> queue);
 }
