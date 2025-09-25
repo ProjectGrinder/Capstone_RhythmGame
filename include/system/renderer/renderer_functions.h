@@ -35,6 +35,9 @@ namespace System::Renderer
   template<RendererConcept Renderer>
   void render(Renderer renderer, std::priority_queue<RenderItem> queue)
   {
-
+    for (RenderItem &item: queue)
+    {
+      renderer.render(item);
+    }
   }
 }
