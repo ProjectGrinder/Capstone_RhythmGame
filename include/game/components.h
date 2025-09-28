@@ -1,5 +1,7 @@
 #pragma once
 
+#include "components/battle/battlestate.h"
+
 #include "components/bullethell/angular_velocity.h"
 #include "components/bullethell/animation.h"
 #include "components/bullethell/animator.h"
@@ -18,5 +20,11 @@
 #include "components/bullethell/tag.h"
 #include "components/bullethell/text.h"
 #include "components/bullethell/velocity.h"
+
+#include "components/rhythm/judgetext.h"
+#include "components/rhythm/keyinput.h"
+#include "components/rhythm/notespeed.h"
+#include "components/rhythm/timing.h"
+#include "components/rhythm/timingend.h"
 
 #include "system/ecs.h"
