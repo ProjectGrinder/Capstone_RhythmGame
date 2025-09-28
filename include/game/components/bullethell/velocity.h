@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Game
+namespace Game::BulletHell
 {
     struct Velocity
     {

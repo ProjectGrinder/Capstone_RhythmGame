@@ -2,7 +2,7 @@
 
 #include "game/components.h"
 
-namespace Game
+namespace Game::BulletHell
 {
     template <typename T>
     void MovementSystem([[maybe_unused]] T &syscall, System::ECS::Query<Position, Velocity>& query)
@@ -22,7 +22,6 @@ namespace Game
             comps.get<Rotation>().angle += comps.get<AngularVelocity>().v;
             if (comps.get<Rotation>().angle > 360)
             {
-                throw std::runtime_error("Rotation angle is greater than 180");
                 comps.get<Rotation>().angle -= 360;
             }
         }
