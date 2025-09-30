@@ -13,6 +13,7 @@
 #include "components/bullethell/material.h"
 #include "components/bullethell/particle.h"
 #include "components/bullethell/pattern.h"
+#include "components/bullethell/player.h"
 #include "components/bullethell/position.h"
 #include "components/bullethell/rotation.h"
 #include "components/bullethell/shader.h"
