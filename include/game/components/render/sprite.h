@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Game::BulletHell
+namespace Game::Render
 {
     struct Sprite
     {

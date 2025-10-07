@@ -4,6 +4,6 @@ namespace Game::Rhythm
 {
     struct NoteSpeed
     {
-        float speed;
+        int speed;
     };
 }

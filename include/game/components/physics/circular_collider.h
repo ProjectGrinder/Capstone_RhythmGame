@@ -2,9 +2,9 @@
 
 #include "position.h"
 
-namespace Game::BulletHell
+namespace Game::Physics
 {
-    struct Collider
+    struct CircularCollider
     {
         Position offset;
         float radius;

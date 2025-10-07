@@ -1,9 +1,14 @@
 #pragma once
-
 #include "game/components.h"
+#include "utils.h"
 
 namespace Game::BulletHell
 {
+    using Position = Physics::Position;
+    using Velocity = Physics::Velocity;
+    using Rotation = Physics::Rotation;
+    using AngularVelocity = Physics::AngularVelocity;
+
     template <typename T>
     void MovementSystem([[maybe_unused]] T &syscall, System::ECS::Query<Position, Velocity>& query)
     {
@@ -20,10 +25,11 @@ namespace Game::BulletHell
         for (auto &[id, comps] : query2)
         {
             comps.get<Rotation>().angle += comps.get<AngularVelocity>().v;
-            if (comps.get<Rotation>().angle > 360)
+            if (comps.get<Rotation>().angle >= 360)
             {
                 comps.get<Rotation>().angle -= 360;
             }
+            LOG_DEBUG("Angle: {}", comps.get<Rotation>().angle);
         }
     }
 }

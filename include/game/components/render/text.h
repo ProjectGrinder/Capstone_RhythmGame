@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Game::BulletHell
+namespace Game::Render
 {
     struct Text
     {
