@@ -27,6 +27,7 @@ namespace Scene
 
             LOG_DEBUG("Info: Changing scene to {}", T::name);
             scene_template = T::instance();
+            instance()._current_manager.reset();
             instance()._current_manager = T::Init();
         }
 
@@ -47,6 +48,22 @@ namespace Scene
                         }
                     },
                     instance()._current_scene_template);
+        }
+
+        static void clean_up()
+        {
+            LOG_DEBUG("Info: Cleaning up...");
+            auto &scene_template = instance()._current_scene_template;
+            instance()._current_manager.reset();
+            std::visit(
+                    []<typename S>(S &&scene)
+                    {
+                        if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
+                        {
+                            scene.Exit();
+                        }
+                    },
+                    scene_template);
         }
 
         static SceneManager &instance();

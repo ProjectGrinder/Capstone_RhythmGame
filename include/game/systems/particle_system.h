@@ -3,7 +3,7 @@
 
 namespace Game::BulletHell
 {
-    template <System::ECS::SyscallType T>
+    template <typename T>
     void ParticleSystem(T &syscall, System::ECS::Query<Particle> &query)
     {
         constexpr auto frame_time = 0.001f;

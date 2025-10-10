@@ -33,6 +33,7 @@ int WINAPI WinMain(
 
     LOG_DEBUG("Info: Cleaning up...");
     OS::clean_up();
+    SceneManager::clean_up();
 
 #if _DEBUG
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG); 
