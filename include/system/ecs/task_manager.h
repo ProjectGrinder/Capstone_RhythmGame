@@ -107,7 +107,7 @@ namespace System::ECS
 
         auto get_rm()
         {
-            return &(_resource_manager);
+            return (&_resource_manager);
         }
     };
 } // namespace System::ECS
