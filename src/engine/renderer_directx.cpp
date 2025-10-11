@@ -5,20 +5,12 @@
 
 namespace System::Renderer
 {
-    Win32Renderer::Win32Renderer()
-    {
-        if (this->_initialize_directx() != ERROR_SUCCESS)
-        {
-            throw std::runtime_error("Failed to initialize directx");
-        }
-    }
-
-    void Win32Renderer::render(RenderItem &item)
+    void Directx::render([[maybe_unused]]RenderItem &item)
     {
 
     }
 
-    uint32_t Win32Renderer::_initialize_directx(uint32_t width, uint32_t height,HWND window_handler, DisplayType display_type)
+    uint32_t Directx::init(WindowInfo &window_info)
     {
         uint32_t error = ERROR_SUCCESS;
 
@@ -41,8 +33,8 @@ namespace System::Renderer
         DXGI_SWAP_CHAIN_FULLSCREEN_DESC fs_desc = {0};
 
         sc_desc.BufferCount = 3; // <- Triple buffering
-        sc_desc.Width = width;
-        sc_desc.Height = height;
+        sc_desc.Width = window_info.width;
+        sc_desc.Height = window_info.height;
         sc_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
         sc_desc.Stereo = false;
         sc_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -52,7 +44,7 @@ namespace System::Renderer
         sc_desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
         sc_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
-        fs_desc.Windowed = display_type == DisplayType::WINDOW;
+        fs_desc.Windowed = window_info.display_type == DisplayType::WINDOW;
 
     #ifdef _DEBUG
         error = D3D11CreateDevice(
@@ -94,7 +86,7 @@ namespace System::Renderer
         if (FAILED(error))
             goto Exit;
 
-        error = factory->CreateSwapChainForHwnd(device.Get(), window_handler, &sc_desc, &fs_desc, nullptr, &swap_chain1);
+        error = factory->CreateSwapChainForHwnd(device.Get(), window_info.window_handler, &sc_desc, &fs_desc, nullptr, &swap_chain1);
         if (FAILED(error))
             goto Exit;
 

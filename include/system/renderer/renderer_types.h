@@ -13,13 +13,19 @@ namespace System::Renderer
 
     struct RenderItem
     {
-    public:
+        uint16_t priority = 0;
+
         explicit RenderItem(Render2D &render_2d);
         explicit RenderItem(Render3D &render_3d);
+
+        bool operator < (const RenderItem &other) const;
+        bool operator > (const RenderItem &other) const;
     };
 
     template<size_t BufferSize>
     class VertexGeneratorQueue;
+
+    class VertexGenerator;
 
     template<typename T>
     concept RendererConcept = requires(T renderer, RenderItem &item)

@@ -17,7 +17,7 @@ Scene::Demo::TaskManager Scene::Demo::Init()
 {
     LOG_DEBUG("Initialization called");
     auto tm = TaskManager{};
-    tm.create_entity(test_component{1});
+    tm.create_entity(test_component{1}, System::Renderer::Render2D{});
     tm.run_all();
     return(tm);
 }

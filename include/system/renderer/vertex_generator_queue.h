@@ -7,33 +7,36 @@
 
 namespace System::Renderer
 {
+    using ItemsQueue = std::priority_queue<RenderItem, std::vector<RenderItem>, std::greater<RenderItem>>;
+
     template<std::size_t BufferSize>
     class VertexGeneratorQueue
     {
-    private:
-        std::array<std::priority_queue<RenderItem>, BufferSize> _buffer;
+        std::array<ItemsQueue, BufferSize> _buffer;
         std::atomic<std::size_t> _current_read = {0};
         std::atomic<std::size_t> _current_write = {0};
 
     public:
         template<typename ResourceManager>
-        void write(ResourceManager &manager)
+        void write(ResourceManager *manager)
         {
-            std::priority_queue<RenderItem, std::vector<RenderItem>, std::greater<RenderItem>> items;
+            ItemsQueue items;
 
-            if (manager.template has_resource_type<Render2D>())
+            if constexpr (ResourceManager::template has_resource_type<Render2D>())
             {
-                for (auto &item : manager.template query<Render2D>())
+                for (auto entry: manager->template query<Render2D>())
                 {
-                    items.push(item.second);
+                    RenderItem item(static_cast<Render2D &>(entry.second));
+                    items.push(item);
                 }
             }
 
-            if (manager.template has_resource_type<Render3D>())
+            if constexpr (ResourceManager::template has_resource_type<Render3D>())
             {
-                for (auto &item : manager.template query<Render3D>())
+                for (auto entry: manager->template query<Render3D>())
                 {
-                    items.push(item.second);
+                    RenderItem item(static_cast<Render3D &>(entry.second));
+                    items.push(item);
                 }
             }
 
@@ -48,17 +51,17 @@ namespace System::Renderer
             this->_current_write.store((write_idx + 1) % BufferSize, std::memory_order_release);
         }
 
-        std::optional<const std::priority_queue<RenderItem>&> read() const
+        std::optional<ItemsQueue> read() const
         {
             const std::size_t read_idx = _current_read.load(std::memory_order_relaxed);
             const std::size_t write_idx = _current_write.load(std::memory_order_acquire);
 
             if (read_idx == write_idx)
             {
-                return{};
+                return {};
             }
 
-            return(_buffer[read_idx]);
+            return (_buffer[read_idx]);
         }
 
         void advance_read()

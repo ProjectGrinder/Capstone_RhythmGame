@@ -68,7 +68,7 @@ Exit:
 
 using System::OS;
 
-OS::OS() : _window{1280, 720, nullptr, DisplayType::WINDOW, false}, _monitor{0, 0}
+OS::OS(): _window(1280, 720, 0, 0, nullptr, Renderer::WINDOW, false)
 {
     this->_handler = GetModuleHandleA(nullptr);
     if (this->_handler == nullptr)
@@ -98,114 +98,13 @@ uint32_t OS::run()
     if (error != ERROR_SUCCESS)
         goto Exit;
 
-    error = instance()._initialize_directx();
+    error = instance()._renderer.init(instance()._window);
     if (error != ERROR_SUCCESS)
         goto Exit;
 
+    Scene::SceneManager::init(instance()._vertex_queue.get());
+
     instance()._run();
-
-Exit:
-    return (error);
-}
-
-uint32_t OS::_initialize_directx()
-{
-    // TODO: Make this function pure
-    uint32_t error = ERROR_SUCCESS;
-
-    using Microsoft::WRL::ComPtr;
-
-    ComPtr<ID3D11Device> device;
-    ComPtr<ID3D11DeviceContext> context;
-    ComPtr<IDXGIDevice> dxgi_device;
-    ComPtr<IDXGIAdapter> adapter;
-    ComPtr<IDXGIFactory2> factory;
-    ComPtr<IDXGISwapChain1> swap_chain1;
-    ComPtr<IDXGISwapChain3> final_swap_chain;
-    ComPtr<ID3D11Texture2D> backbuffer;
-    ComPtr<ID3D11RenderTargetView> rtv;
-
-    D3D_FEATURE_LEVEL level = {};
-    D3D_FEATURE_LEVEL feature_levels[] = {D3D_FEATURE_LEVEL_11_0};
-
-    DXGI_SWAP_CHAIN_DESC1 sc_desc = {0};
-    DXGI_SWAP_CHAIN_FULLSCREEN_DESC fs_desc = {0};
-
-    sc_desc.BufferCount = 3; // <- Triple buffering
-    sc_desc.Width = _window.width;
-    sc_desc.Height = _window.height;
-    sc_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sc_desc.Stereo = false;
-    sc_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sc_desc.SampleDesc.Count = 1;
-    sc_desc.Scaling = DXGI_SCALING_STRETCH;
-    sc_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-    sc_desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
-    sc_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-
-    fs_desc.Windowed = _window.display_type == DisplayType::WINDOW;
-
-#ifdef _DEBUG
-    error = D3D11CreateDevice(
-            nullptr,
-            D3D_DRIVER_TYPE_HARDWARE,
-            nullptr,
-            D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_SINGLETHREADED,
-            feature_levels,
-            _countof(feature_levels),
-            D3D11_SDK_VERSION,
-            &device,
-            &level,
-            &context);
-#else
-    error = D3D11CreateDevice(
-            nullptr,
-            D3D_DRIVER_TYPE_HARDWARE,
-            nullptr,
-            D3D11_CREATE_DEVICE_SINGLETHREADED,
-            feature_levels,
-            _countof(feature_levels),
-            D3D11_SDK_VERSION,
-            &device,
-            &level,
-            &context);
-#endif
-    if (FAILED(error))
-        goto Exit;
-
-    error = device.As(&dxgi_device);
-    if (FAILED(error))
-        goto Exit;
-
-    error = dxgi_device->GetAdapter(&adapter);
-    if (FAILED(error))
-        goto Exit;
-
-    error = adapter->GetParent(__uuidof(IDXGIFactory2), reinterpret_cast<void **>(factory.GetAddressOf()));
-    if (FAILED(error))
-        goto Exit;
-
-    error = factory->CreateSwapChainForHwnd(device.Get(), _window.handler, &sc_desc, &fs_desc, nullptr, &swap_chain1);
-    if (FAILED(error))
-        goto Exit;
-
-    error = swap_chain1.As(&final_swap_chain);
-    if (FAILED(error))
-        goto Exit;
-
-    error = final_swap_chain->GetBuffer(
-            0, __uuidof(ID3D11Texture2D), reinterpret_cast<void **>(backbuffer.GetAddressOf()));
-    if (FAILED(error))
-        goto Exit;
-
-    error = device->CreateRenderTargetView(backbuffer.Get(), nullptr, &rtv);
-    if (FAILED(error))
-        goto Exit;
-
-    _renderer.device = device;
-    _renderer.context = context;
-    _renderer.swap_chain = final_swap_chain;
-    _renderer.render_target_view = rtv;
 
 Exit:
     return (error);
@@ -265,46 +164,6 @@ struct Vertex
 void OS::_run()
 {
     _window.is_running = true;
-    constexpr float clear_color[4] = {0.39f, 0.58f, 0.93f, 1.0f};
-
-    constexpr Vertex vertices[] = {
-            {{0.0f, 0.5f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-            {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-            {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    };
-
-    D3D11_BUFFER_DESC bd = {};
-    bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(vertices);
-    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA initData = {nullptr};
-    initData.pSysMem = vertices;
-
-    using namespace Microsoft::WRL;
-    ComPtr<ID3D11Buffer> vertexBuffer;
-    assert(SUCCEEDED(_renderer.device->CreateBuffer(&bd, &initData, &vertexBuffer)));
-
-    ComPtr<ID3D11VertexShader> vertex_shader = nullptr;
-    ComPtr<ID3D11PixelShader> pixel_shader = nullptr;
-
-    std::vector<char> vertex_shader_code = read_shader("shaders/vs/rainbow.cso");
-    std::vector<char> pixel_shader_code = read_shader("shaders/ps/rainbow.cso");
-
-    assert(SUCCEEDED(_renderer.device->CreateVertexShader(vertex_shader_code.data(), vertex_shader_code.size(), nullptr, &vertex_shader)));
-    assert(SUCCEEDED(_renderer.device->CreatePixelShader(pixel_shader_code.data(), pixel_shader_code.size(), nullptr, &pixel_shader)));
-
-    D3D11_INPUT_ELEMENT_DESC layout[] = {
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(Vertex, position), D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(Vertex, color), D3D11_INPUT_PER_VERTEX_DATA, 0},
-    };
-
-    ComPtr<ID3D11InputLayout> inputLayout;
-    _renderer.device->CreateInputLayout(
-        layout, ARRAYSIZE(layout),
-        vertex_shader_code.data(), vertex_shader_code.size(),
-        &inputLayout
-    );
 
     while (_window.is_running)
     {
@@ -313,34 +172,6 @@ void OS::_run()
         /*  Update Game  */
         Scene::SceneManager::update();
         /*  Render  */
-        _renderer.context->ClearRenderTargetView(_renderer.render_target_view.Get(), clear_color);
-
-        D3D11_VIEWPORT viewport = {};
-        viewport.TopLeftX = 0.0f;
-        viewport.TopLeftY = 0.0f;
-        viewport.Width = static_cast<float>(_window.width);
-        viewport.Height = static_cast<float>(_window.height);
-        viewport.MinDepth = 0.0f;
-        viewport.MaxDepth = 1.0f;
-        _renderer.context->RSSetViewports(1, &viewport);
-
-        _renderer.context->OMSetRenderTargets(1, _renderer.render_target_view.GetAddressOf(), nullptr);
-
-        UINT stride = sizeof(Vertex);
-        UINT offset = 0;
-
-        _renderer.context->IASetInputLayout(inputLayout.Get());
-        _renderer.context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
-        _renderer.context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        _renderer.context->VSSetShader(vertex_shader.Get(), nullptr, 0);
-        _renderer.context->PSSetShader(pixel_shader.Get(), nullptr, 0);
-        _renderer.context->Draw(3, 0);
-
-        if (HRESULT hr = _renderer.swap_chain->Present(1, 0); FAILED(hr))
-        {
-            LOG_DEBUG("Failed to present swap chain: HRESULT=0x{:X}", hr);
-            break;
-        }
 
         _sleep();
     }
@@ -349,7 +180,7 @@ void OS::_run()
 void OS::_poll_event() const
 {
     MSG msg;
-    while (PeekMessage(&msg, this->_window.handler, 0, 0, PM_REMOVE))
+    while (PeekMessage(&msg, this->_window.window_handler, 0, 0, PM_REMOVE))
     {
         switch (msg.message)
         {
@@ -407,7 +238,7 @@ uint32_t OS::_create_window()
         goto Exit;
     }
 
-    this->_window.handler = CreateWindowExA(
+    this->_window.window_handler = CreateWindowExA(
             0,
             window_settings.lpszClassName,
             window_settings.lpszClassName,
@@ -421,7 +252,7 @@ uint32_t OS::_create_window()
             this->_handler,
             nullptr);
 
-    if (this->_window.handler == nullptr)
+    if (this->_window.window_handler == nullptr)
     {
         error = GetLastError();
         LOG_DEBUG("Error code: {}, Failed to create window.", error);
@@ -429,7 +260,7 @@ uint32_t OS::_create_window()
     }
 
     /* We can do this because MonitorFromWindow Guarantee the return value */
-    if (GetMonitorInfoA(MonitorFromWindow(this->_window.handler, MONITOR_DEFAULTTOPRIMARY), &monitor_info) == 0)
+    if (GetMonitorInfoA(MonitorFromWindow(this->_window.window_handler, MONITOR_DEFAULTTOPRIMARY), &monitor_info) == 0)
     {
         error = ERROR_MONITOR_NO_DESCRIPTOR;
 
@@ -437,33 +268,33 @@ uint32_t OS::_create_window()
         goto Exit;
     }
 
-    this->_monitor.height = monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top;
-    this->_monitor.width = monitor_info.rcMonitor.right - monitor_info.rcMonitor.left;
+    this->_window.monitor_height = monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top;
+    this->_window.monitor_width = monitor_info.rcMonitor.right - monitor_info.rcMonitor.left;
 
     if (this->_window.width == 0)
     {
-        this->_window.width = this->_monitor.width;
+        this->_window.width = this->_window.monitor_width;
     }
 
     if (this->_window.height == 0)
     {
-        this->_window.height = this->_monitor.height;
+        this->_window.height = this->_window.monitor_height;
     }
 
-    if (this->_window.width > this->_monitor.width || this->_window.height > this->_monitor.height)
+    if (this->_window.width > this->_window.monitor_width || this->_window.height > this->_window.monitor_height)
     {
         LOG_DEBUG("Info: Either window width or window height is larger than monitor's value. Resetting");
 
-        this->_window.width = this->_monitor.width;
-        this->_window.height = this->_monitor.height;
+        this->_window.width = this->_window.monitor_width;
+        this->_window.height = this->_window.monitor_height;
     }
 
-    LOG_DEBUG("Info: Monitor: {}x{}", this->_monitor.width, this->_monitor.height);
+    LOG_DEBUG("Info: Monitor: {}x{}", this->_window.monitor_width, this->_window.monitor_height);
     LOG_DEBUG("Info: Window: {}x{}", this->_window.width, this->_window.height);
 
     switch (this->_window.display_type)
     {
-    case FULLSCREEN:
+    case Renderer::FULLSCREEN:
 
         devmode_screen_settings.dmSize = sizeof(DEVMODEA);
         devmode_screen_settings.dmPelsWidth = this->_window.width;
@@ -481,7 +312,7 @@ uint32_t OS::_create_window()
         }
 
         if (SetWindowPos(
-                    this->_window.handler,
+                    this->_window.window_handler,
                     HWND_TOP,
                     monitor_info.rcMonitor.left,
                     monitor_info.rcMonitor.top,
@@ -497,15 +328,15 @@ uint32_t OS::_create_window()
 
         break;
 
-    case BORDERLESS:
+    case Renderer::BORDERLESS:
 
         if (SetWindowPos(
-                    this->_window.handler,
+                    this->_window.window_handler,
                     HWND_TOP,
                     monitor_info.rcMonitor.left,
                     monitor_info.rcMonitor.top,
-                    this->_monitor.width,
-                    this->_monitor.height,
+                    this->_window.monitor_width,
+                    this->_window.monitor_height,
                     SWP_NOOWNERZORDER | SWP_FRAMECHANGED) == 0)
         {
             error = GetLastError();
@@ -516,10 +347,10 @@ uint32_t OS::_create_window()
 
         break;
 
-    case WINDOW:
+    case Renderer::WINDOW:
 
         if (SetWindowLongPtrA(
-                    this->_window.handler, GWL_STYLE, (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)) == 0)
+                    this->_window.window_handler, GWL_STYLE, (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)) == 0)
         {
             error = GetLastError();
 
@@ -528,10 +359,10 @@ uint32_t OS::_create_window()
         }
 
         if (SetWindowPos(
-                    this->_window.handler,
+                    this->_window.window_handler,
                     HWND_TOP,
-                    (this->_monitor.width - this->_window.width) / 2,
-                    (this->_monitor.height - this->_window.height) / 2,
+                    (this->_window.monitor_width - this->_window.width) / 2,
+                    (this->_window.monitor_height - this->_window.height) / 2,
                     this->_window.width,
                     this->_window.height,
                     SWP_NOOWNERZORDER | SWP_FRAMECHANGED) == 0)
@@ -551,7 +382,7 @@ uint32_t OS::_create_window()
         goto Exit;
     }
 
-    ShowWindow(this->_window.handler, SW_SHOW);
+    ShowWindow(this->_window.window_handler, SW_SHOW);
 
 Exit:
     return (error);
@@ -573,30 +404,14 @@ static LRESULT CALLBACK System::window_process(HWND hwnd, UINT msg, WPARAM w_par
 
 uint32_t OS::clean_up()
 {
-    uint32_t error = ERROR_SUCCESS;
-    if (DestroyWindow(instance()._window.handler) == 0)
-    {
-        error = GetLastError();
+    LOG_DEBUG("Info: Cleaning up...");
 
-        LOG_DEBUG("Error code: {}, Unable to destroy window.", error);
-    }
-
-    if (instance()._window.display_type != FULLSCREEN)
-    {
-        goto Exit;
-    }
-
-    error = ChangeDisplaySettingsA(nullptr, 0);
-    if (error != DISP_CHANGE_SUCCESSFUL)
-    {
-        LOG_DEBUG("Error code: {}, ChangeDisplaySetting failed.", error);
-    }
+    instance()._vertex_queue.reset();
 
     if (timeEndPeriod(1) != TIMERR_NOERROR)
     {
         LOG_DEBUG("timeEndPeriod failed.");
     }
 
-Exit:
-    return (error);
+    return (ERROR_SUCCESS);
 }

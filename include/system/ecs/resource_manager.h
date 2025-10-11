@@ -260,7 +260,7 @@ namespace System::ECS
         }
 
         template<typename T>
-        [[nodiscard]]constexpr bool has_resource_type() const
+        [[nodiscard]]constexpr static bool has_resource_type()
         {
             return(contains_type_v<T, Resources...>);
         }

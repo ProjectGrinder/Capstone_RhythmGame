@@ -1,12 +1,26 @@
 #include "system/renderer.h"
 
 /* Constructor */
-System::Renderer::RenderItem::RenderItem(Render2D &render_2d)
+namespace System::Renderer
 {
+    RenderItem::RenderItem([[maybe_unused]]Render2D &render_2d)
+    {
 
-}
+    }
 
-System::Renderer::RenderItem::RenderItem(Render3D &render_3d)
-{
+    RenderItem::RenderItem([[maybe_unused]]Render3D &render_3d)
+    {
+
+    }
+
+    bool RenderItem::operator<(const RenderItem &other) const
+    {
+        return (this->priority < other.priority);
+    }
+
+    bool RenderItem::operator>(const RenderItem &other) const
+    {
+        return (this->priority > other.priority);
+    }
 
 }
