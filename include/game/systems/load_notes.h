@@ -4,15 +4,17 @@
 namespace Game::Rhythm
 {
     template<typename T>
-    void LoadNotes(T &syscall, System::ECS::Query<Battle::BattleState> &query)
+    void LoadNotes(T &syscall, System::ECS::Query<Battle::ChartData> &query, System::ECS::Query<Battle::BattleState> &query2, System::ECS::Query<Battle::RhythmState> &query3)
     {
         constexpr float lookahead = 5;
 
-        auto &battle_state = query.front().get<Battle::BattleState>();
+        auto &battle_state = query2.front().get<Battle::BattleState>();
+        auto &chart_data = query.front().get<Battle::ChartData>();
+        auto &rhythm_state = query3.front().get<Battle::RhythmState>();
         const auto &clock = battle_state.clock_time;
 
         // repeat for each lane
-        for (auto &[lanes] = battle_state.chart_data; Battle::LaneInfo & lane: lanes)
+        for (auto &[lanes] = chart_data; Battle::LaneInfo & lane: lanes)
         {
             if (lane.current_note == lane.notes.size())
             {
@@ -28,14 +30,14 @@ namespace Game::Rhythm
                     if (note.is_hold)
                     {
                         syscall.template create_entity<NoteSpeed, Timing, TimingEnd>(
-                            NoteSpeed{battle_state.rhythm_state.note_speed},
+                            NoteSpeed{rhythm_state.note_speed},
                             Timing{note.timing},
                             TimingEnd{note.timing_end});
                     }
                     else
                     {
                         syscall.template create_entity<NoteSpeed, Timing>(
-                            NoteSpeed{battle_state.rhythm_state.note_speed},
+                            NoteSpeed{rhythm_state.note_speed},
                             Timing{note.timing});
                     }
                 }

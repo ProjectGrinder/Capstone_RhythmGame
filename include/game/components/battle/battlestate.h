@@ -4,30 +4,11 @@
 
 namespace Game::Battle
 {
+
+    // intermediate structures
     enum Instrument
     {
         NO_INSTRUMENT,
-    };
-
-    struct BulletHellState
-    {
-        int graze;
-        float iframe_time;
-    };
-
-    struct RhythmState
-    {
-        int heal_hp;
-        int base_score;
-        int total_notes;
-        float note_speed;
-    };
-
-    struct Acceptance
-    {
-        int total_accept;
-        int current_accept;
-        int max_accept_gauge;
     };
 
     struct NoteData
@@ -44,9 +25,10 @@ namespace Game::Battle
         unsigned int current_note;
     };
 
-    struct ChartData
+    struct Difficulty
     {
-        LaneInfo lanes[4];
+        Instrument instrument;
+        int difficulty;
     };
 
     struct BpmInfo
@@ -60,10 +42,37 @@ namespace Game::Battle
         unsigned int idx;
     };
 
-    struct Difficulty
+    // use these structures
+
+    struct BattleState
     {
-        Instrument instrument;
-        int difficulty;
+        int max_hp;
+        int hp;
+        int score;
+        float clock_time;
+        int total_accept;
+        int current_accept;
+        int max_accept_gauge;
+        Difficulty difficulty;
+    };
+
+    struct BulletHellState
+    {
+        int graze;
+        float iframe_time;
+    };
+
+    struct RhythmState
+    {
+        int heal_hp;
+        int base_score;
+        int total_notes;
+        float note_speed;
+    };
+
+    struct ChartData
+    {
+        LaneInfo lanes[4];
     };
 
     struct LevelData
@@ -74,20 +83,5 @@ namespace Game::Battle
         float main_bpm;
         BpmInfo bpm_info;
         std::vector<Difficulty> difficulties;
-    };
-
-    struct BattleState
-    {
-        int max_hp{};
-        int hp{};
-        int score{};
-        float clock_time{};
-        Instrument instrument{};
-        unsigned int difficulty{};
-        BulletHellState bullet_hell_state{};
-        RhythmState rhythm_state{};
-        Acceptance acceptance{};
-        ChartData chart_data;
-        LevelData level_data;
     };
 }
