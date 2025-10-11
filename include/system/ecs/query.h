@@ -44,8 +44,6 @@ namespace System::ECS
             pid id{};
             StoredTuple components;
 
-
-
             template<typename Component>
             decltype(auto) get()
             {
@@ -69,6 +67,11 @@ namespace System::ECS
         void add(pid id, Comps &...components)
         {
             _entries.emplace_back(QueryEntry{id, StoredTuple{std::ref(components)...}});
+        }
+
+        QueryEntry front()
+        {
+            return (_entries.front());
         }
 
         auto begin()

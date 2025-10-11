@@ -39,8 +39,8 @@ namespace Game::Battle
 
     struct LaneInfo
     {
-        int lane_number;
         std::vector<NoteData> notes;
+        int lane_number;
         unsigned int current_note;
     };
 
