@@ -10,7 +10,7 @@
 
 namespace Utils
 {
-    inline std::mutex log_mutex;
+    extern std::mutex log_mutex;
 
     constexpr std::string_view trim_src_path(std::string_view path)
     {
@@ -31,7 +31,17 @@ namespace Utils
         return(path);
     }
 
+    /// <summary>
+    /// Getting local time string
+    /// </summary>
+    /// <returns>String of local time string</returns>
     std::string get_local_time_string();
+
+    /// <summary>
+    /// Converts all '\' to '/' in a path string.
+    /// </summary>
+    /// <param name="path">path</param>
+    std::string normalize_path(std::string_view path);
 
     /// <summary>
     /// Formatted Debug Printing
@@ -41,7 +51,7 @@ namespace Utils
     /// <param name="format">format print</param>
     /// <param name="argv">argument list</param>
     template<typename... args>
-    void print_debug
+    inline void print_debug
     (
         std::string_view file_path,
         std::string_view func_name,
@@ -53,13 +63,14 @@ namespace Utils
         std::lock_guard lock(log_mutex);
 
         const std::string message = std::format(format, std::forward<args>(argv)...);
+        const std::string normalized_path = normalize_path(file_path);
         std::string time_str = get_local_time_string();
         const std::string log =
             std::format
             (
                 "[ {} | {} | {} ] - {}\n",
                 time_str,
-                file_path,
+                normalized_path,
                 func_name,
                 message
             );
