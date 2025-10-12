@@ -5,6 +5,25 @@
 namespace Scene
 {
 
+    struct test_component
+    {
+        int number;
+    };
+
+    template <typename T>
+    void please_work([[maybe_unused]] T &syscall, System::ECS::Query<test_component>& query)
+    {
+        for (auto& entry : query)
+        {
+            auto& comp = entry.get<test_component>();
+            comp.number += 1;
+            if (comp.number > 10)
+            {
+                comp.number = 0;
+            }
+        }
+    }
+
     template <typename T>
     void please_work2([[maybe_unused]] T &syscall, System::ECS::Query<System::Renderer::Render2D>& query)
     {
