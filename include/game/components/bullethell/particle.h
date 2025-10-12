@@ -4,6 +4,6 @@ namespace Game::BulletHell
 {
     struct Particle
     {
-        float lifetime;
+        int lifetime;
     };
 }

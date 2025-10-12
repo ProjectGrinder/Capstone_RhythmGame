@@ -5,22 +5,22 @@
 namespace Game::BulletHell
 {
     template <typename T>
-    void PlayerSystem([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState> &query)
+    void PlayerSystem([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BulletHellState> &query)
     {
 
         constexpr auto frame_time = 0.001f;
 
         for (auto &[id, comp]: query)
         {
-            auto &state = comp.get<Battle::BattleState>();
-            if (state.bullet_hell_state.iframe_time > 0)
+            auto &state = comp.get<Battle::BulletHellState>();
+            if (state.iframe_time > 0)
             {
-                state.bullet_hell_state.iframe_time -= frame_time;
+                state.iframe_time -= frame_time;
             }
 
-            if (state.bullet_hell_state.iframe_time < 0)
+            if (state.iframe_time < 0)
             {
-                state.bullet_hell_state.iframe_time = 0;
+                state.iframe_time = 0;
             }
         }
     }

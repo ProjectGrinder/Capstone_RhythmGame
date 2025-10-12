@@ -14,8 +14,8 @@ namespace Game::Battle
     struct NoteData
     {
         bool is_hold;
-        float timing;
-        float timing_end;
+        int timing;
+        int timing_end;
     };
 
     struct LaneInfo
@@ -49,7 +49,7 @@ namespace Game::Battle
         int max_hp;
         int hp;
         int score;
-        float clock_time;
+        int clock_time;
         int total_accept;
         int current_accept;
         int max_accept_gauge;
@@ -59,7 +59,7 @@ namespace Game::Battle
     struct BulletHellState
     {
         int graze;
-        float iframe_time;
+        int iframe_time;
     };
 
     struct RhythmState

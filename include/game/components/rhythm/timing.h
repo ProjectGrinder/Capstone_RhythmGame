@@ -4,6 +4,6 @@ namespace Game::Rhythm
 {
     struct Timing
     {
-        float timing;
+        int timing;
     };
 }

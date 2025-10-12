@@ -8,21 +8,23 @@ namespace Game::BulletHell
     void BulletSystem(T &syscall, System::ECS::Query<Bullet> &query)
     {
 
-        constexpr auto frame_time = 0.001f;
+        constexpr auto frame_time = 1; // 1ms
 
         for (auto &[id, comps] : query)
         {
             auto &bullet = comps.get<Bullet>();
-            if (bullet.is_active)
+            if (!bullet.is_active)
             {
-                if (!bullet.is_damageable)
+                continue;
+            }
+
+            if (!bullet.is_damageable)
+            {
+                bullet.telegraph_time -= frame_time;
+                if (bullet.telegraph_time < 0)
                 {
-                    bullet.telegraph_time -= frame_time;
-                    if (bullet.telegraph_time < 0)
-                    {
-                        bullet.is_damageable = true;
-                        bullet.telegraph_time = 0;
-                    }
+                    bullet.is_damageable = true;
+                    bullet.telegraph_time = 0;
                 }
             }
         }

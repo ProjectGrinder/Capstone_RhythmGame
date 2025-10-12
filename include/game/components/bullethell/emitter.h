@@ -14,7 +14,7 @@ namespace Game::BulletHell
         EmitterType type;
         int spawn_amount;
         float spawn_rate;
-        float spawn_time;
+        int spawn_time;
         float angle_offset;
         Particle particle;
     };
