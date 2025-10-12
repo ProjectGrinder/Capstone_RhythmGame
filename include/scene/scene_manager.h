@@ -1,14 +1,17 @@
 #pragma once
 #include <any>
 #include <variant>
+#include "system.h"
 #include "demo.h"
 
 namespace Scene
 {
+    /* Optimizable */
     class SceneManager
     {
         std::variant<std::monostate, Demo> _current_scene_template;
         std::any _current_manager;
+        System::Renderer::VertexGeneratorQueue<System::Config::VertexQueueSize>* _generator_queue = nullptr;
 
     public:
         template<typename T>
@@ -31,24 +34,9 @@ namespace Scene
             instance()._current_manager = T::Init();
         }
 
-        static void update()
-        {
-            std::visit(
-                    []<typename S>([[maybe_unused]] S &&scene)
-                    {
-                        if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
-                        {
-                            using SceneType = std::decay_t<S>;
-                            auto &manager = std::any_cast<typename SceneType::TaskManager&>(instance()._current_manager);
-                            manager.run_all();
-                        }
-                        else
-                        {
-                            LOG_DEBUG("Warn: No scene loaded during update");
-                        }
-                    },
-                    instance()._current_scene_template);
-        }
+        static void update();
+        static void clean_up();
+        static void init(System::Renderer::VertexGeneratorQueue<System::Config::VertexQueueSize> *queue);
 
         static void clean_up()
         {

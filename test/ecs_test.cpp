@@ -127,6 +127,14 @@ TEST(ECS, delete_resource_test)
     EXPECT_FALSE(resource.query<test_component_2>().has(id_1));
 }
 
+TEST(ECS, check_exist_test)
+{
+    struct not_exist{};
+    const System::ECS::ResourceManager<1, test_component,test_component_2> resource_manager;
+    EXPECT_TRUE(resource_manager.has_resource_type<test_component>());
+    EXPECT_FALSE(resource_manager.has_resource_type<not_exist>());
+};
+
 // Test Syscall
 
 TEST(ECS, exec_add_component)

@@ -5,6 +5,15 @@
 namespace Scene
 {
 
+    template <typename T>
+    void please_work2([[maybe_unused]] T &syscall, System::ECS::Query<System::Renderer::Render2D>& query)
+    {
+        for (auto& entry : query)
+        {
+            entry.get<System::Renderer::Render2D>();
+        }
+    }
+
     struct Demo
     {
 
@@ -13,10 +22,10 @@ namespace Scene
         constexpr static auto name = "Demo";
         // declare scene parameters
         constexpr static size_t MaxResource = 1000;
-        using ComponentTuple = std::tuple<Game::BulletHell::Position, Game::BulletHell::Velocity, Game::BulletHell::Rotation, Game::BulletHell::AngularVelocity>;
-        using ResourceManager = System::ECS::ResourceManager<MaxResource, Game::BulletHell::Position, Game::BulletHell::Velocity, Game::BulletHell::Rotation, Game::BulletHell::AngularVelocity>;
-        using Syscall = System::ECS::Syscall<MaxResource, Game::BulletHell::Position, Game::BulletHell::Velocity, Game::BulletHell::Rotation, Game::BulletHell::AngularVelocity>;
-        using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall, Game::BulletHell::MovementSystem<Syscall>, Game::BulletHell::RotationSystem<Syscall>>;
+        using ComponentTuple = std::tuple<test_component, System::Renderer::Render2D>;
+        using ResourceManager = System::ECS::ResourceManager<MaxResource, test_component, System::Renderer::Render2D>;
+        using Syscall = System::ECS::Syscall<MaxResource, test_component, System::Renderer::Render2D>;
+        using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall, please_work<Syscall>>;
 
         // declare functions
         static void test();
