@@ -1,5 +1,7 @@
 #pragma once
 
+#include "system/renderer.h"
+
 #include <array>
 #include <atomic>
 #include <optional>
@@ -47,6 +49,7 @@ namespace System::Renderer
             {
                 write_idx = (write_idx + 1) % BufferSize;
             }
+
             this->_buffer[write_idx] = std::move(items);
             this->_current_write.store((write_idx + 1) % BufferSize, std::memory_order_release);
         }

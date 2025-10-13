@@ -1,27 +1,67 @@
-% == Preamble ==
-\documentclass[12pt]{article}
+\documentclass[8pt]{article}
 
-% == Packages ==
+% Packages
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage{geometry}
+\usepackage{changepage}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+\usepackage{titlesec}
+\usepackage{lastpage}
+
+\titleformat{\section}
+{\normalsize\bfseries}
+{\thesection \, \textbar}
+{0.5em}
+{}
+
+\titleformat{\subsection}
+{\normalsize\bfseries}
+{\thesubsection \, \textbar}
+{0.5em}
+{}
 
 \geometry{a4paper, margin=1in}
 
-% == Project Config ==
-\title{Utilization of High Precision Software System for Development of Interactive Entertainment Media}
-\author{Tapaneeya Odmung, Wachirawich Kanil, Pranesh Ingkanunt, Rangsiman Jearuksa}
-\date{\today}
+\fancyhf{}
+\fancyfoot[L]{
+    \scriptsize\bfseries
+    Department of Computer Engineering\\
+    Chulalongkorn University
+}
+\fancyfoot[R]{
+    \thepage\ of \pageref{LastPage}
+}
 
-% == Main stuff ==
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\renewcommand{\cftsecaftersnum}{.}
+
 \begin{document}
-    
-    \maketitle
+
+    \begin{titlepage}
+        \input{sections/title}
+        \noindent
+        {\rule{\textwidth}{0.5px}\par}
+        \vspace{-0.4cm}
+        \input{sections/abstract}
+        \noindent
+        {\rule{\textwidth}{0.5px}\par}
+    \end{titlepage}
+
+    \pagestyle{fancy}
+    \pagenumbering{roman}
+
     \tableofcontents
+    \addcontentsline{toc}{section}{Contents}
     \newpage
 
-    \input{sections/abstract}
+    \pagenumbering{arabic}
+    \setcounter{page}{1}
+    \twocolumn
+
     \input{sections/introduction}
     \input{sections/related_work}
     \input{sections/design}
@@ -32,5 +72,7 @@
 
     \bibliographystyle{ieeetr}
     \bibliography{refs}
+
+    % -- Appendix if needed (which you will) -- %
 
 \end{document}
