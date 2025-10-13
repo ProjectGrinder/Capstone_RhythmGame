@@ -22,14 +22,16 @@ namespace System::Renderer
         bool operator > (const RenderItem &other) const;
     };
 
-    template<size_t BufferSize>
-    class VertexGeneratorQueue;
-
-    class VertexGenerator;
-
     template<typename T>
     concept RendererConcept = requires(T renderer, RenderItem &item)
     {
         { renderer.render(item) } -> std::same_as<void>;
     };
+
+    template<size_t BufferSize>
+    class VertexGeneratorQueue;
+    template<size_t BufferSize>
+    class RendererQueue;
+
+    class VertexGenerator;
 }
