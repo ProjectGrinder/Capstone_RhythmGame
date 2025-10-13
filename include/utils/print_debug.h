@@ -10,18 +10,38 @@
 
 namespace Utils
 {
-    inline std::mutex log_mutex;
+    extern std::mutex log_mutex;
 
     constexpr std::string_view trim_src_path(std::string_view path)
     {
-        constexpr std::string_view key = R"(\src\)";
-        size_t pos = path.find(key);
-        return((pos != std::string_view::npos) ?
-                    path.substr(pos + key.size()) :
-                    path);
+        constexpr std::string_view src_key = R"(\src\)";
+        constexpr std::string_view include_key = R"(\include\)";
+
+        size_t pos = path.find(src_key);
+
+        if (pos != std::string_view::npos) {
+            return(path.substr(pos + src_key.size()));
+        }
+
+        pos = path.find(include_key);
+        if (pos != std::string_view::npos) {
+            return(path.substr(pos + include_key.size()));
+        }
+
+        return(path);
     }
 
+    /// <summary>
+    /// Getting local time string
+    /// </summary>
+    /// <returns>String of local time string</returns>
     std::string get_local_time_string();
+
+    /// <summary>
+    /// Converts all '\' to '/' in a path string.
+    /// </summary>
+    /// <param name="path">path</param>
+    std::string normalize_path(std::string_view path);
 
     /// <summary>
     /// Formatted Debug Printing
@@ -31,7 +51,7 @@ namespace Utils
     /// <param name="format">format print</param>
     /// <param name="argv">argument list</param>
     template<typename... args>
-    void print_debug
+    inline void print_debug
     (
         std::string_view file_path,
         std::string_view func_name,
@@ -39,20 +59,23 @@ namespace Utils
         args&&... argv
     )
     {
+        #if _DEBUG
         std::lock_guard lock(log_mutex);
 
         const std::string message = std::format(format, std::forward<args>(argv)...);
+        const std::string normalized_path = normalize_path(file_path);
         std::string time_str = get_local_time_string();
         const std::string log =
             std::format
             (
                 "[ {} | {} | {} ] - {}\n",
                 time_str,
-                file_path,
+                normalized_path,
                 func_name,
                 message
             );
 
         OutputDebugStringA(log.c_str());
+        #endif
     }
 }

@@ -32,6 +32,7 @@ int WINAPI WinMain(
     }
 
     LOG_DEBUG("Info: Cleaning up...");
+    SceneManager::clean_up();
     OS::clean_up();
 
 #if _DEBUG
