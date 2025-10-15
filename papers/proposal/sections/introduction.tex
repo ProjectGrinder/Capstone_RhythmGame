@@ -1,6 +1,6 @@
 \section{Introduction}
 \label{sec:introduction}
-In recent years, interactive media is found in various places throughout digital society
+In recent years, interactive media is found in various places throughout digital society,
 such as within games, visual effects in movies, applications, or Visual Reality (VR)
 with usage covering many fields.
 For example, Virtual Reality as a recovery tool in a medical system.
@@ -21,14 +21,38 @@ and highly optimal for various tasks while also remaining highly optimized.
 To test the precision of such software, a good test is to create a rhythm game.
 This type of media is forced to have high-precision inputs to provide good responsiveness to
 the user and make a better impression on them.
-To prove the generality of the system, a bullet hell game is also added to the media to showcase seamless
+To prove the generality of the system, a bullet hell mechanic is added to the game to showcase seamless
 integration between the two highly different logics.
-Lastly, to check if the system is viable from a business standpoint, we will create this game
-to compete in Game Talent Showcase by Thailand Game Association (TGA).
+Lastly, to check if the system is viable from a business standpoint, we will develop this game
+to compete in the Game Talent Showcase by Thailand Game Association (TGA).
 
 \subsection{Background}
 \label{subsec:background}
 % Background goes here
+
+\subsubsection*{Entity-Component-System Architecture}
+
+Entity-component-system (ECS) is a software architectural pattern mostly used in game development.
+Its mechanisms are characterized by the entities, composed of components of data,
+and the systems which operate upon those components.
+The behaviors of these entities are modified at runtime by systems modifying, adding, or removing the components
+attached to said entities.
+\\\\
+Implementations of ECS already exist, even in production contexts.
+One of the more popular implementations is EnTT~\cite{ValtoLibraries_EnTT}, a header-only C++ library for game programming.
+This library has been used to develop many game titles, the most major of which is Minecraft.
+Another popular implementation is Bevy ECS~\cite{Bevy_Engine}, a data-driven game engine built in Rust.
+\\\\
+However, most existing ECS libraries use runtime component registration, perform type-erased iteration, or resolve
+system dependencies at runtime, or some combination of the above.
+While they often optimize queries via template views or code specialization, they cannot fully eliminate
+runtime overhead associated with registration, lookup, or caching.
+Experimental systems like Vittorio's ECST~\cite{vittorio} achieve deep compile-time specialization
+but are not production-ready due to ambiguity in naming, sparse documentation, and hidden dependencies.
+\\\\
+We want to combine the best of both worlds — to create an ECS framework that registers and determines component types
+and system dependencies at compile-time, while ensuring code flexibility and production-ready performance, complete
+with rigorous documentation.
 
 \subsection{Problem Statement}
 \label{subsec:problem-statement}
@@ -36,7 +60,7 @@ to compete in Game Talent Showcase by Thailand Game Association (TGA).
 \subsection{Objectives}
 \label{subsec:objectives}
 
-\subsection{Scope \& Limitation}
+\subsection{Scope \& Limitations}
 \label{subsec:scope-and-limitation}
 
 \subsection{Expected Benefits}
