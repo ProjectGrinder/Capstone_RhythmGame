@@ -15,7 +15,28 @@ Because of this, these engines might not be suitable for widespread everyday usa
 Many companies decided to write their own systems from the ground up, which led to slower development while accruing
 unnecessary costs.
 \\\\
-These situations raise the question — whether it is possible to create a system that can be used to generate such media
+The core ideas of these game engine systems rely on Object Oriented Programming (OOP) which provide easier to understand
+software architecture.
+But with the implementation of OOP in many programming language, usually tends to create a system where every calls are
+made with pointer calls or indirection calls which create an issue on compiler understanding the intention of code
+clearly which leads to compiler unable to aggressively optimize the code.
+\\\\
+This gave rise to another programming paradigm where we just have raw data and a set of function to manipulate it.
+Entity Component System (ECS) which is another style of writing software in easy to understand way.
+But the problem is that most of ECS implementation rely on reflection which can also hurt the performance greatly.
+\\\\
+But with C++20 which provide a self write code on compile time (templating), this can be achieved on compile time
+which provide compiler total understanding of software code and it's intention which will give compiler the ability
+to aggressively optimize the code.
+\\\\
+Also in current market, most of the hardware are now multithread support which means we can write a code in such a
+way where we can send the subsystem to multiple threads in order to reduce delay.
+This will ensure the fully utilization of CPU\@.
+\\\\
+On GPU side, we can write software in such a way where the data itself got turn from Array of Struct (AoS) to Struct of Array (SoA).
+And using the idea of GPU offloading in order to optimize a data transformation and continue to render the data to the screen.
+\\\\
+These situations raise the question \textemdash whether it is possible to create a system that can be used to generate such media
 and highly optimal for various tasks while also remaining highly optimized.
 \\\\
 To test the precision of such software, a good test is to create a rhythm game.
@@ -50,7 +71,7 @@ runtime overhead associated with registration, lookup, or caching.
 Experimental systems like Vittorio's ECST~\cite{vittorio} achieve deep compile-time specialization
 but are not production-ready due to ambiguity in naming, sparse documentation, and hidden dependencies.
 \\\\
-We want to combine the best of both worlds — to create an ECS framework that registers and determines component types
+We want to combine the best of both worlds \textemdash to create an ECS framework that registers and determines component types
 and system dependencies at compile-time, while ensuring code flexibility and production-ready performance, complete
 with rigorous documentation.
 
@@ -72,8 +93,8 @@ Therefore, an ideal software system for the industry should be able to provide h
 optimized and efficient to reduce operation costs and resources.
 \\\\
 Upon considering regional valuation, North America is the leader of the global HPC market, valued at 20.0 billion USD in 2024, 
-with the U.S.A. being the key driver of the market due to strong demand for highly advanced software and contributions from 
-various tech companies, including Microsoft, IBM, AWS, and NVIDIA.
+with the U.S.A.being the key driver of the market due to strong demand for highly advanced software and contributions from
+various tech companies, including Microsoft, IBM, AWS, and NVIDIA\@.
 Following North America is Europe, with a valuation of 11.0 billion USD in 2024, and Asia-Pacific region (APAC), valued at 
 10.0 billion USD in 2024.
 The global market trend shows that many countries around the world are investing in HPC software and companies are innovating 
@@ -81,19 +102,20 @@ new technologies to capitalize on the growing demands.
 \\\\
 Our project does not cover only the development of high-performance software, but also its utilization.
 Therefore, we decided to research a performance-reliant medium for computer software: video games.
-We have looked into a report of Gaming Software Market Analysis 2025-2029~\cite{Gaming_Software_Market_Analysis} to understand the direction of 
+We have looked into a report of Gaming Software Market Analysis 2025--2029~\cite{Gaming_Software_Market_Analysis} to understand the direction of
 the gaming industry in different regions.
-The market has been growing significantly due to advancements in game engines which support mobile and tablet games, along with 
-increasing popularity in eSports, short for electronic sports, which is a form of competition using video games, creating new 
+The market has been growing significantly due to advancements in game engines which support mobile and tablet games, along with
+increasing popularity in eSports, short for electronic sports, which is a form of competition using video games, creating new
 revenue streams for the market.
-Game engines are being optimized to improve performance and graphical processes. To capitalize on market opportunities, gaming 
-software companies must keep up in research and development of technologies to provide new experiences to consumers.
+Game engines are being optimized to improve performance and graphical processes.
+To capitalize on market opportunities, gaming software companies must keep up in research and development of technologies to
+provide new experiences to consumers.
 \\\\
-According to Technavio’s analysts, the Asia Pacific (APAC) region is estimated to contribute 43\% to the growth of the global 
+According to Technavio's analysts, the Asia Pacific (APAC) region is estimated to contribute 43\% to the growth of the global
 market during the forecast period.
-With China, Japan, and India as leading countries, APAC dominates the market due to the largest number of mobile gamers, 
+With China, Japan, and India as leading countries, APAC dominates the market due to the largest number of mobile gamers,
 in addition to the increase in smartphone usage and high-speed internet services.
-The advancements in game engines serve as the primary driver for the rise of the gaming software market, driven by the 
+The advancements in game engines serve as the primary driver for the rise of the gaming software market, driven by the
 evolution of technologies in rendering, animation, graphics, augmented/virtual reality (AR/VR), and artificial intelligence (AI).
 Game development tools, including engines, continue to be a crucial investment for businesses in the industry.
 
