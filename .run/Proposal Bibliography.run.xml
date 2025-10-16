@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Proposal Bibliography" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+    <texify-bibtex>
+      <compiler>BIBTEX</compiler>
+      <compiler-path />
+      <compiler-arguments />
+      <envs />
+      <main-file>$PROJECT_DIR$/papers/proposal/main.tex</main-file>
+      <aux-dir>$PROJECT_DIR$/papers/proposal</aux-dir>
+      <latex-distribution>PROJECT_SDK</latex-distribution>
+    </texify-bibtex>
+    <method v="2" />
+  </configuration>
+</component>
