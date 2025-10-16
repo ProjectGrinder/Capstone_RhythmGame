@@ -1,4 +1,4 @@
-\documentclass[8pt]{article}
+\documentclass[10pt]{article}
 
 % Packages
 \usepackage{graphicx}
@@ -31,9 +31,6 @@
     Department of Computer Engineering\\
     Chulalongkorn University
 }
-\fancyfoot[R]{
-    \thepage\ of \pageref{LastPage}
-}
 
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0.5pt}
@@ -53,11 +50,16 @@
 
     \pagestyle{fancy}
     \pagenumbering{roman}
+    \fancyfoot[R]{\thepage}
 
     \tableofcontents
     \addcontentsline{toc}{section}{Contents}
+    \thispagestyle{fancy}
     \newpage
 
+    \fancyfoot[R]{
+        \thepage\ of \pageref{subsec:intellectual-property-and-law}
+    }
     \pagenumbering{arabic}
     \setcounter{page}{1}
     \twocolumn
@@ -69,7 +71,13 @@
     \input{sections/timeline}
     \input{sections/planned_work}
     \input{sections/ethics}
+    \newpage
 
+    \onecolumn
+    \fancyfoot[R]{\thepage}
+    \pagenumbering{alph}
+
+    \addcontentsline{toc}{section}{References}
     \bibliographystyle{ieeetr}
     \bibliography{refs}
 
