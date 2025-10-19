@@ -1,138 +1,52 @@
 \section{Introduction}
 \label{sec:introduction}
-In recent years, interactive media is found in various places throughout digital society,
-such as within games, visual effects in movies, applications, or Visual Reality (VR)
-with usage covering many fields.
-For example, Virtual Reality as a recovery tool in a medical system.
-Because of this demand, the performance requirements are becoming more prominent.
-But on the hardware side, the growth of performance
-is far less than the demand.
-\\\\
-The current trend of creating interactive media is using game engines such as Unity, Godot, or
-Unreal to create this type of media.
-But these systems weren't built with this general usage in mind, but rather were specialized for creating games.
-Because of this, these engines might not be suitable for widespread everyday usage with such high demands.
-Many companies decided to write their own systems from the ground up, which led to slower development while accruing
-unnecessary costs.
-\\\\
-The core ideas of these game engine systems rely on Object Oriented Programming (OOP) which provide easier to understand
-software architecture.
-But with the implementation of OOP in many programming language, usually tends to create a system where every calls are
-made with pointer calls or indirection calls which create an issue on compiler understanding the intention of code
-clearly which leads to compiler unable to aggressively optimize the code.
-\\\\
-This gave rise to another programming paradigm where we just have raw data and a set of function to manipulate it.
-Entity Component System (ECS) which is another style of writing software in easy to understand way.
-But the problem is that most of ECS implementation rely on reflection which can also hurt the performance greatly.
-\\\\
-But with C++20 which provide a self write code on compile time (templating), this can be achieved on compile time
-which provide compiler total understanding of software code and it's intention which will give compiler the ability
-to aggressively optimize the code.
-\\\\
-Also in current market, most of the hardware are now multithread support which means we can write a code in such a
-way where we can send the subsystem to multiple threads in order to reduce delay.
-This will ensure the fully utilization of CPU\@.
-\\\\
-On GPU side, we can write software in such a way where the data itself got turn from Array of Struct (AoS) to Struct of Array (SoA).
-And using the idea of GPU offloading in order to optimize a data transformation and continue to render the data to the screen.
-\\\\
-These situations raise the question \textemdash whether it is possible to create a system that can be used to generate such media
-and highly optimal for various tasks while also remaining highly optimized.
-\\\\
-To evaluate the precision of such software, a rhythm game is a great and representative subject
-due to its strict needs for high-precision inputs ensuring good responsiveness and a better impression for the user.
-Additionally, a bullet hell game, a video game genre revolved around having a vast amount of projectiles on the screen at the same time,
-serves as an excellent demonstration of performance under stress for the software.
-\\\\
-To evaluate the generality of such software, both of the genre, being highly different in logics, are being integrated together seamlessly
-in order to showcase the versatility of the software alongside with 2D side scrolling gameplay.
-\\\\
-Lastly, to validate if the system is viable from a business standpoint, we will develop this game
-to compete in the Game Talent Showcase by Thailand Game Association (TGA).
 
-\subsection{Background}
-\label{subsec:background}
-% Background goes here
+\subsection{Background \& Motivation}
+\label{subsec:background-and-motivation}
 
-\subsubsection*{Entity-Component-System Architecture}
+In recent years, interactive media has become increasingly more integrated into modern society.
+It has appeared within games, movies, applications, and Virtual Reality (VR) with usage covering
+many fields, including within academic and medical contexts.
+As such media continues to develop in scale and complexity, its performance demands have intensified.
+The growth in hardware performance is not enough to keep up with this demand, creating a challenge for
+creators and system designers alike.
 
-Entity-component-system (ECS) is a software architectural pattern mostly used in game development.
-Its mechanisms are characterized by the entities, composed of components of data,
-and the systems which operate upon those components.
-The behaviors of these entities are modified at runtime by systems modifying, adding, or removing the components
-attached to said entities.
-\\\\
-Implementations of ECS already exist, even in production contexts.
-One of the more popular implementations is EnTT~\cite{ValtoLibraries_EnTT}, a header-only C++ library for game programming.
-This library has been used to develop many game titles, the most major of which is Minecraft.
-Another popular implementation is Bevy ECS~\cite{Bevy_Engine}, a data-driven game engine built in Rust.
-\\\\
-However, most existing ECS libraries use runtime component registration, perform type-erased iteration, or resolve
-system dependencies at runtime, or some combination of the above.
-While they often optimize queries via template views or code specialization, they cannot fully eliminate
-runtime overhead associated with registration, lookup, or caching.
-Experimental systems like Vittorio's ECST~\cite{vittorio} achieve deep compile-time specialization
-but are not production-ready due to ambiguity in naming, sparse documentation, and hidden dependencies.
-\\\\
-We want to combine the best of both worlds \textemdash to create an ECS framework that registers and determines component types
-and system dependencies at compile-time, while ensuring code flexibility and production-ready performance, complete
-with rigorous documentation.
-
-\subsubsection*{Market Research}
-
-The computer software market has been growing for many years, and software performance continues to develop 
-as the demand for advanced software systems increases in various industries.
-We have looked into a report of the High Performance Computing Software Market~\cite{HPC_Software_Market_Research} to
-understand the possible trend of software engineering in the future.
-According to the research, the market is forecasted to grow from 45.5 billion USD in 2024 to 99 billion USD by 2035.
-\\\\
-High performance computing (HPC) software has become essential for optimizing complex processes to ensure high-speed operations.
-With the increased use of advanced technology, including artificial intelligence, machine learning, simulations, and many more 
-modules and services, HPC software is necessary for these technologies to function properly.
-Additionally, organizations and companies are also interested in software efficiency to lower the costs of computing resources, 
-and implementation with cloud services.
-This can be marked as another direction of the market which focuses on sustainable and energy-efficient products.
-Therefore, an ideal software system for the industry should be able to provide high performance while simultaneously being 
-optimized and efficient to reduce operation costs and resources.
-\\\\
-Upon considering regional valuation, North America is the leader of the global HPC market, valued at 20.0 billion USD in 2024, 
-with the U.S.A.being the key driver of the market due to strong demand for highly advanced software and contributions from
-various tech companies, including Microsoft, IBM, AWS, and NVIDIA\@.
-Following North America is Europe, with a valuation of 11.0 billion USD in 2024, and Asia-Pacific region (APAC), valued at 
-10.0 billion USD in 2024.
-The global market trend shows that many countries around the world are investing in HPC software and companies are innovating 
-new technologies to capitalize on the growing demands.
-\\\\
-Our project does not cover only the development of high-performance software, but also its utilization.
-Therefore, we decided to research a performance-reliant medium for computer software: video games.
-We have looked into a report of Gaming Software Market Analysis 2025--2029~\cite{Gaming_Software_Market_Analysis} to understand the direction of
-the gaming industry in different regions.
-The market has been growing significantly due to advancements in game engines which support mobile and tablet games, along with
-increasing popularity in eSports, short for electronic sports, which is a form of competition using video games, creating new
-revenue streams for the market.
-Game engines are being optimized to improve performance and graphical processes.
-To capitalize on market opportunities, gaming software companies must keep up in research and development of technologies to
-provide new experiences to consumers.
-\\\\
-According to Technavio's analysts, the Asia Pacific (APAC) region is estimated to contribute 43\% to the growth of the global
-market during the forecast period.
-With China, Japan, and India as leading countries, APAC dominates the market due to the largest number of mobile gamers,
-in addition to the increase in smartphone usage and high-speed internet services.
-The advancements in game engines serve as the primary driver for the rise of the gaming software market, driven by the
-evolution of technologies in rendering, animation, graphics, augmented/virtual reality (AR/VR), and artificial intelligence (AI).
-Game development tools, including engines, continue to be a crucial investment for businesses in the industry.
-
-
-
+Current interactive media is usually created by relying on game engines, such as Unity, Godot, and Unreal Engine,
+as a software framework.
+However, these game engines were originally designed for game development and were not built for the more
+general applications.
+This mismatch motivates the need to create such a system that is built optimally for these new demands,
+while remaining highly optimized in terms of performance for various tasks.
 
 \subsection{Problem Statement}
 \label{subsec:problem-statement}
 
+Existing game engines are not suitable for the creation of general-purpose interactive media.
+Their architecture uses the traditional object-oriented programming (OOP) paradigm, which introduces
+certain constraints and limitations on flexibility, scalability, and performance outside game contexts.
+In response, many companies have resorted to developing proprietary systems from scratch to meet their specific requirements.
+This practice, however, leads to delays in development while accruing unnecessary costs.
+The problem, therefore, is that there lacks a sufficiently versatile and high-performance framework that can
+efficiently support the development of general-purpose interactive media.
+
 \subsection{Objectives}
 \label{subsec:objectives}
+
+\begin{enumerate}
+    \item To analyze the limitations of existing game engine architectures, particularly in relation to general-purpose interactive applications.
+    \item To explore alternative architectural paradigms that could offer improved performance and flexibility over conventional OOP-based designs.
+    \item To propose and develop a framework that can streamline the creation of interactive media while reducing development costs and maintaining high performance across various domains.
+\end{enumerate}
 
 \subsection{Scope \& Limitations}
 \label{subsec:scope-and-limitation}
 
 \subsection{Expected Benefits}
 \label{subsec:expected-benefits}
+
+\begin{enumerate}
+    \item A clearer understanding of current game design architectures and its limitations on the development of general-purpose interactive media.
+    \item A structured analysis of alternative design paradigms that may overcome these limitations.
+    \item A practical framework that simplifies the development of interactive systems across multiple application domains.
+    \item Enhanced adaptability and performance in future interactive media platforms.
+\end{enumerate}
