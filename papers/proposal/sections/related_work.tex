@@ -4,13 +4,6 @@
 \subsection{Review of Existing Knowledge}
 \label{subsec:review-of-existing-knowledge}
 
-% Software systems have been evolving over the years to adapt to changes of hardware and user requirements, 
-% driven by new functionality requirements.
-% Current systems in the market continue to improve their performance with every update released.
-% However, it often depends on multiple configuration options, which can either speed-up or slow-down the performance depending on 
-% how their compatibility.~\cite{Software_Performance_Evolution}
-% \\\\
-
 \subsubsection*{Software Bloat Analysis}
 
 As hardware has been improving with microprocessors since 1980s, software engineering practices have 
@@ -57,10 +50,6 @@ While they often optimize queries via template views or code specialization, the
 runtime overhead associated with registration, lookup, or caching.
 Experimental systems like Vittorio's ECST~\cite{vittorio} achieve deep compile-time specialization
 but are not production-ready due to ambiguity in naming, sparse documentation, and hidden dependencies.
-% \\\\
-% We want to combine the best of both worlds \textemdash to create an ECS framework that registers and determines component types
-% and system dependencies at compile-time, while ensuring code flexibility and production-ready performance, complete
-% with rigorous documentation.
 
 \subsection{Comparison with Existing Systems}
 \label{subsec:comparison-with-existing-systems}
@@ -154,6 +143,8 @@ when managing complex relationships between objects, leading to tight coupling a
 Hence, game engines like Unity and Unreal Engine have been shifting towards data-oriented designs like ECS to improve 
 performance and scalability.
 \\\\
+As software demands continue to surpass the current hardware capabilities, system optimization is crucial to ensure 
+efficient resource utilization and performance.
 A recent study on game engine efficiency~\cite{Game_Engine_Efficiency} experimented with Unity, Unreal Engine, 
 Godot~\cite{Godot_Engine}, and a custom-built engine using ECS architecture and scripting system in C syntax.
 When using the engines to buid a simple 2D game, the study showed that as the number of objects increased, the custom 
@@ -162,3 +153,22 @@ This indicates that further optimization is still possible with efficient archit
 
 \subsection{Linkage to Project}
 \label{subsec:linkage-to-project}
+
+Upon analyzing existing systems in the market, it is evident that there are still gaps and limitations 
+that can be addressed to improve performance and flexibility.
+We aim to create a framework that combines the strengths of existing architectures while addressing 
+their weaknesses.
+By utilizing ECS architecture, we can achieve better performance and scalability compared to 
+traditional OOP-based designs.
+We want to combine the best of both worlds \textemdash to create an ECS framework that registers and determines component types
+and system dependencies at compile-time, while ensuring code flexibility and production-ready performance, complete
+with rigorous documentation.
+\\\\
+In order to showcase the capabilities of our proposed framework, we plan to develop a game prototype that utilizes 
+the system performance to its fullest potential.
+We have designed a game that combines two performance-intensive genres: rhythm games and bullet hell shooters.
+Rhythm games require players to interact with the game in sync with the music, demanding precise timing and 
+responsiveness as much as in millisecond accuracy.
+Bullet hell shooters, on the other hand, involve navigating through a screen filled with numerous projectiles, 
+requiring efficient handling of a large number of entities and collision detection.
+By merging these two genres, we can create a game that demonstrates our framework's performance and responsiveness.
