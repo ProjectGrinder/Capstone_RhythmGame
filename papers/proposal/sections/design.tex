@@ -4,6 +4,78 @@
 \subsection{System Overview}
 \label{subsec:system-overview}
 
+\subsubsection*{Engine Design}
+
+
+\subsubsection*{Game Design}
+
+The project’s core game design will involve combining rhythm games and bullet hell games into a hybrid game
+structured around distinct but smoothly transitioning phases,
+thus requiring a seamless transition between the two, creating a revolutionary take on hybrid games.
+Having that both of the games hugely relied on great optimization, as with a little disruption,
+it can cause a fatal unintended mistake for the player inciting frustration;
+therefore, the design of the game must be made cautiously.
+\\\\
+
+The bullet hell section is mostly composed of large amounts of bullets and particles
+while great performance is still required to attain the player’s fluidity of movement.
+To achieve this, an ECS architecture is highly favoured as opposed to object-oriented
+since the high amount of entities can be handled more efficiently with it.
+Entities of the system are composed of player, bullets, boss, enemies, background and effects
+utilizing shared components such as position, velocity, sprite, shader, etc.
+Each system will be executed every frame thus handling the entity movement,
+collision check and input allowing it to handle all the bullets in a frame efficiently.
+Such systems consist of a player system, movement system, collision system, particle system and much more.
+The core mechanics is for each frame, the input was processed to control the player system
+while the collision system will check each ongoing colliding entity by calling each entity with a collider component
+and computing if they are colliding with which entity.
+Then, the corresponding function will be triggered to apply change to the state such as the player taking damage and making change to the player’s health UI\@.
+
+Moreover, the movement system computes the next frame position to render and lastly the animation system will render the right frame of the animation at the correct time.
+\\\\
+Rhythm games require precise timing and precision to catch the note at the right time,
+very little or next to none of the optimization issues can be tolerated as a result.
+However, ECS architecture is powerful enough to handle all the requirements
+such as notes quantities and an accurate time tracking device centralized by a single system.
+With entities as simple as notes, lanes and judgement, components are widely adjustable with speed, timing and judgement.
+In addition, the system design is fairly simple as the input system and judgement system is centralized and the note system moves all notes called.
+Along with the bullet hell section, they contain backgrounds that are adjustable by shader and particle effects.
+The core mechanic revolves around spawning the notes at the right time as set up.
+Then, each note will be called by the movement system to calculate the position of the sprite.
+However, the real logic of the note is being computed by another system that reduces its timing to be compared in the judgement system.
+Lastly, the judgement system calls the corresponding system to handle whether if the note has been well-time pressed and sending responses to the player.
+\\\\
+Transitioning between both gameplay proves to be a great challenge design-wise
+because it has to be smooth and seamless enough to not disrupt the precision-hungry gameplay of both games.
+Firstly, in the whole game process, only one game scene may be rendered to minimize time to transition
+as the whole scene will be loaded and initiated only once from the start.
+If the transition is happening, the gameplay should be frozen and any progress should not be counted during the process,
+allowing the player to get ready to adjust their gameplay smoothly.
+The transition's animation has to telegraph the player clearly to make them aware that the gameplay is going to be changed
+as the timer UI counts down to inform the duration and delay of the transition precisely.
+Lastly, the screen changing the gameplay rendered has to be transition creative by splitting the screen in two and slowly expanding the next gameplay.
+To achieve this, a line animation system is used to express animation of the transition
+and the Game Transition System will be triggered if the state has been changed rendering the new gameplay for a section of the screen expanding until full.
+\\\\
+A biggest concern of the system is the control of the rhythm game’s charts and bullet hell’s patterns
+needing to be not too exhaustingly difficult to control as both games require vast amounts of complicated pattern and timing design.
+A solution proposed would be to create our own scripting language and a corresponding compiler such as a chart file.
+Practicing these techniques makes designing and implementing charts and patterns much easier
+allowing more complex and challenging design and features.
+\\\\
+To complete a game, a narrative device should be implemented to make the game more immersive and enjoyable;
+A proposed gameplay would be a 2D side-scrolling style that allows players to choose a level and progress the story of the gameplay.
+Additionally, explorations are added to the game such as interacting with an interactable such as NPC, or objects, obtaining new in-game items and accessing new areas.
+Such requirements must be implemented with an entirely new system.
+Interactable and solid collision components are needed to be implemented along with the new system, for example, new movement system, interact system and area load system.
+\\\\
+Lastly, using ECS, UI entities are being rendered concurrently in a higher priority by default.
+The entities will have a position, text, sprite and animation components and are created organizedly using functions for each set of UIs.
+For sound and music in the game, just like UIs as each is assigned to its own entity holding a tag or trigger to be played on an instance sound system at the right time.
+Finally, the cutscene could be added as a video format to be rendered in an instance video player system.
+
+
+
 \subsection{Components}
 \label{subsec:components}
 
