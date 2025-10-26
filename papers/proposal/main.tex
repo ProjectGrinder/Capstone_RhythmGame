@@ -55,6 +55,11 @@
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0.5pt}
 \renewcommand{\cftsecaftersnum}{.}
+\renewcommand{\arraystretch}{1.75}
+
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
 
 \sloppy
 \begin{document}
@@ -78,7 +83,7 @@
     \newpage
 
     \fancyfoot[R]{
-        \thepage\ of \pageref{subsec:intellectual-property-and-law}
+        \thepage\ of \pageref{tag:end}
     }
     \pagenumbering{arabic}
     \setcounter{page}{1}
@@ -96,16 +101,20 @@
     \begin{multicols}{2}
         \raggedcolumns
         \input{sections/team_two_column}
-        \end{multicols}
-    \begin{multicols}{1}
-        \input{sections/timeline}
-    \end{multicols}
-    \begin{multicols}{2}
-        \raggedcolumns
-        \input{sections/planned_work}
-        \input{sections/ethics}
     \end{multicols}
     \newpage
+    \begin{multicols}{1}
+        \input{sections/timeline_one_column}
+    \end{multicols}
+    \vspace{0.5em}
+    \begin{multicols}{1}
+        \input{sections/planned_work_one_column}
+    \end{multicols}
+    \vspace{0.5em}
+    \begin{multicols}{2}
+        \raggedcolumns
+        \input{sections/ethics}
+    \end{multicols}
 
     \onecolumn
     \fancyfoot[R]{\thepage}
@@ -158,14 +167,8 @@
     \listoffigures
 
     \listoftables
-
-    \newpage
-
     \input{sections/feasibility}
-    \newpage
-
     \input{sections/code_of_conduct}
-    \newpage
     % -- Skip for now -- %
 %    \input{sections/literature_review}
 
