@@ -208,29 +208,28 @@ single-instance ECS implementations.
 \noindent Figure~\ref{fig:gameflow} shows how the scenes in our game should flow.
 The game starts from the main menu scene where the player can choose to enter the game or exit.
 After the player chooses to enter the game, the game's world scene will be loaded.
-The world is a 2D side-scrolling scene where the player can explore and choose levels to play.
 There will be objects across the world which act as stages that the player can interact with to 
 enter the level.
 When the player interacts with a stage object, the game will transition to pre-stage scene, where 
 they can select which instrument to use in the level.
 Each instrument represents a different difficulty level.
 The player can choose to start the level with the selected instrument or return to the world.
+\\\\
 Once the player starts the level, the game will transition to the main gameplay scene.
 The gameplay scene consists of both bullet hell and rhythm game phases.
 In this scene, as the level begins, the player will start with bullet hell phase.
 The player must avoid incoming obstacles from the enemy and survive throughout the phase.
-Each hit taken will reduce the player's health.
 If the player's health reaches zero at any point, the gameplay will end, failing the level.
 After surviving the for a certain amount of time, the game will transition to rhythm game phase.
 In this phase, the player must hit the notes in time with the music to attack the enemy.
-A gauge is displayed at the top of the screen to show the player's progress in defeating the enemy.
-Each successful note hit will slightly fill the gauge and heal the player, while missed notes will 
+Each successful note hit will slightly fill the enemy's gauge and heal the player, while missed notes will 
 only deplete the gauge.
 The player must fill the gauge above a certain threshold to defeat the enemy and complete the level.
 Then, the game will transition back to bullet hell phase again.
 This cycle continues until the song ends or the player is defeated first.
 If the player successfully fills the gauge above the threshold by the end of the song, the player wins.
 Otherwise, it is considered a draw.
+\\\\
 After the gameplay ends, regardless if the player wins, loses or draws, the game will transition to results 
 scene, displaying the player's performance statistics.
 Then, the player will return to the world scene to continue exploring or choose another level.
