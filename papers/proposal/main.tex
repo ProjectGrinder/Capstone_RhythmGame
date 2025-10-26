@@ -82,17 +82,29 @@
     }
     \pagenumbering{arabic}
     \setcounter{page}{1}
-    \twocolumn
 
-    \input{sections/introduction}
-    \input{sections/related_work}
-    \input{sections/design}
-    \onecolumn %change into multicolumn
-    \input{sections/team}
-    \twocolumn
-    \input{sections/timeline}
-    \input{sections/planned_work}
-    \input{sections/ethics}
+    \begin{multicols}{2}
+        \raggedcolumns
+        \input{sections/introduction}
+        \input{sections/related_work}
+        \input{sections/design}
+    \end{multicols}
+    \begin{multicols}{1}
+        \input{sections/team_one_column}
+    \end{multicols}
+    \vspace{0.5em}
+    \begin{multicols}{2}
+        \raggedcolumns
+        \input{sections/team_two_column}
+        \end{multicols}
+    \begin{multicols}{1}
+        \input{sections/timeline}
+    \end{multicols}
+    \begin{multicols}{2}
+        \raggedcolumns
+        \input{sections/planned_work}
+        \input{sections/ethics}
+    \end{multicols}
     \newpage
 
     \onecolumn
