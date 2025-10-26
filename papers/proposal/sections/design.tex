@@ -18,6 +18,43 @@ a manager, which will also execute the registered systems during the main game l
 DirectX 11 is used for the rendering of the game with the use of a custom rendering pipeline implementation.
 User input is collected through the Windows API\@.
 
+For the actual implementation of these compile-time optimizations, we take advantage of C++'s concept of templates.
+By using component and system data types as template parameters, we can use template specialization to let
+the compiler generate code specific to our use case.
+Since each system is a function, this also means we get usage of functions without relying on indirect calls,
+which is a common pain point in engine design.
+\\\\
+The benefits of template specialization can be seen with a key part of the ECS instance, the resource manager.
+The resource manager manages entities along with any components attached to those entities, together referred to as resources.
+The resource manager takes a size integer and any number of structures as template parameters and treats those
+structures as registered components in this instance.
+It will create a resource pool of each registered component with the specified size when constructed, each of
+which will reserve their own memory depending on the component's size and the pool size.
+By accessing these components through template specialization, code is generated such that the abstraction layers
+are removed from the code when compiled.
+\\\\
+While systems are being run, entities with select component archetypes are iterated upon.
+If components are added or removed during iteration, this may invalidate references or otherwise cause unpredictable behavior.
+To avoid such hazards, a structure must be created with the purpose to defer all attempts to add or remove components
+and to apply such changes after all systems complete execution.
+Borrowing the term from operating systems, we refer to this structure with elevated permissions to modify resources
+as the syscall.
+The syscall must know the components registered to its coupled resource manager so that it can add the appropriate
+components.
+When systems want to add or remove components from an entity, they make the request to the ECS instance, which
+will schedule the changes in its internal syscall.
+\\\\
+Systems operate upon entities based on whether they fulfill certain component requirements.
+For complex systems, the requirements can be rather complex, and entities may be retrieved multiple times
+under different requirements.
+Some implementations have the ECS instance be provided as a function argument to each system so that entities
+can be retrieved directly from internal resources via templated retrieval functions.
+We decided, instead, that systems define query data structures as function arguments, which describes the components
+that entity references stored within are guaranteed to possess.
+When the system is run, the ECS instance will internally fulfill each query requirement by fetching and filtering
+from the resource manager before passing them to the system.
+This way, the system's implementation does not concern itself with fetching data from the ECS instance.
+
 \subsubsection*{Game Design}
 
 The project’s core game design will involve combining rhythm games and bullet hell games into a hybrid game
