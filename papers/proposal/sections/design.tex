@@ -112,7 +112,12 @@ the Windows operating system.
 
 \vspace{0.5cm}
 
-\noindent Describe how task manager works here.
+\noindent Figure~\ref{fig:taskmanager} shows the composition of the task manager, a unit of ECS instance.
+Using template instantiation, the task manager knows the type of its resources(components) and tasks(systems),
+and creates the required storage and functionality when constructed.
+When the task manager receives a signal to advance its state, depending on the type of task, it will
+formulate the appropriate queried resource data structure and apply it as a parameter to its registered tasks.
+The tasks state the query requirements in advance so that this process can be inferred at compile-time.
 
 \vspace{0.5cm}
 
@@ -125,7 +130,11 @@ the Windows operating system.
 
 \vspace{0.5cm}
 
-\noindent Describe how scene manager works here.
+\noindent Figure~\ref{fig:scenemanager} shows the composition of the scene manager, which manages ECS instances.
+The scene manager registers a collection of scenes in advance, where each scene is a data structure with the
+functions to create a task manager instance.
+When the scene manager chooses a scene to change to, the scene's functions are invoked, returning the created
+task manager instance to the scene manager to update during the game loop.
 
 \vspace{0.5cm}
 
@@ -138,7 +147,15 @@ the Windows operating system.
 
 \vspace{0.5cm}
 
-\noindent Describe how scene manager transfers data here.
+\noindent When the game logic leaves one scene and enters another, persistent data between scenes may be required.
+The operation of this data transfer is shown in Figure~\ref{fig:scenemanager2}.
+As shown, when a scene is exited, it returns an intermediate data structure containing the data of resources
+it wishes to transfer to the next scene.
+This data structure is then applied as arguments for initialization of the scene to enter.
+\\\\
+Through the functionality of the task manager and scene manager, the assembly and disassembly of memory-efficient
+ECS instances with complete knowledge of required data types can be achieved without losing any functionality of
+single-instance ECS implementations.
 
 \vspace{0.5cm}
 
