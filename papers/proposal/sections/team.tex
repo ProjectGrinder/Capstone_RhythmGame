@@ -1,9 +1,47 @@
+\begin{multicols}{1}
 \section{Teamwork Plan}
 \label{sec:teamwork-plan}
 
 \subsection{Roles and Responsibilities}
 \label{subsec:roles-and-responsibilities}
+\centering
+%    \begin{tabularx}{\columnwidth}{X X}
+%        Name & Roles\\
+%        \hline
+%        Tapaneeya Odmung & Project Lead \newline System Software Architecture \newline Operating System Level Software Engineer\\
+%        Wachirawich Kanil & System Software Architecture \newline User Level Software Engineer\\
+%        Pranesh Ingkanunt & Gameplay Design \newline Game Programming \newline Gameplay Software Architecture\\
+%        Rangsiman Jearuksa & Gameplay Design \newline Game Programming \newline Graphic Software Engineer\\
+%        \hline
+%    \end{tabularx}
+\renewcommand{\arraystretch}{1.75}
 
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+
+\small
+\begin{minipage}{\textwidth}
+    \begin{tabularx}{\textwidth}{|L|L|L|}
+        \hline
+        \textbf{Role} & \textbf{Name} & \textbf{Responsibilities} \\
+        \hline
+        Project Lead & - Tapaneeya Odmung & Project Planning, Define System Scope, Communication \\
+        System Software Architecture & {- Tapaneeya Odmung \newline - Wachirawich Kanil} & Design Engine \\
+        Gameplay Design & {- Pranesh Ingkanunt \newline - Rangsiman Jearuksa} & Design Gameplay \\
+        Game Software Engineer & {- Pranesh Ingkanunt \newline - Rangsiman Jearuksa} & Program Game \\
+        Graphic Programming & {- Tapaneeya Odmung \newline - Rangsiman Jearuksa} & Program Graphic \\
+        Operating System Software Engineer & - Tapaneeya Odmung & Program Operating System Level Communication \\
+        User Level Software Engineer & - Wachirawich Kanil & Program User Communication Level \\
+        Gameplay Software Architecture & - Pranesh Ingkanunt & Design Gameplay Architecture \\
+        \hline
+    \end{tabularx}
+    \captionof{table}{Roles and Resposibility}
+\end{minipage}
+\label{tab:table}
+\end{multicols}
+
+\begin{multicols}{2}
 \subsection{Collaborative Plan}
 \label{subsec:collaborative-plan}
 
@@ -12,3 +50,4 @@
 
 \subsection{Workload Balance}
 \label{subsec:workload-balance}
+\end{multicols}

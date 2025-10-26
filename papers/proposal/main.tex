@@ -11,9 +11,20 @@
 \usepackage{titlesec}
 \usepackage{lastpage}
 \usepackage{caption}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multicol}
 
 \captionsetup[figure]{
-    font={it, footnotesize},
+    font={it, small},
+    labelfont=bf,
+    labelsep=period,
+    justification=centering,
+    singlelinecheck=false
+}
+
+\captionsetup[table]{
+    font={it, small},
     labelfont=bf,
     labelsep=period,
     justification=centering,
@@ -76,7 +87,10 @@
     \input{sections/introduction}
     \input{sections/related_work}
     \input{sections/design}
+    \newpage
+    \onecolumn %change into multicolumn
     \input{sections/team}
+    \twocolumn
     \input{sections/timeline}
     \input{sections/planned_work}
     \input{sections/ethics}
