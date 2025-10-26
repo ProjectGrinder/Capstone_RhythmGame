@@ -80,7 +80,31 @@
     \addcontentsline{toc}{section}{References}
     \bibliographystyle{ieeetr}
     \bibliography{refs}
+    \newpage
 
     % -- Appendix if needed (which you will) -- %
+    \appendix
+    \renewcommand{\thesection}{\Alph{section}}
+    \titleformat{\section}
+    {\normalsize\bfseries}
+    {Appendix \thesection \, \textbar}
+    {0.5em}
+    {}
 
+    \makeatletter
+    \renewcommand{\listoffigures}{%
+        \begingroup
+        \let\old@makecaption\@makecaption
+        \renewcommand{\@makecaption}[2]{##2\\}%
+        \parindent\z@
+        \refstepcounter{section}
+        \section*{Appendix \thesection \, \textbar \vspace{0.5em} List of Figures}
+        \label{sec:appendix-list-of-figures}
+        \addcontentsline{toc}{section}{Appendix \thesection: List of Figures}%
+        \@starttoc{lof}%
+        \endgroup
+    }
+    \makeatother
+
+    \listoffigures
 \end{document}
