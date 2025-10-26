@@ -114,21 +114,39 @@
     {}
 
     \makeatletter
-    \renewcommand{\listoffigures}{%
+    \renewcommand{\listoffigures}{
         \begingroup
         \let\old@makecaption\@makecaption
-        \renewcommand{\@makecaption}[2]{##2\\}%
+        \renewcommand{\@makecaption}[2]{##2\\}
         \parindent\z@
         \refstepcounter{section}
         \section*{Appendix \thesection \, \textbar \vspace{0.5em} List of Figures}
         \label{sec:appendix-list-of-figures}
-        \addcontentsline{toc}{section}{Appendix \thesection: List of Figures}%
-        \@starttoc{lof}%
+        \addcontentsline{toc}{section}{Appendix \thesection: List of Figures}
+        \@starttoc{lof}
+        \let\old@makecaption\@makecaption
+        \endgroup
+    }
+
+    \renewcommand{\listoftables}{
+        \begingroup
+        \let\old@makecaption\@makecaption
+        \renewcommand{\@makecaption}[2]{##2\\}
+        \parindent\z@
+        \refstepcounter{section}
+        \section*{Appendix \thesection \, \textbar \vspace{0.5em} List of Tables}
+        \label{sec:appendix-list-of-tables}
+        \addcontentsline{toc}{section}{Appendix \thesection: List of Tables}
+        \@starttoc{lot}
+        \let\old@makecaption\@makecaption
         \endgroup
     }
     \makeatother
 
     \listoffigures
+
+    \listoftables
+
     \newpage
 
     \input{sections/feasibility}
