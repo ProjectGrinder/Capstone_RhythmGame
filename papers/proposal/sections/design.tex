@@ -57,42 +57,43 @@ This way, the system's implementation does not concern itself with fetching data
 
 \subsubsection*{Game Design}
 
-The project’s core game design will involve combining rhythm games and bullet hell games into a hybrid game
+The project's core game design will involve combining rhythm games and bullet hell games into a hybrid game
 structured around distinct but smoothly transitioning phases,
 thus requiring a seamless transition between the two, creating a revolutionary take on hybrid games.
-Having that both of the games hugely relied on great optimization, as with a little disruption,
-it can cause a fatal unintended mistake for the player inciting frustration;
-therefore, the design of the game must be made cautiously.
+Considering that both of the games hugely relied on great optimization, as with a little disruption,
+it can cause a fatal mistake for the player inciting frustration, the design of the game must be made cautiously.
 \\\\
-The bullet hell section is mostly composed of large amounts of bullets and particles
-while great performance is still required to attain the player’s fluidity of movement.
-To achieve this, an ECS architecture is highly favoured as opposed to object-oriented
-since the high amount of entities can be handled more efficiently with it.
+The bullet hell section is mostly composed of large numbers of bullets and particles,
+while great performance is still required to retain the player’s fluidity of movement.
+To achieve this, an ECS architecture is highly favored as opposed to object-oriented
+since the large number of entities can be handled more efficiently with it.
 Entities of the system are composed of player, bullets, boss, enemies, background and effects
-utilizing shared components such as position, velocity, sprite, shader, etc.
+using shared components such as position, velocity, sprite, shader, etc.
 Each system will be executed every frame thus handling the entity movement,
 collision check and input allowing it to handle all the bullets in a frame efficiently.
 Such systems consist of a player system, movement system, collision system, particle system and much more.
-The core mechanics is for each frame, the input was processed to control the player system
-while the collision system will check each ongoing colliding entity by calling each entity with a collider component
-and computing if they are colliding with which entity.
+The core mechanics are that, for each frame, the input was processed to control the player system.
+Meanwhile, the collision system will check each ongoing colliding entity by computing if each entity with a collider component
+is colliding with another entity.
 Then, the corresponding function will be triggered to apply change to the state such as the player taking damage and making change to the player’s health UI\@.
 Moreover, the movement system computes the next frame position to render, and lastly, the animation system will render the right frame of the animation at the correct time.
 \\\\
 Rhythm games require precise timing and precision to catch the note at the right time,
-very little or next to none of the optimization issues can be tolerated as a result.
+so very few optimization issues can be tolerated as a result.
 However, ECS architecture is powerful enough to handle all the requirements
 such as notes quantities and an accurate time tracking device centralized by a single system.
-With entities as simple as notes, lanes and judgement, components are widely adjustable with speed, timing and judgement.
-In addition, the system design is fairly simple as the input system and judgement system is centralized and the note system moves all notes called.
+With entities as simple as notes, lanes and judgment, components are widely adjustable with speed, timing and judgment.
+In addition, the system design is fairly simple as the input system and judgment system are centralized
+and the note system moves all notes called.
 Along with the bullet hell section, they contain backgrounds that are adjustable by shader and particle effects.
 The core mechanic revolves around spawning the notes at the right time as set up.
 Then, each note will be called by the movement system to calculate the position of the sprite.
-However, the real logic of the note is being computed by another system that reduces its timing to be compared in the judgement system.
-Lastly, the judgement system calls the corresponding system to handle whether if the note has been well-time pressed and sending responses to the player.
+However, the real logic of the note is being computed by another system that reduces its timing to be
+compared within the judgment system.
+Lastly, the judgment system calls the corresponding system to handle whether if the note has been well-time pressed and sending responses to the player.
 \\\\
-Transitioning between both gameplay proves to be a great challenge design-wise
-because it has to be smooth and seamless enough to not disrupt the precision-hungry gameplay of both games.
+Transitioning between both types of gameplay proves to be a great challenge design-wise.
+It has to be smooth and seamless enough to not disrupt the precision-hungry gameplay of both games.
 Firstly, in the whole game process, only one game scene may be rendered to minimize time to transition
 as the whole scene will be loaded and initiated only once from the start.
 If the transition is happening, the gameplay should be frozen and any progress should not be counted during the process,
@@ -100,20 +101,23 @@ allowing the player to get ready to adjust their gameplay smoothly.
 The transition's animation has to telegraph the player clearly to make them aware that the gameplay is going to be changed
 as the timer UI counts down to inform the duration and delay of the transition precisely.
 Lastly, the screen changing the gameplay rendered has to be transition creative by splitting the screen in two and slowly expanding the next gameplay.
-To achieve this, a line animation system is used to express animation of the transition
-and the Game Transition System will be triggered if the state has been changed rendering the new gameplay for a section of the screen expanding until full.
+To achieve this, a line animation system is used to express animation of the transition, and the game transition system
+will be triggered if the state has been changed.
+Following this, the new gameplay is rendered for a section of the screen expanding until full.
 \\\\
-A biggest concern of the system is the control of the rhythm game’s charts and bullet hell’s patterns
+The biggest concern of the system is the control of the rhythm game's charts and bullet hell's patterns
 needing to be not too exhaustingly difficult to control as both games require vast amounts of complicated pattern and timing design.
 A solution proposed would be to create our own scripting language and a corresponding compiler such as a chart file.
-Practicing these techniques makes designing and implementing charts and patterns much easier
+Practicing these techniques makes designing and implementing charts and patterns much easier,
 allowing more complex and challenging design and features.
 \\\\
 To complete a game, a narrative device should be implemented to make the game more immersive and enjoyable;
 the proposed gameplay would be a 2D side-scrolling style that allows players to choose a level and progress the story of the gameplay.
-Additionally, explorations are added to the game such as interacting with an interactable such as NPC, or objects, obtaining new in-game items and accessing new areas.
-Such requirements must be implemented with an entirely new system.
-Interactable and solid collision components are needed to be implemented along with the new system, for example, new movement system, interact system and area load system.
+Additionally, explorations are added to the game such as interacting with an interactable such as NPC, or objects,
+getting new in-game items and accessing new areas.
+Such requirements must be implemented with an entirely separate system.
+Interactable and solid collision components are needed to be implemented along with the new system,
+for example, a new movement system, interact system and area load system.
 \\\\
 Lastly, using ECS, UI entities are being rendered concurrently in a higher priority by default.
 The entities will have a position, text, sprite and animation components and are created organizedly using functions for each set of UIs.
@@ -151,7 +155,7 @@ the Windows operating system.
 \vspace{0.5cm}
 
 \noindent Figure~\ref{fig:taskmanager} shows the composition of the task manager, a unit of ECS instance.
-Using template instantiation, the task manager knows the type of its resources(components) and tasks(systems),
+Using template instantiation, the task manager knows the type of its resources(components) and tasks(systems)
 and creates the required storage and functionality when constructed.
 When the task manager receives a signal to advance its state, depending on the type of task, it will
 formulate the appropriate queried resource data structure and apply it as a parameter to its registered tasks.
@@ -212,28 +216,28 @@ single-instance ECS implementations.
 \noindent Figure~\ref{fig:gameflow} shows how the scenes in our game should flow.
 The game starts from the main menu scene where the player can choose to enter the game or exit.
 After the player chooses to enter the game, the game's world scene will be loaded.
-There will be objects across the world which act as stages that the player can interact with to 
+There will be objects across the world that act as stages that the player can interact with to
 enter the level.
-When the player interacts with a stage object, the game will transition to pre-stage scene, where 
+When the player interacts with a stage object, the game will transition to a pre-stage scene, where
 they can select which instrument to use in the level.
 Each instrument represents a different difficulty level.
 The player can choose to start the level with the selected instrument or return to the world.
 \\\\
 Once the player starts the level, the game will transition to the main gameplay scene.
 The gameplay scene consists of both bullet hell and rhythm game phases.
-In this scene, as the level begins, the player will start with bullet hell phase.
+In this scene, as the level begins, the player will start with the bullet hell phase.
 The player must avoid incoming obstacles from the enemy and survive throughout the phase.
 If the player's health reaches zero at any point, the gameplay will end, failing the level.
-After surviving the for a certain amount of time, the game will transition to rhythm game phase.
+After surviving for a certain amount of time, the game will transition to the rhythm game phase.
 In this phase, the player must hit the notes in time with the music to attack the enemy.
 Each successful note hit will slightly fill the enemy's gauge and heal the player, while missed notes will 
 only deplete the gauge.
 The player must fill the gauge above a certain threshold to defeat the enemy and complete the level.
-Then, the game will transition back to bullet hell phase again.
+Then, the game will transition back to the bullet hell phase again.
 This cycle continues until the song ends or the player is defeated first.
 If the player successfully fills the gauge above the threshold by the end of the song, the player wins.
 Otherwise, it is considered a draw.
 \\\\
-After the gameplay ends, regardless if the player wins, loses or draws, the game will transition to results 
+After the gameplay ends, regardless if the player wins, loses or draws, the game will transition to the result
 scene, displaying the player's performance statistics.
 Then, the player will return to the world scene to continue exploring or choose another level.

@@ -6,9 +6,9 @@
 
 \subsubsection*{Software Bloat Analysis}
 
-As hardware has been improving with microprocessors since 1980s, software engineering practices have 
+As hardware has been improving with microprocessors since the 1980s, software engineering practices have
 also evolved to match the higher performance provided by the runtime system and architecture.
-However, the growth of software requirements proves to be higher in terms functionality and size.
+However, the growth of software requirements proves to be higher in terms of functionality and size.
 As the software complexity rapidly increases, the performance improvement from hardware has not been 
 able to grow fast enough to satisfy the demands.
 Hence, performance optimization is necessary in modern software despite the advancement of CPUs and 
@@ -19,14 +19,14 @@ problems in software systems was not from hardware limitations, but from lack of
 Modern object-oriented applications often suffer from inefficient use of memory, such as memory leaks 
 which accumulate unused objects and exhaust the heap space, and algorithms that are not suitable for 
 large data sets.
-Though multicore processors have been widely adapted to improve performance via parallelism, the root \
-causes of performance bottleneck are left unsolved.
+Though multicore processors have been widely adapted to improve performance via parallelism, the root
+causes of performance bottlenecks are left unsolved.
 \\\\
 Solving performance issues in software systems requires effort, time, and knowledge to analyze and 
 pinpoint the causes of bottlenecks.
 Though there are studies on bloat detection and analysis to identify the sources of inefficiencies 
 in software systems, there are still challenges in the process of bloat removal.
-Because the definition of bloat is subjective and varies across different applications, it is difficult 
+Because the definition of bloat is subjective and varies across different applications, it is challenging
 to create a universal solution for bloat removal.
 Therefore, the process of removing performance bottlenecks requires careful consideration and specification 
 to precisely resolve the issues without affecting the intended functionality of the software.
@@ -54,7 +54,7 @@ but are not production-ready due to ambiguity in naming, sparse documentation, a
 \subsection{Comparison with Existing Systems}
 \label{subsec:comparison-with-existing-systems}
 
-We have reviewed existing well-knowned free software systems that are designed for interactive media 
+We have reviewed existing well-known free software systems that are designed for interactive media
 development to understand their strengths and weaknesses in their architectures and design.
 
 \subsubsection*{Game Engines}
@@ -69,13 +69,13 @@ from objects.
 Unity also provides a data-oriented technology stack (DOTS)~\cite{Unity_DOTS} that utilizes
 ECS architecture to improve performance by optimizing memory layout and enabling multithreading on 
 multiple packages.
-The system is built on native C/C++ engine core, reducing runtime overhead and allowing 
+The system is built on a native C / C++ engine core, reducing runtime overhead and allowing
 cross-platform compatibility.
-However, the system uses C\# on .NET framework for scripting layer, which introduces memory management 
+However, the system uses C\# on .NET Framework for the scripting layer, which introduces memory management
 overhead from frequent garbage collection cycles.
 Additionally, Unity's architecture relies on object-oriented programming (OOP), which can lead to performance 
-bottlenecks when managing large numbers of game objects due to deep inheritance hierarchies, along with 
-tight coupling between game objects and their behaviors, leading to challenges in scalability and maintainability.
+bottlenecks when managing large numbers of game objects due to deep inheritance hierarchies.
+This, along with tight coupling between game objects and their behaviors, leads to challenges in scalability and maintainability.
 \\\\
 Unreal Engine also uses a similar component-based architecture, with objects composed of various components 
 to define their behaviors, but the engine is built entirely in C++, allowing for high 
@@ -83,8 +83,8 @@ performance and low-level control over system resources.
 The engine is also built with modular subsystems (rendering, physics, audio, etc.) that utilize multithreading 
 to improve performance.
 Unreal Engine 5 introduces a new framework similar to ECS called MassEntity~\cite{Unreal_MassEntity}, which aims to 
-improve performanceby optimizing memory layout for large-scale simulations.
-Currently in 2025, the MassEntity system is still in development and not fully integrated into the engine.
+improve performance by optimizing memory layout for large-scale simulations.
+Currently, in 2025, the MassEntity system is still in development and not fully integrated into the engine.
 On the other hand, the engine uses a visual scripting system called Blueprints, which can introduce additional 
 performance overhead.
 Moreover, Unreal Engine contains advanced features such as real-time ray tracing and high-fidelity graphics, 
@@ -95,7 +95,7 @@ which can impact their suitability for different types of projects.
 Both engines utilize component-based architectures that promote modularity and flexibility.
 Unity's flexibility and modularity make it a good choice for smaller projects or those requiring rapid 
 developing cycles, but could suffer from performance issues in larger-scale applications.
-Meanwhile, Unreal Engine's high performance and advanced features aim for high-quality 
+Meanwhile, Unreal Engine's high performance and advanced features aim for high-quality
 3D projects, but the system is not built to support the general media applications due to its massive 
 performance costs.
 
@@ -106,7 +106,7 @@ of 3D models, animations, and visual effects.
 \\\\
 Blender is an open-source DCC tool built with native C/C++ core for optimized data processing and 
 memory management.
-The system uses dependency graph~\cite{Blender_Dependency} to update and manage relationships of scene data 
+The system uses dependency graphs~\cite{Blender_Dependency} to update and manage relationships of scene data
 efficiently by only considering what is dependent on the modified value.
 Blender also uses a specialized system called DNA~\cite{Blender_DNA} and RNA~\cite{Blender_RNA} to manage 
 data structures and properties.
@@ -118,9 +118,9 @@ across other versions of the system.
 On top of DNA, RNA is a higher-level system that provides an interface for accessing and manipulating 
 Blender's data structures at runtime, allowing for dynamic interaction with the data.
 \\\\
-Blender's architecture is designed to be modular and extensible from its data-block Structure, allowing for 
+Blender's architecture is designed to be modular and extensible from its data-block structure, allowing for
 the addition of new features from plugins and scripts.
-Although, the system uses Python for scripting layer and API, which while flexible and easy to use, 
+However, the system uses Python for scripting layer and API which, while flexible and easy to use,
 can introduce performance overhead due to its interpreted nature.
 Additionally, Blender's DNA/RNA systems can add complexity to the data management process, which may cause 
 complications for developers when improving or extending the system in the future.
@@ -130,7 +130,7 @@ challenges in balancing these aspects effectively.
 \subsection{Gap Analysis}
 \label{subsec:gap-analysis}
 
-Upon reviewing existing systems and related work, it is evident that each system has its own strengths depending 
+Upon reviewing existing systems and related work, it is clear that each system has its own strengths depending
 on the intended use cases.
 However, there are still gaps and limitations that can be addressed to improve performance and flexibility.
 \\\\
@@ -158,7 +158,7 @@ Upon analyzing existing systems in the market, it is evident that there are stil
 that can be addressed to improve performance and flexibility.
 We aim to create a framework that combines the strengths of existing architectures while addressing 
 their weaknesses.
-By utilizing ECS architecture, we can achieve better performance and scalability compared to 
+By utilizing the ECS architecture, we can achieve better performance and scalability compared to
 traditional OOP-based designs.
 We want to combine the best of both worlds \textemdash to create an ECS framework that registers and determines component types
 and system dependencies at compile-time, while ensuring code flexibility and production-ready performance, complete
