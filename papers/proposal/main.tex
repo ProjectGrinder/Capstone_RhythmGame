@@ -116,6 +116,7 @@
         \input{sections/planned_work_one_column}
     \end{multicols}
     \vspace{0.5em}
+    \newpage
     \begin{multicols}{2}
         \raggedcolumns
 %        \input{sections/planned_work_two_column}
@@ -149,7 +150,7 @@
         \refstepcounter{section}
         \section*{Appendix \thesection \, \textbar \vspace{0.5em} List of Figures}
         \label{sec:appendix-list-of-figures}
-        \addcontentsline{toc}{section}{Appendix \thesection: List of Figures}
+        \addcontentsline{toc}{section}{Appendix \thesection. List of Figures}
         \@starttoc{lof}
         \let\old@makecaption\@makecaption
         \endgroup
@@ -163,7 +164,7 @@
         \refstepcounter{section}
         \section*{Appendix \thesection \, \textbar \vspace{0.5em} List of Tables}
         \label{sec:appendix-list-of-tables}
-        \addcontentsline{toc}{section}{Appendix \thesection: List of Tables}
+        \addcontentsline{toc}{section}{Appendix \thesection. List of Tables}
         \@starttoc{lot}
         \let\old@makecaption\@makecaption
         \endgroup
@@ -174,7 +175,8 @@
 
     \listoftables
     \input{sections/feasibility}
-    \input{sections/code_of_conduct}
+    \input{sections/document_standard}
+    \input{sections/coding_standard}
     % -- Skip for now -- %
 %    \input{sections/literature_review}
 
