@@ -4,63 +4,52 @@
 \addcontentsline{toc}{section}{Appendix \thesection. Document Standard}
 
 This document is typeset in LaTeX using a custom standard designed for clarity, consistency, and professional presentation. The format emphasizes readability in both digital and printed form while supporting structured technical writing. The main standards are as follows:
-\begin{enumerate}
+\subsection*{1. Document Class and Layout}
+The proposal is based on the article class with a 10-point font size on A4 paper. Page margins are set to 1 inch on all sides for balanced spacing and printing compatibility.
+\subsection*{2. Typography and Sectioning}
+The document uses normal-sized body text with bold section and subsection titles. Each section title is prefixed by its number and separated by a vertical bar for clear visual hierarchy (e.g., “2 | System Design”).
+The layout alternates between single-column and two-column formats depending on content density — technical sections such as \textit{Design} and \textit{Ethics} are two-column for compactness, while detailed tables and timelines are presented in single-column layout for readability.
+\subsection*{3. Headers and Footers}
+All pages include a footer containing the department name and university on the left and the page number on the right. A thin horizontal rule separates the footer from the main text. Page numbering is shown in the format “\textit{current of total}” after the table of contents.
+\subsection*{4. Captions and Figures}
+Figure and table captions use small italic text with bold labels, followed by a period separator (e.g., “Figure 3. System Architecture”). Captions are centered and consistently formatted to maintain visual balance across columns.
+\subection*{5. Tables and Column Types}
+The tabularx package is used to create flexible tables that automatically adjust to the page width. Three custom column types are defined:
+\begin{itemize}
     \item
-    Document Class and Layout
-    The proposal is based on the article class with a 10-point font size on A4 paper. Page margins are set to 1 inch on all sides for balanced spacing and printing compatibility.
+    L for left-aligned text
     \item
-    Typography and Sectioning
-    The document uses normal-sized body text with bold section and subsection titles. Each section title is prefixed by its number and separated by a vertical bar for clear visual hierarchy (e.g., “2 | System Design”).
-    The layout alternates between single-column and two-column formats depending on content density — technical sections such as \textit{Design} and \textit{Ethics} are two-column for compactness, while detailed tables and timelines are presented in single-column layout for readability.
+    R for right-aligned text
     \item
-    Headers and Footers
-    All pages include a footer containing the department name and university on the left and the page number on the right. A thin horizontal rule separates the footer from the main text. Page numbering is shown in the format “\textit{current of total}” after the table of contents.
+    Y for centered text
+    The line spacing inside tables is slightly increased (1.75×) for better readability in printed form.
+    \end{itemize}
+\subsection*{6. Page Style and Numbering}
+Preliminary pages (title, abstract, and table of contents) use Roman numerals, while the main content uses Arabic numerals. Appendix pages are labeled alphabetically (A, B, C, etc.). Headers are omitted to maintain a clean layout.
+\subsection*{7. Table of Contents and Structure}
+The table of contents lists all major sections, references, and appendices. Each section and subsection is clearly numbered for easy navigation.
+\subsection*{8. References}
+References are formatted using the IEEE Transactions style (ieeetr), which is standard for engineering and computer science research. The bibliography section is automatically generated and included in the table of contents.
+\subsection*{9. Appendices}
+Appendices are styled consistently with the main document but relabeled alphabetically (e.g., “Appendix A | List of Figures”). Lists of figures and tables are customized to display caption titles only for compactness. Additional appendices may include feasibility analysis, code of conduct, and other supplementary materials.
+\item
+\subsection*{10. Compilation and Packages}
+The document uses standard LaTeX packages for layout and styling, including:
+\begin{itemize}
     \item
-    Captions and Figures
-    Figure and table captions use small italic text with bold labels, followed by a period separator (e.g., “Figure 3. System Architecture”). Captions are centered and consistently formatted to maintain visual balance across columns.
+    geometry for margin control
     \item
-    Tables and Column Types
-    The tabularx package is used to create flexible tables that automatically adjust to the page width. Three custom column types are defined:
-    \begin{itemize}
-        \item
-        L for left-aligned text
-        \item
-        R for right-aligned text
-        \item
-        Y for centered text
-        The line spacing inside tables is slightly increased (1.75×) for better readability in printed form.
-        \end{itemize}
-        \item
-        Page Style and Numbering
-        Preliminary pages (title, abstract, and table of contents) use Roman numerals, while the main content uses Arabic numerals. Appendix pages are labeled alphabetically (A, B, C, etc.). Headers are omitted to maintain a clean layout.
-        \item
-        Table of Contents and Structure
-        The table of contents lists all major sections, references, and appendices. Each section and subsection is clearly numbered for easy navigation.
-        \item
-        References
-        References are formatted using the IEEE Transactions style (ieeetr), which is standard for engineering and computer science research. The bibliography section is automatically generated and included in the table of contents.
-        \item
-        Appendices
-        Appendices are styled consistently with the main document but relabeled alphabetically (e.g., “Appendix A | List of Figures”). Lists of figures and tables are customized to display caption titles only for compactness. Additional appendices may include feasibility analysis, code of conduct, and other supplementary materials.
-        \item
-        Compilation and Packages
-        The document uses standard LaTeX packages for layout and styling, including:
-        \begin{itemize}
-            \item
-            geometry for margin control
-            \item
-            fancyhdr for footer customization
-            \item
-            titlesec for section formatting
-            \item
-            multicol for multi-column layout
-            \item
-            graphicx for image inclusion
-            \item
-            tabularx and array for table management
-            \item
-            hyperref for internal linking and references
-            \end{itemize}
-\end{enumerate}
+    fancyhdr for footer customization
+    \item
+    titlesec for section formatting
+    \item
+    multicol for multi-column layout
+    \item
+    graphicx for image inclusion
+    \item
+    tabularx and array for table management
+    \item
+    hyperref for internal linking and references
+    \end{itemize}
 
 This formatting standard is chosen to ensure that the proposal is visually organized, technically clear, and easily extensible for later reports such as the progress and final project documentation.
