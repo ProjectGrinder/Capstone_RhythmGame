@@ -1,4 +1,4 @@
-\documentclass[8pt]{article}
+\documentclass[10pt]{article}
 
 % Packages
 \usepackage{graphicx}
@@ -10,6 +10,26 @@
 \usepackage{tocloft}
 \usepackage{titlesec}
 \usepackage{lastpage}
+\usepackage{caption}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multicol}
+
+\captionsetup[figure]{
+    font={it, small},
+    labelfont=bf,
+    labelsep=period,
+    justification=centering,
+    singlelinecheck=false
+}
+
+\captionsetup[table]{
+    font={it, small},
+    labelfont=bf,
+    labelsep=period,
+    justification=centering,
+    singlelinecheck=false
+}
 
 \titleformat{\section}
 {\normalsize\bfseries}
@@ -31,16 +51,19 @@
     Department of Computer Engineering\\
     Chulalongkorn University
 }
-\fancyfoot[R]{
-    \thepage\ of \pageref{LastPage}
-}
 
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0.5pt}
 \renewcommand{\cftsecaftersnum}{.}
+\renewcommand{\arraystretch}{1.75}
 
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+
+\sloppy
 \begin{document}
-
+    \pagestyle{plain}
     \begin{titlepage}
         \input{sections/title}
         \noindent
@@ -53,26 +76,108 @@
 
     \pagestyle{fancy}
     \pagenumbering{roman}
+    \fancyfoot[R]{\thepage}
 
-    \tableofcontents
     \addcontentsline{toc}{section}{Contents}
+    \tableofcontents
+    \thispagestyle{fancy}
     \newpage
 
+    \fancyfoot[R]{
+        \thepage\ of \pageref{tag:end}
+    }
     \pagenumbering{arabic}
     \setcounter{page}{1}
-    \twocolumn
 
-    \input{sections/introduction}
-    \input{sections/related_work}
-    \input{sections/design}
-    \input{sections/team}
-    \input{sections/timeline}
-    \input{sections/planned_work}
-    \input{sections/ethics}
+    \begin{multicols}{2}
+        \raggedcolumns
+        \input{sections/introduction}
+        \input{sections/related_work}
+        \input{sections/design}
+    \end{multicols}
+    \begin{multicols}{1}
+        \input{sections/team_one_column}
+    \end{multicols}
+    \vspace{0.5em}
+    \begin{multicols}{2}
+        \raggedcolumns
+        \input{sections/team_two_column}
+    \end{multicols}
+    \newpage
+    \begin{multicols}{1}
+        \input{sections/timeline_one_column}
+    \end{multicols}
+    \vspace{0.5em}
+%    \begin{multicols}{2}
+%        \raggedcolumns
+%        \input{sections/timeline_two_column}
+%    \end{multicols}
+    \begin{multicols}{1}
+        \input{sections/planned_work_one_column}
+    \end{multicols}
+    \vspace{0.5em}
+    \newpage
+    \begin{multicols}{2}
+        \raggedcolumns
+%        \input{sections/planned_work_two_column}
+        \input{sections/ethics}
+    \end{multicols}
 
+    \onecolumn
+    \fancyfoot[R]{\thepage}
+    \pagenumbering{alph}
+
+    \addcontentsline{toc}{section}{References}
     \bibliographystyle{ieeetr}
     \bibliography{refs}
+    \newpage
 
     % -- Appendix if needed (which you will) -- %
+    \appendix
+    \renewcommand{\thesection}{\Alph{section}}
+    \titleformat{\section}
+    {\normalsize\bfseries}
+    {Appendix \thesection \, \textbar}
+    {0.5em}
+    {}
+
+    \makeatletter
+    \renewcommand{\listoffigures}{
+        \begingroup
+        \let\old@makecaption\@makecaption
+        \renewcommand{\@makecaption}[2]{##2\\}
+        \parindent\z@
+        \refstepcounter{section}
+        \section*{Appendix \thesection \, \textbar \vspace{0.5em} List of Figures}
+        \label{sec:appendix-list-of-figures}
+        \addcontentsline{toc}{section}{Appendix \thesection. List of Figures}
+        \@starttoc{lof}
+        \let\old@makecaption\@makecaption
+        \endgroup
+    }
+
+    \renewcommand{\listoftables}{
+        \begingroup
+        \let\old@makecaption\@makecaption
+        \renewcommand{\@makecaption}[2]{##2\\}
+        \parindent\z@
+        \refstepcounter{section}
+        \section*{Appendix \thesection \, \textbar \vspace{0.5em} List of Tables}
+        \label{sec:appendix-list-of-tables}
+        \addcontentsline{toc}{section}{Appendix \thesection. List of Tables}
+        \@starttoc{lot}
+        \let\old@makecaption\@makecaption
+        \endgroup
+    }
+    \makeatother
+
+    \listoffigures
+
+    \listoftables
+    \input{sections/feasibility}
+    \input{sections/document_standard}
+    \input{sections/coding_standard}
+    % -- Skip for now -- %
+%    \input{sections/literature_review}
 
 \end{document}

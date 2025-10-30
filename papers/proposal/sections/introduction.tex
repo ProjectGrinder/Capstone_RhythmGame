@@ -1,19 +1,63 @@
 \section{Introduction}
 \label{sec:introduction}
-% Quick Intro goes here
 
-\subsection{Background}
-\label{subsec:background}
-% Background goes here
+\subsection{Background \& Motivation}
+\label{subsec:background-and-motivation}
+
+In recent years, interactive media has become increasingly more integrated into modern society.
+It has appeared within games, movies, applications, and Virtual Reality (VR) with usage covering
+many fields, including within academic and medical contexts.
+As such media continues to develop in scale and complexity, its performance demands have intensified.
+The growth in hardware performance is not enough to keep up with this demand, creating a challenge for
+creators and system designers alike.
+\\\\
+Current interactive media is usually created by relying on game engines, such as Unity, Godot, and Unreal Engine,
+as a software framework.
+However, these game engines were originally designed for game development and were not built for the more
+general applications.
+This mismatch motivates the need to create such a system that is built optimally for these new demands,
+while remaining highly optimized in terms of performance for various tasks.
 
 \subsection{Problem Statement}
 \label{subsec:problem-statement}
 
+Existing game engines are not suitable for the creation of general-purpose interactive media.
+Their architecture uses the traditional object-oriented programming (OOP) paradigm, which introduces
+certain constraints and limitations on flexibility, scalability, and performance outside game contexts.
+\\\\
+In response, many companies have resorted to developing proprietary systems from scratch to meet their specific requirements.
+This practice, however, leads to delays in development while accruing unnecessary costs.
+The problem, therefore, is that there lacks a sufficiently versatile and high-performance framework that can
+efficiently support the development of general-purpose interactive media.
+
 \subsection{Objectives}
 \label{subsec:objectives}
 
-\subsection{Scope \& Limitation}
+\begin{enumerate}
+    \item To analyze the limitations of existing game engine architectures, particularly in relation to general-purpose interactive applications.
+    \item To explore alternative architectural paradigms that could offer improved performance and flexibility over conventional OOP-based designs.
+    \item To propose and develop a framework that can streamline the creation of interactive media while reducing development costs and maintaining high performance across various domains.
+\end{enumerate}
+
+\subsection{Scope \& Limitations}
 \label{subsec:scope-and-limitation}
+This project intended to create high precision software.
+In order to achieve this goal, we need to have control on our system as much as possible.
+That's mean everything on this system will be relied on only Operating System's library and
+C++ standard library (STL) function that is proved to be zero cost abstraction according to
+International Organization for Standardization (ISO) but if specify to be up to implementation
+we will refer to Microsoft Visual C++ implementation of STL\@.
+\\\\
+Scope of this paper will be implementation of rhythm game and bullet hell and
+compete on Talent Showcase competition by Thai Game Software Industry Association (TGA)
+using fewer libraries as much as possible.
 
 \subsection{Expected Benefits}
 \label{subsec:expected-benefits}
+
+\begin{enumerate}
+    \item A clearer understanding of current game design architectures and its limitations on the development of general-purpose interactive media.
+    \item A structured analysis of alternative design paradigms that may overcome these limitations.
+    \item A practical framework that simplifies the development of interactive systems across multiple application domains.
+    \item Enhanced adaptability and performance in future interactive media platforms.
+\end{enumerate}
