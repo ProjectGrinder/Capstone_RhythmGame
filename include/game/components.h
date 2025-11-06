@@ -4,7 +4,6 @@
 
 #include "components/bullethell/bullet.h"
 #include "components/bullethell/emitter.h"
-#include "components/bullethell/gamestat.h"
 #include "components/bullethell/input.h"
 #include "components/bullethell/particle.h"
 #include "components/bullethell/pattern.h"
@@ -24,6 +23,7 @@
 
 #include "components/rhythm/judgetext.h"
 #include "components/rhythm/keyinput.h"
+#include "components/rhythm/lane.h"
 #include "components/rhythm/notespeed.h"
 #include "components/rhythm/timing.h"
 #include "components/rhythm/timingend.h"

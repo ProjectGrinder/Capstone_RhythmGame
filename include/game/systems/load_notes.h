@@ -29,14 +29,16 @@ namespace Game::Rhythm
                 {
                     if (note.is_hold)
                     {
-                        syscall.template create_entity<NoteSpeed, Timing, TimingEnd>(
+                        syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd>(
+                            Lane{lane.lane_number},
                             NoteSpeed{rhythm_state.note_speed},
                             Timing{note.timing},
                             TimingEnd{note.timing_end});
                     }
                     else
                     {
-                        syscall.template create_entity<NoteSpeed, Timing>(
+                        syscall.template create_entity<Lane, NoteSpeed, Timing>(
+                            Lane{lane.lane_number},
                             NoteSpeed{rhythm_state.note_speed},
                             Timing{note.timing});
                     }
