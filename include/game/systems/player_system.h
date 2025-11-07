@@ -8,7 +8,7 @@ namespace Game::BulletHell
     void PlayerSystem([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BulletHellState> &query)
     {
 
-        constexpr auto frame_time = 0.001f;
+        constexpr auto frame_time = 1;
 
         for (auto &[id, comp]: query)
         {

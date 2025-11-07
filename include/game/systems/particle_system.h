@@ -4,7 +4,7 @@
 namespace Game::BulletHell
 {
     template <typename T>
-    void ParticleSystem(T &syscall, System::ECS::Query<Particle> &query)
+    void ParticleSystem(T &task_manager, System::ECS::Query<Particle> &query)
     {
         constexpr auto frame_time = 1;
 
@@ -14,7 +14,7 @@ namespace Game::BulletHell
             comp.lifetime -= frame_time;
             if (comp.lifetime < 0)
             {
-                syscall.template remove_entity<Particle>(id);
+                task_manager.template remove_entity<Particle>(id);
             }
         }
     }
