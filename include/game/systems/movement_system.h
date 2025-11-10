@@ -2,6 +2,8 @@
 #include "game/components.h"
 #include "game/components/physics/acceleration.h"
 #include "utils.h"
+#define USE_MATH_DEFINES
+#include <maths.h>
 
 namespace Game::BulletHell
 {
@@ -12,14 +14,15 @@ namespace Game::BulletHell
     using AngularVelocity = Physics::AngularVelocity;
 
     template <typename T>
-    void MovementSystem([[maybe_unused]] T &task_manager, System::ECS::Query<Position, Velocity, Acceleration>& query)
+    void MovementSystem([[maybe_unused]] T &task_manager, System::ECS::Query<Position, Rotation, Velocity, Acceleration>& query)
     {
         constexpr auto frame_time = 1;
 
         for (auto &[id, comps] : query)
         {
-            comps.get<Position>().x += comps.get<Velocity>().vx * frame_time;
-            comps.get<Position>().y += comps.get<Velocity>().vy * frame_time;
+            const float angle = comps.get<Rotation>().angle * acos(0.0f)/90.0f  ;
+            comps.get<Position>().x += (comps.get<Velocity>().vx * cos(angle) - comps.get<Velocity>().vy * sin(angle)) * frame_time;
+            comps.get<Position>().y += (comps.get<Velocity>().vx * sin(angle) + comps.get<Velocity>().vy * cos(angle)) * frame_time;
 
             if (comps.get<Acceleration>().ax != 0)
             {
