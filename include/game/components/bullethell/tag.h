@@ -10,5 +10,9 @@ namespace Game::BulletHell
     struct Tag
     {
         TagType type;
+        Tag() : type(NO_TAG)
+        {}
+        explicit Tag(const TagType type) : type(type)
+        {}
     };
 }

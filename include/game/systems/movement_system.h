@@ -1,5 +1,6 @@
 #pragma once
 #include "game/components.h"
+#include "game/components/physics/acceleration.h"
 #include "utils.h"
 
 namespace Game::BulletHell
@@ -7,10 +8,11 @@ namespace Game::BulletHell
     using Position = Physics::Position;
     using Velocity = Physics::Velocity;
     using Rotation = Physics::Rotation;
+    using Acceleration = Physics::Acceleration;
     using AngularVelocity = Physics::AngularVelocity;
 
     template <typename T>
-    void MovementSystem([[maybe_unused]] T &task_manager, System::ECS::Query<Position, Velocity>& query)
+    void MovementSystem([[maybe_unused]] T &task_manager, System::ECS::Query<Position, Velocity, Acceleration>& query)
     {
         constexpr auto frame_time = 1;
 
@@ -18,6 +20,16 @@ namespace Game::BulletHell
         {
             comps.get<Position>().x += comps.get<Velocity>().vx * frame_time;
             comps.get<Position>().y += comps.get<Velocity>().vy * frame_time;
+
+            if (comps.get<Acceleration>().ax != 0)
+            {
+                comps.get<Velocity>().vx += comps.get<Acceleration>().ax * frame_time;
+            }
+            if (comps.get<Acceleration>().ay != 0)
+            {
+                comps.get<Velocity>().vy += comps.get<Acceleration>().ay * frame_time;
+            }
+
         }
     }
 
