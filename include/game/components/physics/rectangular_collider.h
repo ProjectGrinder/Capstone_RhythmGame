@@ -4,15 +4,15 @@
 
 namespace Game::Physics
 {
-    struct CircularCollider
+    struct RectangularCollider
     {
         Position offset;
         Position size;
         unsigned int layer;
         unsigned int mask;
-        CircularCollider() : layer(0), mask(0)
+        RectangularCollider() : layer(0), mask(0)
         {}
-        explicit CircularCollider(
+        explicit RectangularCollider(
                 const Position &offset, const Position &size, const unsigned int layer = 0, const unsigned int mask = 0) :
             offset(offset), size(size), layer(layer), mask(mask)
         {}
