@@ -105,8 +105,8 @@ To achieve this, a line animation system is used to express animation of the tra
 will be triggered if the state has been changed.
 Following this, the new gameplay is rendered for a section of the screen expanding until full.
 \\\\
-The biggest concern of the system is the control of the rhythm game's charts and bullet hell's patterns
-needing to be not too exhaustingly difficult to control as both games require vast amounts of complicated pattern and timing design.
+The biggest concern of the game logic is the control of the rhythm game's charts and bullet hell's patterns
+needing to be not too exhaustingly difficult to control, as both games require vast amounts of complicated pattern and timing design.
 A solution proposed would be to create our own scripting language and a corresponding compiler such as a chart file.
 Practicing these techniques makes designing and implementing charts and patterns much easier,
 allowing more complex and challenging design and features.
@@ -115,7 +115,7 @@ To complete a game, a narrative device should be implemented to make the game mo
 the proposed gameplay would be a 2D side-scrolling style that allows players to choose a level and progress the story of the gameplay.
 Additionally, explorations are added to the game such as interacting with an interactable such as NPC, or objects,
 getting new in-game items and accessing new areas.
-Such requirements must be implemented with an entirely separate system.
+Such requirements must be implemented with an entirely separate game logic.
 Interactable and solid collision components are needed to be implemented along with the new system,
 for example, a new movement system, interact system and area load system.
 \\\\
@@ -155,11 +155,13 @@ the Windows operating system.
 \vspace{0.5cm}
 
 \noindent Figure~\ref{fig:taskmanager} shows the composition of the task manager, a unit of ECS instance.
-Using template instantiation, the task manager knows the type of its resources(components) and tasks(systems)
+\begin{itemize}
+\item Using template instantiation, the task manager knows the type of its resources(components) and tasks(systems)
 and creates the required storage and functionality when constructed.
-When the task manager receives a signal to advance its state, depending on the type of task, it will
+\item When the task manager receives a signal to advance its state, depending on the type of task, it will
 formulate the appropriate queried resource data structure and apply it as a parameter to its registered tasks.
-The tasks state the query requirements in advance so that this process can be inferred at compile-time.
+\item The tasks state the query requirements in advance so that this process can be inferred at compile-time.
+\end{itemize}
 
 \vspace{0.5cm}
 
@@ -174,11 +176,10 @@ The tasks state the query requirements in advance so that this process can be in
 \vspace{0.5cm}
 
 \noindent Figure~\ref{fig:scenemanager} shows the composition of the scene manager, which manages ECS instances.
-The scene manager registers a collection of scenes in advance, where each scene is a data structure with the
-functions to create a task manager instance.
-When the scene manager chooses a scene to change to, the scene's functions are invoked, returning the created
-task manager instance to the scene manager to update during the game loop.
-
+\begin{itemize}
+    \item The scene manager registers a collection of scenes in advance, where each scene is a data structure with the functions to create a task manager instance.
+    \item When the scene manager chooses a scene to change to, the scene's functions are invoked, returning the created task manager instance to the scene manager to update during the game loop.
+\end{itemize}
 \vspace{0.5cm}
 
 \noindent
@@ -193,9 +194,10 @@ task manager instance to the scene manager to update during the game loop.
 
 \noindent When the game logic leaves one scene and enters another, persistent data between scenes may be required.
 The operation of this data transfer is shown in Figure~\ref{fig:scenemanager2}.
-As shown, when a scene is exited, it returns an intermediate data structure containing the data of resources
-it wishes to transfer to the next scene.
-This data structure is then applied as arguments for initialization of the scene to enter.
+\begin{itemize}
+    \item As shown, when a scene is exited, it returns an intermediate data structure containing the data of resources it wishes to transfer to the next scene.
+    \item This data structure is then applied as arguments for initialization of the scene to enter.
+\end{itemize}
 \\\\
 Through the functionality of the task manager and scene manager, the assembly and disassembly of memory-efficient
 ECS instances with complete knowledge of required data types can be achieved without losing any functionality of
