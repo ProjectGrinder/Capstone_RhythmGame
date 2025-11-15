@@ -1,19 +1,14 @@
 cmake_minimum_required(VERSION 3.30)
 project(Capstone_RhythmGame)
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_C_STANDARD 23)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/out/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/out/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/out/bin)
-
+# set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 add_compile_options(/W4 /WX)
 add_compile_definitions(PROJECT_NAME=${PROJECT_NAME})
-
 
 list(APPEND
     LIBS
         scene
+        utils
         engine
 )
 
@@ -61,21 +56,21 @@ else()
     )
 endif()
 
-#add_executable(${PROJECT_NAME}
-#    WIN32
-#        src/main.cpp
-#)
-#
-#target_link_libraries(${PROJECT_NAME}
-#    PRIVATE
-#        ${LIBS}
-#        user32
-#        gdi32
-#        kernel32
-#        d3d11
-#        dxgi
-#        dinput8
-#        winmm
-#)
-#
-#add_dependencies(${PROJECT_NAME} compile_shaders)
+add_executable(${PROJECT_NAME}
+    WIN32
+        ${PROJECT_SOURCE_DIR}/src/main.cpp
+)
+
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+        ${LIBS}
+        user32
+        gdi32
+        kernel32
+        d3d11
+        dxgi
+        dinput8
+        winmm
+)
+
+add_dependencies(${PROJECT_NAME} compile_shaders)

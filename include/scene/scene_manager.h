@@ -11,6 +11,7 @@ namespace Scene
     {
         std::variant<std::monostate, Demo> _current_scene_template;
         std::any _current_manager;
+        System::Renderer::VertexGeneratorQueue<System::Config::VertexQueueSize>* _generator_queue = nullptr;
 
     public:
         template<typename T>
@@ -34,8 +35,8 @@ namespace Scene
         }
 
         static void update();
-        ~SceneManager();
-        // static void init(System::Renderer::VertexGeneratorQueue<System::Config::VertexQueueSize> *queue);
+        static void clean_up();
+        static void init(System::Renderer::VertexGeneratorQueue<System::Config::VertexQueueSize> *queue);
 
         static SceneManager &instance();
     };

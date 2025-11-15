@@ -10,20 +10,20 @@ Scene::Demo Scene::Demo::instance()
 void Scene::Demo::test()
 {
     test_component val{1};
-    LOG_INFO("test call with val = {}", val.number);
+    LOG_DEBUG("Info: test call with val = {}", val.number);
 }
 
 Scene::Demo::TaskManager Scene::Demo::Init()
 {
-    LOG_INFO("Initialization called");
+    LOG_DEBUG("Initialization called");
     auto tm = TaskManager{};
-    tm.create_entity(test_component{1});
+    tm.create_entity(test_component{1}, System::Renderer::Render2D{});
     tm.run_all();
     return(tm);
 }
 
 std::vector<Scene::Demo::ComponentTuple> Scene::Demo::Exit()
 {
-    LOG_INFO("Exiting Demo Scene.");
+    LOG_DEBUG("Exiting Demo Scene.");
     return {};
 }

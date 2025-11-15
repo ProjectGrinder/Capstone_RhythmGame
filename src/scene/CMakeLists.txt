@@ -11,7 +11,7 @@ add_library(scene
 target_link_libraries(scene
     PRIVATE
         engine
-        os_utils
+        utils
         user32
         gdi32
         kernel32
