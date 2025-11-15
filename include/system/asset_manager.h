@@ -44,7 +44,7 @@ namespace System
             {
                 if (std::shared_ptr<T> asset = _assets[index].lock())
                 {
-                    LOG_DEBUG("WARNING: Unloading asset {} while it is in use", path);
+                    LOG_WARNING("Unloading asset %s while it is in use", path.c_str());
                 }
 
                 // Remove the asset
