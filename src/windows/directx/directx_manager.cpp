@@ -1,17 +1,8 @@
-#include "Windows.h"
-#include "exception"
+#include "directx_manager.hpp"
 
-#include "system.h"
 
-namespace System::Renderer
+uint32_t Windows::DirectxManager::init(const DirectxConfig *config)
 {
-    void Directx::render([[maybe_unused]]RenderItem &item)
-    {
-
-    }
-
-    uint32_t Directx::init(WindowInfo &window_info)
-    {
         uint32_t error = ERROR_SUCCESS;
 
         using Microsoft::WRL::ComPtr;
@@ -33,8 +24,8 @@ namespace System::Renderer
         DXGI_SWAP_CHAIN_FULLSCREEN_DESC fs_desc = {0};
 
         sc_desc.BufferCount = 3; // <- Triple buffering
-        sc_desc.Width = window_info.width;
-        sc_desc.Height = window_info.height;
+        sc_desc.Width = config->width;
+        sc_desc.Height = config->height;
         sc_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
         sc_desc.Stereo = false;
         sc_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -44,7 +35,7 @@ namespace System::Renderer
         sc_desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
         sc_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
-        fs_desc.Windowed = window_info.display_type == DisplayType::WINDOW;
+        fs_desc.Windowed = config->is_window;
 
     #ifdef _DEBUG
         error = D3D11CreateDevice(
@@ -86,7 +77,7 @@ namespace System::Renderer
         if (FAILED(error))
             goto Exit;
 
-        error = factory->CreateSwapChainForHwnd(device.Get(), window_info.window_handler, &sc_desc, &fs_desc, nullptr, &swap_chain1);
+        error = factory->CreateSwapChainForHwnd(device.Get(), config->window_handler, &sc_desc, &fs_desc, nullptr, &swap_chain1);
         if (FAILED(error))
             goto Exit;
 
@@ -110,5 +101,4 @@ namespace System::Renderer
 
 Exit:
         return(error);
-    }
 }
