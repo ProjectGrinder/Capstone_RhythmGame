@@ -10,6 +10,8 @@ using System::ECS::SyscallType;
 using System::ECS::TaskManager;
 using namespace Game::BulletHell;
 
+// -- BULLET HELL TESTS --
+
 using PlayerResource = ResourceManager<1000, Player, Position, Velocity, Rotation, Acceleration, AngularVelocity>;
 using BulletResource = ResourceManager<1000, Bullet, Position, Velocity, Rotation, Acceleration, AngularVelocity>;
 
@@ -313,3 +315,6 @@ TEST(Game, bullets_damagable)
     EXPECT_TRUE(resource->query<Bullet>().get(id).is_damageable);
     EXPECT_EQ(resource->query<Bullet>().get(id).telegraph_time, 0);
 }
+
+// -- RHYTHM GAME TESTS --
+

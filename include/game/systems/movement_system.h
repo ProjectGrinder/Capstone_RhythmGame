@@ -2,8 +2,7 @@
 #include "game/components.h"
 #include "game/components/physics/acceleration.h"
 #include "utils.h"
-#define USE_MATH_DEFINES
-#include <maths.h>
+#include <cmath>
 
 namespace Game::BulletHell
 {
@@ -20,7 +19,7 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query)
         {
-            const float angle = comps.get<Rotation>().angle * acos(0.0f)/90.0f  ;
+            const float angle = comps.get<Rotation>().angle * std::acos(0.0f)/90.0f  ;
             comps.get<Position>().x += (comps.get<Velocity>().vx * cos(angle) - comps.get<Velocity>().vy * sin(angle)) * frame_time;
             comps.get<Position>().y += (comps.get<Velocity>().vx * sin(angle) + comps.get<Velocity>().vy * cos(angle)) * frame_time;
 
@@ -48,7 +47,7 @@ namespace Game::BulletHell
             {
                 comps.get<Rotation>().angle -= 360;
             }
-            LOG_DEBUG("Angle: {}", comps.get<Rotation>().angle);
+            LOG_INFO("Angle: {}", comps.get<Rotation>().angle);
         }
     }
 }

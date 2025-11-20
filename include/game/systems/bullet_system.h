@@ -5,7 +5,7 @@
 namespace Game::BulletHell
 {
     template <typename T>
-    void BulletSystem(T &task_manager, System::ECS::Query<Bullet> &query)
+    void BulletSystem([[maybe_unused]] T &task_manager, System::ECS::Query<Bullet> &query)
     {
 
         constexpr auto frame_time = 1; // 1ms

@@ -2,7 +2,7 @@
 
 namespace Scene
 {
-    static extern SceneManager scene_instance;
+    static SceneManager scene_instance;
     SceneManager &SceneManager::instance()
     {
         return (scene_instance);
@@ -43,7 +43,7 @@ namespace Scene
                 instance()._current_scene_template);
     }
 
-    void SceneManager::~SceneManager()
+    SceneManager::~SceneManager()
     {
         LOG_INFO("Cleaning up...");
         auto &scene_template = instance()._current_scene_template;
