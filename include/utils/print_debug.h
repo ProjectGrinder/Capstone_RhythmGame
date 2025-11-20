@@ -1,81 +1,38 @@
 #pragma once
-
 #include <Windows.h>
-#include <string>
-#include <format>
-#include <mutex>
 
-#define FILE_PATH Utils::trim_src_path(__FILE__)
-#define LOG_DEBUG(fmt, ...) Utils::print_debug(FILE_PATH, __FUNCTION__, fmt, __VA_ARGS__)
+#ifndef PROJECT_NAME
+    #define PROJECT_NAME    UNNAMED_PROJECT
+#endif
 
-namespace Utils
+#define STR(name)       #name
+#define TO_STR(name)    STR(name)
+
+#define LOG_MAX         512
+
+#define LOG_INFO(format, ...)       log_message(LogLevel::LL_INFO, __FUNCTION__, format, ##__VA_ARGS__);
+#define LOG_WARNING(format, ...)    log_message(LogLevel::LL_WARNING, __FUNCTION__, format, ##__VA_ARGS__);
+#define LOG_ERROR(format, ...)      log_message(Loglevel::LL_ERROR, __FUNCTION__, format, ##__VA_ARGS__);
+
+typedef enum class LogLevel: char
 {
-    extern std::mutex log_mutex;
+    LL_INFO,
+    LL_WARNING,
+    LL_ERROR,
+} LogLevel;
 
-    constexpr std::string_view trim_src_path(std::string_view path)
-    {
-        constexpr std::string_view src_key = R"(\src\)";
-        constexpr std::string_view include_key = R"(\include\)";
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-        size_t pos = path.find(src_key);
+void __cdecl log_message
+(
+    _In_    LogLevel    level,
+    _In_    const char* function_name,
+    _In_    const char* format,
+    _In_    ...
+);
 
-        if (pos != std::string_view::npos) {
-            return(path.substr(pos + src_key.size()));
-        }
-
-        pos = path.find(include_key);
-        if (pos != std::string_view::npos) {
-            return(path.substr(pos + include_key.size()));
-        }
-
-        return(path);
-    }
-
-    /// <summary>
-    /// Getting local time string
-    /// </summary>
-    /// <returns>String of local time string</returns>
-    std::string get_local_time_string();
-
-    /// <summary>
-    /// Converts all '\' to '/' in a path string.
-    /// </summary>
-    /// <param name="path">path</param>
-    std::string normalize_path(std::string_view path);
-
-    /// <summary>
-    /// Formatted Debug Printing
-    /// </summary>
-    /// <param name="file_path">file path</param>
-    /// <param name="func_name">name of the function (please add where the definition from)</param>
-    /// <param name="format">format print</param>
-    /// <param name="argv">argument list</param>
-    template<typename... args>
-    inline void print_debug
-    (
-        std::string_view file_path,
-        std::string_view func_name,
-        std::format_string<args...> format,
-        args&&... argv
-    )
-    {
-        #if _DEBUG
-        std::lock_guard lock(log_mutex);
-
-        const std::string message = std::format(format, std::forward<args>(argv)...);
-        const std::string normalized_path = normalize_path(file_path);
-        std::string time_str = get_local_time_string();
-        const std::string log =
-            std::format
-            (
-                "[ {} | {} | {} ] - {}\n",
-                time_str,
-                normalized_path,
-                func_name,
-                message
-            );
-
-        OutputDebugStringA(log.c_str());
-        #endif
-    }
+#ifdef __cplusplus
 }
+#endif

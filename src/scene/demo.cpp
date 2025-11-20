@@ -9,21 +9,21 @@ Scene::Demo Scene::Demo::instance()
 
 void Scene::Demo::test()
 {
-    Game::BulletHell::Rotation val{1};
-    LOG_DEBUG("Info: test call with val = {}", val.angle);
+    test_component val{1};
+    LOG_INFO("test call with val = {}", val.number);
 }
 
 Scene::Demo::TaskManager Scene::Demo::Init()
 {
-    LOG_DEBUG("Initialization called");
+    LOG_INFO("Initialization called");
     auto tm = TaskManager{};
-    tm.create_entity(test_component{1}, System::Renderer::Render2D{});
+    tm.create_entity(test_component{1});
     tm.run_all();
     return(tm);
 }
 
 std::vector<Scene::Demo::ComponentTuple> Scene::Demo::Exit()
 {
-    LOG_DEBUG("Exiting Demo Scene.");
+    LOG_INFO("Exiting Demo Scene.");
     return {};
 }
