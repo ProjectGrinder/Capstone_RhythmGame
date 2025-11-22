@@ -10,7 +10,7 @@ add_library(engine
 
 target_link_libraries(engine
     PRIVATE
-        utils
+        os_utils
         user32
         gdi32
         kernel32
