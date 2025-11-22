@@ -1,0 +1,31 @@
+#pragma once
+
+#include "components/battle/battlestate.h"
+
+#include "components/bullethell/bullet.h"
+#include "components/bullethell/emitter.h"
+#include "components/bullethell/input.h"
+#include "components/bullethell/particle.h"
+#include "components/bullethell/pattern.h"
+#include "components/bullethell/player.h"
+#include "components/bullethell/tag.h"
+#include "components/physics/angular_velocity.h"
+#include "components/physics/circular_collider.h"
+#include "components/physics/position.h"
+#include "components/physics/rotation.h"
+#include "components/physics/velocity.h"
+#include "components/render/animation.h"
+#include "components/render/animator.h"
+#include "components/render/material.h"
+#include "components/render/shader.h"
+#include "components/render/sprite.h"
+#include "components/render/text.h"
+
+#include "components/rhythm/judgetext.h"
+#include "components/rhythm/keyinput.h"
+#include "components/rhythm/lane.h"
+#include "components/rhythm/notespeed.h"
+#include "components/rhythm/timing.h"
+#include "components/rhythm/timingend.h"
+
+#include "system/ecs.h"

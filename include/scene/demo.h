@@ -1,13 +1,15 @@
 #pragma once
 #include "system.h"
-
-struct test_component
-{
-    int number;
-};
+#include "game.h"
 
 namespace Scene
 {
+
+    struct test_component
+    {
+        int number;
+    };
+
     template <typename T>
     void please_work([[maybe_unused]] T &syscall, System::ECS::Query<test_component>& query)
     {
@@ -33,6 +35,7 @@ namespace Scene
 
     struct Demo
     {
+
         static Demo instance();
 
         constexpr static auto name = "Demo";

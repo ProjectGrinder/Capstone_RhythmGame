@@ -1,0 +1,21 @@
+#pragma once
+#include "game/components.h"
+
+namespace Game::BulletHell
+{
+    template <typename T>
+    void ParticleSystem(T &task_manager, System::ECS::Query<Particle> &query)
+    {
+        constexpr auto frame_time = 1;
+
+        for (auto &[id, comps] : query)
+        {
+            auto &comp = comps.get<Particle>();
+            comp.lifetime -= frame_time;
+            if (comp.lifetime < 0)
+            {
+                task_manager.template remove_entity<Particle>(id);
+            }
+        }
+    }
+}
