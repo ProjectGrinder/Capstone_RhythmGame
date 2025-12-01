@@ -26,7 +26,7 @@ namespace System
         {
             // TODO: Load the asset from the filesystem
             // Nack get over here
-            T asset();
+            T asset{};
             const size_t new_id = _paths.size();
 
             _paths.push_back(path);
