@@ -2,6 +2,9 @@
 #include <Windows.h>
 #define INLINEOPTIMIZE static inline __attribute__((always_inline)) __forceinline
 
+typedef void *SceneManagerHandler;
+typedef void *DirectxHandler;
+
 typedef enum
 {
     DT_WINDOW,
@@ -50,4 +53,7 @@ typedef struct
 
     VertexQueue *vertex_queue;
     RenderingQueue *rendering_queue;
+
+    SceneManagerHandler scene_manager;
+    DirectxHandler directx;
 } SystemInfo;

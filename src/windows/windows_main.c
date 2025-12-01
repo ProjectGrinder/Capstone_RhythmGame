@@ -1,11 +1,12 @@
+#include "scenes/scenes_api.h"
 #define WIN32_LEAN_AND_MEAN
 
 #if _DEBUG
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
+    #define _CRTDBG_MAP_ALLOC
+    #include <crtdbg.h>
 #endif
 
-#include <Windows.h>
+#include <windows.h>
 
 #include "utils/windows_utils.h"
 
@@ -13,43 +14,46 @@
 #include "windows_functions.h"
 #include "windows_types.h"
 
-static SystemInfo system_info =
-{
-    .window     =   {
-            .width  = 1280,
-            .height = 720
-    },
-    .monitor    =   {
-            .width  = 0,
-            .height = 0,
-    },
-    .instance_handler   =   NULL,
-    .window_handler     =   NULL,
-    .display_type       =   DT_WINDOW,
-    .is_running         =   0,
-    .precision          =   15,
-    .vertex_queue       =   NULL,
-    .rendering_queue    =   NULL,
+static SystemInfo system_info = {
+        .window = {.width = 1280, .height = 720},
+        .monitor =
+                {
+                        .width = 0,
+                        .height = 0,
+                },
+        .instance_handler = NULL,
+        .window_handler = NULL,
+        .display_type = DT_WINDOW,
+        .is_running = 0,
+        .precision = 15,
+        .vertex_queue = NULL,
+        .rendering_queue = NULL,
+        .scene_manager = NULL,
+        .directx = NULL,
 };
 
 HWND get_window_handler()
 {
-    return(system_info.window_handler);
+    return (system_info.window_handler);
 }
 
-HRESULT directx_init(_In_ DirectxAPI *directx_api)
+void *get_scene_manager()
 {
-    const DirectxConfig config =
-    {
-        .height = system_info.window.height,
-        .width  = system_info.window.width,
-        .window_handler = system_info.window_handler,
-        .is_window = system_info.display_type == DT_WINDOW,
-    };
-    return(directx_manager_init(directx_api, &config));
+    return (system_info.scene_manager);
 }
 
-__forceinline void directx_clean_up(_In_ const DirectxAPI *directx_api)
+HRESULT directx_init(_In_ DirectxHandler *directx_api)
+{
+    const DirectxConfig config = {
+            .height = system_info.window.height,
+            .width = system_info.window.width,
+            .window_handler = system_info.window_handler,
+            .is_window = system_info.display_type == DT_WINDOW,
+    };
+    return (directx_manager_init(directx_api, &config));
+}
+
+__forceinline void directx_clean_up(_In_ const DirectxHandler *directx_api)
 {
     directx_manager_clean_up(directx_api);
 }
@@ -63,7 +67,6 @@ int __stdcall real_main()
     DWORD error = 0;
     MSG msg = {0};
     system_info.is_running = 1;
-    DirectxAPI directx_api = {0};
 
     log_init();
     sleep_init();
@@ -75,29 +78,39 @@ int __stdcall real_main()
         goto exit;
     }
 
-    error = directx_init(&directx_api);
+    error = directx_init(&system_info.directx);
     if (error != ERROR_SUCCESS)
     {
         LOG_ERROR("directx_init failed, Code 0x%081x", error);
         goto exit;
     }
 
+    error = scene_manager_init(&system_info.scene_manager);
+    if (error != ERROR_SUCCESS)
+    {
+        LOG_ERROR("scene_manager_init failed, Code 0x%081x", error);
+        goto exit;
+    }
 
     while (system_info.is_running)
     {
         process_system_message(&system_info, &msg);
+
+        scene_manager_update(&system_info.scene_manager);
+
         sleep(system_info.precision);
     }
 
 exit:
-    directx_clean_up(&directx_api);
+    scene_manager_cleanup(&system_info.scene_manager);
+    directx_clean_up(&system_info.directx);
     log_cleanup();
 
 #if _DEBUG
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
     _CrtDumpMemoryLeaks();
 #endif
-    return((int)error);
+    return ((int) error);
 }
 
 /*
@@ -105,20 +118,14 @@ exit:
  *  1. Console
  *  2. Windows Application
  */
-int __stdcall main(int argc, char** argv)
+int __stdcall main(int argc, char **argv)
 {
     UNREFERENCED_PARAMETER(argc);
     UNREFERENCED_PARAMETER(argv);
-    return(real_main());
+    return (real_main());
 }
 
-int WINAPI WinMain
-(
-    _In_        HINSTANCE   hInstance,
-    _In_opt_    HINSTANCE   hPrevInstance,
-    _In_        LPSTR       lpCmdLine,
-    _In_        INT         nShowCmd
-)
+int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ INT nShowCmd)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
@@ -126,5 +133,5 @@ int WINAPI WinMain
 
     system_info.instance_handler = hInstance;
 
-    return(main(0, NULL));
+    return (main(0, NULL));
 }
