@@ -21,9 +21,9 @@ typedef enum
     LL_ERROR,
 } LogLevel;
 
-void __vectorcall log_init();
-void __vectorcall log_cleanup();
-void __cdecl log_message
+void log_init(void);
+void log_cleanup(void);
+void log_message
 (
     _In_    LogLevel    level,
     _In_    const char* function_name,
