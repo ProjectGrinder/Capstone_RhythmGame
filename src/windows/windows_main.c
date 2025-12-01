@@ -49,7 +49,7 @@ HRESULT directx_init(_In_ DirectxAPI *directx_api)
     return(directx_manager_init(directx_api, &config));
 }
 
-void directx_clean_up(_In_ const DirectxAPI *directx_api)
+__forceinline void directx_clean_up(_In_ const DirectxAPI *directx_api)
 {
     directx_manager_clean_up(directx_api);
 }

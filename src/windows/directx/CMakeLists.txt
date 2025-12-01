@@ -5,12 +5,12 @@ file(GLOB
         "./*.h"
 )
 
-add_library(directx_lib
+add_library(directx
         STATIC
         ${DIRECTX_FILES}
 )
 
-target_link_libraries(directx_lib
+target_link_libraries(directx
         PRIVATE
         user32
         gdi32
