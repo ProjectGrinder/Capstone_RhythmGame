@@ -16,7 +16,7 @@ add_executable(windows_main
 target_link_libraries(windows_main
         PRIVATE
             ${LIBS}
-            directx_lib
+            directx
             user32
             gdi32
             kernel32
