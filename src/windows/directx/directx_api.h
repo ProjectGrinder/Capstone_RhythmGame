@@ -2,10 +2,11 @@
 #include <windows.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-    typedef struct DirectxAPI DirectxAPI;
+    typedef void *DirectxHandler;
     typedef struct DirectxConfig DirectxConfig;
 
     struct DirectxConfig
@@ -16,14 +17,10 @@ extern "C" {
         int is_window;
     };
 
-    struct DirectxAPI
-    {
-        void *ptr;
-    };
-
-    HRESULT directx_manager_init(_Out_ DirectxAPI *api, _In_ const DirectxConfig *config);
-    void directx_manager_clean_up(_In_ const DirectxAPI *manager);
+    HRESULT directx_manager_init(_Out_ DirectxHandler *api, _In_ const DirectxConfig *config);
+    void directx_manager_clean_up(_In_ const DirectxHandler *manager);
 
 #ifdef __cplusplus
 }
 #endif
+

@@ -1,8 +1,8 @@
 #pragma once
 #include <any>
 #include <variant>
-#include "system.h"
 #include "demo.h"
+#include "system.h"
 
 namespace Scene
 {
@@ -27,7 +27,7 @@ namespace Scene
                     },
                     scene_template);
 
-            LOG_DEBUG("Info: Changing scene to {}", T::name);
+            LOG_INFO("Info: Changing scene to %s", T::name);
             scene_template = T::instance();
             instance()._current_manager.reset();
             instance()._current_manager = T::Init();

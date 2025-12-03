@@ -13,9 +13,10 @@ namespace Scene
     template <typename T>
     void please_work([[maybe_unused]] T &syscall, System::ECS::Query<test_component>& query)
     {
-        for (auto& entry : query)
+        for (auto &entry: query)
         {
-            auto& comp = entry.get<test_component>();
+            auto &comp = entry.get<test_component>();
+            LOG_INFO("comp.number = %d", comp.number)
             comp.number += 1;
             if (comp.number > 10)
             {
@@ -51,4 +52,4 @@ namespace Scene
         static TaskManager Init();
         static std::vector<ComponentTuple> Exit();
     };
-}
+} // namespace Scene

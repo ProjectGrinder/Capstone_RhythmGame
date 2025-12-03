@@ -1,12 +1,9 @@
 #include "windows_utils.h"
 
-#include <stdarg.h>
-#include <strsafe.h>
-
 static CRITICAL_SECTION log_lock;
 static char log_initialize = 0;
 
-void __vectorcall log_init()
+void log_init(void)
 {
     if (!log_initialize)
     {
@@ -15,7 +12,7 @@ void __vectorcall log_init()
     }
 }
 
-void __vectorcall log_cleanup()
+void log_cleanup(void)
 {
     if (log_initialize)
     {
@@ -29,7 +26,6 @@ void __cdecl log_message(_In_ LogLevel level, _In_ const char *function_name, _I
     /* We can use va_* because it's compiler directive hence no CRT */
     SYSTEMTIME st = {0};
     va_list args = NULL;
-    HRESULT error = ERROR_SUCCESS;
     char time_buffer[64] = {0};
     char str[LOG_MAX] = {0};
     char final[LOG_MAX + 128 + 8] = {0};
@@ -54,35 +50,23 @@ void __cdecl log_message(_In_ LogLevel level, _In_ const char *function_name, _I
     }
 
     GetLocalTime(&st);
-    error = StringCchPrintf(
-            time_buffer,
-            sizeof(time_buffer),
-            "%04d-%02d-%02d %02d:%02d:%02d.%03d",
-            st.wYear,
-            st.wMonth,
-            st.wDay,
-            st.wHour,
-            st.wMinute,
-            st.wSecond,
-            st.wMilliseconds);
-    if (FAILED(error))
-    {
-        goto exit;
-    }
+    wsprintf(
+        time_buffer,
+        "%04d-%02d-%02d %02d:%02d:%02d.%03d",
+        st.wYear,
+        st.wMonth,
+        st.wDay,
+        st.wHour,
+        st.wMinute,
+        st.wSecond,
+        st.wMilliseconds
+    );
 
     va_start(args, format);
-    error = StringCchVPrintfEx(str, sizeof(str), NULL, NULL, STRSAFE_FILL_BEHIND_NULL, format, args);
+    wvsprintf(str, format, args);
     va_end(args);
-    if (FAILED(error))
-    {
-        goto exit;
-    }
 
-    error = StringCchPrintfA(final, sizeof(final), "[ %s | %s | %s ] %s\n", type, function_name, time_buffer, str);
-    if (FAILED(error))
-    {
-        goto exit;
-    }
+    wsprintf(final, "[ %s | %s | %s ] %s\n", type, function_name, time_buffer, str);
 
     EnterCriticalSection(&log_lock);
     OutputDebugString(final);

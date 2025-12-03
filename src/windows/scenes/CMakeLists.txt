@@ -5,13 +5,14 @@ file(GLOB
         "./*.h"
 )
 
-add_library(directx
+add_library(os_scene
         STATIC
         ${DIRECTX_FILES}
 )
 
-target_link_libraries(directx
+target_link_libraries(os_scene
         PRIVATE
+        scene
         user32
         gdi32
         kernel32

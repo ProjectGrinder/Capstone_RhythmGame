@@ -4,7 +4,7 @@
 Scene::Demo Scene::Demo::instance()
 {
     static Demo instance;
-    return(instance);
+    return (instance);
 }
 
 void Scene::Demo::test()
@@ -19,7 +19,7 @@ Scene::Demo::TaskManager Scene::Demo::Init()
     auto tm = TaskManager{};
     tm.create_entity(test_component{1});
     tm.run_all();
-    return(tm);
+    return (tm);
 }
 
 std::vector<Scene::Demo::ComponentTuple> Scene::Demo::Exit()
@@ -27,3 +27,4 @@ std::vector<Scene::Demo::ComponentTuple> Scene::Demo::Exit()
     LOG_INFO("Exiting Demo Scene.");
     return {};
 }
+

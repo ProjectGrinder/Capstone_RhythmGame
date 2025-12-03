@@ -1,11 +1,11 @@
 #include "directx_api.h"
 #include "directx_manager.hpp"
 
-HRESULT directx_manager_init(DirectxAPI *api, const DirectxConfig *config)
+HRESULT directx_manager_init(DirectxHandler *api, const DirectxConfig *config)
 {
     HRESULT error = ERROR_SUCCESS;
     Windows::DirectxManager *manager;
-    void* manager_alloc = nullptr;
+    void *manager_alloc = nullptr;
 
     manager_alloc = HeapAlloc(GetProcessHeap(), 0, sizeof(Windows::DirectxManager));
     if (manager_alloc == nullptr)
@@ -14,21 +14,21 @@ HRESULT directx_manager_init(DirectxAPI *api, const DirectxConfig *config)
         goto exit;
     }
 
-    manager = new(manager_alloc) Windows::DirectxManager();
+    manager = new (manager_alloc) Windows::DirectxManager();
     error = manager->init(reinterpret_cast<const Windows::DirectxConfig *>(config));
 
-    api->ptr = manager;
+    *api = manager;
 
 exit:
-    return(error);
+    return (error);
 }
 
-void directx_manager_clean_up(const DirectxAPI *api)
+void directx_manager_clean_up(const DirectxHandler *api)
 {
-    if (api == nullptr || api->ptr == nullptr)
+    if (api == nullptr)
         return;
 
-    auto *manager = static_cast<Windows::DirectxManager *>(api->ptr);
+    auto *manager = static_cast<Windows::DirectxManager *>(*api);
     manager->~DirectxManager();
 
     HeapFree(GetProcessHeap(), 0, manager);

@@ -4,11 +4,11 @@
 
 extern HWND get_window_handler();
 
-Vector2D get_mouse_position()
+Position get_mouse_position()
 {
     POINT p = {0};
     HWND handler = get_window_handler();
-    Vector2D res = {0};
+    Position res = {0};
 
     if (handler == NULL)
         goto exit;
@@ -26,3 +26,4 @@ int get_key_state(const int vk)
 {
     return ((GetAsyncKeyState(vk) & 0x8000) != 0);
 }
+
