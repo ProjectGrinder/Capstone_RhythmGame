@@ -3,6 +3,7 @@
 #include <string>
 #include <utility>
 
+// TODO: Marked by Nack ("most painful shit to implement")
 namespace Game::Render
 {
     struct Text

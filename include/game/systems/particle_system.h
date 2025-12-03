@@ -1,6 +1,7 @@
 #pragma once
 #include "game/components.h"
 
+// TODO: Marked by Nack (his part)
 namespace Game::BulletHell
 {
     template <typename T>

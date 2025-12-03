@@ -1,5 +1,6 @@
 #pragma once
 
+// TODO: Marked by Nack
 namespace Game::Render
 {
     struct Animation

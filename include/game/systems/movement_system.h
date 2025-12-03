@@ -4,6 +4,7 @@
 #include "utils.h"
 #include <cmath>
 
+// FIXME: Part of physics, consider separation into its own thread
 namespace Game::BulletHell
 {
     using Position = Physics::Position;

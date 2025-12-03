@@ -1,5 +1,6 @@
 #pragma once
 
+// TODO: Marked by Nack (his part)
 namespace Game::Render
 {
     struct Sprite

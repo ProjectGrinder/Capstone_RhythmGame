@@ -1,5 +1,6 @@
 #pragma once
 
+// FIXME: May separate thread
 namespace Game::Physics
 {
     struct Velocity
