@@ -6,7 +6,7 @@ namespace Game::Rhythm
 {
 
     template<typename T>
-    void HandleBPM(T &task_manager, System::ECS::Query<Battle::LevelData> &query, System::ECS::Query<Battle::RhythmState> &query2, System::ECS::Query<Battle::BattleState> &query3)
+    void HandleBPM([[maybe_unused]] T &syscall, System::ECS::Query<Battle::LevelData> &query, System::ECS::Query<Battle::RhythmState> &query2, System::ECS::Query<Battle::BattleState> &query3)
     {
         auto &battle_state = query3.front().get<Battle::BattleState>();
         auto &rhythm_state = query2.front().get<Battle::RhythmState>();

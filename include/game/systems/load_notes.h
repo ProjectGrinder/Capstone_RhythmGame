@@ -5,11 +5,11 @@ namespace Game::Rhythm
 {
     template<typename T>
     void create_note_entity(
-            T &task_manager, Battle::RhythmState &rhythm_state, Battle::LaneInfo &lane, Battle::NoteData &note)
+            T &syscall, Battle::RhythmState &rhythm_state, Battle::LaneInfo &lane, Battle::NoteData &note)
     {
         if (note.is_hold)
         {
-            task_manager.template create_entity<Lane, NoteSpeed, Timing, TimingEnd>(
+            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd>(
                     Lane{lane.lane_number},
                     NoteSpeed{rhythm_state.note_speed},
                     Timing{note.timing},
@@ -17,13 +17,13 @@ namespace Game::Rhythm
         }
         else
         {
-            task_manager.template create_entity<Lane, NoteSpeed, Timing>(
+            syscall.template create_entity<Lane, NoteSpeed, Timing>(
                     Lane{lane.lane_number}, NoteSpeed{rhythm_state.note_speed}, Timing{note.timing});
         }
     }
 
     template<typename T>
-    void LoadNotes(T &task_manager, System::ECS::Query<Battle::ChartData> &query, System::ECS::Query<Battle::BattleState> &query2, System::ECS::Query<Battle::RhythmState> &query3)
+    void LoadNotes(T &syscall, System::ECS::Query<Battle::ChartData> &query, System::ECS::Query<Battle::BattleState> &query2, System::ECS::Query<Battle::RhythmState> &query3)
     {
         constexpr float lookahead = 5;
 
@@ -46,7 +46,7 @@ namespace Game::Rhythm
             {
                 if (note.timing >= clock)
                 {
-                    create_note_entity<T>(task_manager, rhythm_state, lane, note);
+                    create_note_entity<T>(syscall, rhythm_state, lane, note);
                 }
 
                 // increment cursor

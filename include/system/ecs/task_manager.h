@@ -19,7 +19,7 @@ namespace System::ECS
         auto _make_query_impl(std::index_sequence<I...>)
         {
             using QueryObject = std::remove_reference_t<QueryRef>;
-            using ComponentTuple = typename QueryObject::ComponentTuple;
+            using ComponentTuple = QueryObject::ComponentTuple;
             using First = std::remove_reference_t<std::tuple_element_t<0, ComponentTuple>>;
             auto &main_pool = _resource_manager.template query<First>();
             auto cached_pools = std::tie(
@@ -58,7 +58,7 @@ namespace System::ECS
         void _run()
         {
             using TaskType = decltype(Task);
-            using ArgsTuple = typename function_traits<TaskType>::args_tuple;
+            using ArgsTuple = function_traits<TaskType>::args_tuple;
             constexpr std::size_t N = std::tuple_size_v<ArgsTuple>;
 
             auto queries = _run_impl<ArgsTuple>(std::make_index_sequence<N - 1>{});
@@ -70,16 +70,14 @@ namespace System::ECS
         }
 
     public:
-        TaskManager()
+        TaskManager() : _syscall(_resource_manager)
         {
-            _resource_manager = ResourceManager();
-            _syscall = Syscall();
         }
 
         inline void run_all()
         {
             (_run<Tasks>(), ...);
-            _syscall.exec(_resource_manager);
+            _syscall.exec();
         }
 
         template <typename Component>
@@ -97,7 +95,7 @@ namespace System::ECS
         template<typename... Components>
         pid create_entity(Components &&...components)
         {
-            return _syscall.template create_entity<Components...>(_resource_manager, std::forward<Components>(components)...);
+            return _syscall.template create_entity<Components...>(std::forward<Components>(components)...);
         }
 
         void remove_entity(const pid id)

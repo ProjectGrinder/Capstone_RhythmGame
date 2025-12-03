@@ -14,7 +14,7 @@ namespace Game::BulletHell
     using AngularVelocity = Physics::AngularVelocity;
 
     template <typename T>
-    void MovementSystem([[maybe_unused]] T &task_manager, System::ECS::Query<Position, Rotation, Velocity, Acceleration>& query)
+    void MovementSystem([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity, Acceleration>& query)
     {
         constexpr auto frame_time = 1;
 

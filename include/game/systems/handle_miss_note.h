@@ -5,14 +5,14 @@
 namespace Game::Rhythm
 {
     template<typename T>
-    void HandleMissNote(T &task_manager, System::ECS::Query<Lane, NoteSpeed, Timing> &query, System::ECS::Query<Lane, NoteSpeed, Timing, TimingEnd> &query2)
+    void HandleMissNote(T &syscall, System::ECS::Query<Lane, NoteSpeed, Timing> &query, System::ECS::Query<Lane, NoteSpeed, Timing, TimingEnd> &query2)
     {
         constexpr auto miss_timing = 500;
         for (auto &[id, comps] : query)
         {
             if (comps.get<Timing>().timing < -1 * miss_timing)
             {
-                task_manager.delete_entity(id);
+                syscall.delete_entity(id);
             }
         }
 
@@ -20,7 +20,7 @@ namespace Game::Rhythm
         {
             if (comps.get<TimingEnd>().timing_end < -1 * miss_timing)
             {
-                task_manager.delete_entity(id);
+                syscall.delete_entity(id);
             }
         }
     }
