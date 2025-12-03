@@ -20,8 +20,8 @@ uint32_t Windows::DirectxManager::init(const DirectxConfig *config)
         D3D_FEATURE_LEVEL level = {};
         D3D_FEATURE_LEVEL feature_levels[] = {D3D_FEATURE_LEVEL_11_0};
 
-        DXGI_SWAP_CHAIN_DESC1 sc_desc = {0};
-        DXGI_SWAP_CHAIN_FULLSCREEN_DESC fs_desc = {0};
+        DXGI_SWAP_CHAIN_DESC1 sc_desc = {};
+        DXGI_SWAP_CHAIN_FULLSCREEN_DESC fs_desc = {};
 
         sc_desc.BufferCount = 3; // <- Triple buffering
         sc_desc.Width = config->width;

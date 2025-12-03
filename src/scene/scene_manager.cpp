@@ -1,18 +1,25 @@
+#include <cstdlib>
 #include "scene.h"
 
 namespace Scene
 {
-    static extern SceneManager scene_instance;
+    /*
+     * Very Unsafe Please Fix This
+     * Didn't Protect Against Use Before Initialization and After Cleanup
+     */
+    typedef void *SceneManagerHandler;
+    extern "C" SceneManagerHandler get_scene_manager();
+
     SceneManager &SceneManager::instance()
     {
-        return (scene_instance);
+        SceneManager *instance = static_cast<SceneManager *>(get_scene_manager());
+        if (instance == nullptr)
+        {
+            LOG_ERROR("SceneManager used before initialization or after cleanup");
+            std::abort();
+        }
+        return (*instance);
     }
-
-    // void SceneManager::init(System::Renderer::VertexGeneratorQueue<System::Config::VertexQueueSize> *queue)
-    // {
-    //     instance()._generator_queue = queue;
-    //     change_scene<Config::StartingScene>();
-    // }
 
     void SceneManager::update()
     {
@@ -24,16 +31,6 @@ namespace Scene
                         using SceneType = std::decay_t<S>;
                         auto &manager = std::any_cast<typename SceneType::TaskManager &>(instance()._current_manager);
                         manager.run_all();
-                        //
-                        // if (instance()._generator_queue == nullptr)
-                        // {
-                        //     LOG_DEBUG(
-                        //             "Warn: Vertex queue generator didn't get initialize. Please check if you have "
-                        //             "called init "
-                        //             "function");
-                        //     return;
-                        // }
-                        // instance()._generator_queue->write(manager.get_rm());
                     }
                     else
                     {
@@ -43,11 +40,10 @@ namespace Scene
                 instance()._current_scene_template);
     }
 
-    void SceneManager::~SceneManager()
+    SceneManager::~SceneManager()
     {
         LOG_INFO("Cleaning up...");
-        auto &scene_template = instance()._current_scene_template;
-        instance()._current_manager.reset();
+        _current_manager.reset();
         std::visit(
                 []<typename S>(S &&scene)
                 {
@@ -56,6 +52,6 @@ namespace Scene
                         scene.Exit();
                     }
                 },
-                scene_template);
+                _current_scene_template);
     }
 } // namespace Scene

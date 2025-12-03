@@ -1,5 +1,9 @@
 #pragma once
 #include <Windows.h>
+#define INLINEOPTIMIZE static inline __attribute__((always_inline)) __forceinline
+
+typedef void *SceneManagerHandler;
+typedef void *DirectxHandler;
 
 typedef enum
 {
@@ -10,25 +14,25 @@ typedef enum
 
 typedef struct
 {
-    LONG    width;
-    LONG    height;
+    LONG width;
+    LONG height;
 } Window;
 
 typedef struct
 {
-    LONG    width;
-    LONG    height;
+    LONG width;
+    LONG height;
 } Monitor;
 
 typedef struct
 {
-    INT     x;
-    INT     y;
-} Vector2D;
+    INT x;
+    INT y;
+} Position;
 
 typedef struct
 {
-    void*   addr[256];
+    void *addr[256];
 } SystemQueue;
 
 typedef SystemQueue VertexQueue;
@@ -36,17 +40,20 @@ typedef SystemQueue RenderingQueue;
 
 typedef struct
 {
-    Window      window;
-    Monitor     monitor;
+    Window window;
+    Monitor monitor;
 
-    HINSTANCE   instance_handler;
-    HWND        window_handler;
+    HINSTANCE instance_handler;
+    HWND window_handler;
 
     DisplayType display_type;
-    char        is_running;
+    char is_running;
 
-    LONGLONG    precision;
+    LONGLONG precision;
 
-    VertexQueue     *vertex_queue;
-    RenderingQueue  *rendering_queue;
+    VertexQueue *vertex_queue;
+    RenderingQueue *rendering_queue;
+
+    SceneManagerHandler scene_manager;
+    DirectxHandler directx;
 } SystemInfo;
