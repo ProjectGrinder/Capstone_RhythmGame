@@ -38,3 +38,13 @@ static __inline size_t __vectorcall char_string_get_size(_In_ const char *str)
         ++cnt;
     return (cnt);
 }
+
+typedef struct
+{
+    size_t size;
+    size_t alloc;
+    char data[];
+} FileContent;
+
+DWORD __stdcall file_read(_Out_ FileContent **content, const char *name);
+void __stdcall file_free(FileContent **file);

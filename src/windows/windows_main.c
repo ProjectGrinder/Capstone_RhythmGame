@@ -1,3 +1,4 @@
+#include "directx/directx_api.h"
 #include "scenes/scenes_api.h"
 #define WIN32_LEAN_AND_MEAN
 
@@ -10,7 +11,6 @@
 
 #include "utils/windows_utils.h"
 
-#include "windows_directx.h"
 #include "windows_functions.h"
 #include "windows_types.h"
 
@@ -42,20 +42,20 @@ void *get_scene_manager()
     return (system_info.scene_manager);
 }
 
-HRESULT directx_init(_In_ DirectxHandler *directx_api)
+HRESULT directx_init(_In_ DirectXHandler *directx_api)
 {
-    const DirectxConfig config = {
+    const DirectXConfig config = {
             .height = system_info.window.height,
             .width = system_info.window.width,
             .window_handler = system_info.window_handler,
             .is_window = system_info.display_type == DT_WINDOW,
     };
-    return (directx_manager_init(directx_api, &config));
+    return (directx_device_init(directx_api, &config));
 }
 
 __forceinline void directx_clean_up(_In_ const DirectxHandler *directx_api)
 {
-    directx_manager_clean_up(directx_api);
+    directx_device_clean_up(directx_api);
 }
 
 int __stdcall real_main()
