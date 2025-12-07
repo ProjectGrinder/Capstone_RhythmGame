@@ -12,6 +12,7 @@ add_library(directx
 
 target_link_libraries(directx
         PRIVATE
+        os_utils
         user32
         gdi32
         kernel32
