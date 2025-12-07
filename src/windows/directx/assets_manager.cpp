@@ -6,6 +6,31 @@ typedef size_t asset_id;
 typedef struct
 {
 
+    char *semantic;
+    enum
+    {
+        FLOAT32BITS,
+        FLOAT16BITS,
+        FLOAT8BITS,
+
+        UINT32BITS,
+        UINT16BITS,
+        UINT8BITS,
+    } type;
+
+    size_t offset;
+
+} InputAttributeDescription;
+
+typedef struct
+{
+    InputAttributeDescription *elements;
+    size_t count;
+} InputLayout;
+
+typedef struct
+{
+
     enum
     {
         ASSET_PIXEL_SHADER,
@@ -23,9 +48,8 @@ typedef struct
 
         struct
         {
-            char *semantic;
-            unsigned int semantic_index;
-        } *as_vertex_shader;
+            InputLayout layout;
+        } as_vertex_shader;
 
         byte *as_any;
     } info;
