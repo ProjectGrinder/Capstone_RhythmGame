@@ -1,5 +1,7 @@
 #include "assets_manager.hpp"
 
+extern void *heap_alloc(size_t size);
+
 typedef unsigned char byte;
 typedef size_t asset_id;
 
@@ -24,8 +26,9 @@ typedef struct
 
 typedef struct
 {
-    InputAttributeDescription *elements;
     size_t count;
+    size_t stride;
+    InputAttributeDescription *elements;
 } InputLayout;
 
 typedef struct
@@ -39,6 +42,7 @@ typedef struct
         ASSET_UNKNOWN,
     } type;
     size_t size;
+    size_t alloc;
     union
     {
         struct
@@ -53,16 +57,28 @@ typedef struct
 
         byte *as_any;
     } info;
+
     byte data[];
 
 } AssetsData;
 
 typedef struct
 {
+   long long x, y, z;
+} Position;
 
-    char **loaded;
-    AssetsData *data;
-    size_t size;
-    size_t alloc;
+typedef struct
+{
 
-} AssetsManager;
+    size_t count;
+    byte position[];
+
+} VertexData;
+
+typedef struct
+{
+
+    AssetsData *assets;
+    VertexData *vertex;
+
+} RenderCommand;
