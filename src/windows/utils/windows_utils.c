@@ -145,3 +145,13 @@ void __stdcall file_free(FileContent **file)
         *file = NULL;
     }
 }
+
+void *__stdcall heap_alloc(size_t size)
+{
+    return (HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size));
+}
+
+void __stdcall heap_free(void *ptr)
+{
+    HeapFree(GetProcessHeap(), 0, ptr);
+}

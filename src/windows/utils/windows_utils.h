@@ -2,17 +2,17 @@
 #include <Windows.h>
 
 #ifndef PROJECT_NAME
-    #define PROJECT_NAME    UNNAMED_PROJECT
+    #define PROJECT_NAME UNNAMED_PROJECT
 #endif
 
-#define STR(name)       #name
-#define TO_STR(name)    STR(name)
+#define STR(name) #name
+#define TO_STR(name) STR(name)
 
-#define LOG_MAX         512
+#define LOG_MAX 512
 
-#define LOG_INFO(format, ...)       log_message(LL_INFO, __FUNCTION__, format, ##__VA_ARGS__);
-#define LOG_WARNING(format, ...)    log_message(LL_WARNING, __FUNCTION__, format, ##__VA_ARGS__);
-#define LOG_ERROR(format, ...)      log_message(LL_ERROR, __FUNCTION__, format, ##__VA_ARGS__);
+#define LOG_INFO(format, ...) log_message(LL_INFO, __FUNCTION__, format, ##__VA_ARGS__);
+#define LOG_WARNING(format, ...) log_message(LL_WARNING, __FUNCTION__, format, ##__VA_ARGS__);
+#define LOG_ERROR(format, ...) log_message(LL_ERROR, __FUNCTION__, format, ##__VA_ARGS__);
 
 typedef enum
 {
@@ -23,13 +23,7 @@ typedef enum
 
 void log_init(void);
 void log_cleanup(void);
-void log_message
-(
-    _In_    LogLevel    level,
-    _In_    const char* function_name,
-    _In_    const char* format,
-    _In_    ...
-);
+void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const char *format, _In_...);
 
 static __inline size_t __vectorcall char_string_get_size(_In_ const char *str)
 {
@@ -48,3 +42,7 @@ typedef struct
 
 DWORD __stdcall file_read(_Out_ FileContent **content, const char *name);
 void __stdcall file_free(FileContent **file);
+
+void *__stdcall heap_alloc(size_t size);
+
+void __stdcall heap_free(void *ptr);

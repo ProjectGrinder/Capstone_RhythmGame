@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+
 #define INLINEOPTIMIZE static inline __attribute__((always_inline)) __forceinline
 
 typedef void *SceneManagerHandler;
