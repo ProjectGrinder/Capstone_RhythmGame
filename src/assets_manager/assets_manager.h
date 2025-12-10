@@ -85,4 +85,8 @@ assets_id load_assets(const char *path, const char *name, AssetsType type);
 
 assets_id get_assets_id(const char *name);
 
-char wait_for_assets_load();
+void free_assets(assets_id id);
+
+char wait_for_assets_load(void);
+
+void assets_cleanup(void);

@@ -4,6 +4,7 @@ typedef unsigned long DWORD;
 
 extern DWORD __stdcall file_read(FileContent **content, const char *path);
 extern void __stdcall file_free(FileContent **content);
+extern void heap_free(void **data);
 
 // Leave -1 for error indication
 static AssetsRecord assets_records[(SHORT_MAX - 1)] = {0};
@@ -47,4 +48,24 @@ assets_id get_assets_id(const char *name)
             return id_map[i].id;
     }
     return (-1);
+}
+
+void free_assets(assets_id id)
+{
+    uint16_t index = ASSET_INDEX(id);
+    AssetsRecord current = assets_records[index];
+    AssetsIDMapping map = id_map[index];
+
+    file_free(&current.data);
+    heap_free((void **) &map.name);
+}
+
+void assets_cleanup(void)
+{
+    uint16_t i = 0;
+    for (; i < index; ++i)
+    {
+        file_free(&assets_records[index].data);
+        heap_free((void **) &id_map[index].name);
+    }
 }

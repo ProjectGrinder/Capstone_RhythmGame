@@ -1,5 +1,3 @@
-#include "directx/directx_api.h"
-#include "scenes/scenes_api.h"
 #define WIN32_LEAN_AND_MEAN
 
 #if _DEBUG
@@ -11,8 +9,13 @@
 
 #include "utils/windows_utils.h"
 
+#include "directx/directx_api.h"
+#include "scenes/scenes_api.h"
+
 #include "windows_functions.h"
 #include "windows_types.h"
+
+extern void assets_cleanup();
 
 static SystemInfo system_info = {
         .window = {.width = 1280, .height = 720},
@@ -71,6 +74,7 @@ int __stdcall real_main()
     log_init();
     sleep_init();
 
+    LOG_INFO("Starting...");
     error = create_window(&system_info);
     if (error != ERROR_SUCCESS)
     {
@@ -102,8 +106,10 @@ int __stdcall real_main()
     }
 
 exit:
+    LOG_INFO("Cleaning up");
     scene_manager_cleanup(&system_info.scene_manager);
     directx_clean_up(&system_info.directx);
+    assets_cleanup();
     log_cleanup();
 
 #if _DEBUG

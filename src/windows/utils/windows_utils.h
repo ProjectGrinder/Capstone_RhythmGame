@@ -45,4 +45,4 @@ void __stdcall file_free(FileContent **file);
 
 void *__stdcall heap_alloc(size_t size);
 
-void __stdcall heap_free(void *ptr);
+void __stdcall heap_free(void **ptr);

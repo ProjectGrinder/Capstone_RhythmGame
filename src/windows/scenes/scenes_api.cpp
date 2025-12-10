@@ -42,4 +42,5 @@ void scene_manager_cleanup(const SceneManagerHandler *api)
     manager->~SceneManager();
 
     HeapFree(GetProcessHeap(), 0, manager);
+    api = nullptr;
 }

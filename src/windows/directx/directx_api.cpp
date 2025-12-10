@@ -38,4 +38,5 @@ void directx_device_clean_up(const DirectXHandler *api)
     manager->~DeviceResources();
 
     HeapFree(GetProcessHeap(), 0, manager);
+    api = nullptr;
 }
