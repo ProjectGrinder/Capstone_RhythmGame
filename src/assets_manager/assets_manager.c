@@ -1,4 +1,5 @@
 #include "assets_manager.h"
+#include "utils/str_utils.h"
 
 typedef unsigned long DWORD;
 
@@ -39,6 +40,7 @@ exit:
     return (id);
 }
 
+/* TODO: Change this shit to hash map or my ass will get whip */
 assets_id get_assets_id(const char *name)
 {
     size_t i = 0;
