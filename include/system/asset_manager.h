@@ -11,8 +11,6 @@ extern "C"
         SPRITE,
     } AssetsType;
 
-    assets_id load_assets(const char *path, const char *name, AssetsType type);
-
     assets_id get_assets_id(const char *name);
 
     char wait_for_assets_load(void);

@@ -11,14 +11,32 @@ typedef unsigned int uint32_t;
 typedef unsigned short uint16_t;
 typedef unsigned char byte;
 
-typedef uint32_t assets_id;
-
 typedef struct
 {
     size_t size;
     size_t alloc;
     char data[];
 } FileContent;
+
+typedef enum
+{
+    FLOAT32BITS,
+    FLOAT16BITS,
+    FLOAT8BITS,
+
+    UINT32BITS,
+    UINT16BITS,
+    UINT8BITS,
+} InputType;
+
+typedef struct
+{
+    char *semantic;
+    InputType type;
+    size_t offset;
+} InputAttributeDescription;
+
+typedef uint32_t assets_id;
 
 typedef enum
 {
@@ -30,7 +48,17 @@ typedef enum
 typedef struct
 {
     AssetsType type;
+    union
+    {
+        struct { size_t count; InputAttributeDescription *data; } *as_shader;
+        struct { size_t width, height;} as_sprite;
+    } info;
+} AssetsInfo;
+
+typedef struct
+{
     uint16_t gen;
+    AssetsInfo info;
     FileContent *data;
 } AssetsRecord;
 
@@ -44,8 +72,6 @@ static inline assets_id make_id(uint16_t index, uint16_t gen)
 {
     return ((assets_id) gen << 16) | index;
 }
-
-assets_id load_assets(const char *path, const char *name, AssetsType type);
 
 assets_id get_assets_id(const char *name);
 
