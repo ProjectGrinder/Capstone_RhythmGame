@@ -21,7 +21,7 @@ void log_cleanup(void)
     }
 }
 
-void __cdecl log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const char *format, _In_...)
+void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const char *format, _In_...)
 {
     /* We can use va_* because it's compiler directive hence no CRT */
     SYSTEMTIME st = {0};
@@ -89,7 +89,7 @@ BOOL join_path(char *dst, size_t dst_size, const char *dir, size_t dir_size, con
     return (TRUE);
 }
 
-DWORD __stdcall file_read(_Out_ FileContent **content, _In_ const char *path)
+DWORD file_read(_Out_ FileContent **content, _In_ const char *path)
 {
     FileContent *fc = NULL;
     LARGE_INTEGER size = {0};
@@ -172,7 +172,7 @@ exit:
     return (error);
 }
 
-void __stdcall file_free(FileContent **file)
+void file_free(FileContent **file)
 {
     if (file && *file)
     {
@@ -181,15 +181,23 @@ void __stdcall file_free(FileContent **file)
     }
 }
 
-void *__stdcall heap_alloc(size_t size)
+void *heap_alloc(size_t size)
 {
     return (HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size));
 }
 
-void __stdcall heap_free(void **ptr)
+void heap_free(void *ptr)
 {
     if (ptr == NULL)
         return;
-    HeapFree(GetProcessHeap(), 0, *ptr);
+    HeapFree(GetProcessHeap(), 0, ptr);
     ptr = NULL;
+}
+
+void *memcpy(void *dst, const void *src, size_t n)
+{
+    UNREFERENCED_PARAMETER(dst);
+    UNREFERENCED_PARAMETER(src);
+    UNREFERENCED_PARAMETER(n);
+    return (NULL);
 }

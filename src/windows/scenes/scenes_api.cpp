@@ -3,14 +3,14 @@
 
 HRESULT scene_manager_init(SceneManagerHandler *handler)
 {
-    HRESULT error = ERROR_SUCCESS;
+    HRESULT error = HRESULT_FROM_WIN32(ERROR_SUCCESS);
     Scene::SceneManager *manager = nullptr;
     void *manager_alloc = nullptr;
 
     manager_alloc = HeapAlloc(GetProcessHeap(), 0, sizeof(Scene::SceneManager));
     if (manager_alloc == nullptr)
     {
-        error = ERROR_NOT_ENOUGH_MEMORY;
+        error = HRESULT_FROM_WIN32(ERROR_NOT_ENOUGH_MEMORY);
         goto exit;
     }
 

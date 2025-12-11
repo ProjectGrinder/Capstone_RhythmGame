@@ -40,9 +40,10 @@ typedef struct
     char data[];
 } FileContent;
 
-DWORD __stdcall file_read(_Out_ FileContent **content, const char *name);
-void __stdcall file_free(FileContent **file);
+DWORD file_read(_Out_ FileContent **content, const char *name);
+void file_free(FileContent **file);
 
-void *__stdcall heap_alloc(size_t size);
+void *heap_alloc(size_t size);
+void heap_free(void *ptr);
 
-void __stdcall heap_free(void **ptr);
+void *memcpy(void *dst, const void *src, size_t n);

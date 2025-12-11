@@ -10,9 +10,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #add_compile_options(/W4 /WX /Zi /DNDEBUG /FAcs)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-add_compile_options(/FAcs /O2 /Ob2 /Oi /Ot /GS- /Gy /DNDEBUG /Zi -flto)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FAcs /W4 /WX /DNDEBUG /Zi")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /FAcs /W4 /WX /DNDEBUG /Zi")
 add_compile_definitions(PROJECT_NAME=${PROJECT_NAME})
 
+include(cmake/FetchNASM.cmake)
 
 list(APPEND
     LIBS

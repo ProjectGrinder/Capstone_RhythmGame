@@ -61,7 +61,8 @@ __forceinline void directx_clean_up(_In_ const DirectxHandler *directx_api)
     directx_device_clean_up(directx_api);
 }
 
-int __stdcall real_main()
+// extern int asm_call(int a, int b);
+int real_main()
 {
 #if _DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -70,6 +71,9 @@ int __stdcall real_main()
     DWORD error = 0;
     MSG msg = {0};
     system_info.is_running = 1;
+
+    // int a = asm_call(1,2);
+    // LOG_INFO("asm test: %d", a);
 
     log_init();
     sleep_init();
@@ -124,7 +128,7 @@ exit:
  *  1. Console
  *  2. Windows Application
  */
-int __stdcall main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     UNREFERENCED_PARAMETER(argc);
     UNREFERENCED_PARAMETER(argv);
