@@ -14,10 +14,28 @@ As such, we have opted to use multiple smaller ECS instances that each take cont
 We refer to these smaller ECS instances, alongside the data necessary to register related components and systems,
 as well as compute and store initial data into those instances, as scenes.
 Communications between scenes, such as the data transfer when creating a new scene, are facilitated through
-a manager, which will also execute the registered systems during the main game loop.
+a SceneManager, which will also execute the registered systems during the main game loop.
 DirectX 11 is used for the rendering of the game with the use of a custom rendering pipeline implementation.
 User input is collected through the Windows API\@.
 
+\vspace{0.5cm}
+
+\noindent
+\begin{minipage}{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth, keepaspectratio]{images/engine}
+    \captionof{figure}{A diagram showing scene flow of the game prototype}
+    \label{fig:engine}
+\end{minipage}
+
+\vspace{0.5cm}
+
+\noindent Figure~\ref{fig:engine} shows the outline of the engine to implement.
+The SceneManager takes ownership and executes user-level systems during runtime by receiving inputs from the operating system,
+passing logs, audio and render object references to different specialized components.
+Those components will then pass information to the operating system to pass information to the device outputs as appropriate.
+For modularity, the communications are passed through the Window/Lifetime Manager, which acts as an adapter for the operating system.
+\\\\
 For the actual implementation of these compile-time optimizations, we take advantage of C++'s concept of templates.
 By using component and system data types as template parameters, we can use template specialization to let
 the compiler generate code specific to our use case.
