@@ -25,7 +25,7 @@ void log_init(void);
 void log_cleanup(void);
 void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const char *format, _In_...);
 
-static __inline size_t __vectorcall char_string_get_size(_In_ const char *str)
+static __inline size_t __vectorcall str_len(_In_ const char *str)
 {
     size_t cnt = 0;
     while (str[cnt] != '\0')

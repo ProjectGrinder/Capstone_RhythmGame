@@ -75,14 +75,49 @@ exit:
     return;
 }
 
-DWORD __stdcall file_read(_Out_ FileContent **content, const char *path)
+BOOL join_path(char *dst, size_t dst_size, const char *dir, size_t dir_size, const char *file, size_t file_size)
+{
+    if (dir_size + 1 + file_size + 1 > dst_size)
+        return (FALSE);
+
+    RtlCopyMemory(dst, dir, dir_size);
+
+    dst[dir_size] = '\\';
+    RtlCopyMemory(dst + dir_size + 1, file, file_size);
+    dst[dir_size + 1 + file_size] = '\0';
+
+    return (TRUE);
+}
+
+DWORD __stdcall file_read(_Out_ FileContent **content, _In_ const char *path)
 {
     FileContent *fc = NULL;
     LARGE_INTEGER size = {0};
-    DWORD error = ERROR_SUCCESS, byte_read = 0;
+    DWORD error = ERROR_SUCCESS, byte_read = 0, last_backslash = 0;
+    char current_directory[MAX_PATH], full_path[MAX_PATH];
 
+    byte_read = GetModuleFileName(NULL, current_directory, sizeof(current_directory));
+    if (byte_read == 0 || byte_read == MAX_PATH)
+    {
+        error = GetLastError();
+        LOG_ERROR("GetModuleFileName failed, Code 0x%081x", error);
+        goto exit;
+    }
+
+    last_backslash = byte_read;
+    while (last_backslash >= 0 && current_directory[last_backslash] != '\\' && current_directory[last_backslash] != '/')
+        --last_backslash;
+
+    if (!join_path(full_path, MAX_PATH, current_directory, last_backslash, path, str_len(path)))
+    {
+        LOG_ERROR("Path is too long");
+        goto exit;
+    }
+
+    LOG_INFO("Openning file at: %s", full_path);
+    byte_read = 0;
     const HANDLE hfile =
-            CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            CreateFile(full_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
     if (hfile == INVALID_HANDLE_VALUE)
     {
