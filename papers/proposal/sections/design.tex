@@ -80,8 +80,20 @@ structured around distinct but smoothly transitioning phases,
 thus requiring a seamless transition between the two, creating a revolutionary take on hybrid games.
 Considering that both of the games hugely relied on great optimization, as with a little disruption,
 it can cause a fatal mistake for the player inciting frustration, the design of the game must be made cautiously.
-\\\\
-The bullet hell section is mostly composed of large numbers of bullets and particles,
+
+\vspace{0.5cm}
+
+\noindent
+\begin{minipage}{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth, keepaspectratio]{images/designbullet}
+    \captionof{figure}{Preliminary system design for the bullet hell gameplay section}
+    \label{fig:designbullet}
+\end{minipage}
+
+\vspace{0.5cm}
+
+\noindent The bullet hell section is mostly composed of large numbers of bullets and particles,
 while great performance is still required to retain the player’s fluidity of movement.
 To achieve this, an ECS architecture is highly favored as opposed to object-oriented
 since the large number of entities can be handled more efficiently with it.
@@ -95,8 +107,20 @@ Meanwhile, the collision system will check each ongoing colliding entity by comp
 is colliding with another entity.
 Then, the corresponding function will be triggered to apply change to the state such as the player taking damage and making change to the player’s health UI\@.
 Moreover, the movement system computes the next frame position to render, and lastly, the animation system will render the right frame of the animation at the correct time.
-\\\\
-Rhythm games require precise timing and precision to catch the note at the right time,
+
+\vspace{0.5cm}
+
+\noindent
+\begin{minipage}{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth, keepaspectratio]{images/designrhythm}
+    \captionof{figure}{Preliminary system design of the rhythm game gameplay section}
+    \label{fig:designrhythm}
+\end{minipage}
+
+\vspace{0.5cm}
+
+\noindent Rhythm games require precise timing and precision to catch the note at the right time,
 so very few optimization issues can be tolerated as a result.
 However, ECS architecture is powerful enough to handle all the requirements
 such as notes quantities and an accurate time tracking device centralized by a single system.
