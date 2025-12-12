@@ -56,7 +56,7 @@ HRESULT directx_init(_In_ DirectXHandler *directx_api)
     return (directx_device_init(directx_api, &config));
 }
 
-__forceinline void directx_clean_up(_In_ const DirectxHandler *directx_api)
+__forceinline void directx_clean_up(_In_ DirectxHandler *directx_api)
 {
     directx_device_clean_up(directx_api);
 }

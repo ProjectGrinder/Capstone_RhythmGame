@@ -1,5 +1,5 @@
                     section .text
-                    global     __asm_memset
+                    global  __asm_memset
                     align   32, db  0x90
 __asm_memset:       push            rsi
                     push            rdi

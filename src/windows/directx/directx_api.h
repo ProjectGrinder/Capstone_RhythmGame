@@ -20,7 +20,7 @@ extern "C"
     };
 
     HRESULT directx_device_init(_Out_ DirectXHandler *api, _In_ const DirectXConfig *config);
-    void directx_device_clean_up(_In_ const DirectXHandler *manager);
+    void directx_device_clean_up(_In_ DirectXHandler *manager);
 
     HRESULT directx_renderer_create(DirectXHandler *handler, RendererHandler *h_renderer);
     void directx_renderer_free(RendererHandler *h_renderer);
