@@ -23,9 +23,9 @@ L_EQ1:     mov    r10b,   [rdx]
             
             align   2
 L_GE4_LE7: mov    r10d,   [rdx]
-            mov    [rdx + r8 - 4], r11d
+            mov    r11d, [rdx + r8 - 4]
             mov    [rcx],  r10d
-            mov    [rcx + r8 - 4], r10d
+            mov    [rcx + r8 - 4], r11d
             jmp		EXIT
 
                 align   64
@@ -103,7 +103,7 @@ L_GE33_LE256:  vmovdqu ymm0,   [rdx]
 L_GE257:       cmp     rdx,    rcx
                 jae     L_COPY_FORWARD
                 
-                lea     r12,    [rdx + rcx]
+                lea     r12,    [rdx + r8]
                 cmp     r12,    rcx
 
                 ja      L_OVERLAP_BWD
