@@ -205,11 +205,12 @@ void heap_free(void *ptr)
 
 extern void *__asm_memset(void *dest, int ch, size_t count);
 
-typedef unsigned long long __attribute__((__may_alias__)) u64_alias;
-typedef unsigned int __attribute__((__may_alias__)) u32_alias;
-typedef unsigned short __attribute__((__may_alias__)) u16_alias;
+typedef unsigned long long u64;
+typedef unsigned int u32;
+typedef unsigned short u16;
+typedef unsigned char u8;
 
-static void FORCEINLINE *__inline_memset(void *dest, int ch, size_t count)
+static FORCEINLINE void *__inline_memset(void *dest, int ch, size_t count)
 {
     unsigned char *ptr = (unsigned char *) dest;
 
@@ -219,20 +220,20 @@ static void FORCEINLINE *__inline_memset(void *dest, int ch, size_t count)
 
     while (count >= 8)
     {
-        *(u64_alias *) ptr = fill_ull;
+        *(u64 *) ptr = fill_ull;
         ptr += 8;
         count -= 8;
     }
 
     if (count >= 4)
     {
-        *(u32_alias *) ptr = fill_ui;
+        *(u32 *) ptr = fill_ui;
         ptr += 4;
         count -= 4;
     }
     if (count >= 2)
     {
-        *(u16_alias *) ptr = fill_us;
+        *(u16 *) ptr = fill_us;
         ptr += 2;
         count -= 2;
     }
@@ -249,4 +250,51 @@ void *memset(void *dest, int ch, size_t count)
     if (count >= SMALL_SIZE)
         return (__asm_memset(dest, ch, count));
     return (__inline_memset(dest, ch, count));
+}
+
+extern void *__asm_memcpy(void *dest, const void *src, size_t size);
+
+static FORCEINLINE void *__inline_memcpy(void *dest, const void *src, size_t size)
+{
+    u8 *dptr = (u8 *) dest;
+    const u8 *sptr = (const u8 *) src;
+
+    if (((size_t) dptr | (size_t) sptr) % 8 == 0)
+    {
+        while (size >= 8)
+        {
+            *(u64 *) dptr = *(u64 *) sptr;
+            dptr += 8;
+            sptr += 8;
+            size -= 8;
+        }
+    }
+
+    if (size >= 4)
+    {
+        *(u32 *) dptr = *(u32 *) sptr;
+        dptr += 4;
+        sptr += 4;
+        size -= 4;
+    }
+    if (size >= 2)
+    {
+        *(u16 *) dptr = *(u16 *) sptr;
+        dptr += 2;
+        sptr += 2;
+        size -= 2;
+    }
+    if (size > 0)
+    {
+        *dptr = *sptr;
+    }
+
+    return dest;
+}
+
+void *memcpy(void *dest, const void *src, size_t size)
+{
+    if (size >= SMALL_SIZE)
+        return (__asm_memcpy(dest, src, size));
+    return (__inline_memcpy(dest, src, size));
 }
