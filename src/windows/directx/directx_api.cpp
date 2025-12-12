@@ -7,7 +7,7 @@ HRESULT directx_device_init(DirectXHandler *api, const DirectXConfig *config)
     Windows::DeviceResources *device_resources;
     void *alloc = nullptr;
 
-    alloc = HeapAlloc(GetProcessHeap(), 0, sizeof(*device_resources));
+    alloc = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device_resources));
     if (alloc == nullptr)
     {
         error = HRESULT_FROM_WIN32(ERROR_NOT_ENOUGH_MEMORY);
@@ -29,14 +29,14 @@ exit:
     return (error);
 }
 
-void directx_device_clean_up(const DirectXHandler *api)
+void directx_device_clean_up(DirectXHandler *api)
 {
-    if (api == nullptr || *api == nullptr)
+    if (api == nullptr)
         return;
 
     auto *manager = static_cast<Windows::DeviceResources *>(*api);
     manager->~DeviceResources();
 
     HeapFree(GetProcessHeap(), 0, manager);
-    api = nullptr;
+    *api = nullptr;
 }

@@ -23,7 +23,7 @@ extern "C"
     void directx_device_clean_up(_In_ const DirectXHandler *manager);
 
     HRESULT directx_renderer_create(DirectXHandler *handler, RendererHandler *h_renderer);
-    void directx_renderer_free(const RendererHandler *h_renderer);
+    void directx_renderer_free(RendererHandler *h_renderer);
 
 #ifdef __cplusplus
 }
