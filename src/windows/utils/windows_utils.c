@@ -1,4 +1,5 @@
 #include "windows_utils.h"
+#define SMALL_SIZE 64
 
 static CRITICAL_SECTION log_lock;
 static char log_initialize = 0;
@@ -194,10 +195,58 @@ void heap_free(void *ptr)
     ptr = NULL;
 }
 
-void *memcpy(void *dst, const void *src, size_t n)
+// void *memcpy(void *dst, const void *src, size_t n)
+//{
+//     UNREFERENCED_PARAMETER(dst);
+//     UNREFERENCED_PARAMETER(src);
+//     UNREFERENCED_PARAMETER(n);
+//     return (NULL);
+// }
+
+extern void *__asm_memset(void *dest, int ch, size_t count);
+
+typedef unsigned long long __attribute__((__may_alias__)) u64_alias;
+typedef unsigned int __attribute__((__may_alias__)) u32_alias;
+typedef unsigned short __attribute__((__may_alias__)) u16_alias;
+
+static void FORCEINLINE *__inline_memset(void *dest, int ch, size_t count)
 {
-    UNREFERENCED_PARAMETER(dst);
-    UNREFERENCED_PARAMETER(src);
-    UNREFERENCED_PARAMETER(n);
-    return (NULL);
+    unsigned char *ptr = (unsigned char *) dest;
+
+    unsigned long long fill_ull = (unsigned long long) (unsigned char) ch * 0x0101010101010101ULL;
+    unsigned int fill_ui = (unsigned int) (unsigned char) ch * 0x01010101U;
+    unsigned short fill_us = (unsigned short) (unsigned char) ch * 0x0101U;
+
+    while (count >= 8)
+    {
+        *(u64_alias *) ptr = fill_ull;
+        ptr += 8;
+        count -= 8;
+    }
+
+    if (count >= 4)
+    {
+        *(u32_alias *) ptr = fill_ui;
+        ptr += 4;
+        count -= 4;
+    }
+    if (count >= 2)
+    {
+        *(u16_alias *) ptr = fill_us;
+        ptr += 2;
+        count -= 2;
+    }
+    if (count)
+    {
+        *ptr = (unsigned char) ch;
+    }
+
+    return (dest);
+}
+
+void *memset(void *dest, int ch, size_t count)
+{
+    if (count >= SMALL_SIZE)
+        return (__asm_memset(dest, ch, count));
+    return (__inline_memset(dest, ch, count));
 }

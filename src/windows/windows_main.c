@@ -72,9 +72,6 @@ int real_main()
     MSG msg = {0};
     system_info.is_running = 1;
 
-    // int a = asm_call(1,2);
-    // LOG_INFO("asm test: %d", a);
-
     log_init();
     sleep_init();
 
