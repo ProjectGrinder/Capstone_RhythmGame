@@ -6,6 +6,7 @@
 
 extern void *heap_alloc(size_t size);
 
+/* Needed to be optimized */
 static inline int strcmp(const char *left, const char *right)
 {
     for (; *left && *left == *right; ++left, ++right)
@@ -21,17 +22,17 @@ static inline size_t strlen(const char *s)
     return (cnt);
 }
 
-static inline char *strdup(const char *s)
+static inline char *strdup(const char *src)
 {
-    if (!s)
+    if (!src)
         return (char *) NULL;
-    size_t len = strlen(s) + 1;
+    size_t len = strlen(src) + 1;
     char *dst = (char *) heap_alloc(len);
     if (!dst)
         return (char *) NULL;
 
     for (size_t i = 0; i <= len; ++i)
-        dst[i] = s[i];
+        dst[i] = src[i];
 
     return (dst);
 }

@@ -1,18 +1,25 @@
 #include "assets_manager.h"
-#include "utils/str_utils.h"
 #include "utils/macros.h"
+#include "utils/str_utils.h"
 
 typedef unsigned long DWORD;
 
 extern DWORD __stdcall file_read(FileContent **content, const char *path);
 extern void __stdcall file_free(FileContent **content);
 extern void heap_free(void *data);
+extern void *memcpy(void *dst, const void *src, size_t size);
 
 // Leave -1 for error indication
 static AssetsRecord assets_records[(SHORT_MAX - 1)] = {0};
 // TODO: Change from this to proper hash mapping
 static AssetsIDMapping id_map[(SHORT_MAX - 1)];
 static uint16_t index = 0;
+
+
+static inline assets_id make_id(uint16_t index, uint16_t gen)
+{
+    return ((assets_id) gen << 16) | index;
+}
 
 static inline assets_id load_assets(const char *path, const char *name, AssetsInfo info)
 {
@@ -53,12 +60,27 @@ assets_id load_sprite(const char *path, const char *name, size_t width, size_t h
 assets_id load_vertex_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count)
 {
     /* need to copy */
-    InputAttributeDescription *copy = heap_alloc(sizeof(*attributes) * count);
-    UNUSED(path);
-    UNUSED(copy);
-    UNUSED(name);
-    UNUSED(attributes);
-    return (0);
+    InputAttributeDescription *cpy = heap_alloc(sizeof(*attributes) * count);
+    memcpy(cpy, attributes, count);
+
+    AssetsInfo info = {0};
+    info.type = VERTEX_SHADER;
+    info.info.as_shader.count = count;
+    info.info.as_shader.data = cpy;
+    return (load_assets(path, name, info));
+}
+
+assets_id load_pixel_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count)
+{
+    /* need to copy */
+    InputAttributeDescription *cpy = heap_alloc(sizeof(*attributes) * count);
+    memcpy(cpy, attributes, count);
+
+    AssetsInfo info = {0};
+    info.type = PIXEL_SHADER;
+    info.info.as_shader.count = count;
+    info.info.as_shader.data = cpy;
+    return (load_assets(path, name, info));
 }
 
 /* TODO: Change this shit to hash map or my ass will get whip */

@@ -50,8 +50,15 @@ typedef struct
     AssetsType type;
     union
     {
-        struct { size_t count; InputAttributeDescription *data; } *as_shader;
-        struct { size_t width, height;} as_sprite;
+        struct
+        {
+            size_t count;
+            InputAttributeDescription *data;
+        } as_shader;
+        struct
+        {
+            size_t width, height;
+        } as_sprite;
     } info;
 } AssetsInfo;
 
@@ -68,12 +75,10 @@ typedef struct
     assets_id id;
 } AssetsIDMapping;
 
-static inline assets_id make_id(uint16_t index, uint16_t gen)
-{
-    return ((assets_id) gen << 16) | index;
-}
-
 assets_id get_assets_id(const char *name);
+assets_id load_sprite(const char *path, const char *name, size_t width, size_t height);
+assets_id load_vertex_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count);
+assets_id load_pixel_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count);
 
 void free_assets(assets_id id);
 
