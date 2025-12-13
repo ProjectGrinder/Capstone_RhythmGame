@@ -1,5 +1,5 @@
 #include "assets_manager.h"
-#include "utils/macros.h"
+#include "utils/print_debug.h"
 #include "utils/str_utils.h"
 
 typedef unsigned long DWORD;
@@ -24,25 +24,54 @@ static inline assets_id make_id(uint16_t index, uint16_t gen)
 static inline assets_id load_assets(const char *path, const char *name, AssetsInfo info)
 {
     FileContent *content = NULL;
-    AssetsRecord current = assets_records[index];
-    AssetsIDMapping mapping = {0};
-    uint32_t id = -1;
+    uint32_t id = (uint32_t) -1;
+    uint16_t use_idx = (uint16_t) -1, i = 0;
+
+    AssetsRecord *current = NULL;
+    AssetsIDMapping *mapping = NULL;
+
+    for (; i < index; ++i)
+    {
+        if (assets_records[i].data == NULL)
+        {
+            use_idx = i;
+            break;
+        }
+    }
+
+    if (use_idx == (uint16_t) -1)
+    {
+        use_idx = index;
+    }
+
+    if (use_idx >= (SHORT_MAX - 1))
+    {
+        LOG_ERROR("Cannot add more assets");
+        goto exit;
+    }
 
     if (file_read(&content, path) != 0)
+    {
+        LOG_ERROR("Cannot read file at path of %s", path);
         goto exit;
+    }
 
-    current.data = content;
-    current.info = info;
-    ++current.gen;
+    current = &assets_records[use_idx];
+    mapping = &id_map[use_idx];
 
-    id = make_id(index, current.gen);
-    mapping.name = strdup(name);
-    mapping.id = id;
+    current->data = content;
+    current->info = info;
 
-    assets_records[index] = current;
-    id_map[index] = mapping;
+    id = make_id(use_idx, current->gen);
 
-    ++index;
+    if (mapping->name)
+        heap_free(mapping->name);
+
+    mapping->name = strdup(name);
+    mapping->id = id;
+
+    if (use_idx == index)
+        ++index;
 
 exit:
     return (id);
@@ -98,19 +127,46 @@ assets_id get_assets_id(const char *name)
 void free_assets(assets_id id)
 {
     uint16_t index = ASSET_INDEX(id);
-    AssetsRecord current = assets_records[index];
-    AssetsIDMapping map = id_map[index];
+    AssetsRecord *current = &assets_records[index];
+    AssetsIDMapping *map = &id_map[index];
 
-    file_free(&current.data);
-    heap_free(map.name);
+    switch (current->info.type)
+    {
+    case VERTEX_SHADER:
+    case PIXEL_SHADER:
+        heap_free(current->info.info.as_shader.data);
+        break;
+    default:
+        break;
+    }
+
+    file_free(&current->data);
+    heap_free(map->name);
+
+    ++current->gen;
+    current->data = NULL;
+
+    map->name = NULL;
+    map->id = (uint32_t) -1;
 }
 
 void assets_cleanup(void)
 {
     uint16_t i = 0;
+    AssetsRecord *curr = NULL;
     for (; i < index; ++i)
     {
-        file_free(&assets_records[index].data);
-        heap_free((void **) &id_map[index].name);
+        curr = &assets_records[i];
+        switch (curr->info.type)
+        {
+        case VERTEX_SHADER:
+        case PIXEL_SHADER:
+            heap_free(curr->info.info.as_shader.data);
+            break;
+        default:
+            break;
+        };
+        file_free(&curr->data);
+        heap_free(id_map[i].name);
     }
 }
