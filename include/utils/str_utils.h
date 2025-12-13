@@ -5,6 +5,7 @@
 #endif
 
 extern void *heap_alloc(size_t size);
+extern void *memcpy(void *dst, const void *src, size_t count);
 
 /* Needed to be optimized */
 static inline int strcmp(const char *left, const char *right)
@@ -31,8 +32,7 @@ static inline char *strdup(const char *src)
     if (!dst)
         return (char *) NULL;
 
-    for (size_t i = 0; i <= len; ++i)
-        dst[i] = src[i];
+    memcpy(dst, src, len);
 
     return (dst);
 }
