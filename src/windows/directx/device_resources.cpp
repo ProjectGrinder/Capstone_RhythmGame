@@ -1,6 +1,7 @@
 #include "device_resources.hpp"
 extern "C"
 {
+#include <dxgi1_4.h>
 #include "../utils/windows_utils.h"
 }
 
