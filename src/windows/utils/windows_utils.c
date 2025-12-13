@@ -223,6 +223,7 @@ static FORCEINLINE void *__inline_memset(void *dest, int ch, size_t count)
         ptr += 4;
         count -= 4;
     }
+
     if (count >= 2)
     {
         *(u16 *) ptr = fill_us;
