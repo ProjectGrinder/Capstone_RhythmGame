@@ -72,6 +72,12 @@ int real_main()
     MSG msg = {0};
     system_info.is_running = 1;
 
+    char test1[61], test2[61];
+
+    memset(test1, 0x11, sizeof(test1));
+
+    memcpy(test2, test1, sizeof(test1));
+
     log_init();
     sleep_init();
 

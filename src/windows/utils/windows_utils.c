@@ -109,7 +109,7 @@ DWORD file_read(_Out_ FileContent **content, _In_ const char *path)
     while (last_backslash >= 0 && current_directory[last_backslash] != '\\' && current_directory[last_backslash] != '/')
         --last_backslash;
 
-    if (!join_path(full_path, MAX_PATH, current_directory, last_backslash, path, str_len(path)))
+    if (!join_path(full_path, MAX_PATH, current_directory, last_backslash, path, strlen(path)))
     {
         LOG_ERROR("Path is too long");
         goto exit;
@@ -194,14 +194,6 @@ void heap_free(void *ptr)
     HeapFree(GetProcessHeap(), 0, ptr);
     ptr = NULL;
 }
-
-// void *memcpy(void *dst, const void *src, size_t n)
-//{
-//     UNREFERENCED_PARAMETER(dst);
-//     UNREFERENCED_PARAMETER(src);
-//     UNREFERENCED_PARAMETER(n);
-//     return (NULL);
-// }
 
 extern void *__asm_memset(void *dest, int ch, size_t count);
 
