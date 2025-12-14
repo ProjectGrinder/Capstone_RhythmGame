@@ -112,33 +112,33 @@ Meanwhile, Unreal Engine's high performance and advanced features aim for high-q
 3D projects, but the system is not built to support the general media applications due to its massive 
 performance costs.
 
-\subsubsection*{Digital Content Creation Tools}
+% \subsubsection*{Digital Content Creation Tools}
 
-Digital Content Creation (DCC) tools, such as Blender~\cite{Blender}, are widely used in the creation 
-of 3D models, animations, and visual effects.
-\\\\
-Blender is an open-source DCC tool built with native C/C++ core for optimized data processing and 
-memory management.
-The system uses dependency graphs~\cite{Blender_Dependency} to update and manage relationships of scene data
-efficiently by only considering what is dependent on the modified value.
-Blender also uses a specialized system called DNA~\cite{Blender_DNA} and RNA~\cite{Blender_RNA} to manage 
-data structures and properties.
-DNA is a low-level system that defines the data structures used in Blender to enable forward and backward 
-compatibility across different versions of the software.
-The system generates a binary representation for the data structures, called Structure DNA (SDNA).
-Then, SDNA is embedded with the actual data, making the contents in the files self-descriptive and portable 
-across other versions of the system.
-On top of DNA, RNA is a higher-level system that provides an interface for accessing and manipulating 
-Blender's data structures at runtime, allowing for dynamic interaction with the data.
-\\\\
-Blender's architecture is designed to be modular and extensible from its data-block structure, allowing for
-the addition of new features from plugins and scripts.
-However, the system uses Python for scripting layer and API which, while flexible and easy to use,
-can introduce performance overhead due to its interpreted nature.
-Additionally, Blender's DNA/RNA systems can add complexity to the data management process, which may cause 
-complications for developers when improving or extending the system in the future.
-Therefore, while Blender's architecture is optimized for performance and flexibility, there are still 
-challenges in balancing these aspects effectively.
+% Digital Content Creation (DCC) tools, such as Blender~\cite{Blender}, are widely used in the creation 
+% of 3D models, animations, and visual effects.
+% \\\\
+% Blender is an open-source DCC tool built with native C/C++ core for optimized data processing and 
+% memory management.
+% The system uses dependency graphs~\cite{Blender_Dependency} to update and manage relationships of scene data
+% efficiently by only considering what is dependent on the modified value.
+% Blender also uses a specialized system called DNA~\cite{Blender_DNA} and RNA~\cite{Blender_RNA} to manage 
+% data structures and properties.
+% DNA is a low-level system that defines the data structures used in Blender to enable forward and backward 
+% compatibility across different versions of the software.
+% The system generates a binary representation for the data structures, called Structure DNA (SDNA).
+% Then, SDNA is embedded with the actual data, making the contents in the files self-descriptive and portable 
+% across other versions of the system.
+% On top of DNA, RNA is a higher-level system that provides an interface for accessing and manipulating 
+% Blender's data structures at runtime, allowing for dynamic interaction with the data.
+% \\\\
+% Blender's architecture is designed to be modular and extensible from its data-block structure, allowing for
+% the addition of new features from plugins and scripts.
+% However, the system uses Python for scripting layer and API which, while flexible and easy to use,
+% can introduce performance overhead due to its interpreted nature.
+% Additionally, Blender's DNA/RNA systems can add complexity to the data management process, which may cause 
+% complications for developers when improving or extending the system in the future.
+% Therefore, while Blender's architecture is optimized for performance and flexibility, there are still 
+% challenges in balancing these aspects effectively.
 
 \subsection{Gap Analysis}
 \label{subsec:gap-analysis}
