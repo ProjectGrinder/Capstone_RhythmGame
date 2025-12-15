@@ -22,6 +22,7 @@ void log_cleanup(void)
     }
 }
 
+#pragma warning(disable : 4200)
 void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const char *format, _In_...)
 {
     /* We can use va_* because it's compiler directive hence no CRT */
@@ -151,7 +152,7 @@ DWORD file_read(_Out_ FileContent **content, _In_ const char *path)
     fc->size = size.QuadPart;
     fc->alloc = size.QuadPart + 1;
 
-    if (ReadFile(hfile, fc->data, size.QuadPart, &byte_read, NULL) == 0 || byte_read != size.QuadPart)
+    if (ReadFile(hfile, fc->data, (DWORD) size.QuadPart, &byte_read, NULL) == 0 || byte_read != size.QuadPart)
     {
         error = GetLastError();
         LOG_ERROR("ReadFile failed, Code 0x%08lx", error);

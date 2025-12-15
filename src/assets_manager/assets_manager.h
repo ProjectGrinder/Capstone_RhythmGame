@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable : 4200)
 
 #ifndef SHORT_MAX
     #define SHORT_MAX 65535

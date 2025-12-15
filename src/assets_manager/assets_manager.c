@@ -1,3 +1,6 @@
+#pragma warning(disable : 4200)
+#pragma warning(disable : 4245)
+
 #include "assets_manager.h"
 #include "utils/print_debug.h"
 #include "utils/str_utils.h"
@@ -13,7 +16,7 @@ extern void *memcpy(void *dst, const void *src, size_t size);
 static AssetsRecord assets_records[(SHORT_MAX - 1)] = {0};
 // TODO: Change from this to proper hash mapping
 static AssetsIDMapping id_map[(SHORT_MAX - 1)];
-static uint16_t index = 0;
+static uint16_t record_index = 0;
 
 
 static inline assets_id make_id(uint16_t index, uint16_t gen)
@@ -30,7 +33,7 @@ static inline assets_id load_assets(const char *path, const char *name, AssetsIn
     AssetsRecord *current = NULL;
     AssetsIDMapping *mapping = NULL;
 
-    for (; i < index; ++i)
+    for (; i < record_index; ++i)
     {
         if (assets_records[i].data == NULL)
         {
@@ -41,7 +44,7 @@ static inline assets_id load_assets(const char *path, const char *name, AssetsIn
 
     if (use_idx == (uint16_t) -1)
     {
-        use_idx = index;
+        use_idx = record_index;
     }
 
     if (use_idx >= (SHORT_MAX - 1))
@@ -70,8 +73,8 @@ static inline assets_id load_assets(const char *path, const char *name, AssetsIn
     mapping->name = strdup(name);
     mapping->id = id;
 
-    if (use_idx == index)
-        ++index;
+    if (use_idx == record_index)
+        ++record_index;
 
 exit:
     return (id);
@@ -116,11 +119,12 @@ assets_id load_pixel_shader(const char *path, const char *name, InputAttributeDe
 assets_id get_assets_id(const char *name)
 {
     size_t i = 0;
-    for (; i < index; ++i)
+    for (; i < record_index; ++i)
     {
         if (strcmp(name, id_map[i].name) == 0)
             return id_map[i].id;
     }
+
     return (-1);
 }
 
@@ -154,7 +158,7 @@ void assets_cleanup(void)
 {
     uint16_t i = 0;
     AssetsRecord *curr = NULL;
-    for (; i < index; ++i)
+    for (; i < record_index; ++i)
     {
         curr = &assets_records[i];
         switch (curr->info.type)
