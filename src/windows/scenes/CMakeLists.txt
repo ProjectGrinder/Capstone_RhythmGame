@@ -6,7 +6,7 @@ file(GLOB
 )
 
 add_library(os_scene
-        STATIC
+        OBJECT
         ${DIRECTX_FILES}
 )
 

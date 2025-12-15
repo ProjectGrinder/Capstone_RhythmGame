@@ -6,7 +6,7 @@ file(GLOB
 )
 
 add_library(directx
-        STATIC
+        OBJECT
         ${DIRECTX_FILES}
 )
 

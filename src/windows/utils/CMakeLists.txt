@@ -8,15 +8,6 @@ file(GLOB
 )
 
 add_library(os_utils
-        STATIC
+        OBJECT
         ${WINDOWS_UTILS_FILES}
-)
-
-target_link_libraries(os_utils
-        PRIVATE
-            os_asm_utils
-            user32
-            gdi32
-            kernel32
-            winmm
 )

@@ -18,6 +18,8 @@ target_link_libraries(windows_main
         PRIVATE
             ${LIBS}
             directx
+            os_utils
+            os_asm_utils
             os_scene
             user32
             gdi32
