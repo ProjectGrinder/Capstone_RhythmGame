@@ -1,0 +1,18 @@
+[default_config]
+version = "0.10.1"
+assembler = "nasm"
+instruction_set = "x86/x86-64"
+
+[default_config.opts]
+diagnostics = true
+default_diagnostics = true
+
+[[project]]
+path = ""
+version = "0.10.1"
+assembler = "nasm"
+instruction_set = "x86/x86-64"
+
+[project.opts]
+diagnostics = true
+default_diagnostics = true

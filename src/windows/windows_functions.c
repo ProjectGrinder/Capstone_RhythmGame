@@ -4,13 +4,8 @@
 
 LARGE_INTEGER perf_frequency;
 
-LRESULT CALLBACK window_process
-(
-    _In_    const HWND    hwnd,
-    _In_    const UINT    msg,
-    _In_    const WPARAM  w_param,
-    _In_    const LPARAM  l_param
-)
+LRESULT CALLBACK
+window_process(_In_ const HWND hwnd, _In_ const UINT msg, _In_ const WPARAM w_param, _In_ const LPARAM l_param)
 {
     switch (msg)
     {
@@ -25,34 +20,33 @@ LRESULT CALLBACK window_process
 
 DWORD __vectorcall create_window(_In_ SystemInfo *system_info)
 {
-    HWND hwnd                           =   {0};
-    MONITORINFO monitor_info            =   {0};
-    WNDCLASSEX window_settings          =   {0};
-    DEVMODE devmode_screen_settings     =   {0};
-    const DWORD style_flags             =   WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP;
+    HWND hwnd = {0};
+    MONITORINFO monitor_info = {0};
+    WNDCLASSEX window_settings = {0};
+    DEVMODE devmode_screen_settings = {0};
+    const DWORD style_flags = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP;
     DWORD error = ERROR_SUCCESS;
 
     monitor_info.cbSize = sizeof(MONITORINFO);
 
-    window_settings.cbSize          =   sizeof(WNDCLASSEXA);
-    window_settings.style           =   CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-    window_settings.lpfnWndProc     =   window_process;
-    window_settings.cbClsExtra      =   0;
-    window_settings.cbWndExtra      =   0;
-    window_settings.hInstance       =   system_info->instance_handler;
-    window_settings.hIcon           =   LoadIcon(NULL, IDI_WINLOGO);
-    window_settings.hIconSm         =   LoadIcon(NULL, IDI_WINLOGO);
-    window_settings.hCursor         =   LoadCursor(NULL, IDC_ARROW);
-    window_settings.hbrBackground   =   (HBRUSH)(GetStockObject(BLACK_BRUSH));
-    window_settings.lpszMenuName    =   NULL;
-    window_settings.lpszClassName   =   TO_STR(PROJECT_NAME);
-
+    window_settings.cbSize = sizeof(WNDCLASSEXA);
+    window_settings.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    window_settings.lpfnWndProc = window_process;
+    window_settings.cbClsExtra = 0;
+    window_settings.cbWndExtra = 0;
+    window_settings.hInstance = system_info->instance_handler;
+    window_settings.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+    window_settings.hIconSm = LoadIcon(NULL, IDI_WINLOGO);
+    window_settings.hCursor = LoadCursor(NULL, IDC_ARROW);
+    window_settings.hbrBackground = (HBRUSH) (GetStockObject(BLACK_BRUSH));
+    window_settings.lpszMenuName = NULL;
+    window_settings.lpszClassName = TO_STR(PROJECT_NAME);
 
 
     if (RegisterClassEx(&window_settings) == 0)
     {
         error = GetLastError();
-        LOG_ERROR("RegisterClassEx failed, Code 0x%081x", error);
+        LOG_ERROR("RegisterClassEx failed, Code 0x%08lx", error);
         goto Exit;
     }
 
@@ -73,7 +67,7 @@ DWORD __vectorcall create_window(_In_ SystemInfo *system_info)
     if (hwnd == NULL)
     {
         error = GetLastError();
-        LOG_ERROR("CreateWindowEx failed, Code 0x%081x", error);
+        LOG_ERROR("CreateWindowEx failed, Code 0x%08lx", error);
         goto Exit;
     }
 
@@ -81,7 +75,7 @@ DWORD __vectorcall create_window(_In_ SystemInfo *system_info)
     if (GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTOPRIMARY), &monitor_info) == 0)
     {
         error = ERROR_MONITOR_NO_DESCRIPTOR;
-        LOG_ERROR("GetMonitorInfo failed, Code 0x%081x", error);
+        LOG_ERROR("GetMonitorInfo failed, Code 0x%08lx", error);
         goto Exit;
     }
 
@@ -125,7 +119,7 @@ DWORD __vectorcall create_window(_In_ SystemInfo *system_info)
 
         if (error != DISP_CHANGE_SUCCESSFUL)
         {
-            LOG_ERROR("ChangeDisplaySettings failed, Code 0x%081x", error);
+            LOG_ERROR("ChangeDisplaySettings failed, Code 0x%08lx", error);
             goto Exit;
         }
 
@@ -139,7 +133,7 @@ DWORD __vectorcall create_window(_In_ SystemInfo *system_info)
                     SWP_NOOWNERZORDER | SWP_FRAMECHANGED) == 0)
         {
             error = GetLastError();
-            LOG_ERROR("SetWindowPos failed, Code 0x%081x", error);
+            LOG_ERROR("SetWindowPos failed, Code 0x%08lx", error);
             goto Exit;
         }
 
@@ -157,18 +151,17 @@ DWORD __vectorcall create_window(_In_ SystemInfo *system_info)
                     SWP_NOOWNERZORDER | SWP_FRAMECHANGED) == 0)
         {
             error = GetLastError();
-            LOG_ERROR("SetWindowPos failed, Code 0x%081x", error);
+            LOG_ERROR("SetWindowPos failed, Code 0x%08lx", error);
             goto Exit;
         }
 
         break;
 
     case DT_WINDOW:
-        if (SetWindowLongPtr(
-                    hwnd, GWL_STYLE, (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)) == 0)
+        if (SetWindowLongPtr(hwnd, GWL_STYLE, (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)) == 0)
         {
             error = GetLastError();
-            LOG_ERROR("SetWindowLongPtr failed, Code 0x%081x", error);
+            LOG_ERROR("SetWindowLongPtr failed, Code 0x%08lx", error);
             goto Exit;
         }
 
@@ -183,7 +176,7 @@ DWORD __vectorcall create_window(_In_ SystemInfo *system_info)
         {
             error = GetLastError();
 
-            LOG_ERROR("SetWindowPos failed, Code 0x%081x", error);
+            LOG_ERROR("SetWindowPos failed, Code 0x%08lx", error);
             goto Exit;
         }
 
@@ -192,17 +185,17 @@ DWORD __vectorcall create_window(_In_ SystemInfo *system_info)
     default:
 
         error = ERROR_INVALID_PARAMETER;
-        LOG_ERROR("Unknown display type, Code 0x%081x", error);
+        LOG_ERROR("Unknown display type, Code 0x%08lx", error);
         goto Exit;
     }
 
     ShowWindow(hwnd, SW_SHOW);
 
     system_info->monitor.height = monitor_height;
-    system_info->monitor.width  = monitor_width;
+    system_info->monitor.width = monitor_width;
 
     system_info->window.height = window_height;
-    system_info->window.width  = window_width;
+    system_info->window.width = window_width;
 
     system_info->window_handler = hwnd;
 
