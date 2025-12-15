@@ -12,14 +12,14 @@ HRESULT Windows::DeviceResources::init(const DirectXConfig *config)
     hr = create_device_resources();
     if (FAILED(hr))
     {
-        LOG_ERROR("create_deivce_resources failed, Code 0x%081x", hr);
+        LOG_ERROR("create_deivce_resources failed, Code 0x%08lx", hr);
         goto exit;
     }
 
     hr = create_window_resources(config->window_handler);
     if (FAILED(hr))
     {
-        LOG_ERROR("create_window_resources failed, Code 0x%081x", hr);
+        LOG_ERROR("create_window_resources failed, Code 0x%08lx", hr);
     }
 exit:
     return (hr);
@@ -58,7 +58,7 @@ HRESULT Windows::DeviceResources::create_device_resources()
             &context);
     if (FAILED(hr))
     {
-        LOG_ERROR("D3D11CreateDevice failed, Code 0x%081x", hr);
+        LOG_ERROR("D3D11CreateDevice failed, Code 0x%08lx", hr);
         goto exit;
     }
 

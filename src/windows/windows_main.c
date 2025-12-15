@@ -61,7 +61,6 @@ __forceinline void directx_clean_up(_In_ DirectxHandler *directx_api)
     directx_device_clean_up(directx_api);
 }
 
-// extern int asm_call(int a, int b);
 int real_main()
 {
 #if _DEBUG
@@ -79,21 +78,21 @@ int real_main()
     error = create_window(&system_info);
     if (error != ERROR_SUCCESS)
     {
-        LOG_ERROR("create_window failed, Code 0x%081x", error);
+        LOG_ERROR("create_window failed, Code 0x%08lx", error);
         goto exit;
     }
 
     error = directx_init(&system_info.directx);
     if (error != ERROR_SUCCESS)
     {
-        LOG_ERROR("directx_init failed, Code 0x%081x", error);
+        LOG_ERROR("directx_init failed, Code 0x%08lx", error);
         goto exit;
     }
 
     error = scene_manager_init(&system_info.scene_manager);
     if (error != ERROR_SUCCESS)
     {
-        LOG_ERROR("scene_manager_init failed, Code 0x%081x", error);
+        LOG_ERROR("scene_manager_init failed, Code 0x%08lx", error);
         goto exit;
     }
 

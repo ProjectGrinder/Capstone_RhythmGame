@@ -101,7 +101,7 @@ DWORD file_read(_Out_ FileContent **content, _In_ const char *path)
     if (byte_read == 0 || byte_read == MAX_PATH)
     {
         error = GetLastError();
-        LOG_ERROR("GetModuleFileName failed, Code 0x%081x", error);
+        LOG_ERROR("GetModuleFileName failed, Code 0x%08lx", error);
         goto exit;
     }
 
@@ -123,14 +123,14 @@ DWORD file_read(_Out_ FileContent **content, _In_ const char *path)
     if (hfile == INVALID_HANDLE_VALUE)
     {
         error = GetLastError();
-        LOG_ERROR("CreateFile failed, Code 0x%081x", error)
+        LOG_ERROR("CreateFile failed, Code 0x%08lx", error)
         goto exit;
     }
 
     if (GetFileSizeEx(hfile, &size) == 0)
     {
         error = GetLastError();
-        LOG_ERROR("GetFileSizeEx failed, Code 0x%081x", error);
+        LOG_ERROR("GetFileSizeEx failed, Code 0x%08lx", error);
         goto error;
     }
 
@@ -154,7 +154,7 @@ DWORD file_read(_Out_ FileContent **content, _In_ const char *path)
     if (ReadFile(hfile, fc->data, size.QuadPart, &byte_read, NULL) == 0 || byte_read != size.QuadPart)
     {
         error = GetLastError();
-        LOG_ERROR("ReadFile failed, Code 0x%081x", error);
+        LOG_ERROR("ReadFile failed, Code 0x%08lx", error);
         goto error;
     }
 
@@ -166,7 +166,7 @@ error:
     if (CloseHandle(hfile) == 0)
     {
         error = GetLastError();
-        LOG_ERROR("CloseHandle failed, Code 0x%081x", error);
+        LOG_ERROR("CloseHandle failed, Code 0x%08lx", error);
     }
 
 exit:
