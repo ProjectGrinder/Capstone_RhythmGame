@@ -6,21 +6,25 @@ extern "C"
 {
 #endif
 
-    typedef void *DirectxHandler;
-    typedef struct DirectxConfig DirectxConfig;
+    typedef void *DirectXHandler;
+    typedef void *RendererHandler;
+    typedef void *VertexGeneratorHandler;
+    typedef struct DirectXConfig DirectXConfig;
 
-    struct DirectxConfig
+    struct DirectXConfig
     {
         HWND window_handler;
         UINT width;
         UINT height;
-        int is_window;
+        BOOL is_window;
     };
 
-    HRESULT directx_manager_init(_Out_ DirectxHandler *api, _In_ const DirectxConfig *config);
-    void directx_manager_clean_up(_In_ const DirectxHandler *manager);
+    HRESULT directx_device_init(_Out_ DirectXHandler *api, _In_ const DirectXConfig *config);
+    void directx_device_clean_up(_In_ DirectXHandler *manager);
+
+    HRESULT directx_renderer_create(DirectXHandler *handler, RendererHandler *h_renderer);
+    void directx_renderer_free(RendererHandler *h_renderer);
 
 #ifdef __cplusplus
 }
 #endif
-

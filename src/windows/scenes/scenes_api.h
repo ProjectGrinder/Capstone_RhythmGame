@@ -11,7 +11,7 @@ extern "C"
 
     HRESULT scene_manager_init(SceneManagerHandler *api);
     void scene_manager_update(SceneManagerHandler *api);
-    void scene_manager_cleanup(const SceneManagerHandler *api);
+    void scene_manager_cleanup(SceneManagerHandler *api);
 #ifdef __cplusplus
 }
 #endif

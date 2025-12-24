@@ -3,21 +3,25 @@ project(Capstone_RhythmGame)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 23)
 
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/out/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/out/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/out/bin)
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /PROFILE")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_compile_options(/W4 /WX)
-#add_compile_options(/FAcs /O2 /Ob2 /Oi /Ot /GS- /Gy /DNDEBUG /Zi -flto)
+#add_compile_options(/W4 /WX /Zi /DNDEBUG /FAcs)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FAcs /W4 /WX /DNDEBUG /Zi")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /FAcs /W4 /WX /DNDEBUG /Zi")
 add_compile_definitions(PROJECT_NAME=${PROJECT_NAME})
 
+include(cmake/FetchNASM.cmake)
 
 list(APPEND
     LIBS
         scene
         engine
+        assets_manager
 )
 
 include_directories("include")
@@ -63,22 +67,3 @@ else()
         COMMENT "[${PROJECT_NAME}] - Building"
     )
 endif()
-
-#add_executable(${PROJECT_NAME}
-#    WIN32
-#        src/main.cpp
-#)
-#
-#target_link_libraries(${PROJECT_NAME}
-#    PRIVATE
-#        ${LIBS}
-#        user32
-#        gdi32
-#        kernel32
-#        d3d11
-#        dxgi
-#        dinput8
-#        winmm
-#)
-#
-#add_dependencies(${PROJECT_NAME} compile_shaders)
