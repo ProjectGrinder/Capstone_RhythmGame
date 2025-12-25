@@ -10,8 +10,8 @@ namespace System::ECS
     class ResourcePool
     {
         std::vector<Resource> _data;
-        std::vector<pid> _index_to_id;
-        std::vector<size_t> _id_to_index;
+        std::vector<pid> _index_to_id{};
+        std::vector<size_t> _id_to_index{};
         std::bitset<MaxResource> _has_component;
 
     private:
