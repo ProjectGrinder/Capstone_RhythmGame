@@ -26,4 +26,3 @@ int get_key_state(const int vk)
 {
     return ((GetAsyncKeyState(vk) & 0x8000) != 0);
 }
-
