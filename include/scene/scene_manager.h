@@ -2,7 +2,6 @@
 #include <any>
 #include <variant>
 #include "demo.h"
-#include "system.h"
 
 namespace Scene
 {

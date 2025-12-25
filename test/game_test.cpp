@@ -8,6 +8,7 @@ using System::ECS::ResourcePool;
 using System::ECS::Syscall;
 using System::ECS::SyscallType;
 using System::ECS::TaskManager;
+using Game::Physics::Position;
 using namespace Game::BulletHell;
 
 // -- BULLET HELL TESTS --

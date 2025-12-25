@@ -5,17 +5,27 @@
 namespace Game::Rhythm
 {
     template<typename T>
-    void HandleRhythm([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState> &query1)
+    void HandleRhythm(
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<Battle::BattleState> &battle_query,
+            System::ECS::Query<Rhythm::KeyInput> &input_query,
+            [[maybe_unused]] System::ECS::Query<Rhythm::Lane, Rhythm::Timing> &note_query,
+            [[maybe_unused]] System::ECS::Query<Rhythm::Lane, Rhythm::Timing, Rhythm::TimingEnd> &hold_note_query)
     {
-        if (query1.begin() == query1.end())
+        if (battle_query.begin() == battle_query.end())
             return;
 
-        if (query1.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
+        if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
         {
             return;
         }
 
-        // intentionally left blank to await the rest of the implementation
+        if (input_query.begin() == input_query.end())
+            return;
 
+        // This system should check the input, remove a note if it was hit correctly, and update score/hp/etc. correctly
+        // If you need to adjust components or data structures you can ask what structures implement what data to
+        // Midfield
+        // TODO: Pooh part please implement
     }
-}
+} // namespace Game::Rhythm

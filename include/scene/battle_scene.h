@@ -1,5 +1,8 @@
 #pragma once
 
+#include "system.h"
+#include "game.h"
+
 namespace Scene
 {
     struct BattleScene
@@ -70,7 +73,7 @@ namespace Scene
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             Game::BulletHell::InputToVelocity<Syscall>,
             Game::BulletHell::MovementSystem<Syscall>,
-
+            Game::BulletHell::BulletCollision<Syscall>,
             Game::BulletHell::PlayerSystem<Syscall>,
             Game::BulletHell::BulletSystem<Syscall>,
             Game::Rhythm::HandleRhythm<Syscall>,

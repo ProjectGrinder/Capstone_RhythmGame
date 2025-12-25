@@ -18,6 +18,6 @@ Scene::BattleScene::TaskManager Scene::BattleScene::Init()
 
 std::vector<Scene::BattleScene::ComponentTuple> Scene::BattleScene::Exit()
 {
-    LOG_INFO("Exiting Demo Scene.");
+    LOG_INFO("Exiting Battle Scene.");
     return {};
 }

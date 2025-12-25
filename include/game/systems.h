@@ -5,11 +5,11 @@
 // Bullet Hell Part
 #include "game/systems/bullethell/input_to_velocity.h"
 #include "game/systems/bullethell/movement_system.h"
-    // TODO: System that Query Collision between Bullet and Player and convert into Player Damage + Refresh IFrame
+#include "game/systems/bullethell/bullet_collision.h" // TODO: Suchas implement this system 
 #include "game/systems/bullethell/player_system.h"
 #include "game/systems/bullethell/bullet_system.h"
 // Rhythm Part
-#include "game/systems/rhythm/handle_rhythm.h" // TODO: Actually implement this system
+#include "game/systems/rhythm/handle_rhythm.h" // TODO: Pooh implement this system
 #include "game/systems/rhythm/handle_miss_note.h"
 #include "game/systems/rhythm/handle_bpm.h"
 // General Battle Part
