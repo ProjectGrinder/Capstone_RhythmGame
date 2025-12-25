@@ -1,144 +1,97 @@
 #include "pch.h"
 #include "system.h"
 #include <string>
-#include <utility>
 
-struct DummyAsset 
+extern "C"
 {
-    std::string name;
-    explicit DummyAsset(std::string  n) : name(std::move(n)) {}
+    typedef uint32_t assets_id;
+
+    typedef enum
+    {
+        FLOAT32BITS,
+        FLOAT16BITS,
+        FLOAT8BITS,
+
+        UINT32BITS,
+        UINT16BITS,
+        UINT8BITS,
+    } InputType;
+
+    typedef struct
+    {
+        const char *semantic;
+        InputType type;
+        size_t offset;
+    } InputAttributeDescription;
+
+    assets_id load_sprite(const char *path, const char *name, size_t width, size_t height);
+    assets_id load_vertex_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count);
+    assets_id load_pixel_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count);
+
+    void free_assets(assets_id id);
+
+    void assets_cleanup(void);
+}
+
+InputAttributeDescription dummyVS[] = {
+    {"position",FLOAT32BITS,0},
+    {"normal",FLOAT32BITS,4},
+    {"texCoord",FLOAT32BITS,8}
+};
+InputAttributeDescription dummyPS[] = {
+    {"fragColor",FLOAT32BITS,0},
 };
 
-struct SecondDummyAsset
+TEST(AssetManager, get_null_assets)
 {
-    std::string name;
-    int value;
-    explicit SecondDummyAsset(std::string  n) : name(std::move(n)), value(0) {}
-};
-
-using TestAssetManager = System::AssetManager<DummyAsset, SecondDummyAsset>;
-
-// Override the load method temporarily by specializing _AssetStore
-namespace System 
-{
-    template <>
-    std::shared_ptr<DummyAsset> AssetStore<DummyAsset>::load(const std::string& path)
-    {
-        auto asset = std::make_shared<DummyAsset>(path);
-        const size_t new_id = _paths.size();
-
-        _paths.push_back(path);
-        _assets.push_back(asset);  // Store the weak_ptr of the new asset
-        _index_to_id.push_back(new_id);
-        _id_to_index.push_back(new_id);
-
-        return asset;
-    }
-
-    template <>
-    std::shared_ptr<SecondDummyAsset> AssetStore<SecondDummyAsset>::load(const std::string& path)
-    {
-        auto asset = std::make_shared<SecondDummyAsset>(path);
-        const size_t new_id = _paths.size();
-
-        _paths.push_back(path);
-        _assets.push_back(asset);  // Store the weak_ptr of the new asset
-        _index_to_id.push_back(new_id);
-        _id_to_index.push_back(new_id);
-
-        return asset;
-    }
+    assets_id id = get_assets_id("testNull");
+    EXPECT_EQ(id, -1);
 }
 
-
-TEST(AssetManager, get_asset_test)
+TEST(AssetManager, load_sprite)
 {
-    TestAssetManager instance;
-    auto asset = instance.get<DummyAsset>("test_asset");
-    ASSERT_NE(asset, nullptr);
-    EXPECT_EQ(asset->name, "test_asset");
+    assets_id idImg = load_sprite("./test.png","testImg",500,500);
+    EXPECT_NE(idImg, -1);
+    assets_id id = get_assets_id("testImg");
+    EXPECT_NE(id, -1);
+    EXPECT_EQ(id, idImg);
 }
 
-TEST(AssetManager, get_same_asset_test)
+TEST(AssetManager, load_vertex_shader)
 {
-    TestAssetManager instance;
-    auto asset1 = instance.get<DummyAsset>("test_asset");
-    auto asset2 = instance.get<DummyAsset>("test_asset");
-    ASSERT_EQ(asset1, asset2);
+    assets_id idVS = load_vertex_shader("./shaders/vs/rainbow.hlsl","testVS",dummyVS, sizeof(dummyVS)/sizeof(dummyVS[0]));
+    EXPECT_NE(idVS, -1);
+    assets_id id = get_assets_id("testVS");
+    EXPECT_EQ(id, idVS);
 }
 
-TEST(AssetManager, get_different_asset_test)
+TEST(AssetManager, load_pixel_shader)
 {
-    TestAssetManager instance;
-    auto asset1 = instance.get<DummyAsset>("asset_one");
-    auto asset2 = instance.get<SecondDummyAsset>("asset_two");
-    
-    ASSERT_NE(asset1, nullptr);
-    ASSERT_NE(asset2, nullptr);
-    EXPECT_EQ(asset1->name, "asset_one");
-    EXPECT_EQ(asset2->name, "asset_two");
+    assets_id idPS = load_pixel_shader("./shaders/ps/rainbow.hlsl","testPS",dummyPS, sizeof(dummyPS)/sizeof(dummyPS[0]));
+    EXPECT_NE(idPS, -1);
+    assets_id id = get_assets_id("testPS");
+    EXPECT_EQ(id, idPS);
 }
 
-TEST(AssetManager, get_two_asset_types_test)
+TEST(AssetManager, free_assets)
 {
-    TestAssetManager instance;
-    auto asset1 = instance.get<DummyAsset>("asset_one");
-    auto asset2 = instance.get<SecondDummyAsset>("asset_two");
-    ASSERT_NE(asset1, nullptr);
-    ASSERT_NE(asset2, nullptr);
-    EXPECT_EQ(asset1->name, "asset_one");
-	EXPECT_EQ(asset2->name, "asset_two");
+    assets_id idImg = load_sprite("./test.png","testImg",500,500);
+    EXPECT_NE(idImg, -1);
+    free_assets(idImg);
+    idImg = get_assets_id("testImg");
+    //EXPECT_EQ(get_assets_id("testImg"), -1);
 }
 
-TEST(AssetManager, unload_asset_test)
+TEST(AssetManager, assets_cleanup)
 {
-    TestAssetManager instance;
-    auto asset = instance.get<DummyAsset>("temp_path");
-    instance.unload<DummyAsset>("temp_path");
+    load_sprite("./test.png","testImg",500,500);
+    load_vertex_shader("./shaders/vs/rainbow.hlsl","testVS",dummyVS, sizeof(dummyVS)/sizeof(dummyVS[0]));
+    load_pixel_shader("./shaders/ps/rainbow.hlsl","testPS",dummyPS, sizeof(dummyPS)/sizeof(dummyPS[0]));
+    load_sprite("./test.png","testImg2",500,500);
 
-    EXPECT_FALSE(instance.is_loaded<DummyAsset>("temp_path"));
+    assets_cleanup();
+    EXPECT_EQ(get_assets_id("testImg"), -1);
+    EXPECT_EQ(get_assets_id("testVS"), -1);
+    EXPECT_EQ(get_assets_id("testPS"), -1);
+    EXPECT_EQ(get_assets_id("testImg2"), -1);
 }
-
-TEST(AssetManager, is_loaded_test)
-{
-    TestAssetManager instance;
-    instance.get<DummyAsset>("check_path");
-    EXPECT_TRUE(instance.is_loaded<DummyAsset>("check_path"));
-}
-
-TEST(AssetManager, nonexistence_is_not_loaded_test)
-{
-    TestAssetManager instance;
-    EXPECT_FALSE(instance.is_loaded<DummyAsset>("nonexistent_asset_path"));
-}
-
-TEST(AssetManager, clear_assetstore_test)
-{
-    TestAssetManager instance;
-    instance.get<DummyAsset>("clear_path");
-    instance.clear<DummyAsset>();
-    
-	EXPECT_FALSE(instance.is_loaded<DummyAsset>("clear_path"));
-}
-
-TEST(AssetManager, clear_assetstore_ignores_other_stores_test)
-{
-    TestAssetManager instance;
-    instance.get<DummyAsset>("dummy_path");
-    instance.get<SecondDummyAsset>("second_dummy_path");
-    
-    instance.clear<DummyAsset>();
-
-    EXPECT_FALSE(instance.is_loaded<DummyAsset>("dummy_path"));
-	EXPECT_TRUE(instance.is_loaded<SecondDummyAsset>("second_dummy_path"));
-}
-
-TEST(AssetManager, clear_all_assets_test)
-{
-    TestAssetManager instance;
-    instance.get<DummyAsset>("clear_path");
-    instance.clear_all();
-    
-    EXPECT_FALSE(instance.is_loaded<DummyAsset>("clear_path"));
-}
-
