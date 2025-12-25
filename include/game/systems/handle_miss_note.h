@@ -12,7 +12,7 @@ namespace Game::Rhythm
         {
             if (comps.get<Timing>().timing < -1 * miss_timing)
             {
-                syscall.remove_entity(id);
+                syscall.delete_entity(id);
             }
         }
 
@@ -20,7 +20,7 @@ namespace Game::Rhythm
         {
             if (comps.get<TimingEnd>().timing_end < -1 * miss_timing)
             {
-                syscall.remove_entity(id);
+                syscall.delete_entity(id);
             }
         }
     }

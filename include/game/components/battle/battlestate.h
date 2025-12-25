@@ -12,13 +12,6 @@ namespace Game::Battle
         NO_INSTRUMENT,
     };
 
-    enum CurrentPhase
-    {
-        NO_PHASE,
-        BULLET_HELL,
-        RHYTHM
-    };
-
     struct NoteData
     {
         bool is_hold;
@@ -55,7 +48,7 @@ namespace Game::Battle
     {
         struct InfoPair
         {
-            int timing;
+            float timing;
             float bpm;
         };
         std::vector<InfoPair> bpm_list;
@@ -63,21 +56,6 @@ namespace Game::Battle
         BpmInfo() : idx(0)
         {}
         explicit BpmInfo(const unsigned int idx) : idx(idx)
-        {}
-    };
-
-    struct PhaseInfo
-    {
-        struct InfoPair
-        {
-            int timing;
-            CurrentPhase phase;
-        };
-        std::vector<InfoPair> phase_list;
-        unsigned int idx;
-        PhaseInfo() : idx(0)
-        {}
-        explicit PhaseInfo(const unsigned int idx) : idx(idx)
         {}
     };
 
@@ -93,13 +71,12 @@ namespace Game::Battle
         int current_accept;
         int max_accept_gauge;
         Difficulty difficulty;
-        CurrentPhase current_phase;
         BattleState() :
-            max_hp(0), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(0), current_phase(BULLET_HELL)
+            max_hp(0), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(0)
         {}
         explicit BattleState(
                 const int max_hp = 0, const int max_accept_gauge = 0, const Difficulty difficulty = Difficulty()) :
-            max_hp(max_hp), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), difficulty(difficulty), current_phase(BULLET_HELL)
+            max_hp(max_hp), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), difficulty(difficulty)
         {}
     };
 
@@ -136,7 +113,6 @@ namespace Game::Battle
         std::string genre_name;
         float main_bpm;
         BpmInfo bpm_info;
-        PhaseInfo phase_info;
         std::vector<Difficulty> difficulties;
         LevelData() : main_bpm(0)
         {}
@@ -146,10 +122,9 @@ namespace Game::Battle
                 std::string genre_name,
                 const float main_bpm,
                 BpmInfo bpm_info,
-                PhaseInfo phase_info,
                 std::vector<Difficulty> difficulties) :
             title(std::move(title)), artist_name(std::move(artist_name)), genre_name(std::move(genre_name)), main_bpm(main_bpm),
-            bpm_info(std::move(bpm_info)), phase_info(std::move(phase_info)), difficulties(std::move(difficulties))
+            bpm_info(std::move(bpm_info)), difficulties(std::move(difficulties))
         {}
     };
 }
