@@ -5,7 +5,7 @@
 namespace Game::Rhythm
 {
     template<typename T>
-    void HandleRhythm(T &syscall)
+    void HandleRhythm([[maybe_unused]] T &syscall)
     {
         // intentionally left blank to await input implementation
 
