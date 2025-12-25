@@ -4,6 +4,6 @@ file(GLOB
 )
 
 add_library(maths
-    STATIC
+    SHARED
         ${MATHS_FILES}
 )

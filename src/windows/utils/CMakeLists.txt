@@ -1,6 +1,3 @@
-add_subdirectory(asm)
-enable_language(C)
-
 file(GLOB
         WINDOWS_UTILS_FILES
         "./*.c"
@@ -14,9 +11,11 @@ add_library(os_utils
 
 target_link_libraries(os_utils
         PRIVATE
-            os_asm_utils
             user32
             gdi32
             kernel32
+            d3d11
+            dxgi
+            dinput8
             winmm
 )

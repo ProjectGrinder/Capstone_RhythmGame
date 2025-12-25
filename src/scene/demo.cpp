@@ -1,5 +1,4 @@
 #include "scene.h"
-#include "system.h"
 #include "utils.h"
 
 Scene::Demo Scene::Demo::instance()
@@ -20,7 +19,6 @@ Scene::Demo::TaskManager Scene::Demo::Init()
     auto tm = TaskManager{};
     tm.create_entity(test_component{1});
     tm.run_all();
-
     return (tm);
 }
 
@@ -29,3 +27,4 @@ std::vector<Scene::Demo::ComponentTuple> Scene::Demo::Exit()
     LOG_INFO("Exiting Demo Scene.");
     return {};
 }
+

@@ -9,31 +9,16 @@
 
 #define LOG_MAX 512
 
-#ifdef __cplusplus
-    #define LOG_SIG(level) LogLevel::level
-#else
-    #define LOG_SIG(level) level
-#endif
+#define LOG_INFO(format, ...) log_message(LogLevel::LL_INFO, __FUNCTION__, format, ##__VA_ARGS__);
+#define LOG_WARNING(format, ...) log_message(LogLevel::LL_WARNING, __FUNCTION__, format, ##__VA_ARGS__);
+#define LOG_ERROR(format, ...) log_message(LogLevel::LL_ERROR, __FUNCTION__, format, ##__VA_ARGS__);
 
-#define LOG_INFO(format, ...) log_message(LOG_SIG(LL_INFO), __FUNCTION__, format, ##__VA_ARGS__);
-#define LOG_WARNING(format, ...) log_message(LOG_SIG(LL_WARNING), __FUNCTION__, format, ##__VA_ARGS__);
-#define LOG_ERROR(format, ...) log_message(LOG_SIG(LL_ERROR), __FUNCTION__, format, ##__VA_ARGS__);
-
-#ifdef __cplusplus
 typedef enum class LogLevel : char
 {
     LL_INFO,
     LL_WARNING,
     LL_ERROR,
 } LogLevel;
-#else
-typedef enum
-{
-    LL_INFO,
-    LL_WARNING,
-    LL_ERROR,
-} LogLevel;
-#endif
 
 #ifdef __cplusplus
 extern "C"

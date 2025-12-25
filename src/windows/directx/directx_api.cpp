@@ -1,42 +1,35 @@
 #include "directx_api.h"
-#include "device_resources.hpp"
+#include "directx_manager.hpp"
 
-HRESULT directx_device_init(DirectXHandler *api, const DirectXConfig *config)
+HRESULT directx_manager_init(DirectxHandler *api, const DirectxConfig *config)
 {
-    HRESULT error = S_OK;
-    Windows::DeviceResources *device_resources;
-    void *alloc = nullptr;
+    HRESULT error = ERROR_SUCCESS;
+    Windows::DirectxManager *manager;
+    void *manager_alloc = nullptr;
 
-    alloc = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device_resources));
-    if (alloc == nullptr)
+    manager_alloc = HeapAlloc(GetProcessHeap(), 0, sizeof(Windows::DirectxManager));
+    if (manager_alloc == nullptr)
     {
-        error = HRESULT_FROM_WIN32(ERROR_NOT_ENOUGH_MEMORY);
+        error = ERROR_NOT_ENOUGH_MEMORY;
         goto exit;
     }
 
-    device_resources = new (alloc) Windows::DeviceResources();
+    manager = new (manager_alloc) Windows::DirectxManager();
+    error = manager->init(reinterpret_cast<const Windows::DirectxConfig *>(config));
 
-    error = device_resources->init(reinterpret_cast<const Windows::DirectXConfig *>(config));
-    if (FAILED(error))
-    {
-        HeapFree(GetProcessHeap(), 0, device_resources);
-        goto exit;
-    }
-
-    *api = device_resources;
+    *api = manager;
 
 exit:
     return (error);
 }
 
-void directx_device_clean_up(DirectXHandler *api)
+void directx_manager_clean_up(const DirectxHandler *api)
 {
     if (api == nullptr)
         return;
 
-    auto *manager = static_cast<Windows::DeviceResources *>(*api);
-    manager->~DeviceResources();
+    auto *manager = static_cast<Windows::DirectxManager *>(*api);
+    manager->~DirectxManager();
 
     HeapFree(GetProcessHeap(), 0, manager);
-    *api = nullptr;
 }

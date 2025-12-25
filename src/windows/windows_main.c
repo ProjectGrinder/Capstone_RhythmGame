@@ -1,3 +1,4 @@
+#include "scenes/scenes_api.h"
 #define WIN32_LEAN_AND_MEAN
 
 #if _DEBUG
@@ -9,13 +10,9 @@
 
 #include "utils/windows_utils.h"
 
-#include "directx/directx_api.h"
-#include "scenes/scenes_api.h"
-
+#include "windows_directx.h"
 #include "windows_functions.h"
 #include "windows_types.h"
-
-extern void assets_cleanup();
 
 static SystemInfo system_info = {
         .window = {.width = 1280, .height = 720},
@@ -45,23 +42,23 @@ void *get_scene_manager()
     return (system_info.scene_manager);
 }
 
-HRESULT directx_init(_In_ DirectXHandler *directx_api)
+HRESULT directx_init(_In_ DirectxHandler *directx_api)
 {
-    const DirectXConfig config = {
+    const DirectxConfig config = {
             .height = system_info.window.height,
             .width = system_info.window.width,
             .window_handler = system_info.window_handler,
             .is_window = system_info.display_type == DT_WINDOW,
     };
-    return (directx_device_init(directx_api, &config));
+    return (directx_manager_init(directx_api, &config));
 }
 
-__forceinline void directx_clean_up(_In_ DirectxHandler *directx_api)
+__forceinline void directx_clean_up(_In_ const DirectxHandler *directx_api)
 {
-    directx_device_clean_up(directx_api);
+    directx_manager_clean_up(directx_api);
 }
 
-int real_main()
+int __stdcall real_main()
 {
 #if _DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -74,25 +71,24 @@ int real_main()
     log_init();
     sleep_init();
 
-    LOG_INFO("Starting...");
     error = create_window(&system_info);
     if (error != ERROR_SUCCESS)
     {
-        LOG_ERROR("create_window failed, Code 0x%08lx", error);
+        LOG_ERROR("create_window failed, Code 0x%081x", error);
         goto exit;
     }
 
     error = directx_init(&system_info.directx);
     if (error != ERROR_SUCCESS)
     {
-        LOG_ERROR("directx_init failed, Code 0x%08lx", error);
+        LOG_ERROR("directx_init failed, Code 0x%081x", error);
         goto exit;
     }
 
     error = scene_manager_init(&system_info.scene_manager);
     if (error != ERROR_SUCCESS)
     {
-        LOG_ERROR("scene_manager_init failed, Code 0x%08lx", error);
+        LOG_ERROR("scene_manager_init failed, Code 0x%081x", error);
         goto exit;
     }
 
@@ -106,10 +102,8 @@ int real_main()
     }
 
 exit:
-    LOG_INFO("Cleaning up");
     scene_manager_cleanup(&system_info.scene_manager);
     directx_clean_up(&system_info.directx);
-    assets_cleanup();
     log_cleanup();
 
 #if _DEBUG
@@ -124,7 +118,7 @@ exit:
  *  1. Console
  *  2. Windows Application
  */
-int main(int argc, char **argv)
+int __stdcall main(int argc, char **argv)
 {
     UNREFERENCED_PARAMETER(argc);
     UNREFERENCED_PARAMETER(argv);

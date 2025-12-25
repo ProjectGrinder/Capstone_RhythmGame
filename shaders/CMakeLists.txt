@@ -19,7 +19,7 @@ file(GLOB_RECURSE CS_SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/cs/*.hlsl")
 function(add_shaders SHADERS SHADER_TARGET)
     foreach(SHADER_FILE IN LISTS ${SHADERS})
         get_filename_component(SHADER_NAME ${SHADER_FILE} NAME_WE)
-        set(OUTPUT_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders/${SHADER_TARGET}/${SHADER_NAME}.cso")
+        set(OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/${SHADER_TARGET}/${SHADER_NAME}.cso")
 
         add_custom_command(
                 OUTPUT ${OUTPUT_FILE}
