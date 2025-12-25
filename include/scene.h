@@ -10,7 +10,7 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = Demo;
+    using StartingScene = BattleScene;
 
 }
 

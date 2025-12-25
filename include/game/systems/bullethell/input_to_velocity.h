@@ -3,8 +3,16 @@
 namespace Game::BulletHell
 {
     template <typename T>
-    void InputToVelocity([[maybe_unused]] T &syscall, System::ECS::Query<Input> &query1, System::ECS::Query<Player, Physics::Velocity> &query2)
+    void InputToVelocity([[maybe_unused]] T &syscall, System::ECS::Query<Input> &query1, System::ECS::Query<Player, Physics::Velocity> &query2, System::ECS::Query<Battle::BattleState> &query3)
     {
+        if (query1.begin() == query1.end())
+            return;
+
+        if (query3.begin() == query3.end())
+            return;
+
+        if (query3.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
+            return;
 
         for (auto &[id, comps] : query2)
         {

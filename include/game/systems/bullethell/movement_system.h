@@ -13,8 +13,14 @@ namespace Game::BulletHell
     using AngularVelocity = Physics::AngularVelocity;
 
     template <typename T>
-    void MovementSystem([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity, Acceleration>& query)
+    void MovementSystem([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity, Acceleration>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
+        if (query2.begin() == query2.end())
+            return;
+
+        if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
+            return;
+
         constexpr auto frame_time = 1;
 
         for (auto &[id, comps] : query)

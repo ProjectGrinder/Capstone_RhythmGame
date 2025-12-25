@@ -8,6 +8,9 @@ namespace Game::Battle
     template <typename T>
     void InputSystem([[maybe_unused]] T &syscall, System::ECS::Query<BattleState> &query1, System::ECS::Query<BulletHell::Input> &bullet_hell_input, System::ECS::Query<Rhythm::KeyInput> &rhythm_input)
     {
+        if (query1.begin() == query1.end())
+            return;
+
         // TODO: Change fixed key bindings to be rebindable
         constexpr auto LEFT = 0x25;
         constexpr auto UP = 0x26;
@@ -25,6 +28,10 @@ namespace Game::Battle
         switch (query1.front().get<BattleState>().current_phase)
         {
         case BULLET_HELL:
+            if (bullet_hell_input.begin() == bullet_hell_input.end())
+            {
+                break;
+            }
             bullet_hell_input.front().get<BulletHell::Input>().axis_x = static_cast<float>(get_key_state(LEFT) - get_key_state(RIGHT));
             bullet_hell_input.front().get<BulletHell::Input>().axis_y = static_cast<float>(get_key_state(UP) - get_key_state(DOWN));
             bullet_hell_input.front().get<BulletHell::Input>().x = get_key_state(X);
@@ -32,6 +39,10 @@ namespace Game::Battle
             bullet_hell_input.front().get<BulletHell::Input>().shift = get_key_state(LSHIFT);
             break;
         case RHYTHM:
+            if (rhythm_input.begin() == rhythm_input.end())
+            {
+                break;
+            }
             rhythm_input.front().get<Rhythm::KeyInput>().input1 = get_key_state(D);
             rhythm_input.front().get<Rhythm::KeyInput>().input2 = get_key_state(F);
             rhythm_input.front().get<Rhythm::KeyInput>().input3 = get_key_state(J);

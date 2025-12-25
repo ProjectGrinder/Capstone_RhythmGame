@@ -7,6 +7,20 @@ namespace Game::Rhythm
     template<typename T>
     void HandleBPM([[maybe_unused]] T &syscall, System::ECS::Query<Battle::LevelData> &query, System::ECS::Query<Battle::RhythmState> &query2, System::ECS::Query<Battle::BattleState> &query3)
     {
+        if (query.begin() == query.end())
+            return;
+
+        if (query2.begin() == query2.end())
+            return;
+
+        if (query3.begin() == query3.end())
+            return;
+
+        if (query3.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
+        {
+            return;
+        }
+
         auto &battle_state = query3.front().get<Battle::BattleState>();
         auto &rhythm_state = query2.front().get<Battle::RhythmState>();
         auto &level_data = query.front().get<Battle::LevelData>();
