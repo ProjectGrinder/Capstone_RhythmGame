@@ -6,6 +6,7 @@ namespace Game::BulletHell
 {
 	template<typename T>
 	void BulletCollision([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState> &battle_query,
+	                     System::ECS::Query<Battle::BulletHellState> &state_query,
 						 System::ECS::Query<Bullet,Physics::Position, Physics::Rotation, Physics::RectangularCollider> &bullet_query,
 						 System::ECS::Query<Player,Physics::Position, Physics::CircularCollider> &player_query)
 	{
@@ -42,7 +43,7 @@ namespace Game::BulletHell
 		    const float dx = bullet_pos.x - player_pos.x;
 		    const float dy = bullet_pos.y - player_pos.y;
 			const float distance_squared = dx * dx + dy * dy;
-            if (constexpr float collision_distance_squared = player_hitbox.radius + std::max(bullet_hitbox.size.x, bullet_hitbox.size.y);
+            if (const float collision_distance_squared = player_hitbox.radius + std::max(bullet_hitbox.size.x, bullet_hitbox.size.y);
                 distance_squared > collision_distance_squared || !bullet.is_damageable) continue;
 
 		    //Narrow check : SAT
@@ -68,6 +69,11 @@ namespace Game::BulletHell
 		    battle_state.hp -= bullet.damage;
 		    if (battle_state.hp < 0)
 		        battle_state.hp = 0;
+
+		    // TODO : Make this const
+		    // Activate Player iFrame
+            auto state = state_query.front().get<Battle::BattleState>();
+		    state.iframe_time = 120;
 
 		    // Deactivate the bullet
 		    bullet.is_active = false;

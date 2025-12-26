@@ -1,19 +1,33 @@
 #pragma once
+#include "../physics/velocity.h"
+#include "../physics/acceleration.h"
 
 namespace Game::BulletHell
 {
-    enum PatternType
+    // A single Pattern - not component
+    struct MoveParam
     {
-        NO_PATTERN,
+        Physics::Velocity velocity;
+        float angle;
+        Physics::Acceleration acceleration;
+        float angular_velocity;
+        MoveParam(const Physics::Velocity velocity, const float angle, const Physics::Acceleration acceleration, const float angular_velocity) :
+            velocity(velocity), angle(angle), acceleration(acceleration), angular_velocity(angular_velocity)
+        {}
     };
 
-    struct Pattern
+    // Component for keeping patterns
+    // Warning : STDs
+    struct Patterns
     {
-        PatternType type;
-        float pattern_args[2];
-        Pattern() : type(NO_PATTERN), pattern_args{0,0}
-        {}
-        explicit Pattern(const PatternType type, const float arg1 = 0, const float arg2 = 0) : type(type),pattern_args{arg1,arg2}
-        {}
+        std::vector<std::pair<float, MoveParam>> patterns;
+        void AddPattern(const float delay, const Physics::Velocity velocity, const float angle)
+        {
+            patterns.emplace_back(delay,MoveParam(velocity, angle, Physics::Acceleration(),0));
+        }
+        void AddPattern(const float delay, const Physics::Velocity velocity, const float angle, const Physics::Acceleration acceleration, const float angular_velocity)
+        {
+            patterns.emplace_back(delay,MoveParam(velocity, angle, acceleration, angular_velocity));
+        }
     };
 }
