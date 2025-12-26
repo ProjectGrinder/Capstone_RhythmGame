@@ -17,7 +17,7 @@ namespace Game::BulletHell
         for (auto &[id, comps] : query2)
         {
             const auto &input = query1.front().get<Input>();
-            const float velocity_factor = input.shift ? 10.0f : 1.0f;
+            const float velocity_factor = input.shift ? 4.0f : 1.0f;
 
             comps.get<Physics::Velocity>().vx = input.axis_x * velocity_factor;
             comps.get<Physics::Velocity>().vy = input.axis_y * velocity_factor;

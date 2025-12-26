@@ -11,6 +11,7 @@
 #include "components/bullethell/tag.h"
 #include "components/physics/angular_velocity.h"
 #include "components/physics/circular_collider.h"
+#include "components/physics/rectangular_collider.h"
 #include "components/physics/position.h"
 #include "components/physics/rotation.h"
 #include "components/physics/velocity.h"

@@ -11,9 +11,9 @@ extern "C"
     {
         int x;
         int y;
-    } Position;
+    } MousePosition;
 
-    Position get_mouse_position();
+    MousePosition get_mouse_position();
     int get_key_state(const int vk);
 #ifdef __cplusplus
 }
