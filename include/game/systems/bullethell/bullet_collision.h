@@ -43,7 +43,10 @@ namespace Game::BulletHell
 		    const float dx = bullet_pos.x - player_pos.x;
 		    const float dy = bullet_pos.y - player_pos.y;
 			const float distance_squared = dx * dx + dy * dy;
-            if (const float collision_distance_squared = player_hitbox.radius + std::max(bullet_hitbox.size.x, bullet_hitbox.size.y);
+            if (const float collision_distance_squared =
+                        player_hitbox.radius + (((bullet_hitbox.size.x) > (bullet_hitbox.size.y))
+                                                        ? (bullet_hitbox.size.x)
+                                                        : (bullet_hitbox.size.y));
                 distance_squared > collision_distance_squared || !bullet.is_damageable) continue;
 
 		    //Narrow check : SAT
@@ -60,8 +63,12 @@ namespace Game::BulletHell
 		    if (fabs(dot_x) > bullet_hitbox.size.x/2 + player_hitbox.radius) continue;
 		    if (fabs(dot_y) > bullet_hitbox.size.y/2 + player_hitbox.radius) continue;
 
-		    const float distX = std::max(fabs(dot_x) - bullet_hitbox.size.x/2,.0f);
-		    const float distY = std::max(fabs(dot_y) - bullet_hitbox.size.y/2,.0f);
+		    const float distX =
+                    (((fabs(dot_x) - bullet_hitbox.size.x / 2) > (.0f)) ? (fabs(dot_x) - bullet_hitbox.size.x / 2)
+                                                                        : (.0f));
+            const float distY =
+                    (((fabs(dot_y) - bullet_hitbox.size.y / 2) > (.0f)) ? (fabs(dot_y) - bullet_hitbox.size.y / 2)
+                                                                        : (.0f));
 		    if (distX * distX + distY * distY <= player_hitbox.radius * player_hitbox.radius) continue;
 
 		    // Reduce player HP

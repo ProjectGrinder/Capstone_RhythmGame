@@ -64,6 +64,8 @@ TEST(Game, instantiate_player)
     EXPECT_TRUE(resource->query<Player>().has(id));
 }
 
+
+
 TEST(Game, instantiate_bullets)
 {
     TaskManager<BulletResource, BulletSyscall> task_manager{};
@@ -110,6 +112,8 @@ TEST(Game, value_change)
     EXPECT_EQ(resource->query<Bullet>().get(id_2).damage, 0);
 }
 
+// TODO: Tests failed from here onwards with a compile error, trying to find cause of error
+
 //Movement
 TEST(Game, bullet_movement1)
 {
@@ -141,6 +145,8 @@ TEST(Game, bullet_movement1)
     EXPECT_EQ(resource->query<Velocity>().get(id).vx, 2);
     EXPECT_EQ(resource->query<Velocity>().get(id).vy, 3);
 }
+
+
 
 TEST(Game, bullet_movement2)
 {

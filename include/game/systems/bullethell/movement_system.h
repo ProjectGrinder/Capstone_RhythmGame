@@ -53,7 +53,6 @@ namespace Game::BulletHell
             {
                 comps.get<Rotation>().angle -= 360;
             }
-            LOG_INFO("Angle: {}", comps.get<Rotation>().angle);
         }
     }
 }
