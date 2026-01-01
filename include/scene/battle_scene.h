@@ -42,9 +42,10 @@ namespace Scene
             Game::BulletHell::BulletCollision<Syscall>,
             Game::BulletHell::PlayerSystem<Syscall>,
             Game::BulletHell::BulletSystem<Syscall>,
+            Game::BulletHell::PatternSystem<Syscall>,
             Game::Rhythm::HandleRhythm<Syscall>,
             Game::Rhythm::HandleMissNote<Syscall>,
-            Game::Rhythm::HandleBPM<Syscall>>;
+            Game::Rhythm::HandleBPM<Syscall> >;
 
         // declare functions
         static void test();

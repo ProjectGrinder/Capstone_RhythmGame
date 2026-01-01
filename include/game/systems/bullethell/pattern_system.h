@@ -1,6 +1,5 @@
 #pragma once
 #include "game/components.h"
-#include "game/components/physics/acceleration.h"
 
 // FIXME: Part of physics, consider separation into its own thread
 namespace Game::BulletHell
