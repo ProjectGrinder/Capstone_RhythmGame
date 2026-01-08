@@ -30,19 +30,19 @@ namespace Game::Rhythm
         {
             if (comp.get<KeyInput>().input1 == true)
             {
-                HandleJudgement(0, syscall, battle_query, input_query, note_query);
+                HandleJudgement(0, syscall, battle_query, note_query);
             }
             if (comp.get<KeyInput>().input2 == true)
             {
-                HandleJudgement(1, syscall, battle_query, input_query, note_query);
+                HandleJudgement(1, syscall, battle_query, note_query);
             }
             if (comp.get<KeyInput>().input3 == true)
             {
-                HandleJudgement(2, syscall, battle_query, input_query, note_query);
+                HandleJudgement(2, syscall, battle_query, note_query);
             }
             if (comp.get<KeyInput>().input4 == true)
             {
-                HandleJudgement(3, syscall, battle_query, input_query, note_query);
+                HandleJudgement(3, syscall, battle_query, note_query);
             }
         }
     }
@@ -52,7 +52,6 @@ namespace Game::Rhythm
         int lane_num, // assume that first lane is lane 0
         [[maybe_unused]] T &syscall,
         [[maybe_unused]] System::ECS::Query<Battle::BattleState> &battle_query,
-        System::ECS::Query<Rhythm::KeyInput> &input_query,
         System::ECS::Query<Rhythm::Lane, Rhythm::Timing> &note_query)
     {
         for (auto &[id2, comp2] : note_query)
