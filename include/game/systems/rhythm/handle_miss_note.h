@@ -17,9 +17,11 @@ namespace Game::Rhythm
         }
 
         constexpr auto miss_timing = 100;
+        auto &current_timing = query3.front().get<Battle::BattleState>().clock_time;
+
         for (auto &[id, comps] : query)
         {
-            if (comps.get<Timing>().timing < -1 * miss_timing)
+            if (comps.get<Timing>().timing - current_timing < -1 * miss_timing)
             {
                 query3.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
                 syscall.remove_entity(id);
@@ -30,7 +32,7 @@ namespace Game::Rhythm
         // Handle miss for an entire hold note, which counts as two misses (start and end)
         // If the note is held but released too early, it should be handled in handle_rhythm.h to be checked along with other judgements
         {
-            if (comps.get<Timing>().timing_end < -1 * miss_timing)
+            if (comps.get<Timing>().timing - current_timing < -1 * miss_timing)
             {
                 query3.front().get<Battle::BattleState>().judgement_count.miss_count += 2;
                 syscall.remove_entity(id);
