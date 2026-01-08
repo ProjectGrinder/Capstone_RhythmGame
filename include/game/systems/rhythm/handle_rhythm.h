@@ -53,24 +53,24 @@ namespace Game::Rhythm
         [[maybe_unused]] T &syscall,
         [[maybe_unused]] System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<Rhythm::Lane, Rhythm::Timing> &note_query)
-    {
-        auto &current_timing = battle_query.front().get<Battle::BattleState>().clock_time;
-        
+    {   
         for (auto &[id2, comp2] : note_query)
         {
             if (comp2.get<Lane>().lane == lane_num)
             {
-                if (comp2.get<Timing>().timing - current_timing >= -50 && comp2.get<Timing>().timing - current_timing <= 50)
+                auto &time_diff = comp2.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
+                
+                if (time_diff >= -50 && time_diff <= 50)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
                     syscall.remove_entity(id2);
                 }
-                else if (comp2.get<Timing>().timing - current_timing >= -75 && comp2.get<Timing>().timing - current_timing <= 75)
+                else if (time_diff >= -75 && time_diff <= 75)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
                     syscall.remove_entity(id2);
                 }
-                else if (comp2.get<Timing>().timing - current_timing >= -100 && comp2.get<Timing>().timing - current_timing <= 100)
+                else if (time_diff >= -100 && time_diff <= 100)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
                     syscall.remove_entity(id2);
