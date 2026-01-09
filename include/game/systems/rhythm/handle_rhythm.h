@@ -58,7 +58,7 @@ namespace Game::Rhythm
         {
             if (comp2.get<Lane>().lane == lane_num)
             {
-                auto &time_diff = comp2.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
+                auto time_diff = comp2.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
                 
                 if (time_diff >= -50 && time_diff <= 50)
                 {
@@ -91,7 +91,7 @@ namespace Game::Rhythm
         {
             if (comp2.get<Lane>().lane == lane_num) // check when start holding
             {
-                auto &time_diff_start = comp2.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
+                auto time_diff_start = comp2.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
                 
                 if (time_diff_start >= -50 && time_diff_start <= 50)
                 {
@@ -108,7 +108,7 @@ namespace Game::Rhythm
 
                 for (auto &[id3, comp3] : input_query) // check when stop holding
                 {
-                    auto &time_diff_end = comp2.get<TimingEnd>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
+                    auto time_diff_end = comp2.get<TimingEnd>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
 
                     if ((lane_num == 0 && comp3.get<KeyInput>().input1 == false) ||
                         (lane_num == 1 && comp3.get<KeyInput>().input2 == false) ||

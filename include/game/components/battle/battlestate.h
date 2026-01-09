@@ -142,6 +142,8 @@ namespace Game::Battle
         LaneInfo lanes[4];
     };
 
+    // TODO: Suchas's struct BulletPatternData
+
     struct LevelData
     {
         std::string title;
