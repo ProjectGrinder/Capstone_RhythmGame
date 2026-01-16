@@ -45,7 +45,8 @@ namespace Scene
             Game::BulletHell::PatternSystem<Syscall>,
             Game::Rhythm::HandleRhythm<Syscall>,
             Game::Rhythm::HandleMissNote<Syscall>,
-            Game::Rhythm::HandleBPM<Syscall> >;
+            Game::Rhythm::HandleBPM<Syscall> ,
+            Game::Render::AnimationSystem<Syscall> >;
 
         // declare functions
         static void test();

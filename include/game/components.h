@@ -14,6 +14,7 @@
 #include "components/physics/rectangular_collider.h"
 #include "components/physics/position.h"
 #include "components/physics/rotation.h"
+#include "components/physics/scale.h"
 #include "components/physics/velocity.h"
 #include "components/render/animation.h"
 #include "components/render/animator.h"
