@@ -7,23 +7,13 @@ namespace Scene
     template <typename T>
     void CreateDemoChart([[maybe_unused]] T &syscall, Game::Battle::ChartData &chart)
     {
-        // for (int lane = 0; lane < 4; ++lane)
-        // {
-        //     chart.lanes[lane].lane_number = lane;
-        //     chart.lanes[lane].notes.clear();
-
-        //     Game::Battle::NoteData note;
-        //     note.is_hold = false;
-        //     note.timing = 1000 * (lane + 1); // e.g., 1000, 2000, 3000, 4000
-        //     note.timing_end = 0;
-        //     chart.lanes[lane].notes.push_back(note);
-        //     chart.lanes[lane].current_note = 0;
-        // }
-
-        chart.lanes[0].lane_number = 0;
-        chart.lanes[1].lane_number = 1;
-        chart.lanes[2].lane_number = 2;
-        chart.lanes[3].lane_number = 3;
+        // Configure ChartData
+        for (int lane = 0; lane < 4; ++lane)
+        {
+            chart.lanes[lane].lane_number = lane;
+            chart.lanes[lane].notes.clear();
+            chart.lanes[lane].current_note = 0;
+        }
 
         // Pattern 1: Simple taps
         chart.lanes[0].notes.push_back(Game::Battle::NoteData(false, 1000, 0));
@@ -64,5 +54,9 @@ namespace Scene
         chart.lanes[2].notes.push_back(Game::Battle::NoteData(false, 33500, 0));   
         chart.lanes[3].notes.push_back(Game::Battle::NoteData(true, 34000, 35000));
         chart.lanes[3].notes.push_back(Game::Battle::NoteData(false, 35500, 0));
+        chart.lanes[0].notes.push_back(Game::Battle::NoteData(false, 37000, 0));
+        chart.lanes[2].notes.push_back(Game::Battle::NoteData(true, 37000, 38000));
+        chart.lanes[0].notes.push_back(Game::Battle::NoteData(false, 37000, 0));
+        chart.lanes[2].notes.push_back(Game::Battle::NoteData(true, 37000, 38000));
     }
 }
