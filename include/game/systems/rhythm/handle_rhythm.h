@@ -63,18 +63,18 @@ namespace Game::Rhythm
                 if (time_diff >= -50 && time_diff <= 50)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-                    syscall.remove_entity(id2);
                 }
                 else if (time_diff >= -75 && time_diff <= 75)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
-                    syscall.remove_entity(id2);
                 }
                 else if (time_diff >= -100 && time_diff <= 100)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
-                    syscall.remove_entity(id2);
                 }
+                else continue;
+
+                syscall.remove_entity(id2);
             }
         }
     }
@@ -105,6 +105,7 @@ namespace Game::Rhythm
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
                 }
+                else continue;
 
                 for (auto &[id3, comp3] : input_query) // check when stop holding
                 {
