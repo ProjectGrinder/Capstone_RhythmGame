@@ -51,6 +51,18 @@ namespace Game::Battle
         {}
     };
 
+    struct JudgementCount
+    {
+        int perfect_count;
+        int great_count;
+        int fine_count;
+        int miss_count;
+        JudgementCount() : perfect_count(0), great_count(0), fine_count(0), miss_count(0)
+        {}
+        explicit JudgementCount(const int perfect_count, const int great_count, const int fine_count, const int miss_count) : perfect_count(perfect_count), great_count(great_count), fine_count(fine_count), miss_count(miss_count)
+        {}
+    };
+
     struct BpmInfo
     {
         struct InfoPair
@@ -93,6 +105,7 @@ namespace Game::Battle
         int current_accept;
         int max_accept_gauge;
         Difficulty difficulty;
+        JudgementCount judgement_count;
         CurrentPhase current_phase;
         BattleState() :
             max_hp(0), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(0), current_phase(BULLET_HELL)
@@ -128,6 +141,8 @@ namespace Game::Battle
     {
         LaneInfo lanes[4];
     };
+
+    // TODO: Suchas's struct BulletPatternData
 
     struct LevelData
     {
