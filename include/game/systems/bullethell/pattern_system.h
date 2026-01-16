@@ -11,7 +11,7 @@ namespace Game::BulletHell
     using AngularVelocity = Physics::AngularVelocity;
 
     template <typename T>
-    void PatternSystem([[maybe_unused]] T &syscall, System::ECS::Query<Patterns, Position, Rotation, Velocity, Acceleration, AngularVelocity>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void PatternSystem([[maybe_unused]] T &syscall, System::ECS::Query<Patterns, Rotation, Velocity, Acceleration, AngularVelocity>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
@@ -31,7 +31,7 @@ namespace Game::BulletHell
                     auto pattern = itr->second;
                     comps.get<Velocity>().vx = pattern.velocity.vx;
                     comps.get<Velocity>().vy = pattern.velocity.vy;
-                    comps.get<Rotation>().angle = pattern.angle;
+                    comps.get<Rotation>().angleZ = pattern.angle;
                     comps.get<Acceleration>().ax = pattern.acceleration.ax;
                     comps.get<Acceleration>().ay = pattern.acceleration.ay;
                     comps.get<AngularVelocity>().v = pattern.angular_velocity;

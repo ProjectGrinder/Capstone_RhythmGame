@@ -25,7 +25,7 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query)
         {
-            const float angle = comps.get<Rotation>().angle * std::acos(0.0f)/90.0f  ;
+            const float angle = comps.get<Rotation>().angleZ * std::acos(0.0f)/90.0f  ;
             comps.get<Position>().x += (comps.get<Velocity>().vx * cos(angle) - comps.get<Velocity>().vy * sin(angle)) * frame_time;
             comps.get<Position>().y += (comps.get<Velocity>().vx * sin(angle) + comps.get<Velocity>().vy * cos(angle)) * frame_time;
 
@@ -48,10 +48,10 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query2)
         {
-            comps.get<Rotation>().angle += comps.get<AngularVelocity>().v * frame_time;
-            if (comps.get<Rotation>().angle >= 360)
+            comps.get<Rotation>().angleZ += comps.get<AngularVelocity>().v * frame_time;
+            if (comps.get<Rotation>().angleZ >= 360)
             {
-                comps.get<Rotation>().angle -= 360;
+                comps.get<Rotation>().angleZ -= 360;
             }
         }
     }
