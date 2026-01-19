@@ -2,6 +2,7 @@
 
 #include "game/components.h"
 #include "system/input.h"
+#include "utils/print_debug.h"
 
 namespace Game::Battle
 {
