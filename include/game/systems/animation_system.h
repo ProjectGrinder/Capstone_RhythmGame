@@ -4,6 +4,7 @@
 #include "game/components.h"
 
 // TODO: Check frame_time
+//  Problem that I can't implement this further -> Handling object with partial components
 namespace Game::Render
 {
     inline float TweenTransform(float t, float a, float b, TweenType tween, float strength);

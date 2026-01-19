@@ -28,13 +28,19 @@ namespace Game::BulletHell
             {
                 if (itr->first < frame_time)
                 {
-                    auto pattern = itr->second;
+                    const auto pattern = itr->second;
                     comps.get<Velocity>().vx = pattern.velocity.vx;
                     comps.get<Velocity>().vy = pattern.velocity.vy;
                     comps.get<Rotation>().angleZ = pattern.angle;
                     comps.get<Acceleration>().ax = pattern.acceleration.ax;
                     comps.get<Acceleration>().ay = pattern.acceleration.ay;
                     comps.get<AngularVelocity>().v = pattern.angular_velocity;
+                    if (pattern.loopDelay <= 0)
+                        itr = patterns.erase(itr);
+                    else
+                    {
+                        itr->first = pattern.loopDelay;
+                    }
                 }
                 else
                 {
