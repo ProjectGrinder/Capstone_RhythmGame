@@ -11,6 +11,7 @@
 #include "components/bullethell/pattern_homing.h"
 #include "components/bullethell/player.h"
 #include "components/bullethell/tag.h"
+#include "components/physics/acceleration.h"
 #include "components/physics/angular_velocity.h"
 #include "components/physics/circular_collider.h"
 #include "components/physics/rectangular_collider.h"
