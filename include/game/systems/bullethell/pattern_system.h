@@ -1,5 +1,6 @@
 #pragma once
 #include "game/components.h"
+#include "game/utils/physics_util.h"
 
 // FIXME: Part of physics, consider separation into its own thread
 namespace Game::BulletHell
@@ -106,7 +107,7 @@ namespace Game::BulletHell
                 target_pos = homing_c.targetPosition;
             }
 
-            float target_angle = atan2(target_pos.y - pos.y,target_pos.x - pos.x);
+            float target_angle = Physics::get_direction(pos,target_pos);
             if (abs(target_angle - rot.angleZ) < homing_c.strength)
             {
                 rot.angleZ = target_angle;
