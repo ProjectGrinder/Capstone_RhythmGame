@@ -32,10 +32,12 @@ namespace Game::BulletHell
             if (comps.get<Acceleration>().ax != 0)
             {
                 comps.get<Velocity>().vx += comps.get<Acceleration>().ax * frame_time;
+                comps.get<Velocity>().vx = comps.get<Velocity>().vx > comps.get<Acceleration>().max_speed? comps.get<Acceleration>().max_speed:comps.get<Velocity>().vx;
             }
             if (comps.get<Acceleration>().ay != 0)
             {
                 comps.get<Velocity>().vy += comps.get<Acceleration>().ay * frame_time;
+                comps.get<Velocity>().vy = comps.get<Velocity>().vy > comps.get<Acceleration>().max_speed? comps.get<Acceleration>().max_speed:comps.get<Velocity>().vy;
             }
 
         }
