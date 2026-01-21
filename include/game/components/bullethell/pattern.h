@@ -1,6 +1,4 @@
 #pragma once
-#include "../physics/velocity.h"
-#include "../physics/acceleration.h"
 
 namespace Game::BulletHell
 {
@@ -8,32 +6,37 @@ namespace Game::BulletHell
     struct MoveParam
     {
         float loopDelay;
-        Physics::Velocity velocity;
+        float speed;
         float angle;
-        Physics::Acceleration acceleration;
+        float accel;
         float angular_velocity;
+        float max_speed;
         MoveParam(
-                const Physics::Velocity velocity,
+                const float speed,
                 const float angle,
-                const Physics::Acceleration acceleration,
-                const float angular_velocity) :
+                const float acceleration,
+                const float angular_velocity,
+                const float max_speed) :
             loopDelay(0),
-            velocity(velocity),
+            speed(speed),
             angle(angle),
-            acceleration(acceleration),
-            angular_velocity(angular_velocity)
+            accel(acceleration),
+            angular_velocity(angular_velocity),
+            max_speed(max_speed)
         {}
         MoveParam(
-                const Physics::Velocity velocity,
+                const float speed,
                 const float angle,
-                const Physics::Acceleration acceleration,
+                const float acceleration,
                 const float angular_velocity,
+                const float max_speed,
                 const float loopDelay) :
             loopDelay(loopDelay),
-            velocity(velocity),
+            speed(speed),
             angle(angle),
-            acceleration(acceleration),
-            angular_velocity(angular_velocity)
+            accel(acceleration),
+            angular_velocity(angular_velocity),
+            max_speed(max_speed)
         {}
     };
 
@@ -42,13 +45,21 @@ namespace Game::BulletHell
     struct Patterns
     {
         std::vector<std::pair<float, MoveParam>> patterns;
-        void AddPattern(const float delay, const Physics::Velocity velocity, const float angle)
+        void AddPattern(const float delay, const float speed, const float angle)
         {
-            patterns.emplace_back(delay,MoveParam(velocity, angle, Physics::Acceleration(),0));
+            patterns.emplace_back(delay,MoveParam(speed, angle, 0,0,0));
         }
-        void AddPattern(const float delay, const Physics::Velocity velocity, const float angle, const Physics::Acceleration acceleration, const float angular_velocity)
+        void AddPattern(const float delay, const float speed, const float angle, const float acceleration, const float angular_velocity, const float max_speed)
         {
-            patterns.emplace_back(delay,MoveParam(velocity, angle, acceleration, angular_velocity));
+            patterns.emplace_back(delay,MoveParam(speed, angle, acceleration, angular_velocity,max_speed));
+        }
+        void AddPattern(const float delay, const float speed, const float angle, const float loopDelay)
+        {
+            patterns.emplace_back(delay,MoveParam(speed, angle, 0,0,0,loopDelay));
+        }
+        void AddPattern(const float delay, const float speed, const float angle, const float acceleration, const float angular_velocity, const float max_speed, const float loopDelay)
+        {
+            patterns.emplace_back(delay,MoveParam(speed, angle, acceleration, angular_velocity,max_speed,loopDelay));
         }
     };
 }
