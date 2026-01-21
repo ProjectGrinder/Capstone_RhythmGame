@@ -44,6 +44,8 @@ namespace Scene
             Game::Battle::InputSystem<Syscall>,
             Game::BulletHell::InputToVelocity<Syscall>,
             Game::BulletHell::MovementSystem<Syscall>,
+            Game::BulletHell::RotationSystem<Syscall>,
+            Game::BulletHell::SyncRotationSystem<Syscall>,
             Game::BulletHell::BulletCollision<Syscall>,
             Game::BulletHell::PlayerSystem<Syscall>,
             Game::BulletHell::BulletSystem<Syscall>,

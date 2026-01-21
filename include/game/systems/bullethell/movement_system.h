@@ -57,4 +57,15 @@ namespace Game::BulletHell
             }
         }
     }
+
+    template <typename T>
+    void SyncRotationSystem([[maybe_unused]] T &task_manager, System::ECS::Query<Physics::Rotation, Render::Rotation, AngularVelocity>& query2)
+    {
+        constexpr auto frame_time = 1;
+
+        for (auto &[id, comps] : query2)
+        {
+            comps.get<Render::Rotation>().angleZ = comps.get<Physics::Rotation>().angleZ;
+        }
+    }
 }

@@ -12,7 +12,7 @@ namespace Game::Render
     template<typename T>
     void AnimationSystem(
             [[maybe_unused]] T &syscall,
-            System::ECS::Query<Physics::Position, Physics::Rotation, Physics::Scale, Sprite, Animator> &query)
+            System::ECS::Query<Physics::Position, Rotation, Physics::Scale, Sprite, Animator> &query)
     {
         constexpr auto frame_time = 1; // 1ms
 
@@ -50,7 +50,7 @@ namespace Game::Render
             const auto &keyFrame2 = animation.keyframes[currentKey + 1];
 
             auto &position = comps.get<Physics::Position>();
-            auto &rotation = comps.get<Physics::Rotation>();
+            auto &rotation = comps.get<Rotation>();
             auto &scale = comps.get<Physics::Scale>();
 
             const float t = static_cast<float>(frame - keyFrameFrame1) / static_cast<float>(keyFrameFrame2 - keyFrameFrame1);
