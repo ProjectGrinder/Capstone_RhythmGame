@@ -7,6 +7,8 @@
 #include "components/bullethell/input.h"
 #include "components/bullethell/particle.h"
 #include "components/bullethell/pattern.h"
+#include "components/bullethell/pattern_bounce.h"
+#include "components/bullethell/pattern_homing.h"
 #include "components/bullethell/player.h"
 #include "components/bullethell/tag.h"
 #include "components/physics/angular_velocity.h"
