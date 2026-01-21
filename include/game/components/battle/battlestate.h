@@ -111,7 +111,7 @@ namespace Game::Battle
             max_hp(0), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(0), current_phase(BULLET_HELL)
         {}
         explicit BattleState(
-                const int max_hp = 0, const int max_accept_gauge = 0, const Difficulty difficulty = Difficulty()) :
+                const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :
             max_hp(max_hp), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), difficulty(difficulty), current_phase(BULLET_HELL)
         {}
     };

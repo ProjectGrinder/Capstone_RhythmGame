@@ -37,6 +37,7 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
+            Game::Battle::InputSystem<Syscall>,
             Game::BulletHell::InputToVelocity<Syscall>,
             Game::BulletHell::MovementSystem<Syscall>,
             Game::BulletHell::BulletCollision<Syscall>,
@@ -49,7 +50,6 @@ namespace Scene
             Game::Render::AnimationSystem<Syscall> >;
 
         // declare functions
-        static void test();
         static TaskManager Init();
         static std::vector<ComponentTuple> Exit();
     };
