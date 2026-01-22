@@ -1,7 +1,7 @@
 #pragma once
 
-// FIXME: May separate thread
-namespace Game::Physics
+// TODO: Later map into real render component to optimize for rendering
+namespace Game::Render
 {
     struct Rotation
     {

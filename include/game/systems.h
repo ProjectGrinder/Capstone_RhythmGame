@@ -2,10 +2,12 @@
 
 // Input Part
 #include "game/systems/input_system.h"
+#include "game/systems/animation_system.h"
 // Bullet Hell Part
 #include "game/systems/bullethell/input_to_velocity.h"
 #include "game/systems/bullethell/movement_system.h"
-#include "game/systems/bullethell/bullet_collision.h" // TODO: Suchas implement this system 
+#include "game/systems/bullethell/bullet_collision.h"
+#include "game/systems/bullethell/pattern_system.h"
 #include "game/systems/bullethell/player_system.h"
 #include "game/systems/bullethell/bullet_system.h"
 // Rhythm Part

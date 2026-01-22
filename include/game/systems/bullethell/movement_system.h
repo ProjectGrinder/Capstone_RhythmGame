@@ -25,17 +25,19 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query)
         {
-            const float angle = comps.get<Rotation>().angle * std::acos(0.0f)/90.0f  ;
+            const float angle = comps.get<Rotation>().angleZ * std::acos(0.0f)/90.0f  ;
             comps.get<Position>().x += (comps.get<Velocity>().vx * cos(angle) - comps.get<Velocity>().vy * sin(angle)) * frame_time;
             comps.get<Position>().y += (comps.get<Velocity>().vx * sin(angle) + comps.get<Velocity>().vy * cos(angle)) * frame_time;
 
             if (comps.get<Acceleration>().ax != 0)
             {
                 comps.get<Velocity>().vx += comps.get<Acceleration>().ax * frame_time;
+                comps.get<Velocity>().vx = comps.get<Velocity>().vx > comps.get<Acceleration>().max_speed? comps.get<Acceleration>().max_speed:comps.get<Velocity>().vx;
             }
             if (comps.get<Acceleration>().ay != 0)
             {
                 comps.get<Velocity>().vy += comps.get<Acceleration>().ay * frame_time;
+                comps.get<Velocity>().vy = comps.get<Velocity>().vy > comps.get<Acceleration>().max_speed? comps.get<Acceleration>().max_speed:comps.get<Velocity>().vy;
             }
 
         }
@@ -48,11 +50,22 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query2)
         {
-            comps.get<Rotation>().angle += comps.get<AngularVelocity>().v * frame_time;
-            if (comps.get<Rotation>().angle >= 360)
+            comps.get<Rotation>().angleZ += comps.get<AngularVelocity>().v * frame_time;
+            if (comps.get<Rotation>().angleZ >= 360)
             {
-                comps.get<Rotation>().angle -= 360;
+                comps.get<Rotation>().angleZ -= 360;
             }
+        }
+    }
+
+    template <typename T>
+    void SyncRotationSystem([[maybe_unused]] T &task_manager, System::ECS::Query<Physics::Rotation, Render::Rotation, AngularVelocity>& query2)
+    {
+        constexpr auto frame_time = 1;
+
+        for (auto &[id, comps] : query2)
+        {
+            comps.get<Render::Rotation>().angleZ = comps.get<Physics::Rotation>().angleZ;
         }
     }
 }

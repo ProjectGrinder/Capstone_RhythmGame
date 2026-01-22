@@ -32,7 +32,7 @@ namespace Game::BulletHell
             const auto &bullet_hitbox = comps.get<Physics::RectangularCollider>();
             const auto &player_hitbox = player_query.front().get<Physics::CircularCollider>();
 
-		    const float bullet_angle = comps.get<Physics::Rotation>().angle * std::acos(0.0f)/90.0f  ;
+		    const float bullet_angle = comps.get<Physics::Rotation>().angleZ * std::acos(0.0f)/90.0f  ;
 
 			if (!bullet.is_active)
                 continue;

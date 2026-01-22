@@ -15,6 +15,14 @@ namespace Game::BulletHell
             comp.lifetime -= frame_time;
             if (comp.lifetime < 0)
             {
+                //TODO: Animate this after renderer
+                switch (comp.destroy_effect)
+                {
+                    case Disappear:
+                        break;
+                    default:
+                        break;
+                }
                 syscall.template remove_entity<Particle>(id);
             }
         }

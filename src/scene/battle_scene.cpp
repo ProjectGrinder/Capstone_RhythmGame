@@ -11,7 +11,9 @@ Scene::BattleScene::TaskManager Scene::BattleScene::Init()
 {
     LOG_INFO("Initialization called");
     auto tm = TaskManager{};
-    tm.create_entity(Game::Physics::Position{0, 0}, Game::Physics::Velocity{1,1});
+    tm.create_entity(Game::Battle::BattleState());
+    tm.create_entity(Game::BulletHell::Input());
+    tm.create_entity(Game::Rhythm::KeyInput());
     tm.run_all();
     return (tm);
 }

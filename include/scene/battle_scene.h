@@ -21,6 +21,15 @@ namespace Scene
             Game::BulletHell::Bullet,
             Game::BulletHell::Input,
             Game::BulletHell::Player,
+            Game::BulletHell::Patterns,
+            Game::BulletHell::BoomEmitter,
+            Game::BulletHell::LaserEmitter,
+            Game::BulletHell::RingEmitter,
+            Game::BulletHell::RandomEmitter,
+            Game::BulletHell::SpreadEmitter,
+            Game::BulletHell::Bounce,
+            Game::BulletHell::Homing,
+            Game::BulletHell::Particle,
             Game::Physics::Acceleration,
             Game::Physics::CircularCollider,
             Game::Physics::RectangularCollider,
@@ -37,17 +46,23 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
+            Game::Battle::InputSystem<Syscall>,
             Game::BulletHell::InputToVelocity<Syscall>,
             Game::BulletHell::MovementSystem<Syscall>,
+            Game::BulletHell::RotationSystem<Syscall>,
+            Game::BulletHell::SyncRotationSystem<Syscall>,
             Game::BulletHell::BulletCollision<Syscall>,
             Game::BulletHell::PlayerSystem<Syscall>,
             Game::BulletHell::BulletSystem<Syscall>,
+            Game::BulletHell::PatternSystem<Syscall>,
+            Game::BulletHell::BouncePatternSystem<Syscall>,
+            Game::BulletHell::HomingPatternSystem<Syscall>,
             Game::Rhythm::HandleRhythm<Syscall>,
             Game::Rhythm::HandleMissNote<Syscall>,
-            Game::Rhythm::HandleBPM<Syscall>>;
+            Game::Rhythm::HandleBPM<Syscall> ,
+            Game::Render::AnimationSystem<Syscall> >;
 
         // declare functions
-        static void test();
         static TaskManager Init();
         static std::vector<ComponentTuple> Exit();
     };
