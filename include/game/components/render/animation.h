@@ -14,6 +14,7 @@ namespace Game::Render
 
     //TODO: Inputting partial field uses the previous key value or get entity default value.
     // Maybe Add RGBA, ShaderParam
+    // In System, check for invalid then assign last field.
     struct AnimationFrame
     {
         Physics::Position position;

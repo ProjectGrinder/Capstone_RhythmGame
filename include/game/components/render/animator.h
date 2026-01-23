@@ -14,10 +14,10 @@ namespace Game::Render
         unsigned int currentKey;
         unsigned int currentAnimation;
         bool is_playing;
-        Animator() : animCount(0), animations{}, frame(0), currentKey(0), currentAnimation(0), is_playing(false)
+        Animator() : animCount(0), frame(0), currentKey(0), currentAnimation(0), is_playing(false)
         {}
         explicit Animator(const unsigned int currentAnimation)
-            : animCount(0), animations{}, frame(0), currentKey(0), currentAnimation(currentAnimation), is_playing(false)
+            : animCount(0), frame(0), currentKey(0), currentAnimation(currentAnimation), is_playing(false)
         {}
         void addAnimation(const Animation &animation)
         {
