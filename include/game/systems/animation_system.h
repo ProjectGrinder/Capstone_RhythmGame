@@ -14,7 +14,6 @@ namespace Game::Render
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Physics::Position, Rotation, Physics::Scale, Sprite, Animator> &query)
     {
-        constexpr auto frame_time = 1; // 1ms
 
         for (auto &[id, comps]: query)
         {

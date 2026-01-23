@@ -50,13 +50,13 @@ namespace Game::Rhythm
     void HandleNoteFromLane(
         int lane_num, // assume that first lane is 0
         [[maybe_unused]] T &syscall,
-        System::ECS::Query<Rhythm::Lane, Rhythm::Timing> &note_query,
+        System::ECS::Query<Rhythm::Lane, Rhythm::Timing, Rhythm::TimingEnd> &note_query,
         [[maybe_unused]] System::ECS::Query<Battle::BattleState> &battle_query,
         [[maybe_unused]] System::ECS::Query<Rhythm::KeyInput> &input_query)
     {
         auto first_timing = 99999;
-        auto note_id = -1;
-        auto note_comp = nullptr;
+        int note_id = -1;
+        System::ECS::Query<Lane, Timing, TimingEnd>::StoredTuple *note_comp = nullptr;
 
         for (auto &[id2, comp2] : note_query)
         {
@@ -65,18 +65,18 @@ namespace Game::Rhythm
                 if (comp2.get<Timing>().timing < first_timing)
                 {
                     first_timing = comp2.get<Timing>().timing;
-                    note_id = id2;
+                    note_id = static_cast<int>(id2);
                     note_comp = &comp2;
                 }
             }
         }
 
-        if (note_id < 0) return;
+        if (note_id < 0 || note_comp == nullptr) return;
         
-        if (note_comp.get<TimingEnd>().timing == 0)
+        if (note_comp->get<TimingEnd>().timing_end == 0)
         {
             // it's a tap note
-            auto time_diff = note_comp.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
+            auto time_diff = note_comp->get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
                 
             if (time_diff >= -50 && time_diff <= 50)
             {
@@ -97,7 +97,7 @@ namespace Game::Rhythm
         else
         {
             // it's a hold note
-            auto time_diff_start = note_comp.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
+            auto time_diff_start = note_comp->get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
                 
             if (time_diff_start >= -50 && time_diff_start <= 50)
             {
@@ -115,7 +115,7 @@ namespace Game::Rhythm
 
             for (auto &[id3, comp3] : input_query) // check when stop holding
             {
-                auto time_diff_end = note_comp.get<TimingEnd>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
+                auto time_diff_end = note_comp->get<TimingEnd>().timing_end - battle_query.front().get<Battle::BattleState>().clock_time;
                 if ((lane_num == 0 && comp3.get<KeyInput>().input1 == false) ||
                     (lane_num == 1 && comp3.get<KeyInput>().input2 == false) ||
                     (lane_num == 2 && comp3.get<KeyInput>().input3 == false) ||

@@ -35,6 +35,9 @@ namespace Game::Render
         unsigned int keyFrameFrame[64];
         AnimationFrame keyframes[64];
 
+        Animation() : is_loop(true), currentKey(0), keyN(0), keyFrameFrame{}, keyframes{}
+        {}
+
         explicit Animation(const unsigned int keyN):
             is_loop(true), currentKey(0), keyN(keyN), keyFrameFrame{}, keyframes{}
         {}

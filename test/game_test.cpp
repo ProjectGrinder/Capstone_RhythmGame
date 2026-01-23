@@ -9,15 +9,16 @@ using System::ECS::Syscall;
 using System::ECS::SyscallType;
 using System::ECS::TaskManager;
 using Game::Physics::Position;
+using Game::Battle::BattleState;
 using namespace Game::BulletHell;
 
 // -- BULLET HELL TESTS --
 
-using PlayerResource = ResourceManager<1000, Player, Position, Velocity, Rotation, Acceleration, AngularVelocity>;
-using BulletResource = ResourceManager<1000, Bullet, Position, Velocity, Rotation, Acceleration, AngularVelocity>;
+using PlayerResource = ResourceManager<1000, Player, Position, Velocity, Rotation, Acceleration, AngularVelocity, BattleState>;
+using BulletResource = ResourceManager<1000, Bullet, Position, Velocity, Rotation, Acceleration, AngularVelocity, BattleState>;
 
-using PlayerSyscall = Syscall<1000, Player, Position, Velocity, Rotation, Acceleration, AngularVelocity>;
-using BulletSyscall = Syscall<1000, Bullet, Position, Velocity, Rotation, Acceleration, AngularVelocity>;
+using PlayerSyscall = Syscall<1000, Player, Position, Velocity, Rotation, Acceleration, AngularVelocity, BattleState>;
+using BulletSyscall = Syscall<1000, Bullet, Position, Velocity, Rotation, Acceleration, AngularVelocity, BattleState>;
 
 pid CreatePlayer(PlayerResource *resource,
     Position pos = Position(0,0), Velocity vel = Velocity(0,0), Rotation rot = Rotation(0),
@@ -165,7 +166,7 @@ TEST(Game, bullet_movement2)
     EXPECT_EQ(resource->query<Position>().get(id).y, 4*1/2);
     EXPECT_EQ(resource->query<Velocity>().get(id).vx, 4);
     EXPECT_EQ(resource->query<Velocity>().get(id).vy, 0);
-    EXPECT_EQ(resource->query<Rotation>().get(id).angle, 30);
+    EXPECT_EQ(resource->query<Rotation>().get(id).angleZ, 30);
 
     resource->query<Position>().set(id,Position(3,2));
     resource->query<Velocity>().set(id,Velocity(2,3));
@@ -179,7 +180,7 @@ TEST(Game, bullet_movement2)
     EXPECT_EQ(round(resource->query<Position>().get(id).y), -2);
     EXPECT_EQ(resource->query<Velocity>().get(id).vx, 2);
     EXPECT_EQ(resource->query<Velocity>().get(id).vy, 3);
-    EXPECT_EQ(resource->query<Rotation>().get(id).angle, -90);
+    EXPECT_EQ(resource->query<Rotation>().get(id).angleZ, -90);
 }
 
 TEST(Game, bullet_movement3)
@@ -228,13 +229,13 @@ TEST(Game, bullet_movement4)
     //Rotate 1 time : 30 -> 15
     task_manager.run_all();
 
-    EXPECT_EQ(resource->query<Rotation>().get(id).angle, 15);
+    EXPECT_EQ(resource->query<Rotation>().get(id).angleZ, 15);
     EXPECT_EQ(resource->query<AngularVelocity>().get(id).v, -15);
 
     //Rotate 2 time : 15 -> -15
     task_manager.run_all();
     task_manager.run_all();
-    EXPECT_EQ(resource->query<Rotation>().get(id).angle, -15);
+    EXPECT_EQ(resource->query<Rotation>().get(id).angleZ, -15);
     EXPECT_EQ(resource->query<AngularVelocity>().get(id).v, -15);
 }
 

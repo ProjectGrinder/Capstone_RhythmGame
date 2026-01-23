@@ -20,7 +20,7 @@ namespace Game::Rhythm
         }
 
         constexpr auto miss_timing = 100;
-        auto &current_timing = query3.front().get<Battle::BattleState>().clock_time;
+        auto &current_timing = battle_query.front().get<Battle::BattleState>().clock_time;
 
         for (auto &[id, comps] : note_query)
         {

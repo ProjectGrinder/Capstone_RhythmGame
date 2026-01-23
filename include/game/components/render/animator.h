@@ -1,4 +1,6 @@
 #pragma once
+#include "utils/print_debug.h"
+#include <array>
 
 namespace Game::Render
 {
@@ -6,7 +8,7 @@ namespace Game::Render
     struct Animator
     {
         int animCount;
-        Animation animations[32];
+        std::array<Animation, 32> animations;
 
         unsigned int frame;
         unsigned int currentKey;
