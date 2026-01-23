@@ -49,7 +49,7 @@ namespace Game::Physics
     {
         static std::random_device rd;
         static std::mt19937 gen(rd());
-        std::uniform_real_distribution dist(min, max);
+        std::uniform_int_distribution dist(min, max);
         return dist(gen);
     }
 }
