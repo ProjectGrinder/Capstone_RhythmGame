@@ -67,7 +67,6 @@ namespace Game::BulletHell
         if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
-        constexpr auto frame_time = 1;
 
         for (auto &[id, comps] : query)
         {
@@ -84,7 +83,10 @@ namespace Game::BulletHell
     }
 
     template <typename T>
-    void HomingPatternSystem([[maybe_unused]] T &syscall, System::ECS::Query<Homing, Position,Rotation>& query,System::ECS::Query<Player, Position> query2, System::ECS::Query<Battle::BattleState> &query3)
+    void HomingPatternSystem([[maybe_unused]] T &syscall,
+        System::ECS::Query<Homing, Position, Rotation>& query,
+        System::ECS::Query<Player, Position> query2,
+        System::ECS::Query<Battle::BattleState> &query3)
     {
         if (query3.begin() == query3.end())
             return;

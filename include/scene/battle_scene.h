@@ -37,11 +37,15 @@ namespace Scene
             Game::Physics::Position,
             Game::Physics::Rotation,
             Game::Physics::Velocity,
+            Game::Physics::Scale,
             Game::Rhythm::KeyInput,
             Game::Rhythm::Lane,
             Game::Rhythm::NoteSpeed,
             Game::Rhythm::Timing,
-            Game::Rhythm::TimingEnd
+            Game::Rhythm::TimingEnd,
+            Game::Render::Animator,
+            Game::Render::Rotation,
+            Game::Render::Sprite
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -56,7 +60,7 @@ namespace Scene
             Game::BulletHell::BulletSystem<Syscall>,
             Game::BulletHell::PatternSystem<Syscall>,
             Game::BulletHell::BouncePatternSystem<Syscall>,
-            Game::BulletHell::HomingPatternSystem<Syscall>,
+            //Game::BulletHell::HomingPatternSystem<Syscall>,
             Game::Rhythm::HandleRhythm<Syscall>,
             Game::Rhythm::HandleMissNote<Syscall>,
             Game::Rhythm::HandleBPM<Syscall> ,
