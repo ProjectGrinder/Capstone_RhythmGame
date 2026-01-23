@@ -5,7 +5,10 @@ namespace Game::Rhythm
 {
     template<typename T>
     void create_note_entity(
-            T &syscall, Battle::RhythmState &rhythm_state, Battle::LaneInfo &lane, Battle::NoteData &note)
+            T &syscall,
+            Battle::RhythmState &rhythm_state,
+            Battle::LaneInfo &lane,
+            Battle::NoteData &note)
     {
         if (note.is_hold)
         {
@@ -17,8 +20,11 @@ namespace Game::Rhythm
         }
         else
         {
-            syscall.template create_entity<Lane, NoteSpeed, Timing>(
-                    Lane{lane.lane_number}, NoteSpeed{rhythm_state.note_speed}, Timing{note.timing});
+            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd>(
+                    Lane{lane.lane_number},
+                    NoteSpeed{rhythm_state.note_speed},
+                    Timing{note.timing},
+                    TimingEnd{0});
         }
     }
 

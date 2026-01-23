@@ -9,8 +9,7 @@ namespace Game::Rhythm
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<Rhythm::KeyInput> &input_query,
-            [[maybe_unused]] System::ECS::Query<Rhythm::Lane, Rhythm::Timing> &note_query,
-            [[maybe_unused]] System::ECS::Query<Rhythm::Lane, Rhythm::Timing, Rhythm::TimingEnd> &hold_note_query)
+            [[maybe_unused]] System::ECS::Query<Rhythm::Lane, Rhythm::Timing, Rhythm::TimingEnd> &note_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -30,115 +29,123 @@ namespace Game::Rhythm
         {
             if (comp.get<KeyInput>().input1 == true)
             {
-                HandleTapNote(0, syscall, battle_query, note_query);
+                HandleNoteFromLane(0, syscall, note_query, battle_query, input_query);
             }
             if (comp.get<KeyInput>().input2 == true)
             {
-                HandleTapNote(1, syscall, battle_query, note_query);
+                HandleNoteFromLane(1, syscall, note_query, battle_query, input_query);
             }
             if (comp.get<KeyInput>().input3 == true)
             {
-                HandleTapNote(2, syscall, battle_query, note_query);
+                HandleNoteFromLane(2, syscall, note_query, battle_query, input_query);
             }
             if (comp.get<KeyInput>().input4 == true)
             {
-                HandleTapNote(3, syscall, battle_query, note_query);
+                HandleNoteFromLane(3, syscall, note_query, battle_query, input_query);
             }
         }
     }
 
     template<typename T>
-    void HandleTapNote(
-        int lane_num, // assume that first lane is lane 0
+    void HandleNoteFromLane(
+        int lane_num, // assume that first lane is 0
         [[maybe_unused]] T &syscall,
+        System::ECS::Query<Rhythm::Lane, Rhythm::Timing> &note_query,
         [[maybe_unused]] System::ECS::Query<Battle::BattleState> &battle_query,
-        System::ECS::Query<Rhythm::Lane, Rhythm::Timing> &note_query)
-    {   
+        [[maybe_unused]] System::ECS::Query<Rhythm::KeyInput> &input_query)
+    {
+        auto first_timing = 99999;
+        auto note_id = -1;
+        auto note_comp = nullptr;
+
         for (auto &[id2, comp2] : note_query)
         {
             if (comp2.get<Lane>().lane == lane_num)
             {
-                auto time_diff = comp2.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
-                
-                if (time_diff >= -50 && time_diff <= 50)
+                if (comp2.get<Timing>().timing < first_timing)
                 {
-                    battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+                    first_timing = comp2.get<Timing>().timing;
+                    note_id = id2;
+                    note_comp = &comp2;
                 }
-                else if (time_diff >= -75 && time_diff <= 75)
-                {
-                    battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
-                }
-                else if (time_diff >= -100 && time_diff <= 100)
-                {
-                    battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
-                }
-                else continue;
-
-                syscall.remove_entity(id2);
             }
         }
-    }
 
-    template<typename T>
-    void HandleHoldNote(
-        int lane_num, // assume that first lane is lane 0
-        [[maybe_unused]] T &syscall,
-        [[maybe_unused]] System::ECS::Query<Rhythm::KeyInput> &input_query,
-        [[maybe_unused]] System::ECS::Query<Battle::BattleState> &battle_query,
-        System::ECS::Query<Rhythm::Lane, Rhythm::Timing, Rhythm::TimingEnd> &note_query)
-    {
-        for (auto &[id2, comp2] : note_query)
+        if (note_id < 0) return;
+        
+        if (note_comp.get<TimingEnd>().timing == 0)
         {
-            if (comp2.get<Lane>().lane == lane_num) // check when start holding
-            {
-                auto time_diff_start = comp2.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
+            // it's a tap note
+            auto time_diff = note_comp.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
                 
-                if (time_diff_start >= -50 && time_diff_start <= 50)
+            if (time_diff >= -50 && time_diff <= 50)
+            {
+                battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+            }
+            else if (time_diff >= -75 && time_diff <= 75)
+            {
+            battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
+            }
+            else if (time_diff >= -100 && time_diff <= 100)
+            {
+                battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
+            }
+            else return;
+
+            syscall.remove_entity(note_id);
+        }
+        else
+        {
+            // it's a hold note
+            auto time_diff_start = note_comp.get<Timing>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
+                
+            if (time_diff_start >= -50 && time_diff_start <= 50)
+            {
+                battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+            }
+            else if (time_diff_start >= -75 && time_diff_start <= 75)
+            {
+                battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
+            }
+            else if (time_diff_start >= -100 && time_diff_start <= 100)
+            {
+                battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
+            }
+            else return;
+
+            for (auto &[id3, comp3] : input_query) // check when stop holding
+            {
+                auto time_diff_end = note_comp.get<TimingEnd>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
+                if ((lane_num == 0 && comp3.get<KeyInput>().input1 == false) ||
+                    (lane_num == 1 && comp3.get<KeyInput>().input2 == false) ||
+                    (lane_num == 2 && comp3.get<KeyInput>().input3 == false) ||
+                    (lane_num == 3 && comp3.get<KeyInput>().input4 == false))
+                    {
+                        if (time_diff_end <= 50)
+                        {
+                            battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+                        }
+                        else if (time_diff_end <= 75)
+                        {
+                            battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
+                        }
+                        else if (time_diff_end <= 100)
+                        {
+                            battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
+                        }
+                        else
+                        {
+                            battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
+                        }
+                        syscall.remove_entity(note_id);
+                        break;
+                    }
+
+                if (time_diff_end == 0) // check for perfect end timing
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-                }
-                else if (time_diff_start >= -75 && time_diff_start <= 75)
-                {
-                    battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
-                }
-                else if (time_diff_start >= -100 && time_diff_start <= 100)
-                {
-                    battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
-                }
-                else continue;
-
-                for (auto &[id3, comp3] : input_query) // check when stop holding
-                {
-                    auto time_diff_end = comp2.get<TimingEnd>().timing - battle_query.front().get<Battle::BattleState>().clock_time;
-
-                    if ((lane_num == 0 && comp3.get<KeyInput>().input1 == false) ||
-                        (lane_num == 1 && comp3.get<KeyInput>().input2 == false) ||
-                        (lane_num == 2 && comp3.get<KeyInput>().input3 == false) ||
-                        (lane_num == 3 && comp3.get<KeyInput>().input4 == false))
-                        {
-                            if (time_diff_end <= 50)
-                            {
-                                battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-                            }
-                            else if (time_diff_end <= 75)
-                            {
-                                battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
-                            }
-                            else if (time_diff_end <= 100)
-                            {
-                                battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
-                            }
-                            else
-                            {
-                                battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
-                            }
-                        }
-
-                    if (time_diff_end == 0) // check for perfect end timing
-                    {
-                        battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-                    }
-                    syscall.remove_entity(id2);
+                    syscall.remove_entity(note_id);
+                    break;
                 }
             }
         }
