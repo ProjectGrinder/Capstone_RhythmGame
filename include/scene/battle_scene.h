@@ -45,7 +45,10 @@ namespace Scene
             Game::Rhythm::TimingEnd,
             Game::Render::Animator,
             Game::Render::Rotation,
-            Game::Render::Sprite
+            Game::Render::Sprite,
+            Game::Render::Material,
+            Game::Render::Text,
+            Game::Render::Camera2D
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
