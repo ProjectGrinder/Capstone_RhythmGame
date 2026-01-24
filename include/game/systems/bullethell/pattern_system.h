@@ -85,9 +85,12 @@ namespace Game::BulletHell
     template <typename T>
     void HomingPatternSystem([[maybe_unused]] T &syscall,
         System::ECS::Query<Homing, Position, Rotation>& query,
-        System::ECS::Query<Player, Position> query2,
+        System::ECS::Query<Player, Position> & query2,
         System::ECS::Query<Battle::BattleState> &query3)
     {
+        if (query2.begin() == query2.end())
+            return;
+
         if (query3.begin() == query3.end())
             return;
 
