@@ -1,5 +1,5 @@
 #pragma once
-
+// Not implemented for render (I don't think this should be here)
 // TODO: Later map into real render component to optimize for rendering
 namespace Game::Render
 {

@@ -1,5 +1,5 @@
 #pragma once
-
+// Not implemented for render (I don't think this should be here)
 namespace Game::Render
 {
     struct Shader
