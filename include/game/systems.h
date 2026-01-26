@@ -9,6 +9,8 @@
 #include "game/systems/bullethell/pattern_system.h"
 #include "game/systems/bullethell/player_system.h"
 #include "game/systems/bullethell/bullet_system.h"
+#include "game/systems/bullethell/booming_system.h"
+#include "game/systems/bullethell/laser_system.h"
 // Rhythm Part
 #include "game/systems/rhythm/handle_rhythm.h" // TODO: Pooh implement this system
 #include "game/systems/rhythm/handle_miss_note.h"
