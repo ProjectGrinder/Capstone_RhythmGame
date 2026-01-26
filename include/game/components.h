@@ -20,7 +20,6 @@
 #include "components/physics/scale.h"
 #include "components/physics/velocity.h"
 #include "components/physics/shaker.h"
-#include "components/render/animation.h"
 #include "components/render/animator.h"
 #include "components/render/material.h"
 #include "components/render/camera.h"
