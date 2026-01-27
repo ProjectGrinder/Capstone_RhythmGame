@@ -5,7 +5,7 @@
 namespace Scene
 {
     template <typename T>
-    void CreateDemoChart([[maybe_unused]] T &syscall, Game::Battle::ChartData &chart)
+    void create_demo_chart([[maybe_unused]] T &syscall, Game::Battle::ChartData &chart)
     {
         // Configure ChartData
         for (int lane = 0; lane < 4; ++lane)
@@ -59,4 +59,57 @@ namespace Scene
         chart.lanes[0].notes.push_back(Game::Battle::NoteData(false, 37000, 0));
         chart.lanes[2].notes.push_back(Game::Battle::NoteData(true, 37000, 38000));
     }
+
+    template <typename T>
+    void setup_demo_rhythm_scene([[maybe_unused]] T &syscall)
+    {
+        // Create and configure BattleState
+        auto &battle_state = syscall.create_component<Game::Battle::BattleState>();
+        battle_state = Game::Battle::BattleState(100, 100, Game::Battle::NO_INSTRUMENT);
+
+        // Create and configure RhythmState
+        auto &rhythm_state = syscall.create_component<Game::Battle::RhythmState>();
+        rhythm_state = Game::Battle::RhythmState(1, 1, 32, 1.0f);
+
+        // Create and configure ChartData
+        auto &chart_data = syscall.create_component<Game::Battle::ChartData>();
+        create_demo_chart(syscall, chart_data);
+
+        // Create KeyInput component
+        syscall.create_component<Game::Rhythm::KeyInput>();
+
+        // Create Lane and NoteSpeed components
+        syscall.create_component<Game::Rhythm::Lane>(0);
+        syscall.create_component<Game::Rhythm::Lane>(1);
+        syscall.create_component<Game::Rhythm::Lane>(2);
+        syscall.create_component<Game::Rhythm::Lane>(3);
+        syscall.create_component<Game::Rhythm::NoteSpeed>(1.0f);
+    }
+
+    struct DemoRhythmScene
+    {
+        static DemoRhythmScene instance();
+
+        constexpr static auto name = "DemoRhythmScene";
+        // declare scene parameters
+        constexpr static size_t MaxResource = 500;
+        using ComponentTuple = std::tuple<
+            Game::Battle::BattleState,
+            Game::Battle::RhythmState,
+            Game::Battle::ChartData,
+            Game::Rhythm::KeyInput,
+            Game::Rhythm::Lane,
+            Game::Rhythm::NoteSpeed,
+            Game::Rhythm::Timing,
+            Game::Rhythm::TimingEnd,
+            >;
+        using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
+        using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
+        using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
+            Game::Battle::InputSystem<Syscall>,
+            Game::Rhythm::HandleRhythm<Syscall>,
+            Game::Rhythm::HandleMissNote<Syscall>,
+            Game::Rhythm::HandleBPM<Syscall>
+            >;
+    };
 }
