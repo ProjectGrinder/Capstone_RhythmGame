@@ -7,7 +7,7 @@ namespace Game::Rhythm
     template<typename T>
     void HandleMissNote(
         T &syscall,
-        System::ECS::Query<Lane, NoteSpeed, Timing, TimingEnd> &note_query,
+        System::ECS::Query<Lane, Timing> &note_query,
         System::ECS::Query<Battle::BattleState> &battle_query)
     {
 
@@ -26,11 +26,11 @@ namespace Game::Rhythm
         {
             if (comps.get<Timing>().timing - current_timing < -1 * miss_timing)
             {
-                if (comps.get<TimingEnd>().timing_end == 0)
+                if (comps.get<TimingEnd>().timing_end == 0) // tap note miss
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
                 }
-                else
+                else if (comps.get<HoldActive>().hold_active == false) // hold note miss (not held at all)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 2;
                 }
