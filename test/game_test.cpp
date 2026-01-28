@@ -74,20 +74,6 @@ pid CreateBoomerBullet(BulletHell_Resource *resource, Bullet bullet = {}, Boomin
     return id;
 }
 
-pid CreateLaserBullet(BulletHell_Resource *resource, Bullet bullet = {}, Booming booming = {}, Delay delay = Delay(0),
-    Position pos = {}, Rotation rot = {}, RectangularCollider rc = {})
-{
-    const pid id = resource->reserve_process();
-    resource->add_resource<Bullet>(id, Bullet(bullet));
-    resource->add_resource<Delay>(id, Delay(delay));
-    resource->add_resource<Booming>(id, Booming(booming));
-    resource->add_resource<Position>(id, Position(pos));
-    resource->add_resource<Scale>(id, Scale());
-    resource->add_resource<Game::Render::Material>(id,{});
-    resource->add_resource<RectangularCollider>(id, RectangularCollider(rc));
-    return id;
-}
-
 pid CreateBattleState(BulletHell_Resource *resource)
 {
     const pid id = resource->reserve_process();
@@ -413,6 +399,7 @@ TEST(Game, bullets_booming)
     EXPECT_EQ(resource->query<Game::Render::Material>().get(id).color.a, 1);
     EXPECT_EQ(resource->query<Booming>().get(id).lifetime, 1);
 }
+
 
 // -- RHYTHM GAME TESTS --
 
