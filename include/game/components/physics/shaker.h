@@ -8,8 +8,7 @@ namespace Game::Physics
         float delay;
         float magnitudeX;
         float magnitudeY;
-        float last_position_x = 0;
-        float last_position_y = 0;
+        Position last_position;
         explicit Shaker(const float shakingTime, const float delay, const float magnitude):
             shakingTime(shakingTime),delay(delay),magnitudeX(magnitude),magnitudeY(magnitude)
         {}
