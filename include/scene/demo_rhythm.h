@@ -86,11 +86,25 @@ namespace Scene
         syscall.create_component<Game::Rhythm::NoteSpeed>(1.0f);
     }
 
-    struct DemoRhythmScene
+    template <typename T>
+    void time_check([[maybe_unused]] T &syscall, System::ECS::Query<Game::Battle::BattleState> &query)
     {
-        static DemoRhythmScene instance();
+        if (query.begin() == query.end())
+        {
+            return;
+        }
+        auto time = query.front().get<Game::Battle::BattleState>().clock_time;
+        if (time % 1000 == 0)
+        {
+            LOG_INFO("Current Time: %d s", time);
+        }
+    }
 
-        constexpr static auto name = "DemoRhythmScene";
+    struct DemoRhythm
+    {
+        static DemoRhythm instance();
+
+        constexpr static auto name = "DemoRhythm";
         // declare scene parameters
         constexpr static size_t MaxResource = 500;
         using ComponentTuple = std::tuple<
@@ -109,7 +123,18 @@ namespace Scene
             Game::Battle::InputSystem<Syscall>,
             Game::Rhythm::HandleRhythm<Syscall>,
             Game::Rhythm::HandleMissNote<Syscall>,
-            Game::Rhythm::HandleBPM<Syscall>
+            Game::Rhythm::HandleBPM<Syscall>,
+            time_check<Syscall>
             >;
+        
+        static TaskManager Init()
+        {
+            ResourceManager resource_manager;
+            Syscall syscall(resource_manager);
+            setup_demo_rhythm_scene(syscall);
+            return TaskManager(resource_manager, syscall);
+        }
+
+        static std::vector<ComponentTuple> Exit();
     };
 }
