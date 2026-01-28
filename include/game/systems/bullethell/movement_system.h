@@ -1,6 +1,5 @@
 #pragma once
 #include "game/components.h"
-#include "game/components/physics/acceleration.h"
 #include <cmath>
 
 // FIXME: Part of physics, consider separation into its own thread

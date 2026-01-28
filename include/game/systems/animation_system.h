@@ -40,7 +40,9 @@ namespace Game::Render
                     continue;
                 }
                 currentKey++;
-                sprite.id = animation.keyframes[currentKey].spriteID;
+
+                if (animation.keyframes[currentKey].texture != nullptr)
+                    sprite.texture = animation.keyframes[currentKey].texture;
             }
 
             const auto &keyFrameFrame1 = animation.keyFrameFrame[currentKey];

@@ -5,7 +5,7 @@
 namespace Game::BulletHell
 {
     template <typename T>
-    void DelayBulletSystem([[maybe_unused]] T &syscall, System::ECS::Query<Bullet, Delay> &query, System::ECS::Query<Battle::BattleState> &query2)
+    void BulletSystem([[maybe_unused]] T &syscall, System::ECS::Query<Bullet, Delay> &query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
@@ -21,6 +21,7 @@ namespace Game::BulletHell
             auto &delay_comp = comps.get<Delay>();
             if (!bullet.is_active)
             {
+                bullet.is_damageable = false;
                 continue;
             }
 

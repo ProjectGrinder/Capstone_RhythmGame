@@ -22,14 +22,12 @@ namespace Scene
             Game::BulletHell::Input,
             Game::BulletHell::Player,
             Game::BulletHell::Patterns,
-            Game::BulletHell::BoomEmitter,
-            Game::BulletHell::LaserEmitter,
-            Game::BulletHell::RingEmitter,
-            Game::BulletHell::RandomEmitter,
-            Game::BulletHell::SpreadEmitter,
             Game::BulletHell::Bounce,
             Game::BulletHell::Homing,
             Game::BulletHell::Particle,
+            Game::BulletHell::Delay,
+            Game::BulletHell::Booming,
+            Game::BulletHell::Laser,
             Game::Physics::Acceleration,
             Game::Physics::CircularCollider,
             Game::Physics::RectangularCollider,
@@ -61,12 +59,14 @@ namespace Scene
             Game::BulletHell::PlayerSystem<Syscall>,
             Game::BulletHell::BulletSystem<Syscall>,
             Game::BulletHell::PatternSystem<Syscall>,
+            Game::BulletHell::DelaySystem<Syscall>,
+            Game::BulletHell::Boomer_System<Syscall>,
+            Game::BulletHell::Laser_System<Syscall>,
             Game::BulletHell::BouncePatternSystem<Syscall>,
             Game::BulletHell::HomingPatternSystem<Syscall>,
             Game::Rhythm::HandleRhythm<Syscall>,
             Game::Rhythm::HandleMissNote<Syscall>,
-            Game::Rhythm::HandleBPM<Syscall> ,
-            Game::Render::AnimationSystem<Syscall> >;
+            Game::Rhythm::HandleBPM<Syscall>  >;
 
         // declare functions
         static TaskManager Init();

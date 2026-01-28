@@ -7,7 +7,7 @@ namespace Game::BulletHell
         int delay;
         Delay() : delay(0)
         {}
-        explicit Delay(const float delay) : delay(delay)
+        explicit Delay(const int delay) : delay(delay)
         {}
     };
 }

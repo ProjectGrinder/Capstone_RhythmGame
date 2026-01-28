@@ -20,7 +20,7 @@ namespace Game::Render
         Physics::Position position;
         Physics::Rotation rotation;
         Physics::Scale scale;
-        int spriteID = -1;
+        char* texture = nullptr;
         TweenType tweenType = Linear;
         float tweenStrength = 1.0f;
     };
