@@ -2,7 +2,7 @@
 
 namespace Game::BulletHell
 {
-    // A single Pattern - not component
+    // A single Pattern - not component ONLY usable for magnitude/angle movement
     struct MoveParam
     {
         float loopDelay;

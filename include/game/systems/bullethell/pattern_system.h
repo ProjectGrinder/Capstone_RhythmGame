@@ -5,12 +5,6 @@
 // FIXME: Part of physics, consider separation into its own thread
 namespace Game::BulletHell
 {
-    using Position = Physics::Position;
-    using Velocity = Physics::Velocity;
-    using Rotation = Physics::Rotation;
-    using Acceleration = Physics::Acceleration;
-    using AngularVelocity = Physics::AngularVelocity;
-
     template <typename T>
     void PatternSystem([[maybe_unused]] T &syscall, System::ECS::Query<Patterns, Rotation, Velocity, Acceleration, AngularVelocity>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
@@ -31,11 +25,10 @@ namespace Game::BulletHell
                 {
                     const auto pattern = itr->second;
                     comps.get<Velocity>().vx = pattern.speed;
-                    comps.get<Velocity>().vy = pattern.speed;
                     comps.get<Rotation>().angleZ = pattern.angle;
                     comps.get<Acceleration>().ax = pattern.accel;
-                    comps.get<Acceleration>().ay = pattern.accel;
                     comps.get<AngularVelocity>().v = pattern.angular_velocity;
+                    comps.get<Acceleration>().max_speed_x = pattern.max_speed;
                     if (pattern.loopDelay <= 0)
                         itr = patterns.erase(itr);
                     else

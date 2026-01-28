@@ -3,10 +3,7 @@
 
 namespace Game::BulletHell
 {
-    using Position = Physics::Position;
-    using Scale = Physics::Scale;
-
-    // Default FadeIn/Out
+        // Default FadeIn/Out
     template <typename T>
     void Boomer_System([[maybe_unused]] T &syscall, System::ECS::Query<Booming,Delay,Physics::Scale, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2)
     {

@@ -1,16 +1,18 @@
 #pragma once
-#include "game/components.h"
 #include <cmath>
+#include "game/components.h"
+
+#include "game/utils/physics_util.h"
 
 // FIXME: Part of physics, consider separation into its own thread
+using Position = Game::Physics::Position;
+using Velocity = Game::Physics::Velocity;
+using Rotation = Game::Physics::Rotation;
+using Acceleration = Game::Physics::Acceleration;
+using AngularVelocity = Game::Physics::AngularVelocity;
+
 namespace Game::BulletHell
 {
-    using Position = Physics::Position;
-    using Velocity = Physics::Velocity;
-    using Rotation = Physics::Rotation;
-    using Acceleration = Physics::Acceleration;
-    using AngularVelocity = Physics::AngularVelocity;
-
     template <typename T>
     void MovementSystem([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity, Acceleration>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
@@ -24,19 +26,31 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query)
         {
-            const float angle = comps.get<Rotation>().angleZ * std::acos(0.0f)/90.0f  ;
-            comps.get<Position>().x += (comps.get<Velocity>().vx * cos(angle) - comps.get<Velocity>().vy * sin(angle)) * frame_time;
-            comps.get<Position>().y += (comps.get<Velocity>().vx * sin(angle) + comps.get<Velocity>().vy * cos(angle)) * frame_time;
+            auto &pos = comps.get<Position>();
+            auto &vel = comps.get<Velocity>();
+            auto &acc = comps.get<Acceleration>();
+            const auto &rot = comps.get<Rotation>();
 
-            if (comps.get<Acceleration>().ax != 0)
+            const float angle = rot.angleZ * acos(0.0f)/90.0f  ;
+
+            pos.x += (vel.vx * cos(angle) - vel.vy * sin(angle)) * frame_time;
+            pos.y += (vel.vx * sin(angle) + vel.vy * cos(angle)) * frame_time;
+
+            if (acc.ax != 0)
             {
-                comps.get<Velocity>().vx += comps.get<Acceleration>().ax * frame_time;
-                comps.get<Velocity>().vx = comps.get<Velocity>().vx > comps.get<Acceleration>().max_speed? comps.get<Acceleration>().max_speed:comps.get<Velocity>().vx;
+                vel.vx += comps.get<Acceleration>().ax * frame_time;
+                if (acc.ax < 0)
+                    vel.vx = vel.vx < acc.max_speed_x? acc.max_speed_x:vel.vx;
+                else
+                    vel.vx = vel.vx > acc.max_speed_x? acc.max_speed_x:vel.vx;
             }
-            if (comps.get<Acceleration>().ay != 0)
+            if (acc.ay != 0)
             {
-                comps.get<Velocity>().vy += comps.get<Acceleration>().ay * frame_time;
-                comps.get<Velocity>().vy = comps.get<Velocity>().vy > comps.get<Acceleration>().max_speed? comps.get<Acceleration>().max_speed:comps.get<Velocity>().vy;
+                vel.vy += acc.ay * frame_time;
+                if (acc.ay < 0)
+                    vel.vy = vel.vy < acc.max_speed_y? acc.max_speed_y:vel.vy;
+                else
+                    vel.vy = vel.vy > acc.max_speed_y? acc.max_speed_y:vel.vy;
             }
 
         }

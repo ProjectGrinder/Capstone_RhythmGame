@@ -2,12 +2,9 @@
 
 namespace Game::BulletHell
 {
-    using Position = Physics::Position;
-    using Scale = Physics::Scale;
-
     // Default FadeIn/Out
     template <typename T>
-    void Laser_System([[maybe_unused]] T &syscall, System::ECS::Query<Laser,Delay, Scale, Position, Rotation, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void Laser_System([[maybe_unused]] T &syscall, System::ECS::Query<Laser,Delay, Physics::Scale, Position, Rotation, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
@@ -19,7 +16,7 @@ namespace Game::BulletHell
             const auto &delay_comp = comps.get<Delay>();
             auto &pos = comps.get<Position>();
             const auto &rot = comps.get<Rotation>();
-            auto &scl = comps.get<Scale>();
+            auto &scl = comps.get<Physics::Scale>();
             auto &render = comps.get<Render::Material>();
 
             auto max_pos_x = laser.start_pos_x + scl.scaleY*cos(rot.angleZ);
