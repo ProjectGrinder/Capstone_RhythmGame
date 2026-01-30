@@ -9,7 +9,7 @@ namespace Game::Physics
     {
         float size_x;
         float size_y;
-        RectangularCollider() : BaseCollider(0, 0, 0, 0), size_x(0), size_y(0)
+        RectangularCollider() : BaseCollider(0, 0, 0, 0), size_x(1), size_y(1)
         {}
         explicit RectangularCollider(
                 const float &size_x, const float &size_y, const unsigned int layer = 0, const unsigned int mask = 0) :

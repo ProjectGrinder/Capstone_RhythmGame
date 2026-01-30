@@ -8,7 +8,7 @@ namespace Game::Physics
     struct CircularCollider : BaseCollider
     {
         float radius_x, radius_y;
-        CircularCollider() : radius_x(0), radius_y(0)
+        CircularCollider() : radius_x(1), radius_y(1)
         {}
         explicit CircularCollider(
                 const float radius, const unsigned int layer = 0, const unsigned int mask = 0) :
