@@ -7,17 +7,18 @@ using System::ECS::ResourcePool;
 using System::ECS::SyscallType;
 using System::ECS::TaskManager;
 using Game::Battle::BattleState;
+using Game::Battle::BulletHellState;
 using namespace Game::BulletHell;
 using namespace Game::Physics;
 
 // -- BULLET HELL TESTS --
 
-using BulletHell_Resource = System::ECS::ResourceManager<1000,Player, Bullet, Position, Scale, Velocity, Rotation, Acceleration, AngularVelocity, Booming, Delay, Laser, Particle, Patterns, CircularCollider, RectangularCollider, Game::Render::Material, BattleState>;
+using BulletHell_Resource = System::ECS::ResourceManager<1000,Player, Bullet, Position, Scale, Velocity, Rotation, Acceleration, AngularVelocity, Booming, Delay, Laser, Particle, Patterns, CircularCollider, RectangularCollider, Game::Render::Material, BattleState, BulletHellState>;
 
-using BulletHell_Syscall = System::ECS::Syscall<1000,Player, Bullet, Position, Scale, Velocity, Rotation, Acceleration, AngularVelocity, Booming, Delay, Laser, Particle, Patterns, CircularCollider, RectangularCollider, Game::Render::Material, BattleState>;
+using BulletHell_Syscall = System::ECS::Syscall<1000,Player, Bullet, Position, Scale, Velocity, Rotation, Acceleration, AngularVelocity, Booming, Delay, Laser, Particle, Patterns, CircularCollider, RectangularCollider, Game::Render::Material, BattleState, BulletHellState>;
 
 pid CreatePlayer(BulletHell_Resource *resource, CircularCollider cc = {},
-    Position pos = Position(0,0), Velocity vel = Velocity(0,0), Rotation rot = Rotation(0),
+    Position pos = Position(0,0), Velocity vel = Velocity(0,0), Rotation rot = Rotation(0), Scale scl = {},
     Acceleration acc = Acceleration(0,0), AngularVelocity avel = AngularVelocity(0))
 {
     const pid id = resource->reserve_process();
@@ -26,6 +27,7 @@ pid CreatePlayer(BulletHell_Resource *resource, CircularCollider cc = {},
     resource->add_resource<Position>(id, Position(pos));
     resource->add_resource<Velocity>(id, Velocity(vel));
     resource->add_resource<Rotation>(id,Rotation(rot));
+    resource->add_resource<Scale>(id, Scale(scl));
     resource->add_resource<Acceleration>(id,Acceleration(acc));
     resource->add_resource<AngularVelocity>(id,AngularVelocity(avel));
     return id;
@@ -61,7 +63,7 @@ pid CreateBullet2(BulletHell_Resource *resource, Bullet bullet = {}, Delay delay
 }
 
 pid CreateCircleBullet(BulletHell_Resource *resource, Bullet bullet = {}, CircularCollider cc = CircularCollider(),
-    Position pos = Position(0,0), Velocity vel = Velocity(0,0), Rotation rot = Rotation(0))
+    Position pos = Position(0,0), Velocity vel = Velocity(0,0), Rotation rot = Rotation(0), Scale scl = {})
 {
     const pid id = resource->reserve_process();
     resource->add_resource<Bullet>(id, Bullet(bullet));
@@ -69,11 +71,12 @@ pid CreateCircleBullet(BulletHell_Resource *resource, Bullet bullet = {}, Circul
     resource->add_resource<Position>(id, Position(pos));
     resource->add_resource<Velocity>(id, Velocity(vel));
     resource->add_resource<Rotation>(id,Rotation(rot));
+    resource->add_resource<Scale>(id, Scale(scl));
     return id;
 }
 
 pid CreateRectangleBullet(BulletHell_Resource *resource, Bullet bullet = {}, RectangularCollider rc = RectangularCollider(),
-    Position pos = Position(0,0), Velocity vel = Velocity(0,0), Rotation rot = Rotation(0))
+    Position pos = Position(0,0), Velocity vel = Velocity(0,0), Rotation rot = Rotation(0), Scale scl = {})
 {
     const pid id = resource->reserve_process();
     resource->add_resource<Bullet>(id, Bullet(bullet));
@@ -81,6 +84,7 @@ pid CreateRectangleBullet(BulletHell_Resource *resource, Bullet bullet = {}, Rec
     resource->add_resource<Position>(id, Position(pos));
     resource->add_resource<Velocity>(id, Velocity(vel));
     resource->add_resource<Rotation>(id,Rotation(rot));
+    resource->add_resource<Scale>(id, Scale(scl));
     return id;
 }
 
@@ -90,9 +94,11 @@ pid CreateBoomerBullet(BulletHell_Resource *resource, Bullet bullet = {}, Boomin
 {
     const pid id = resource->reserve_process();
     resource->add_resource<Bullet>(id, Bullet(bullet));
+    resource->query<Bullet>().get(id).pierce = 999;
     resource->add_resource<Delay>(id, Delay(delay));
     resource->add_resource<Booming>(id, Booming(booming));
     resource->add_resource<Position>(id, Position(pos));
+    resource->add_resource<Rotation>(id,{});
     resource->add_resource<Scale>(id, Scale());
     resource->add_resource<Game::Render::Material>(id,{});
     resource->add_resource<CircularCollider>(id, CircularCollider(cc));
@@ -104,6 +110,7 @@ pid CreateLaserBullet(BulletHell_Resource *resource, Bullet bullet = {}, Laser l
 {
     const pid id = resource->reserve_process();
     resource->add_resource<Bullet>(id, Bullet(bullet));
+    resource->query<Bullet>().get(id).pierce = 999;
     resource->add_resource<Delay>(id, Delay(delay));
     resource->add_resource<Laser>(id, Laser(laser));
     resource->add_resource<Position>(id, Position());
@@ -118,6 +125,13 @@ pid CreateBattleState(BulletHell_Resource *resource)
 {
     const pid id = resource->reserve_process();
     resource->add_resource<BattleState>(id, BattleState());
+    return id;
+}
+
+pid CreateBulletHellState(BulletHell_Resource *resource)
+{
+    const pid id = resource->reserve_process();
+    resource->add_resource<BulletHellState>(id, BulletHellState());
     return id;
 }
 
@@ -263,7 +277,7 @@ TEST(Game, bullet_movement2)
 
 TEST(Game, bullet_movement3)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, MovementSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, MovementSystem<BulletHell_Syscall>, AccelerationSystem<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
@@ -321,7 +335,7 @@ TEST(Game, bullet_movement4)
 
 TEST(Game, bullet_movement5)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, MovementSystem<BulletHell_Syscall>, RotationSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, MovementSystem<BulletHell_Syscall>, AccelerationSystem<BulletHell_Syscall>, RotationSystem<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
@@ -352,7 +366,7 @@ TEST(Game, bullet_movement5)
 
 TEST(Game, bullets_movement6)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, MovementSystem<BulletHell_Syscall>, RotationSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, MovementSystem<BulletHell_Syscall>, AccelerationSystem<BulletHell_Syscall>, RotationSystem<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
@@ -393,7 +407,7 @@ TEST(Game, bullets_damagable)
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
-    const pid id = CreateBullet2(resource,Bullet(3),Delay(2));
+    const pid id = CreateBullet2(resource,Bullet(false,3),Delay(2));
     EXPECT_FALSE(resource->query<Bullet>().get(id).is_damageable);
     task_manager.run_all();
     EXPECT_FALSE(resource->query<Bullet>().get(id).is_damageable);
@@ -499,6 +513,211 @@ TEST(Game, bullets_laser)
     EXPECT_EQ(round(resource->query<Position>().get(id).y), 4);
 }
 
+// Collision
+TEST(Game, bullet_collision1)
+{
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    BulletHell_Resource *resource = task_manager.get_rm();
+    CreateBattleState(resource);
+    const pid bhs = CreateBulletHellState(resource);
+
+    CreatePlayer(resource, CircularCollider(2));
+    const pid bullet1_id = CreateCircleBullet(resource,Bullet(5), CircularCollider(1), Position(4,4));
+    // Miss
+    task_manager.run_all();
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet1_id));
+    EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Near Collide
+    resource->query<Position>().get(bullet1_id) = Position(3.f,0);
+    task_manager.run_all();
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet1_id));
+    EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Collide
+    resource->query<Position>().get(bullet1_id) = Position(2.99f,0.f);
+    task_manager.run_all();
+    EXPECT_FALSE(resource->query<Bullet>().has(bullet1_id));
+    EXPECT_GT(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Reset
+    resource->query<BulletHellState>().get(bhs).iframe_time = 0;
+    const pid bullet2_id = CreateRectangleBullet(resource, Bullet(5),RectangularCollider(1,2), Position(4,0));
+
+    // Miss
+    task_manager.run_all();
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet2_id));
+    EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Near Collide & Wide pass
+    resource->query<Position>().get(bullet2_id) = Position(2.99f,0);
+    task_manager.run_all();
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet2_id));
+    EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Collide
+    resource->query<Position>().get(bullet2_id) = Position(0.f,2.99f);
+    task_manager.run_all();
+    EXPECT_FALSE(resource->query<Bullet>().has(bullet2_id));
+    EXPECT_GT(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+}
+
+TEST(Game, bullet_collision2)
+{
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    BulletHell_Resource *resource = task_manager.get_rm();
+    CreateBattleState(resource);
+    const pid bhs = CreateBulletHellState(resource);
+
+    CreatePlayer(resource, CircularCollider(2));
+    pid bullet_id = CreateCircleBullet(resource,Bullet(5), CircularCollider(1.5f,1.f), Position(2,-2.3f), {},Rotation(30));
+    // Miss
+    task_manager.run_all();
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet_id));
+    EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Collide
+    resource->query<Rotation>().get(bullet_id) = Rotation(0);
+    task_manager.run_all();
+    EXPECT_FALSE(resource->query<Bullet>().has(bullet_id));
+    EXPECT_GT(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Reset
+    resource->query<BulletHellState>().get(bhs).iframe_time = 0;
+    bullet_id = CreateRectangleBullet(resource, Bullet(5),RectangularCollider(1,2), Position(-2.5f,0.62f),{},Rotation(0));
+
+    // Miss
+    task_manager.run_all();
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet_id));
+    EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Collide
+    resource->query<Rotation>().get(bullet_id) = Rotation(60);
+    task_manager.run_all();
+    EXPECT_FALSE(resource->query<Bullet>().has(bullet_id));
+    EXPECT_GT(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+}
+
+TEST(Game, bullet_collision3)
+{
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, MovementSystem<BulletHell_Syscall>, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    BulletHell_Resource *resource = task_manager.get_rm();
+    CreateBattleState(resource);
+    const pid bhs = CreateBulletHellState(resource);
+
+    CreatePlayer(resource, CircularCollider(2));
+    // Miss
+    const pid bullet1_id = CreateCircleBullet(resource,Bullet(5), CircularCollider(1.f,1.f), Position(5,5), Velocity(1),Rotation(-90));
+    const pid bullet2_id = CreateRectangleBullet(resource,Bullet(5), RectangularCollider(1.f,1.f), Position(1.5f,-5.2f), Velocity(1.5),Rotation(135));
+    //Hit
+    const pid bullet3_id = CreateCircleBullet(resource,Bullet(5), CircularCollider(1.f,0.5f), Position(3.5f,1.5f), Velocity(0.5),Rotation(210));
+    const pid bullet4_id = CreateCircleBullet(resource,Bullet(5), CircularCollider(1.f,1.f), Position(0,-5), Velocity(0.75),Rotation(90));
+    const pid bullet5_id = CreateRectangleBullet(resource,Bullet(5), RectangularCollider(1.5f,1.f), Position(-4,0), Velocity(0.5),Rotation(-30));
+
+    for (int i=0;i<10;i++)
+    {
+        task_manager.run_all();
+        resource->query<BulletHellState>().get(bhs).iframe_time = 0;
+    }
+
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet1_id));
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet2_id));
+    EXPECT_FALSE(resource->query<Bullet>().has(bullet3_id));
+    EXPECT_FALSE(resource->query<Bullet>().has(bullet4_id));
+    EXPECT_FALSE(resource->query<Bullet>().has(bullet5_id));
+}
+
+TEST(Game, bullet_collision4)
+{
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ShotDelaySystem<BulletHell_Syscall>, Boomer_System<BulletHell_Syscall>, Laser_System<BulletHell_Syscall>, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    BulletHell_Resource *resource = task_manager.get_rm();
+    CreateBattleState(resource);
+    const pid bhs = CreateBulletHellState(resource);
+
+    CreatePlayer(resource, CircularCollider(2));
+    //Missing boom
+    CreateBoomerBullet(resource,Bullet(false, 5), Booming(1.5f, 2), Delay(3), Position(4,0), CircularCollider(1.f,1.f));
+    //Hit Laser
+    CreateLaserBullet(resource,Bullet(false, 5), Laser(4.f, -4.f, 10, 3, 10), Delay(6), Rotation(135), Scale(2),RectangularCollider(1.f,1.f));
+    // Hit boom
+    CreateBoomerBullet(resource,Bullet(false, 5), Booming(3.f, 2), Delay(10), Position(4,0),CircularCollider(1.f,1.f));
+    // Rotate to hit laser
+    const pid laser_id = CreateLaserBullet(resource,Bullet(false, 5), Laser(7.f, 0, 10, 9, 10), Delay(14), Rotation(135), Scale(2),RectangularCollider(1.f,1.f));
+
+    task_manager.run_all();
+    EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Boomer 1 Fired
+    for (int i=0;i<2;i++) task_manager.run_all();
+    EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Laser Fired
+    for (int i=0;i<3;i++) task_manager.run_all();
+    EXPECT_GT(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    // Laser Gone
+    for (int i=0;i<2;i++) task_manager.run_all();
+    resource->query<BulletHellState>().get(bhs).iframe_time = 0;
+    task_manager.run_all();
+    EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+    task_manager.run_all();
+
+    // Boomer2 Come
+    EXPECT_GT(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+
+    for (int i=0;i<3;i++) task_manager.run_all();
+    resource->query<BulletHellState>().get(bhs).iframe_time = 0;
+    task_manager.run_all();
+
+    // LaserSpin Come
+    EXPECT_LE(resource->query<Delay>().get(laser_id).delay,0);
+    EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+    for (int i=0;i<5;i++)
+    {
+        task_manager.run_all();
+        resource->query<Rotation>().get(laser_id).angleZ += 5.f;
+        EXPECT_EQ(resource->query<Rotation>().get(laser_id).angleZ, 140 + 5*i);
+        if (i==4)
+            EXPECT_GT(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+        else
+            EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
+    }
+
+}
+
+TEST(Game, bullet_collision5)
+{
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, MovementSystem<BulletHell_Syscall>, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    BulletHell_Resource *resource = task_manager.get_rm();
+    CreateBattleState(resource);
+    CreateBulletHellState(resource);
+
+    const pid player_id = CreatePlayer(resource, CircularCollider(2));
+    const pid bullet1_id = CreateCircleBullet(resource,Bullet(5), CircularCollider(1), Position(5,5));
+
+    resource->query<Velocity>().get(player_id).vx = 0.75f;
+    resource->query<Velocity>().get(player_id).vy = 0.75f;
+
+    task_manager.run_all();
+    EXPECT_EQ(resource->query<Position>().get(player_id).x, 0.75f);
+    EXPECT_EQ(resource->query<Position>().get(player_id).y, 0.75f);
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet1_id));
+
+    task_manager.run_all();
+    EXPECT_EQ(resource->query<Position>().get(player_id).x, 1.5f);
+    EXPECT_EQ(resource->query<Position>().get(player_id).y, 1.5f);
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet1_id));
+
+    task_manager.run_all();
+    EXPECT_EQ(resource->query<Position>().get(player_id).x, 2.25f);
+    EXPECT_EQ(resource->query<Position>().get(player_id).y, 2.25f);
+    EXPECT_TRUE(resource->query<Bullet>().has(bullet1_id));
+
+    task_manager.run_all();
+    EXPECT_EQ(resource->query<Position>().get(player_id).x, 3.f);
+    EXPECT_EQ(resource->query<Position>().get(player_id).y, 3.f);
+    EXPECT_FALSE(resource->query<Bullet>().has(bullet1_id));
+}
 
 // -- RHYTHM GAME TESTS --
 

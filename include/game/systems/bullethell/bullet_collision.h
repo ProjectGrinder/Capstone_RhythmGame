@@ -4,6 +4,7 @@
 
 namespace Game::BulletHell
 {
+    // No layer/mask implemented yet
 	template<typename T>
 	void BulletCollision([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState> &battle_query,
 	                     System::ECS::Query<Battle::BulletHellState> &state_query,
@@ -29,10 +30,9 @@ namespace Game::BulletHell
 	    const auto &player_hitbox = player_query.front().get<Physics::CircularCollider>();
 	    const auto &player_scl = player_query.front().get<Physics::Scale>();
 	    const float player_hitbox_size = player_hitbox.radius_x * (player_scl.scaleX < player_scl.scaleY ? player_scl.scaleX : player_scl.scaleY);
-
+	    auto &state = state_query.front().get<Battle::BattleState>();
 		for (auto &[id, comps] : bullet_query1)
 		{
-		    auto state = state_query.front().get<Battle::BattleState>();
             if (state.iframe_time > 0)
                 break;
 
@@ -49,30 +49,22 @@ namespace Game::BulletHell
                 continue;
 
 			// TODO: improve collision detection
-
             //Wide check
 		    const float dx = bullet_pos.x - player_pos.x;
 		    const float dy = bullet_pos.y - player_pos.y;
 			const float distance_squared = dx * dx + dy * dy;
-            if (const float collision_distance_squared =
-                        player_hitbox_size + ((bullet_hitbox_size_x > bullet_hitbox_size_y)
-                                                        ? bullet_hitbox_size_x
-                                                        : bullet_hitbox_size_y);
-                distance_squared > collision_distance_squared || !bullet.is_damageable) continue;
-
+		    const float collision_distance = player_hitbox_size + ((bullet_hitbox_size_x > bullet_hitbox_size_y)
+	                                                            ? bullet_hitbox_size_x
+                                                                : bullet_hitbox_size_y) * 0.5f;
+            if (distance_squared > collision_distance * collision_distance || !bullet.is_damageable) continue;
 		    //Narrow check : SAT
             const auto player_hitbox_pos = Position(player_pos.x + player_hitbox.offset_x, player_pos.y + player_hitbox.offset_y);
 		    const auto bullet_hitbox_pos = Position(bullet_pos.x + bullet_hitbox.offset_x, bullet_pos.y + bullet_hitbox.offset_y);
 
-		    const auto x_axis = Position(cos(bullet_angle),sin(bullet_angle));
-		    const auto y_axis = Position(-sin(bullet_angle),cos(bullet_angle));
 		    const auto distVec = Position(player_hitbox_pos.x - bullet_hitbox_pos.x, player_hitbox_pos.y - bullet_hitbox_pos.y);
 
-		    const float dot_x = distVec.x * x_axis.x + distVec.y * x_axis.y;
-		    const float dot_y = distVec.x * y_axis.x + distVec.y * y_axis.y;
-
-		    if (fabs(dot_x) > bullet_hitbox_size_x/2 + player_hitbox_size) continue;
-		    if (fabs(dot_y) > bullet_hitbox_size_y/2 + player_hitbox_size) continue;
+		    const float dot_x = distVec.x * cos(bullet_angle) + distVec.y * sin(bullet_angle);
+		    const float dot_y = distVec.x * -sin(bullet_angle) + distVec.y * cos(bullet_angle);
 
 		    const float distX =
                     (((fabs(dot_x) - bullet_hitbox_size_x / 2) > (.0f)) ? (fabs(dot_x) - bullet_hitbox_size_x / 2)
@@ -80,7 +72,7 @@ namespace Game::BulletHell
             const float distY =
                     (((fabs(dot_y) - bullet_hitbox_size_y / 2) > (.0f)) ? (fabs(dot_y) - bullet_hitbox_size_y / 2)
                                                                         : (.0f));
-		    if (distX * distX + distY * distY <= player_hitbox_size * player_hitbox_size) continue;
+		    if (distX * distX + distY * distY >= player_hitbox_size * player_hitbox_size) continue;
 
 		    // Reduce player HP
 		    auto &battle_state = battle_query.front().get<Battle::BattleState>();
@@ -93,15 +85,12 @@ namespace Game::BulletHell
 		    state.iframe_time = 120;
 
 		    // Deactivate the bullet
-		    bullet.is_active = false;
+		    bullet.pierce --;
 
-		    // Queue bullet for removal
-		    syscall.remove_entity(id);
         }
 
 	    for (auto &[id, comps] : bullet_query2)
 	    {
-	        auto state = state_query.front().get<Battle::BattleState>();
 	        if (state.iframe_time > 0)
 	            break;
 
@@ -113,7 +102,6 @@ namespace Game::BulletHell
 	        const float bullet_angle = comps.get<Physics::Rotation>().angleZ * std::acos(0.0f)/90.0f;
 	        const float bullet_hitbox_size_x = bullet_hitbox.radius_x * bullet_scl.scaleX;
 	        const float bullet_hitbox_size_y = bullet_hitbox.radius_y * bullet_scl.scaleY;
-
 	        if (!bullet.is_active)
 	            continue;
 
@@ -121,17 +109,18 @@ namespace Game::BulletHell
 	        const float dx = bullet_pos.x - player_pos.x;
 	        const float dy = bullet_pos.y - player_pos.y;
 	        const float distance_squared = dx * dx + dy * dy;
-	        if (const float collision_distance_squared =
-                        player_hitbox_size + ((bullet_hitbox_size_x > bullet_hitbox_size_y)
-                                                        ? bullet_hitbox_size_x
-                                                        : bullet_hitbox_size_y);
-                distance_squared > collision_distance_squared || !bullet.is_damageable) continue;
+	        const float collision_distance = player_hitbox_size + ((bullet_hitbox_size_x > bullet_hitbox_size_y)
+	                                                            ? bullet_hitbox_size_x
+                                                                : bullet_hitbox_size_y);
+	        if (distance_squared > collision_distance*collision_distance || !bullet.is_damageable)
+	            continue;
 
 	        // Ellipse vs circle collision
 	        const auto player_hitbox_pos = Position(player_pos.x + player_hitbox.offset_x, player_pos.y + player_hitbox.offset_y);
-	        const auto bullet_hitbox_pos = Position(bullet_pos.x + bullet_hitbox.offset_x, bullet_pos.y + bullet_hitbox.offset_y);
-	        float dist_x = player_hitbox_pos.x - bullet_hitbox_pos.x;
-	        float dist_y = player_hitbox_pos.y - bullet_hitbox_pos.y;
+	        const auto bullet_hitbox_pos =
+                    Position(bullet_pos.x + bullet_hitbox.offset_x, bullet_pos.y + bullet_hitbox.offset_y);
+            const float dist_x = player_hitbox_pos.x - bullet_hitbox_pos.x;
+            const float dist_y = player_hitbox_pos.y - bullet_hitbox_pos.y;
 
 	        float rDist_x = dist_x * cos(-bullet_angle) - dist_y * sin(-bullet_angle);
 	        float rDist_y = dist_x * sin(-bullet_angle) + dist_y * cos(-bullet_angle);
@@ -140,7 +129,8 @@ namespace Game::BulletHell
 	        rDist_y /= bullet_hitbox_size_y;
 	        float rScaled = player_hitbox_size / (bullet_hitbox_size_x < bullet_hitbox_size_y ? bullet_hitbox_size_x: bullet_hitbox_size_y);
 
-	        if (rDist_x * rDist_x + rDist_y * rDist_y > (1.0f + rScaled) * (1.0f + rScaled)) continue;
+	        if (rDist_x * rDist_x + rDist_y * rDist_y >= (1.0f + rScaled) * (1.0f + rScaled)) continue;
+
 
 	        // Reduce player HP
 	        auto &battle_state = battle_query.front().get<Battle::BattleState>();
@@ -153,10 +143,7 @@ namespace Game::BulletHell
 	        state.iframe_time = 120;
 
 	        // Deactivate the bullet
-	        bullet.is_active = false;
-
-	        // Queue bullet for removal
-	        syscall.remove_entity(id);
+	        bullet.pierce--;
 	    }
 	}
 } // namespace Game::BulletHell

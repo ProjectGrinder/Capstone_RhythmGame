@@ -7,9 +7,14 @@ namespace Game::BulletHell
         bool is_active;
         bool is_damageable;
         int damage;
-        Bullet() : is_active(true), is_damageable(false), damage(0)
+        int pierce;
+        Bullet() : is_active(true), is_damageable(true), damage(0), pierce(1)
         {}
-        explicit Bullet(const int damage) : is_active(true), is_damageable(false), damage(damage)
+
+        explicit Bullet(const int damage) : is_active(true), is_damageable(true), damage(damage), pierce(1)
+        {}
+
+        explicit Bullet(const bool damageable, const int damage) : is_active(true), is_damageable(damageable), damage(damage), pierce(1)
         {}
     };
 }
