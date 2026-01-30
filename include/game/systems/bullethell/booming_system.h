@@ -20,14 +20,17 @@ namespace Game::BulletHell
 
             if (boomer.lifetime <= 0)
             {
-                if (scl.scaleX > 0)
+                if (scl.scaleX  > 0.02f)
                 {
                     scl.scaleX += (0 - scl.scaleX)/boomer.divider;
                     scl.scaleY += (0 - scl.scaleY)/boomer.divider;
                 }
                 else
                 {
-                    // Destroy entity? ObjectPool? Later
+                    // Destroy entity? ObjectPool?
+                    // --> Don't Destroy, it's particle job
+                    scl.scaleX = 0;
+                    scl.scaleY = 0;
                 }
             }
             else
@@ -39,13 +42,6 @@ namespace Game::BulletHell
                     scl.scaleY = boomer.max_size;
                     render.color.a = 0.25;
                 }
-                else if (delay_comp.delay == 1)
-                {
-                    scl.scaleX = boomer.init_size;
-                    scl.scaleY = boomer.init_size;
-                    render.color.a = 1;
-                }
-
                 else if (delay_comp.delay <= 0)
                 {
                     if (scl.scaleX < boomer.max_size)
@@ -55,6 +51,14 @@ namespace Game::BulletHell
                     }
                     boomer.lifetime -= frame_time;
                 }
+                else
+                {
+                    scl.scaleX = boomer.init_size;
+                    scl.scaleY = boomer.init_size;
+                    render.color.a = 1;
+                }
+
+
             }
 
         }

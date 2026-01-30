@@ -133,14 +133,14 @@ namespace Game::BulletHell
 	        float dist_x = player_hitbox_pos.x - bullet_hitbox_pos.x;
 	        float dist_y = player_hitbox_pos.y - bullet_hitbox_pos.y;
 
-	        dist_x = dist_x * cos(-bullet_angle) - dist_y * sin(-bullet_angle);
-	        dist_y = dist_x * sin(-bullet_angle) + dist_y * cos(-bullet_angle);
+	        float rDist_x = dist_x * cos(-bullet_angle) - dist_y * sin(-bullet_angle);
+	        float rDist_y = dist_x * sin(-bullet_angle) + dist_y * cos(-bullet_angle);
 
-	        dist_x /= bullet_hitbox_size_x;
-	        dist_y /= bullet_hitbox_size_y;
+	        rDist_x /= bullet_hitbox_size_x;
+	        rDist_y /= bullet_hitbox_size_y;
 	        float rScaled = player_hitbox_size / (bullet_hitbox_size_x < bullet_hitbox_size_y ? bullet_hitbox_size_x: bullet_hitbox_size_y);
 
-	        if (dist_x * dist_x + dist_y * dist_y > (1.0f + rScaled) * (1.0f + rScaled)) continue;
+	        if (rDist_x * rDist_x + rDist_y * rDist_y > (1.0f + rScaled) * (1.0f + rScaled)) continue;
 
 	        // Reduce player HP
 	        auto &battle_state = battle_query.front().get<Battle::BattleState>();

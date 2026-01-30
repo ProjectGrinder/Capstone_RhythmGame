@@ -60,8 +60,33 @@ pid CreateBullet2(BulletHell_Resource *resource, Bullet bullet = {}, Delay delay
     return id;
 }
 
+pid CreateCircleBullet(BulletHell_Resource *resource, Bullet bullet = {}, CircularCollider cc = CircularCollider(),
+    Position pos = Position(0,0), Velocity vel = Velocity(0,0), Rotation rot = Rotation(0))
+{
+    const pid id = resource->reserve_process();
+    resource->add_resource<Bullet>(id, Bullet(bullet));
+    resource->add_resource<CircularCollider>(id, CircularCollider(cc));
+    resource->add_resource<Position>(id, Position(pos));
+    resource->add_resource<Velocity>(id, Velocity(vel));
+    resource->add_resource<Rotation>(id,Rotation(rot));
+    return id;
+}
+
+pid CreateRectangleBullet(BulletHell_Resource *resource, Bullet bullet = {}, RectangularCollider rc = RectangularCollider(),
+    Position pos = Position(0,0), Velocity vel = Velocity(0,0), Rotation rot = Rotation(0))
+{
+    const pid id = resource->reserve_process();
+    resource->add_resource<Bullet>(id, Bullet(bullet));
+    resource->add_resource<RectangularCollider>(id, RectangularCollider(rc));
+    resource->add_resource<Position>(id, Position(pos));
+    resource->add_resource<Velocity>(id, Velocity(vel));
+    resource->add_resource<Rotation>(id,Rotation(rot));
+    return id;
+}
+
+
 pid CreateBoomerBullet(BulletHell_Resource *resource, Bullet bullet = {}, Booming booming = {},Delay delay = Delay(0),
-    Position pos = {}, RectangularCollider rc = {})
+    Position pos = {}, CircularCollider cc = {})
 {
     const pid id = resource->reserve_process();
     resource->add_resource<Bullet>(id, Bullet(bullet));
@@ -69,6 +94,21 @@ pid CreateBoomerBullet(BulletHell_Resource *resource, Bullet bullet = {}, Boomin
     resource->add_resource<Booming>(id, Booming(booming));
     resource->add_resource<Position>(id, Position(pos));
     resource->add_resource<Scale>(id, Scale());
+    resource->add_resource<Game::Render::Material>(id,{});
+    resource->add_resource<CircularCollider>(id, CircularCollider(cc));
+    return id;
+}
+
+pid CreateLaserBullet(BulletHell_Resource *resource, Bullet bullet = {}, Laser laser = {},Delay delay = Delay(0),
+    Rotation rot = {}, Scale scl = {}, RectangularCollider rc = {})
+{
+    const pid id = resource->reserve_process();
+    resource->add_resource<Bullet>(id, Bullet(bullet));
+    resource->add_resource<Delay>(id, Delay(delay));
+    resource->add_resource<Laser>(id, Laser(laser));
+    resource->add_resource<Position>(id, Position());
+    resource->add_resource<Rotation>(id,Rotation(rot));
+    resource->add_resource<Scale>(id, Scale(scl));
     resource->add_resource<Game::Render::Material>(id,{});
     resource->add_resource<RectangularCollider>(id, RectangularCollider(rc));
     return id;
@@ -398,6 +438,65 @@ TEST(Game, bullets_booming)
     EXPECT_GE(resource->query<Scale>().get(id).scaleY, 2.75f);
     EXPECT_EQ(resource->query<Game::Render::Material>().get(id).color.a, 1);
     EXPECT_EQ(resource->query<Booming>().get(id).lifetime, 1);
+    task_manager.run_all();
+    task_manager.run_all();
+    EXPECT_EQ(round(resource->query<Scale>().get(id).scaleX), 1);
+    task_manager.run_all();
+    task_manager.run_all();
+    task_manager.run_all();
+    EXPECT_EQ(round(resource->query<Scale>().get(id).scaleX), 0);
+}
+
+TEST(Game, bullets_laser)
+{
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, Laser_System<BulletHell_Syscall>> task_manager{};
+    BulletHell_Resource *resource = task_manager.get_rm();
+    CreateBattleState(resource);
+
+    const pid id = CreateLaserBullet(resource, {}, Laser(2,2,3,5,1), Delay(3), Rotation(30) );
+    task_manager.run_all();
+    EXPECT_EQ(resource->query<Delay>().get(id).delay, 2);
+    EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 3);
+    EXPECT_EQ(resource->query<Scale>().get(id).scaleY, 1);
+    EXPECT_EQ(round(resource->query<Position>().get(id).x * 100)/100.f, 3.3f);
+    EXPECT_EQ(resource->query<Position>().get(id).y, 2.75f);
+    EXPECT_EQ(resource->query<Game::Render::Material>().get(id).color.a, 0.25);
+    task_manager.run_all();
+    EXPECT_EQ(resource->query<Delay>().get(id).delay, 1);
+    EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 0);
+    EXPECT_EQ(resource->query<Scale>().get(id).scaleY, 1);
+    EXPECT_EQ(resource->query<Position>().get(id).x, 2);
+    EXPECT_EQ(resource->query<Position>().get(id).y, 2);
+    EXPECT_EQ(resource->query<Game::Render::Material>().get(id).color.a, 1);
+    task_manager.run_all();
+    EXPECT_EQ(resource->query<Delay>().get(id).delay, 0);
+    EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 1);
+    EXPECT_EQ(round(resource->query<Position>().get(id).x * 100)/100.f, 2.43f);
+    EXPECT_EQ(resource->query<Position>().get(id).y, 2.25);
+    EXPECT_EQ(resource->query<Game::Render::Material>().get(id).color.a, 1);
+    EXPECT_EQ(resource->query<Laser>().get(id).lifetime, 4);
+    task_manager.run_all();
+    EXPECT_EQ(round(resource->query<Position>().get(id).x * 100)/100.f, 2.87f);
+    EXPECT_EQ(resource->query<Position>().get(id).y, 2.5);
+    task_manager.run_all();
+    task_manager.run_all();
+    EXPECT_EQ(resource->query<Delay>().get(id).delay, 0);
+    EXPECT_GE(resource->query<Scale>().get(id).scaleX, 3);
+    EXPECT_EQ(round(resource->query<Position>().get(id).x * 100)/100.f, 3.3f);
+    EXPECT_EQ(resource->query<Position>().get(id).y, 2.75f);
+    EXPECT_EQ(resource->query<Game::Render::Material>().get(id).color.a, 1);
+    EXPECT_EQ(resource->query<Laser>().get(id).lifetime, 1);
+    task_manager.run_all();
+    task_manager.run_all();
+    EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 2);
+    EXPECT_EQ(round(resource->query<Position>().get(id).x * 100)/100.f, 4.17f);
+    EXPECT_EQ(resource->query<Position>().get(id).y, 3.25);
+    task_manager.run_all();
+    task_manager.run_all();
+    task_manager.run_all();
+    EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 0);
+    EXPECT_EQ(round(resource->query<Position>().get(id).x), 6);
+    EXPECT_EQ(round(resource->query<Position>().get(id).y), 4);
 }
 
 

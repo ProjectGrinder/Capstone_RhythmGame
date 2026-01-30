@@ -15,55 +15,61 @@ namespace Game::BulletHell
             auto &laser = comps.get<Booming>();
             const auto &delay_comp = comps.get<Delay>();
             auto &pos = comps.get<Position>();
-            const auto &rot = comps.get<Rotation>();
             auto &scl = comps.get<Physics::Scale>();
             auto &render = comps.get<Render::Material>();
-
-            auto max_pos_x = laser.start_pos_x + scl.scaleY*cos(rot.angleZ);
-            auto max_pos_y = laser.start_pos_y + scl.scaleY*sin(rot.angleZ);
-            if (laser.lifetime < 0)
+            const auto angleZ = comps.get<Physics::Rotation>().angleZ * std::acos(0.0f)/90.0f;
+            if (laser.lifetime <= 0)
             {
-                if (scl.scaleX > 0)
+                if (scl.scaleX > 0.02f)
                 {
                     // translate
-                    pos.x = (max_pos_x - scl.scaleY*cos(rot.angleZ))/2;
-                    pos.y = (max_pos_y - scl.scaleY*cos(rot.angleZ))/2;
-                    scl.scaleY -= laser.speed * frame_time;
+                    scl.scaleX -= laser.speed * frame_time;
+                    pos.x += laser.speed * cos(angleZ) * frame_time;
+                    pos.y += laser.speed * sin(angleZ) * frame_time;
                 }
                 else
                 {
-                    // Destroy entity? ObjectPool? Later
+                    // Destroy entity? ObjectPool?
+                    // --> Don't Destroy, it's particle job
+                    scl.scaleX = 0;
                 }
             }
             else
             {
                 //Change after frame time
-                if (delay_comp.delay > 0)
+                if (delay_comp.delay > 1)
                 {
-                    pos.x = (max_pos_x - laser.start_pos_x)/2;
-                    pos.y = (max_pos_y - laser.start_pos_x)/2;
-                    scl.scaleY = laser.length;
+                    scl.scaleX = laser.length;
+                    pos.x = laser.start_pos_x + scl.scaleX*cos(angleZ)/2;
+                    pos.y = laser.start_pos_y + scl.scaleX*sin(angleZ)/2;
                     render.color.a = 0.25;
                 }
 
-                if (delay_comp.delay <= 0)
+                else if (delay_comp.delay <= 0)
                 {
-                    if (render.color.a != 1)
-                    {
-                        pos.x = laser.start_pos_x;
-                        pos.y = laser.start_pos_y;
-                        scl.scaleY = 0;
-                        render.color.a = 1;
-                    }
-                    if (scl.scaleY < laser.length)
+                    if (scl.scaleX < laser.length)
                     {
                         // translate
-                        scl.scaleY += laser.speed * frame_time;
-                        pos.x = (laser.start_pos_x + scl.scaleY*cos(rot.angleZ))/2;
-                        pos.y = (laser.start_pos_y + scl.scaleY*cos(rot.angleZ))/2;
+                        scl.scaleX += laser.speed * frame_time;
+
                     }
+                    else
+                        scl.scaleX = laser.length;
+
+                    pos.x = laser.start_pos_x + scl.scaleX*cos(angleZ)/2;
+                    pos.y = laser.start_pos_y + scl.scaleX*sin(angleZ)/2;
                     laser.lifetime -= frame_time;
                 }
+
+                else
+                {
+                    scl.scaleX = 0;
+                    pos.x = laser.start_pos_x;
+                    pos.y = laser.start_pos_y;
+                    render.color.a = 1;
+                }
+
+
             }
 
         }
