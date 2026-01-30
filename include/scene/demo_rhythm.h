@@ -4,9 +4,9 @@
 
 namespace Scene
 {
-    template <typename T>
-    void create_demo_chart(Game::Battle::ChartData &chart)
+    inline Game::Battle::ChartData create_demo_chart()
     {
+        Game::Battle::ChartData chart;
         // Configure ChartData
         for (int lane = 0; lane < 4; ++lane)
         {
@@ -58,6 +58,8 @@ namespace Scene
         chart.lanes[2].notes.emplace_back(true, 37000, 38000);
         chart.lanes[0].notes.emplace_back(false, 37000, 0);
         chart.lanes[2].notes.emplace_back(true, 37000, 38000);
+
+        return (chart);
     }
 
     template <typename T>
@@ -121,7 +123,7 @@ namespace Scene
             (
                 Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
                 Game::Battle::RhythmState(1, 1, 32, 1.0f),
-                Game::Battle::ChartData(), // note: need to call the chart calling function above
+                create_demo_chart(),
                 Game::Rhythm::KeyInput(),
                 Game::Rhythm::NoteSpeed(1.0f));
 
