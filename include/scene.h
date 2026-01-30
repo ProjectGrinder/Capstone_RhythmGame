@@ -5,6 +5,7 @@
 // declare scene templates here
 #include "scene/demo.h"
 #include "scene/battle_scene.h"
+#include "scene/demo_rhythm.h"
 
 // define configuration items
 namespace Scene::Config

@@ -9,7 +9,7 @@ namespace Game::Rhythm
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<KeyInput> &input_query,
-            [[maybe_unused]] System::ECS::Query<Lane, Timing> &note_query)
+            [[maybe_unused]] System::ECS::Query<Lane, Timing, TimingEnd, HoldActive> &note_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -50,13 +50,13 @@ namespace Game::Rhythm
     void HandleNoteFromLane(
         int lane_num, // assume that first lane is 0
         [[maybe_unused]] T &syscall,
-        System::ECS::Query<Lane, Timing> &note_query,
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive> &note_query,
         [[maybe_unused]] System::ECS::Query<Battle::BattleState> &battle_query,
         [[maybe_unused]] System::ECS::Query<KeyInput> &input_query)
     {
         auto first_timing = 99999;
         int note_id = -1;
-        System::ECS::Query<Lane, Timing>::StoredTuple *note_comp = nullptr;
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive>::StoredTuple *note_comp = nullptr;
 
         for (auto &[id2, comp2] : note_query)
         {
