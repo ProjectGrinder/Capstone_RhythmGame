@@ -14,7 +14,7 @@ using AngularVelocity = Game::Physics::AngularVelocity;
 namespace Game::BulletHell
 {
     template <typename T>
-    void MovementSystem([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity, Acceleration>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void MovementSystem([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
@@ -28,30 +28,42 @@ namespace Game::BulletHell
         {
             auto &pos = comps.get<Position>();
             auto &vel = comps.get<Velocity>();
-            auto &acc = comps.get<Acceleration>();
             const auto &rot = comps.get<Rotation>();
 
             const float angle = rot.angleZ * acos(0.0f)/90.0f  ;
 
             pos.x += (vel.vx * cos(angle) - vel.vy * sin(angle)) * frame_time;
             pos.y += (vel.vx * sin(angle) + vel.vy * cos(angle)) * frame_time;
+        }
+    }
 
-            if (acc.ax != 0)
-            {
-                vel.vx += comps.get<Acceleration>().ax * frame_time;
-                if (acc.ax < 0)
-                    vel.vx = vel.vx < acc.max_speed_x? acc.max_speed_x:vel.vx;
-                else
-                    vel.vx = vel.vx > acc.max_speed_x? acc.max_speed_x:vel.vx;
-            }
-            if (acc.ay != 0)
-            {
-                vel.vy += acc.ay * frame_time;
-                if (acc.ay < 0)
-                    vel.vy = vel.vy < acc.max_speed_y? acc.max_speed_y:vel.vy;
-                else
-                    vel.vy = vel.vy > acc.max_speed_y? acc.max_speed_y:vel.vy;
-            }
+    template <typename T>
+    void AccelerationSystem([[maybe_unused]] T &syscall, System::ECS::Query<Velocity,Acceleration>& query, System::ECS::Query<Battle::BattleState> &query2)
+    {
+        if (query2.begin() == query2.end())
+            return;
+
+        if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
+            return;
+
+        constexpr auto frame_time = 1;
+
+        for (auto &[id, comps] : query)
+        {
+            auto &vel = comps.get<Velocity>();
+            auto &acc = comps.get<Acceleration>();
+
+            vel.vx += comps.get<Acceleration>().ax * frame_time;
+            if (acc.ax < 0)
+                vel.vx = vel.vx < acc.max_speed_x? acc.max_speed_x:vel.vx;
+            else
+                vel.vx = vel.vx > acc.max_speed_x? acc.max_speed_x:vel.vx;
+
+            vel.vy += acc.ay * frame_time;
+            if (acc.ay < 0)
+                vel.vy = vel.vy < acc.max_speed_y? acc.max_speed_y:vel.vy;
+            else
+                vel.vy = vel.vy > acc.max_speed_y? acc.max_speed_y:vel.vy;
 
         }
     }
