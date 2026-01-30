@@ -36,6 +36,7 @@ namespace Scene
             Game::Physics::Rotation,
             Game::Physics::Velocity,
             Game::Physics::Scale,
+            Game::Rhythm::HoldActive,
             Game::Rhythm::KeyInput,
             Game::Rhythm::Lane,
             Game::Rhythm::NoteSpeed,
@@ -66,7 +67,9 @@ namespace Scene
             Game::BulletHell::HomingPatternSystem<Syscall>,
             Game::Rhythm::HandleRhythm<Syscall>,
             Game::Rhythm::HandleMissNote<Syscall>,
-            Game::Rhythm::HandleBPM<Syscall>  >;
+            Game::Rhythm::HandleBPM<Syscall>
+            //Game::Render::AnimationSystem<Syscall>
+            >;
 
         // declare functions
         static TaskManager Init();

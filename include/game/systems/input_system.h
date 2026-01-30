@@ -52,5 +52,51 @@ namespace Game::Battle
         default:
             break;
         }
+
+        // Debug key inputs
+        if (bullet_hell_input.front().get<BulletHell::Input>().axis_x > 0)
+        {
+            LOG_INFO("BulletHell LEFT MOVEMENT");
+        }
+        if (bullet_hell_input.front().get<BulletHell::Input>().axis_x < 0)
+        {
+            LOG_INFO("BulletHell RIGHT MOVEMENT");
+        }
+        if (bullet_hell_input.front().get<BulletHell::Input>().axis_y > 0)
+        {
+            LOG_INFO("BulletHell UP MOVEMENT");
+        }
+        if (bullet_hell_input.front().get<BulletHell::Input>().axis_y < 0)
+        {
+            LOG_INFO("BulletHell DOWN MOVEMENT");
+        }
+        if (bullet_hell_input.front().get<BulletHell::Input>().shift)
+        {
+            LOG_INFO("BulletHell FOCUS");
+        }
+        if (bullet_hell_input.front().get<BulletHell::Input>().z)
+        {
+            LOG_INFO("BulletHell Z");
+        }
+        if (bullet_hell_input.front().get<BulletHell::Input>().x)
+        {
+            LOG_INFO("BulletHell X");
+        }
+        if (rhythm_input.front().get<Rhythm::KeyInput>().input1)
+        {
+            LOG_INFO("Rhythm KEY1");
+        }
+        if (rhythm_input.front().get<Rhythm::KeyInput>().input2)
+        {
+            LOG_INFO("Rhythm KEY2");
+        }
+        if (rhythm_input.front().get<Rhythm::KeyInput>().input3)
+        {
+            LOG_INFO("Rhythm KEY3");
+        }
+        if (rhythm_input.front().get<Rhythm::KeyInput>().input4)
+        {
+            LOG_INFO("Rhythm KEY4");
+        }
     }
 }

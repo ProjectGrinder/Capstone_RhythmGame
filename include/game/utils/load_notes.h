@@ -12,7 +12,7 @@ namespace Game::Rhythm
     {
         if (note.is_hold)
         {
-            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd>(
+            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive>(
                     Lane{lane.lane_number},
                     NoteSpeed{rhythm_state.note_speed},
                     Timing{note.timing},
@@ -20,7 +20,7 @@ namespace Game::Rhythm
         }
         else
         {
-            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd>(
+            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive>(
                     Lane{lane.lane_number},
                     NoteSpeed{rhythm_state.note_speed},
                     Timing{note.timing},
