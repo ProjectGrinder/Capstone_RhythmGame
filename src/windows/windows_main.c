@@ -10,8 +10,8 @@
 #include "utils/windows_utils.h"
 
 #include "directx/directx_api.h"
+#include "scenes/intent_api.h"
 #include "scenes/scenes_api.h"
-#include "intent_storage/intent_api.h"
 
 #include "windows_functions.h"
 #include "windows_types.h"
