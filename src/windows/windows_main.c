@@ -11,6 +11,7 @@
 
 #include "directx/directx_api.h"
 #include "scenes/scenes_api.h"
+#include "intent_storage/intent_api.h"
 
 #include "windows_functions.h"
 #include "windows_types.h"
@@ -32,6 +33,7 @@ static SystemInfo system_info = {
         .vertex_queue = NULL,
         .rendering_queue = NULL,
         .scene_manager = NULL,
+        .intent_storage = NULL,
         .directx = NULL,
 };
 
@@ -93,6 +95,13 @@ int real_main()
     if (error != ERROR_SUCCESS)
     {
         LOG_ERROR("scene_manager_init failed, Code 0x%08lx", error);
+        goto exit;
+    }
+
+    error = intent_storage_init(&system_info.intent_storage);
+    if (error != ERROR_SUCCESS)
+    {
+        LOG_ERROR("intent_storage_init failed, Code 0x%08lx", error);
         goto exit;
     }
 

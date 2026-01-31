@@ -4,6 +4,7 @@
 #define INLINEOPTIMIZE static inline __attribute__((always_inline)) __forceinline
 
 typedef void *SceneManagerHandler;
+typedef void *IntentStorageHandler;
 typedef void *DirectxHandler;
 
 typedef enum
@@ -56,5 +57,6 @@ typedef struct
     RenderingQueue *rendering_queue;
 
     SceneManagerHandler scene_manager;
+    IntentStorageHandler intent_storage;
     DirectxHandler directx;
 } SystemInfo;
