@@ -47,6 +47,11 @@ void *get_scene_manager()
     return (system_info.scene_manager);
 }
 
+void *get_intent_storage()
+{
+    return (system_info.intent_storage);
+}
+
 HRESULT directx_init(_In_ DirectXHandler *directx_api)
 {
     const DirectXConfig config = {

@@ -19,4 +19,3 @@
 #include "game/systems/animation_system.h"
 #include "systems/bullethell/shaking_system.h"
 // Render Pipeline
-#include "game/draw_description.h"
