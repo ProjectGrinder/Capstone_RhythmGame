@@ -16,7 +16,8 @@ namespace Game::Rhythm
                     Lane{lane.lane_number},
                     NoteSpeed{rhythm_state.note_speed},
                     Timing{note.timing},
-                    TimingEnd{note.timing_end});
+                    TimingEnd{note.timing_end},
+                    HoldActive{false});
         }
         else
         {
@@ -24,7 +25,8 @@ namespace Game::Rhythm
                     Lane{lane.lane_number},
                     NoteSpeed{rhythm_state.note_speed},
                     Timing{note.timing},
-                    TimingEnd{0});
+                    TimingEnd{0},
+                    HoldActive{false});
         }
     }
 
@@ -39,7 +41,7 @@ namespace Game::Rhythm
         const auto &clock = battle_state.clock_time;
 
         // repeat for each lane
-        for (auto &[lanes] = chart_data; Battle::LaneInfo & lane: lanes)
+        for (auto &lane: chart_data.lanes)
         {
             if (lane.current_note == lane.notes.size())
             {
