@@ -53,17 +53,17 @@ namespace Game::BulletHell
             auto &vel = comps.get<Velocity>();
             auto &acc = comps.get<Acceleration>();
 
-            vel.vx += comps.get<Acceleration>().ax * frame_time;
+            vel.vx += acc.ax * frame_time;
             if (acc.ax < 0)
                 vel.vx = vel.vx < acc.max_speed_x? acc.max_speed_x:vel.vx;
-            else
+            else if (acc.ax > 0)
                 vel.vx = vel.vx > acc.max_speed_x? acc.max_speed_x:vel.vx;
 
             vel.vy += acc.ay * frame_time;
             if (acc.ay < 0)
                 vel.vy = vel.vy < acc.max_speed_y? acc.max_speed_y:vel.vy;
-            else
-                vel.vy = vel.vy > acc.max_speed_y? acc.max_speed_y:vel.vy;
+            else if (acc.ay > 0)
+                vel.vy = vel.vy >= acc.max_speed_y? acc.max_speed_y:vel.vy;
 
         }
     }

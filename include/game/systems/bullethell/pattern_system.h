@@ -24,10 +24,10 @@ namespace Game::BulletHell
         for (auto &[id, comps]: query)
         {
             auto &patt_c = comps.get<Patterns>();
-            auto &vel_c = comps.get<Velocity>();
-            auto &rot_c = comps.get<Rotation>();
-            auto &acc_c = comps.get<Acceleration>();
-            auto &ang_c = comps.get<AngularVelocity>();
+            const auto &vel_c = comps.get<Velocity>();
+            const auto &rot_c = comps.get<Rotation>();
+            const auto &acc_c = comps.get<Acceleration>();
+            const auto &ang_c = comps.get<AngularVelocity>();
 
             auto &patterns = patt_c.patterns;
 
@@ -37,10 +37,10 @@ namespace Game::BulletHell
                 comps.get<Patterns>().isInitialized = true;
             }
 
-            for (auto itr = patterns.begin(); itr != patterns.end();)
+            for (auto itr = patterns.begin(); itr != patterns.end(); )
             {
                 // Execute
-                if (itr->first < frame_time)
+                if (itr->first <= 0)
                 {
                     const auto pattern = itr->second;
                     comps.get<Velocity>().vx = pattern.speed;
@@ -53,11 +53,13 @@ namespace Game::BulletHell
                     else
                     {
                         itr->first = pattern.loopDelay;
+                        ++itr;
                     }
                 }
                 else
                 {
                     itr->first -= frame_time;
+                    ++itr;
                 }
             }
         }
