@@ -19,20 +19,23 @@ namespace Game::Rhythm
             return;
         }
 
-        constexpr auto miss_timing = 100;
         auto &current_timing = battle_query.front().get<Battle::BattleState>().clock_time;
 
         for (auto &[id, comps] : note_query)
         {
-            if (comps.get<Timing>().timing - current_timing < -1 * miss_timing)
+            auto &note_time = comps.get<Timing>().timing;
+
+            if (current_timing - note_time > 100)
             {
                 if (comps.get<TimingEnd>().timing_end == 0) // tap note miss
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
+                    LOG_INFO("Timing %d Lane %d: Tap Miss", note_time, comps.get<Lane>().lane);
                 }
                 else if (comps.get<HoldActive>().hold_active == false) // hold note miss (not held at all)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 2;
+                    LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comps.get<Lane>().lane);
                 }
                 syscall.remove_entity(id);
             }

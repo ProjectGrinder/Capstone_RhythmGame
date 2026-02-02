@@ -66,7 +66,8 @@ namespace Scene
             Game::BulletHell::HomingPatternSystem<Syscall>,
             Game::Rhythm::HandleRhythm<Syscall>,
             Game::Rhythm::HandleMissNote<Syscall>,
-            Game::Rhythm::HandleBPM<Syscall>
+            Game::Rhythm::HandleBPM<Syscall>,
+            Game::Rhythm::LoadNotes<Syscall>
             //Game::Render::AnimationSystem<Syscall>
             >;
 

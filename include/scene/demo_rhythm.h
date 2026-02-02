@@ -38,34 +38,29 @@ namespace Scene
         // Pattern 4: Repeated taps
         for (int i = 0; i < 3; ++i)
         {
-            chart.lanes[0].notes.emplace_back(false, 20000 + i * 500, 0);
+            chart.lanes[0].notes.emplace_back(false, 20000 + i * 250, 0);
         }
         for (int j = 0; j < 3; ++j)
         {
-            chart.lanes[3].notes.emplace_back(false, 24000 + j * 500, 0);
+            chart.lanes[3].notes.emplace_back(false, 22000 + j * 250, 0);
         }
 
         // Pattern 5: Mixed notes
-        chart.lanes[0].notes.emplace_back(false, 28000, 0);
-        chart.lanes[0].notes.emplace_back(true, 29000, 30000);
-        chart.lanes[1].notes.emplace_back(false, 30000, 0);
-        chart.lanes[1].notes.emplace_back(true, 31000, 32000);
-        chart.lanes[2].notes.emplace_back(true, 32000, 33000);
-        chart.lanes[2].notes.emplace_back(false, 33500, 0);
-        chart.lanes[3].notes.emplace_back(true, 34000, 35000);
-        chart.lanes[3].notes.emplace_back(false, 35500, 0);
-        chart.lanes[0].notes.emplace_back(false, 37000, 0);
-        chart.lanes[2].notes.emplace_back(true, 37000, 38000);
-        chart.lanes[0].notes.emplace_back(false, 37000, 0);
-        chart.lanes[2].notes.emplace_back(true, 37000, 38000);
+        // chart.lanes[0].notes.emplace_back(false, 24000, 0);
+        // chart.lanes[0].notes.emplace_back(true, 25000, 26000);
+        // chart.lanes[1].notes.emplace_back(false, 26000, 0);
+        // chart.lanes[1].notes.emplace_back(true, 27000, 28000);
+        // chart.lanes[2].notes.emplace_back(true, 28000, 29000);
+        // chart.lanes[2].notes.emplace_back(false, 29500, 0);
+        // chart.lanes[3].notes.emplace_back(true, 30000, 31000);
+        // chart.lanes[3].notes.emplace_back(false, 31500, 0);
+        // chart.lanes[0].notes.emplace_back(false, 33000, 0);
+        // chart.lanes[2].notes.emplace_back(true, 33000, 34000);
+        // chart.lanes[0].notes.emplace_back(false, 35000, 0);
+        // chart.lanes[2].notes.emplace_back(true, 35000, 36000);
+        // wait for rendering
 
         return (chart);
-    }
-
-    template <typename T>
-    void setup_demo_rhythm_scene([[maybe_unused]] T &syscall)
-    {
-
     }
 
     template <typename T>
@@ -75,7 +70,7 @@ namespace Scene
         {
             return;
         }
-        auto time = query.front().get<Game::Battle::BattleState>().clock_time;
+        auto &time = query.front().get<Game::Battle::BattleState>().clock_time;
         if (time % 1000 == 0)
         {
             LOG_INFO("Current Time: %d s", time);
@@ -109,6 +104,7 @@ namespace Scene
             Game::Rhythm::HandleRhythm<Syscall>,
             Game::Rhythm::HandleMissNote<Syscall>,
             Game::Rhythm::HandleBPM<Syscall>,
+            Game::Rhythm::LoadNotes<Syscall>,
             time_check<Syscall>
             >;
         
@@ -134,7 +130,7 @@ namespace Scene
             tm.create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
             tm.create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
             tm.run_all();
-            return tm;
+            return (tm);
         }
 
         static std::vector<ComponentTuple> Exit();

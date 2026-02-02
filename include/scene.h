@@ -11,7 +11,7 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = BattleScene;
+    using StartingScene = DemoRhythm;
 
 }
 
