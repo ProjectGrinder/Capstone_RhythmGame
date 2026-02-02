@@ -24,6 +24,11 @@ namespace System
         return (instance()._storage.size() - 1);
     }
 
+    std::optional<DrawIntent> &IntentStorage::get_intent(const size_t slot)
+    {
+        return (instance()._storage[slot]);
+    }
+
     void IntentStorage::free_slot(const size_t slot)
     {
         instance()._storage[slot] = std::nullopt;

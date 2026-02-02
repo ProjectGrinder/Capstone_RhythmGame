@@ -18,4 +18,7 @@
 // Rendering Part
 #include "game/systems/animation_system.h"
 #include "systems/bullethell/shaking_system.h"
-// Render Pipeline
+// Render Intent
+#include "systems/render/material_intent.h"
+#include "systems/render/sprite_intent.h"
+#include "systems/render/text_intent.h"

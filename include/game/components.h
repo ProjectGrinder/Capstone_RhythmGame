@@ -23,6 +23,7 @@
 #include "components/render/animator.h"
 #include "components/render/material.h"
 #include "components/render/camera.h"
+#include "components/render/intent_handle.h"
 #include "components/render/sprite.h"
 #include "components/render/text.h"
 #include "components/render/rotation.h"
