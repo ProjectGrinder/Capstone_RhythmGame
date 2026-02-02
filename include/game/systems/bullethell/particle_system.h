@@ -23,7 +23,7 @@ namespace Game::BulletHell
                     default:
                         break;
                 }
-                syscall.template remove_entity<Particle>(id);
+                syscall.remove_entity(id);
             }
         }
     }

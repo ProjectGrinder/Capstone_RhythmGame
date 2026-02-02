@@ -17,17 +17,21 @@ namespace Game::Render
     // In System, check for invalid then assign last field.
     struct AnimationFrame
     {
-        Physics::Position position;
-        Physics::Rotation rotation;
-        Physics::Scale scale;
+        float posX = 0.f, posY = 0.f, posZ = 0.f;
+        float rotX = 0.f,rotY = 0.f, rotZ = 0.f;
+        float sclX = 0.f, sclY = 0.f, sclZ = 0.f;
         char* texture = nullptr;
         TweenType tweenType = Linear;
         float tweenStrength = 1.0f;
+
+        AnimationFrame() = default;
+        explicit AnimationFrame(char* texture) : texture(texture){}
     };
 
     //Allow adding only
     struct Animation
     {
+        bool isInitialized = false;
         bool is_loop;
 
         unsigned int currentKey;
@@ -46,6 +50,7 @@ namespace Game::Render
         {}
         void AddFrame(const unsigned int frame, AnimationFrame animationFrame)
         {
+            isInitialized = false;
             keyFrameFrame[currentKey] = frame;
             keyframes[currentKey] = animationFrame;
             currentKey++;

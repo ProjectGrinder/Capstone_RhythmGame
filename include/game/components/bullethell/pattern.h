@@ -1,4 +1,5 @@
 #pragma once
+#include "game/utils/physics_util.h"
 
 namespace Game::BulletHell
 {
@@ -11,6 +12,7 @@ namespace Game::BulletHell
         float accel;
         float angular_velocity;
         float max_speed;
+        MoveParam() : loopDelay(0), speed(0), angle(0), accel(0), angular_velocity(0), max_speed(0) {}
         MoveParam(
                 const float speed,
                 const float angle,
@@ -44,21 +46,26 @@ namespace Game::BulletHell
     // Warning : STDs
     struct Patterns
     {
+        bool isInitialized = false;
         std::vector<std::pair<float, MoveParam>> patterns;
         void AddPattern(const float delay, const float speed, const float angle)
         {
-            patterns.emplace_back(delay,MoveParam(speed, angle, 0,0,0));
+            isInitialized = false;
+            patterns.emplace_back(delay,MoveParam(speed, angle, UNASSIGNED,UNASSIGNED,UNASSIGNED, UNASSIGNED));
         }
         void AddPattern(const float delay, const float speed, const float angle, const float acceleration, const float angular_velocity, const float max_speed)
         {
-            patterns.emplace_back(delay,MoveParam(speed, angle, acceleration, angular_velocity,max_speed));
+            isInitialized = false;
+            patterns.emplace_back(delay,MoveParam(speed, angle, acceleration, angular_velocity,max_speed, UNASSIGNED));
         }
         void AddPattern(const float delay, const float speed, const float angle, const float loopDelay)
         {
-            patterns.emplace_back(delay,MoveParam(speed, angle, 0,0,0,loopDelay));
+            isInitialized = false;
+            patterns.emplace_back(delay,MoveParam(speed, angle, UNASSIGNED,UNASSIGNED,UNASSIGNED,loopDelay));
         }
         void AddPattern(const float delay, const float speed, const float angle, const float acceleration, const float angular_velocity, const float max_speed, const float loopDelay)
         {
+            isInitialized = false;
             patterns.emplace_back(delay,MoveParam(speed, angle, acceleration, angular_velocity,max_speed,loopDelay));
         }
     };

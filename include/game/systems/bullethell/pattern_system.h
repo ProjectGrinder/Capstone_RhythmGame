@@ -5,8 +5,13 @@
 // FIXME: Part of physics, consider separation into its own thread
 namespace Game::BulletHell
 {
-    template <typename T>
-    void PatternSystem([[maybe_unused]] T &syscall, System::ECS::Query<Patterns, Rotation, Velocity, Acceleration, AngularVelocity>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void InitializePatterns(Patterns& patterns, float speed, float angle, float acceleration, float angular_velocity, float max_speed);
+
+    template<typename T>
+    void PatternSystem(
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<Patterns, Rotation, Velocity, Acceleration, AngularVelocity> &query,
+            System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
@@ -16,11 +21,25 @@ namespace Game::BulletHell
 
         constexpr auto frame_time = 1;
 
-        for (auto &[id, comps] : query)
+        for (auto &[id, comps]: query)
         {
-            auto &patterns = comps.get<Patterns>().patterns;
+            auto &patt_c = comps.get<Patterns>();
+            auto &vel_c = comps.get<Velocity>();
+            auto &rot_c = comps.get<Rotation>();
+            auto &acc_c = comps.get<Acceleration>();
+            auto &ang_c = comps.get<AngularVelocity>();
+
+            auto &patterns = patt_c.patterns;
+
+            if (!comps.get<Patterns>().isInitialized)
+            {
+                InitializePatterns(patt_c, vel_c.vx, rot_c.angleZ, acc_c.ax, ang_c.v, acc_c.max_speed_x);
+                comps.get<Patterns>().isInitialized = true;
+            }
+
             for (auto itr = patterns.begin(); itr != patterns.end();)
             {
+                // Execute
                 if (itr->first < frame_time)
                 {
                     const auto pattern = itr->second;
@@ -44,79 +63,19 @@ namespace Game::BulletHell
         }
     }
 
-    template <typename T>
-    void BouncePatternSystem([[maybe_unused]] T &syscall, System::ECS::Query<Bounce, Position, Rotation>& query, System::ECS::Query<Battle::BattleState> &query2)
+    inline void InitializePatterns(Patterns& patterns, const float speed, const float angle, const float acceleration, const float angular_velocity, const float max_speed)
     {
-        // TODO: Replace with real bound
-        constexpr float stage_bound_x_min = 0;
-        constexpr float stage_bound_x_max = 640;
-        constexpr float stage_bound_y_min = 0;
-        constexpr float stage_bound_y_max = 480;
+        MoveParam prev{speed,angle,acceleration,angular_velocity,max_speed};
 
-
-        if (query2.begin() == query2.end())
-            return;
-
-        if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
-            return;
-
-
-        for (auto &[id, comps] : query)
+        for (auto& [time, pat] : patterns.patterns)
         {
-            const auto &pos = comps.get<Position>();
-            auto &rot = comps.get<Rotation>();
-            const auto &bounce_c = comps.get<Bounce>();
+            if (pat.speed == UNASSIGNED) pat.speed = prev.speed;
+            if (pat.angle == UNASSIGNED) pat.angle = prev.angle;
+            if (pat.accel == UNASSIGNED) pat.accel = prev.accel;
+            if (pat.angular_velocity == UNASSIGNED) pat.angular_velocity = prev.angular_velocity;
+            if (pat.max_speed == UNASSIGNED) pat.max_speed = prev.max_speed;
 
-            if (bounce_c.reflect_side[0] && pos.x < stage_bound_x_min || bounce_c.reflect_side[1] && pos.x > stage_bound_x_max)
-                rot.angleZ = 180 - rot.angleZ;
-
-            else if (bounce_c.reflect_side[2] && pos.y < stage_bound_y_min || bounce_c.reflect_side[3] && pos.y > stage_bound_y_max)
-                rot.angleZ = 360 - rot.angleZ;
+            prev = pat;
         }
     }
-
-    template <typename T>
-    void HomingPatternSystem([[maybe_unused]] T &syscall,
-        System::ECS::Query<Homing, Position, Rotation>& query,
-        System::ECS::Query<Player, Position> & query2,
-        System::ECS::Query<Battle::BattleState> &query3)
-    {
-        if (query2.begin() == query2.end())
-            return;
-
-        if (query3.begin() == query3.end())
-            return;
-
-        if (query3.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
-            return;
-
-        for (auto &[id, comps] : query)
-        {
-            const auto &pos = comps.get<Position>();
-            auto &rot = comps.get<Rotation>();
-            const auto &homing_c = comps.get<Homing>();
-            Position target_pos;
-            if (homing_c.targetPlayer)
-            {
-                target_pos = query2.front().get<Position>();
-            }
-            else
-            {
-                target_pos = homing_c.targetPosition;
-            }
-
-            float target_angle = Physics::get_direction(pos,target_pos);
-            if (abs(target_angle - rot.angleZ) < homing_c.strength)
-            {
-                rot.angleZ = target_angle;
-            }
-            else
-            {
-                int dist = static_cast<int>(target_angle - rot.angleZ + 540) % 360 - 180;
-                dist = dist>0?-1:1;
-                rot.angleZ = rot.angleZ + homing_c.strength * static_cast<float>(dist);
-            }
-        }
-    }
-
 }

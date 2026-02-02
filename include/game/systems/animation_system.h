@@ -7,6 +7,7 @@
 //  Problem that I can't implement this further -> Handling object with partial components
 namespace Game::Render
 {
+    inline void InitializeAnim(Animation& animation, char* texture);
     inline float TweenTransform(float t, float a, float b, TweenType tween, float strength);
 
     template<typename T>
@@ -25,8 +26,14 @@ namespace Game::Render
 
             const auto &frame = animator.frame;
             auto &currentKey = animator.currentKey;
-            const auto &animation = animator.animations[animator.currentAnimation];
+            auto &animation = animator.animations[animator.currentAnimation];
             auto &sprite = comps.get<Sprite>();
+
+            if (!animation.isInitialized)
+            {
+                InitializeAnim(animation, sprite.texture);
+                animation.isInitialized = true;
+            }
 
             // Check Next Key
             if (animation.keyFrameFrame[currentKey + 1] <= frame)
@@ -56,15 +63,15 @@ namespace Game::Render
 
             const float t = static_cast<float>(frame - keyFrameFrame1) / static_cast<float>(keyFrameFrame2 - keyFrameFrame1);
 
-            position.x = TweenTransform(t,keyFrame1.position.x,keyFrame2.position.x,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            position.y = TweenTransform(t,keyFrame1.position.y,keyFrame2.position.y,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            position.z = TweenTransform(t,keyFrame1.position.z,keyFrame2.position.z,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            rotation.angleX = TweenTransform(t,keyFrame1.rotation.angleX,keyFrame2.rotation.angleX,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            rotation.angleY = TweenTransform(t,keyFrame1.rotation.angleY,keyFrame2.rotation.angleY,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            rotation.angleZ = TweenTransform(t,keyFrame1.rotation.angleZ,keyFrame2.rotation.angleZ,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            scale.scaleX = TweenTransform(t,keyFrame1.scale.scaleX,keyFrame2.scale.scaleX,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            scale.scaleY = TweenTransform(t,keyFrame1.scale.scaleY,keyFrame2.scale.scaleY,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            scale.scaleZ = TweenTransform(t,keyFrame1.scale.scaleZ,keyFrame2.scale.scaleZ,keyFrame1.tweenType,keyFrame1.tweenStrength);
+            position.x = TweenTransform(t,keyFrame1.posX,keyFrame2.posY,keyFrame1.tweenType,keyFrame1.tweenStrength);
+            position.y = TweenTransform(t,keyFrame1.posY,keyFrame2.posY,keyFrame1.tweenType,keyFrame1.tweenStrength);
+            position.z = TweenTransform(t,keyFrame1.posZ,keyFrame2.posZ,keyFrame1.tweenType,keyFrame1.tweenStrength);
+            rotation.angleX = TweenTransform(t,keyFrame1.rotX,keyFrame2.rotX,keyFrame1.tweenType,keyFrame1.tweenStrength);
+            rotation.angleY = TweenTransform(t,keyFrame1.rotY,keyFrame2.rotY,keyFrame1.tweenType,keyFrame1.tweenStrength);
+            rotation.angleZ = TweenTransform(t,keyFrame1.rotZ,keyFrame2.rotZ,keyFrame1.tweenType,keyFrame1.tweenStrength);
+            scale.scaleX = TweenTransform(t,keyFrame1.sclX,keyFrame2.sclX,keyFrame1.tweenType,keyFrame1.tweenStrength);
+            scale.scaleY = TweenTransform(t,keyFrame1.sclY,keyFrame2.sclY,keyFrame1.tweenType,keyFrame1.tweenStrength);
+            scale.scaleZ = TweenTransform(t,keyFrame1.sclZ,keyFrame2.sclZ,keyFrame1.tweenType,keyFrame1.tweenStrength);
 
         }
     }
@@ -86,6 +93,28 @@ namespace Game::Render
                 return a + v * (1 - 0.5f * pow(2*(1 - t), strength));
 
             default: return a + v * t;
+        }
+    }
+
+    inline void InitializeAnim(Animation& animation, char* texture)
+    {
+        AnimationFrame prev{texture};
+
+        for (auto& frame : animation.keyframes)
+        {
+            if (frame.posX == UNASSIGNED) frame.posX = prev.posX;
+            if (frame.posY == UNASSIGNED) frame.posY = prev.posY;
+            if (frame.posZ == UNASSIGNED) frame.posZ = prev.posZ;
+            if (frame.rotX == UNASSIGNED) frame.rotX = prev.rotX;
+            if (frame.rotY == UNASSIGNED) frame.rotY = prev.rotY;
+            if (frame.rotZ == UNASSIGNED) frame.rotZ = prev.rotZ;
+            if (frame.sclX == UNASSIGNED) frame.sclX = prev.sclX;
+            if (frame.sclY == UNASSIGNED) frame.sclY = prev.sclY;
+            if (frame.sclZ == UNASSIGNED) frame.sclZ = prev.sclZ;
+            if (frame.texture == nullptr) frame.texture = prev.texture;
+
+
+            prev = frame;
         }
     }
 }
