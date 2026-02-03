@@ -6,6 +6,11 @@
 // FIXME: May separate thread
 namespace Game::Physics
 {
+    enum ColliderType
+    {
+        RECTANGLE,
+        CIRCLE,
+    };
     struct BaseCollider
     {
         float offset_x;

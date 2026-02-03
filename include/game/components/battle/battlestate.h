@@ -1,11 +1,15 @@
 #pragma once
+#include <string>
 #include <utility>
 #include <vector>
-#include <string>
+
+#include "game/components/bullethell/pattern.h"
+#include "game/components/physics/base_collider.h"
+#include "game/components/render/sprite.h"
+
 
 namespace Game::Battle
 {
-
     // intermediate structures
     enum Instrument
     {
@@ -142,7 +146,69 @@ namespace Game::Battle
         LaneInfo lanes[4];
     };
 
-    // TODO: Suchas's struct BulletPatternData
+    // TODO : Put it somewhere else I think.
+    struct ColliderData
+    {
+        Physics::ColliderType type;
+        float offsetX, offsetY, colX, colY;
+        ColliderData(): type(Physics::CIRCLE), offsetX(0), offsetY(0), colX(0), colY(0)
+        {}
+        ColliderData(const Physics::ColliderType type,
+                const float col):
+        type(type), offsetX(0), offsetY(0), colX(col), colY(col)
+        {}
+        ColliderData(const Physics::ColliderType type,
+                const float colX,
+                const float colY):
+        type(type), offsetX(0), offsetY(0), colX(colX), colY(colY)
+        {}
+        ColliderData(const Physics::ColliderType type, const float offsetX, const float offsetY,
+                const float colX,
+                const float colY):
+        type(type), offsetX(offsetX), offsetY(offsetY), colX(colX), colY(colY)
+        {}
+    };
+    struct GraphicData
+    {
+        Render::Sprite sprite;
+        float r,g,b,a;
+        GraphicData() : sprite({}), r(0), g(0), b(0), a(0) {}
+        explicit GraphicData(const Render::Sprite &sprite, const float r = 0, const float g = 0, const float b = 0, const float a = 0) :
+            sprite(sprite), r(r), g(g), b(b), a(a) {}
+    };
+    struct BulletGraphicMap
+    {
+        ColliderData collider_data;
+        GraphicData graphic_data;
+        int damage;
+        int pierce;
+        float lifetime;
+
+        BulletGraphicMap(): damage(0), pierce(1), lifetime(10)
+        {}
+
+        BulletGraphicMap(
+                const ColliderData &collider_data,
+                const GraphicData &graphic_data,
+                const int damage = 0,
+                const int pierce = 1,
+                const float lifetime = 10 ) :
+            collider_data(collider_data), graphic_data(graphic_data), damage(damage), pierce(pierce), lifetime(lifetime)
+        {}
+    };
+
+    inline std::array<BulletGraphicMap, 128> bulletGraphicMap;
+
+    struct BulletData
+    {
+        float posX, posY;
+        BulletHell::Patterns patterns;
+        float delay;
+        int graphicID;
+        BulletData(const float posX, const float posY, BulletHell::Patterns patterns, const float delay, const int graphicID):
+            posX(posX), posY(posY), patterns(std::move(patterns)), delay(delay), graphicID(graphicID)
+        {}
+    };
 
     struct LevelData
     {
