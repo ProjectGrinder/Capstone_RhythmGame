@@ -13,7 +13,7 @@ namespace Game::BulletHell
     using AngularVelocity = Physics::AngularVelocity;
 
     template<typename T>
-    void MovementSystem(
+    void movement_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Position, Rotation, Velocity, Acceleration> &query,
             System::ECS::Query<Battle::BattleState> &query2)
@@ -52,7 +52,7 @@ namespace Game::BulletHell
     }
 
     template<typename T>
-    void RotationSystem([[maybe_unused]] T &task_manager, System::ECS::Query<Rotation, AngularVelocity> &query2)
+    void rotation_system([[maybe_unused]] T &task_manager, System::ECS::Query<Rotation, AngularVelocity> &query2)
     {
         constexpr auto frame_time = 1;
 

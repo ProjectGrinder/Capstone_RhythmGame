@@ -3,7 +3,7 @@
 namespace Game::Battle
 {
     template<typename T>
-    void PhaseChange(
+    void phase_change(
             [[maybe_unused]] T &syscall, System::ECS::Query<LevelData> &query, System::ECS::Query<BattleState> &query2)
     {
         if (query.begin() == query.end())

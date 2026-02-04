@@ -3,7 +3,7 @@
 namespace Game::Render
 {
     template<typename T>
-    void TextIntent([[maybe_unused]] T &syscall, System::ECS::Query<Text, IntentHandle> &query)
+    void text_intent([[maybe_unused]] T &syscall, System::ECS::Query<Text, IntentHandle> &query)
     {
         for (auto &[id, comps]: query)
         {

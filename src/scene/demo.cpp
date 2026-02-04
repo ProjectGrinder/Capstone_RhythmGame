@@ -14,7 +14,7 @@ void Scene::Demo::test()
     LOG_INFO("test call with val = {}", val.number);
 }
 
-Scene::Demo::TaskManager Scene::Demo::Init()
+Scene::Demo::TaskManager Scene::Demo::init()
 {
     LOG_INFO("Initialization called");
     auto tm = TaskManager{};
@@ -24,7 +24,7 @@ Scene::Demo::TaskManager Scene::Demo::Init()
     return (tm);
 }
 
-std::vector<Scene::Demo::ComponentTuple> Scene::Demo::Exit()
+std::vector<Scene::Demo::ComponentTuple> Scene::Demo::exit()
 {
     LOG_INFO("Exiting Demo Scene.");
     return {};

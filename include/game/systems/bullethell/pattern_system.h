@@ -12,7 +12,7 @@ namespace Game::BulletHell
     using AngularVelocity = Physics::AngularVelocity;
 
     template<typename T>
-    void PatternSystem(
+    void pattern_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Patterns, Rotation, Velocity, Acceleration, AngularVelocity> &query,
             System::ECS::Query<Battle::BattleState> &query2)
@@ -55,7 +55,7 @@ namespace Game::BulletHell
     }
 
     template<typename T>
-    void BouncePatternSystem(
+    void bounce_pattern_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Bounce, Position, Rotation> &query,
             System::ECS::Query<Battle::BattleState> &query2)
@@ -92,7 +92,7 @@ namespace Game::BulletHell
     }
 
     template<typename T>
-    void HomingPatternSystem(
+    void homing_pattern_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Homing, Position, Rotation> &query,
             System::ECS::Query<Player, Position> &query2,

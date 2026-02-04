@@ -109,7 +109,7 @@ namespace System::ECS
         {
             pid id = _resource_manager_ref.reserve_process();
             (add_component(id, std::forward<Components>(components)), ...);
-            return id;
+            return (id);
         }
 
         void remove_entity(const pid id)

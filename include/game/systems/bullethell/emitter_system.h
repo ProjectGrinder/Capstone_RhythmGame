@@ -11,7 +11,7 @@ namespace Game::BulletHell
     using AngularVelocity = Physics::AngularVelocity;
 
     template<typename T>
-    void BoomEmitterSystem(
+    void boom_emitter_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<BoomEmitter> &query,
             System::ECS::Query<Battle::BattleState> &query2)
@@ -20,7 +20,7 @@ namespace Game::BulletHell
     }
 
     template<typename T>
-    void LaserEmitterSystem(
+    void laser_emitter_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<LaserEmitter> &query,
             System::ECS::Query<Battle::BattleState> &query2)
@@ -29,7 +29,7 @@ namespace Game::BulletHell
     }
 
     template<typename T>
-    void RingEmitterSystem(
+    void ring_emitter_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<RingEmitter> &query,
             System::ECS::Query<Battle::BattleState> &query2)
@@ -45,7 +45,7 @@ namespace Game::BulletHell
     }
 
     template<typename T>
-    void RandomEmitterSystem(
+    void random_emitter_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<RingEmitter> &query,
             System::ECS::Query<Battle::BattleState> &query2)
@@ -61,7 +61,7 @@ namespace Game::BulletHell
     }
 
     template<typename T>
-    void SpreadEmitterSystem(
+    void spread_emitter_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<RingEmitter> &query,
             System::ECS::Query<Battle::BattleState> &query2)

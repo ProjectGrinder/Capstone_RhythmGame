@@ -4,7 +4,7 @@
 namespace Game::Render
 {
     template<typename T>
-    void MaterialIntent([[maybe_unused]] T &syscall, System::ECS::Query<Material, IntentHandle> &query)
+    void material_intent([[maybe_unused]] T &syscall, System::ECS::Query<Material, IntentHandle> &query)
     {
         for (auto &[id, comps]: query)
         {

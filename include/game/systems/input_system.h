@@ -7,7 +7,7 @@
 namespace Game::Battle
 {
     template<typename T>
-    void InputSystem(
+    void input_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<BattleState> &query1,
             System::ECS::Query<BulletHell::Input> &bullet_hell_input,

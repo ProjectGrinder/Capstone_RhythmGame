@@ -5,7 +5,7 @@
 namespace Game::Rhythm
 {
     template<typename T>
-    void HandleBPM(
+    void handle_bpm(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::LevelData> &query,
             System::ECS::Query<Battle::RhythmState> &query2,

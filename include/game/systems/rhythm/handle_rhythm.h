@@ -5,7 +5,7 @@
 namespace Game::Rhythm
 {
     template<typename T>
-    void HandleRhythm(
+    void handle_rhythm(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<KeyInput> &input_query,

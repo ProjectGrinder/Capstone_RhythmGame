@@ -3,7 +3,7 @@
 namespace Game::BulletHell
 {
     template<typename T>
-    void InputToVelocity(
+    void input_to_velocity(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Input> &query1,
             System::ECS::Query<Player, Physics::Velocity> &query2,

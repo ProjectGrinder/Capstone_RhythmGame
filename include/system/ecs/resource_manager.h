@@ -120,7 +120,7 @@ namespace System::ECS
             while (empty_id < MaxResource && _component_count[empty_id] != 0)
                 ++empty_id;
 
-            return empty_id;
+            return (empty_id);
         }
 
     public:
@@ -180,7 +180,7 @@ namespace System::ECS
                 else
                 {
                     _occupied.set(_id);
-                    return _id++;
+                    return (_id++);
                 }
             }
 
@@ -197,7 +197,7 @@ namespace System::ECS
                 else
                 {
                     _occupied.set(_id);
-                    return _id++;
+                    return (_id++);
                 }
             }
 

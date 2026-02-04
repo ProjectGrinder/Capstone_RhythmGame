@@ -55,25 +55,25 @@ namespace Scene
         using TaskManager = System::ECS::TaskManager<
                 ResourceManager,
                 Syscall,
-                Game::Battle::InputSystem<Syscall>,
-                Game::BulletHell::InputToVelocity<Syscall>,
-                Game::BulletHell::MovementSystem<Syscall>,
-                Game::BulletHell::RotationSystem<Syscall>,
-                Game::BulletHell::BulletCollision<Syscall>,
-                Game::BulletHell::PlayerSystem<Syscall>,
-                Game::BulletHell::BulletSystem<Syscall>,
-                Game::BulletHell::PatternSystem<Syscall>,
-                Game::BulletHell::BouncePatternSystem<Syscall>,
-                Game::BulletHell::HomingPatternSystem<Syscall>,
-                Game::Rhythm::HandleRhythm<Syscall>,
-                Game::Rhythm::HandleMissNote<Syscall>,
-                Game::Rhythm::HandleBPM<Syscall>
+                Game::Battle::input_system<Syscall>,
+                Game::BulletHell::input_to_velocity<Syscall>,
+                Game::BulletHell::movement_system<Syscall>,
+                Game::BulletHell::rotation_system<Syscall>,
+                Game::BulletHell::bullet_collision<Syscall>,
+                Game::BulletHell::player_system<Syscall>,
+                Game::BulletHell::bullet_system<Syscall>,
+                Game::BulletHell::pattern_system<Syscall>,
+                Game::BulletHell::bounce_pattern_system<Syscall>,
+                Game::BulletHell::homing_pattern_system<Syscall>,
+                Game::Rhythm::handle_rhythm<Syscall>,
+                Game::Rhythm::handle_miss_note<Syscall>,
+                Game::Rhythm::handle_bpm<Syscall>
                 // Game::Render::AnimationSystem<Syscall>
                 >;
 
         // declare functions
-        static TaskManager Init();
-        static std::vector<ComponentTuple> Exit();
+        static TaskManager init();
+        static std::vector<ComponentTuple> exit();
     };
 } // namespace Scene
 

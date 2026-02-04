@@ -8,7 +8,7 @@
 namespace Game::BulletHell
 {
     template<typename T>
-    void BulletCollision(
+    void bullet_collision(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<Battle::BulletHellState> &state_query,

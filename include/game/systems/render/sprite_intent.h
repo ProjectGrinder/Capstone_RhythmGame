@@ -4,7 +4,7 @@
 namespace Game::Render
 {
     template<typename T>
-    void SpriteIntent([[maybe_unused]] T &syscall, System::ECS::Query<Sprite, IntentHandle> &query)
+    void sprite_intent([[maybe_unused]] T &syscall, System::ECS::Query<Sprite, IntentHandle> &query)
     {
         for (auto &[id, comps]: query)
         {

@@ -3,7 +3,7 @@
 namespace Game::Render
 {
     template<typename T>
-    void RotationIntent([[maybe_unused]] T &syscall, System::ECS::Query<Rotation, IntentHandle> &query)
+    void rotation_intent([[maybe_unused]] T &syscall, System::ECS::Query<Rotation, IntentHandle> &query)
     {
         for (auto &[id, comps]: query)
         {

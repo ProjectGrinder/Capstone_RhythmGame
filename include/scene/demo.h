@@ -49,7 +49,7 @@ namespace Scene
 
         // declare functions
         static void test();
-        static TaskManager Init();
-        static std::vector<ComponentTuple> Exit();
+        static TaskManager init();
+        static std::vector<ComponentTuple> exit();
     };
 } // namespace Scene

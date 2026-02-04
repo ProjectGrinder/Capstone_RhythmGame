@@ -104,13 +104,13 @@ namespace Scene
         using TaskManager = System::ECS::TaskManager<
                 ResourceManager,
                 Syscall,
-                Game::Battle::InputSystem<Syscall>,
-                Game::Rhythm::HandleRhythm<Syscall>,
-                Game::Rhythm::HandleMissNote<Syscall>,
-                Game::Rhythm::HandleBPM<Syscall>,
+                Game::Battle::input_system<Syscall>,
+                Game::Rhythm::handle_rhythm<Syscall>,
+                Game::Rhythm::handle_miss_note<Syscall>,
+                Game::Rhythm::handle_bpm<Syscall>,
                 time_check<Syscall>>;
 
-        static TaskManager Init()
+        static TaskManager init()
         {
             auto tm = TaskManager{};
             // Create and configure BattleState
@@ -136,6 +136,6 @@ namespace Scene
             return tm;
         }
 
-        static std::vector<ComponentTuple> Exit();
+        static std::vector<ComponentTuple> exit();
     };
 } // namespace Scene

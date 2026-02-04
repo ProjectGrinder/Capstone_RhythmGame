@@ -23,7 +23,7 @@ namespace Game::Rhythm
     }
 
     template<typename T>
-    void LoadNotes(
+    void load_notes(
             T &syscall,
             System::ECS::Query<Battle::ChartData> &query,
             System::ECS::Query<Battle::BattleState> &query2,

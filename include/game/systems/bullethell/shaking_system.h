@@ -4,7 +4,7 @@
 namespace Game::Physics
 {
     template<typename T>
-    void ShakingSystem(
+    void shaking_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Shaker, Position, Rotation> &query,
             System::ECS::Query<Battle::BattleState> &query2)

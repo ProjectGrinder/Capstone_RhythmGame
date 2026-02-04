@@ -5,7 +5,7 @@
 namespace Game::BulletHell
 {
     template<typename T>
-    void PlayerSystem(
+    void player_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BulletHellState> &query,
             System::ECS::Query<Battle::BattleState> &query2)

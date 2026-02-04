@@ -5,7 +5,7 @@
 namespace Game::Rhythm
 {
     template<typename T>
-    void HandleMissNote(
+    void handle_miss_note(
             T &syscall,
             System::ECS::Query<Lane, Timing, TimingEnd, HoldActive> &note_query,
             System::ECS::Query<Battle::BattleState> &battle_query)

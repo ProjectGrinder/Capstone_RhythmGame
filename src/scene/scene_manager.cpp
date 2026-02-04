@@ -49,7 +49,7 @@ namespace Scene
                 {
                     if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
                     {
-                        scene.Exit();
+                        scene.exit();
                     }
                 },
                 _current_scene_template);

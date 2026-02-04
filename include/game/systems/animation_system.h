@@ -7,10 +7,10 @@
 //  Problem that I can't implement this further -> Handling object with partial components
 namespace Game::Render
 {
-    inline float TweenTransform(float t, float a, float b, TweenType tween, float strength);
+    inline float tween_transform(float t, float a, float b, TweenType tween, float strength);
 
     template<typename T>
-    void AnimationSystem(
+    void animation_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Physics::Position, Rotation, Physics::Scale, Sprite, Animator> &query)
     {
@@ -55,41 +55,41 @@ namespace Game::Render
             const float t =
                     static_cast<float>(frame - keyFrameFrame1) / static_cast<float>(keyFrameFrame2 - keyFrameFrame1);
 
-            position.x = TweenTransform(
+            position.x = tween_transform(
                     t, keyFrame1.position.x, keyFrame2.position.x, keyFrame1.tweenType, keyFrame1.tweenStrength);
-            position.y = TweenTransform(
+            position.y = tween_transform(
                     t, keyFrame1.position.y, keyFrame2.position.y, keyFrame1.tweenType, keyFrame1.tweenStrength);
-            position.z = TweenTransform(
+            position.z = tween_transform(
                     t, keyFrame1.position.z, keyFrame2.position.z, keyFrame1.tweenType, keyFrame1.tweenStrength);
-            rotation.angleX = TweenTransform(
+            rotation.angleX = tween_transform(
                     t,
                     keyFrame1.rotation.angleX,
                     keyFrame2.rotation.angleX,
                     keyFrame1.tweenType,
                     keyFrame1.tweenStrength);
-            rotation.angleY = TweenTransform(
+            rotation.angleY = tween_transform(
                     t,
                     keyFrame1.rotation.angleY,
                     keyFrame2.rotation.angleY,
                     keyFrame1.tweenType,
                     keyFrame1.tweenStrength);
-            rotation.angleZ = TweenTransform(
+            rotation.angleZ = tween_transform(
                     t,
                     keyFrame1.rotation.angleZ,
                     keyFrame2.rotation.angleZ,
                     keyFrame1.tweenType,
                     keyFrame1.tweenStrength);
-            scale.scaleX = TweenTransform(
+            scale.scaleX = tween_transform(
                     t, keyFrame1.scale.scaleX, keyFrame2.scale.scaleX, keyFrame1.tweenType, keyFrame1.tweenStrength);
-            scale.scaleY = TweenTransform(
+            scale.scaleY = tween_transform(
                     t, keyFrame1.scale.scaleY, keyFrame2.scale.scaleY, keyFrame1.tweenType, keyFrame1.tweenStrength);
-            scale.scaleZ = TweenTransform(
+            scale.scaleZ = tween_transform(
                     t, keyFrame1.scale.scaleZ, keyFrame2.scale.scaleZ, keyFrame1.tweenType, keyFrame1.tweenStrength);
         }
     }
 
     inline float
-    TweenTransform(const float t, const float a, const float b, const TweenType tween, const float strength)
+    tween_transform(const float t, const float a, const float b, const TweenType tween, const float strength)
     {
         const float v = b - a;
         switch (tween)
