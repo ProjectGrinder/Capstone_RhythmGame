@@ -4,7 +4,7 @@
 #include "game/components.h"
 
 // TODO: Check frame_time
-//  Problem that I can't implement this further -> Handling object with partial components
+//  If UNASSIGNED stuff is implement like pattern system, ts will be lookin ass as f.
 namespace Game::Render
 {
     inline void InitializeAnim(Animation& animation, char* texture);

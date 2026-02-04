@@ -46,26 +46,21 @@ namespace Game::BulletHell
     // Warning : STDs
     struct Patterns
     {
-        bool isInitialized = false;
         std::vector<std::pair<float, MoveParam>> patterns;
         void AddPattern(const float delay, const float speed, const float angle)
         {
-            isInitialized = false;
             patterns.emplace_back(delay,MoveParam(speed, angle, UNASSIGNED,UNASSIGNED,UNASSIGNED, UNASSIGNED));
         }
         void AddPattern(const float delay, const float speed, const float angle, const float acceleration, const float angular_velocity, const float max_speed)
         {
-            isInitialized = false;
             patterns.emplace_back(delay,MoveParam(speed, angle, acceleration, angular_velocity,max_speed, UNASSIGNED));
         }
         void AddPattern(const float delay, const float speed, const float angle, const float loopDelay)
         {
-            isInitialized = false;
             patterns.emplace_back(delay,MoveParam(speed, angle, UNASSIGNED,UNASSIGNED,UNASSIGNED,loopDelay));
         }
         void AddPattern(const float delay, const float speed, const float angle, const float acceleration, const float angular_velocity, const float max_speed, const float loopDelay)
         {
-            isInitialized = false;
             patterns.emplace_back(delay,MoveParam(speed, angle, acceleration, angular_velocity,max_speed,loopDelay));
         }
     };
