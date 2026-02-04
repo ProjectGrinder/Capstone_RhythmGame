@@ -32,12 +32,12 @@ namespace Game::BulletHell
                 }
                 else if (delay_comp.delay <= 0)
                 {
-                    scl.scaleX += laser.speed * frame_time;
+                    scl.scaleX += laser.length/static_cast<float>(laser.boom_frame);
                     if (scl.scaleX >= laser.length)
                     {
                         scl.scaleX = laser.length;
                         laser.is_activated = true;
-                        delay_comp.delay = particle.lifetime - static_cast<int>(ceil(laser.length/laser.speed)) - 1;
+                        delay_comp.delay = particle.lifetime - laser.boom_frame - 1;
                         delay_comp.delay = delay_comp.delay > 0 ? delay_comp.delay : 0;
                     }
                     pos.x = laser.start_pos_x + scl.scaleX*cos(angleZ)/2;
@@ -56,9 +56,10 @@ namespace Game::BulletHell
             {
                 if (delay_comp.delay <= 0)
                 {
-                    scl.scaleX -= laser.speed * frame_time;
-                    pos.x += laser.speed * cos(angleZ) * frame_time;
-                    pos.y += laser.speed * sin(angleZ) * frame_time;
+                    const float laser_speed = laser.length/static_cast<float>(laser.boom_frame);
+                    scl.scaleX -= laser_speed;
+                    pos.x += laser_speed * cos(angleZ);
+                    pos.y += laser_speed * sin(angleZ);
                 }
             }
         }

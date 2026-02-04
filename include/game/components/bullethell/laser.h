@@ -8,18 +8,18 @@ namespace Game::BulletHell
         float start_pos_x, start_pos_y;
         float length;
 
-        float speed;
+        int boom_frame;
         bool is_activated = false;
 
-        Laser() : start_pos_x(0), start_pos_y(0), length(0), speed(1)
+        Laser() : start_pos_x(0), start_pos_y(0), length(0), boom_frame(1)
         {}
 
         Laser(const float start_pos_x, const float start_pos_y,const float length) :
-            start_pos_x(start_pos_x), start_pos_y(start_pos_y), length(length), speed(1)
+            start_pos_x(start_pos_x), start_pos_y(start_pos_y), length(length), boom_frame(1)
         {}
 
-        Laser(const float start_pos_x, const float start_pos_y,const float length, const float speed) :
-            start_pos_x(start_pos_x), start_pos_y(start_pos_y), length(length), speed(speed)
+        Laser(const float start_pos_x, const float start_pos_y,const float length, const int boom_frame) :
+            start_pos_x(start_pos_x), start_pos_y(start_pos_y), length(length), boom_frame(boom_frame)
         {}
 
     };
