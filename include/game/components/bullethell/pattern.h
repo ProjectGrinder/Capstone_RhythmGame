@@ -47,19 +47,32 @@ namespace Game::BulletHell
         std::vector<std::pair<float, MoveParam>> patterns;
         void AddPattern(const float delay, const float speed, const float angle)
         {
-            patterns.emplace_back(delay,MoveParam(speed, angle, 0,0,0));
+            patterns.emplace_back(delay, MoveParam(speed, angle, 0, 0, 0));
         }
-        void AddPattern(const float delay, const float speed, const float angle, const float acceleration, const float angular_velocity, const float max_speed)
+        void AddPattern(
+                const float delay,
+                const float speed,
+                const float angle,
+                const float acceleration,
+                const float angular_velocity,
+                const float max_speed)
         {
-            patterns.emplace_back(delay,MoveParam(speed, angle, acceleration, angular_velocity,max_speed));
+            patterns.emplace_back(delay, MoveParam(speed, angle, acceleration, angular_velocity, max_speed));
         }
         void AddPattern(const float delay, const float speed, const float angle, const float loopDelay)
         {
-            patterns.emplace_back(delay,MoveParam(speed, angle, 0,0,0,loopDelay));
+            patterns.emplace_back(delay, MoveParam(speed, angle, 0, 0, 0, loopDelay));
         }
-        void AddPattern(const float delay, const float speed, const float angle, const float acceleration, const float angular_velocity, const float max_speed, const float loopDelay)
+        void AddPattern(
+                const float delay,
+                const float speed,
+                const float angle,
+                const float acceleration,
+                const float angular_velocity,
+                const float max_speed,
+                const float loopDelay)
         {
-            patterns.emplace_back(delay,MoveParam(speed, angle, acceleration, angular_velocity,max_speed,loopDelay));
+            patterns.emplace_back(delay, MoveParam(speed, angle, acceleration, angular_velocity, max_speed, loopDelay));
         }
     };
-}
+} // namespace Game::BulletHell

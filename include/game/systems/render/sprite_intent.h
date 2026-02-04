@@ -3,10 +3,10 @@
 
 namespace Game::Render
 {
-    template <typename T>
+    template<typename T>
     void SpriteIntent([[maybe_unused]] T &syscall, System::ECS::Query<Sprite, IntentHandle> &query)
     {
-        for (auto &[id, comps] : query)
+        for (auto &[id, comps]: query)
         {
             const size_t &intent_id = comps.get<IntentHandle>().handle_id;
             std::optional<System::DrawIntent> &intent = System::RenderStorage::get_intent(intent_id);
@@ -36,7 +36,8 @@ namespace Game::Render
             common.layer = sprite.layer;
             common.order = sprite.order;
 
-            auto &[texture, src_rect, dst_rect, flipX, flipY] = std::get<System::SpriteDrawDesc>(intent.value().special);
+            auto &[texture, src_rect, dst_rect, flipX, flipY] =
+                    std::get<System::SpriteDrawDesc>(intent.value().special);
             texture = sprite.texture;
             src_rect = System::Rect{sprite.src_rect.u0, sprite.src_rect.v0, sprite.src_rect.u1, sprite.src_rect.v1};
             dst_rect = System::Rect{sprite.dst_rect.u0, sprite.dst_rect.v0, sprite.dst_rect.u1, sprite.dst_rect.v1};
@@ -44,4 +45,4 @@ namespace Game::Render
             flipY = sprite.flipY;
         }
     }
-}
+} // namespace Game::Render

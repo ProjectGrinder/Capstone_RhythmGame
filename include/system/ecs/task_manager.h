@@ -71,8 +71,7 @@ namespace System::ECS
 
     public:
         TaskManager() : _syscall(_resource_manager)
-        {
-        }
+        {}
 
         inline void run_all()
         {
@@ -80,7 +79,7 @@ namespace System::ECS
             _syscall.exec();
         }
 
-        template <typename Component>
+        template<typename Component>
         void add_component(pid id, Component &&component)
         {
             _syscall.template add_component<Component>(id, std::forward<Component>(component));

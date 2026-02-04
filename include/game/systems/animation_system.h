@@ -52,38 +52,61 @@ namespace Game::Render
             auto &rotation = comps.get<Rotation>();
             auto &scale = comps.get<Physics::Scale>();
 
-            const float t = static_cast<float>(frame - keyFrameFrame1) / static_cast<float>(keyFrameFrame2 - keyFrameFrame1);
+            const float t =
+                    static_cast<float>(frame - keyFrameFrame1) / static_cast<float>(keyFrameFrame2 - keyFrameFrame1);
 
-            position.x = TweenTransform(t,keyFrame1.position.x,keyFrame2.position.x,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            position.y = TweenTransform(t,keyFrame1.position.y,keyFrame2.position.y,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            position.z = TweenTransform(t,keyFrame1.position.z,keyFrame2.position.z,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            rotation.angleX = TweenTransform(t,keyFrame1.rotation.angleX,keyFrame2.rotation.angleX,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            rotation.angleY = TweenTransform(t,keyFrame1.rotation.angleY,keyFrame2.rotation.angleY,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            rotation.angleZ = TweenTransform(t,keyFrame1.rotation.angleZ,keyFrame2.rotation.angleZ,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            scale.scaleX = TweenTransform(t,keyFrame1.scale.scaleX,keyFrame2.scale.scaleX,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            scale.scaleY = TweenTransform(t,keyFrame1.scale.scaleY,keyFrame2.scale.scaleY,keyFrame1.tweenType,keyFrame1.tweenStrength);
-            scale.scaleZ = TweenTransform(t,keyFrame1.scale.scaleZ,keyFrame2.scale.scaleZ,keyFrame1.tweenType,keyFrame1.tweenStrength);
-
+            position.x = TweenTransform(
+                    t, keyFrame1.position.x, keyFrame2.position.x, keyFrame1.tweenType, keyFrame1.tweenStrength);
+            position.y = TweenTransform(
+                    t, keyFrame1.position.y, keyFrame2.position.y, keyFrame1.tweenType, keyFrame1.tweenStrength);
+            position.z = TweenTransform(
+                    t, keyFrame1.position.z, keyFrame2.position.z, keyFrame1.tweenType, keyFrame1.tweenStrength);
+            rotation.angleX = TweenTransform(
+                    t,
+                    keyFrame1.rotation.angleX,
+                    keyFrame2.rotation.angleX,
+                    keyFrame1.tweenType,
+                    keyFrame1.tweenStrength);
+            rotation.angleY = TweenTransform(
+                    t,
+                    keyFrame1.rotation.angleY,
+                    keyFrame2.rotation.angleY,
+                    keyFrame1.tweenType,
+                    keyFrame1.tweenStrength);
+            rotation.angleZ = TweenTransform(
+                    t,
+                    keyFrame1.rotation.angleZ,
+                    keyFrame2.rotation.angleZ,
+                    keyFrame1.tweenType,
+                    keyFrame1.tweenStrength);
+            scale.scaleX = TweenTransform(
+                    t, keyFrame1.scale.scaleX, keyFrame2.scale.scaleX, keyFrame1.tweenType, keyFrame1.tweenStrength);
+            scale.scaleY = TweenTransform(
+                    t, keyFrame1.scale.scaleY, keyFrame2.scale.scaleY, keyFrame1.tweenType, keyFrame1.tweenStrength);
+            scale.scaleZ = TweenTransform(
+                    t, keyFrame1.scale.scaleZ, keyFrame2.scale.scaleZ, keyFrame1.tweenType, keyFrame1.tweenStrength);
         }
     }
 
-    inline float TweenTransform(const float t, const float a, const float b, const TweenType tween, const float strength)
+    inline float
+    TweenTransform(const float t, const float a, const float b, const TweenType tween, const float strength)
     {
-        const float v = b-a;
+        const float v = b - a;
         switch (tween)
         {
-            case Linear:
-                return a + v * t;
-            case Ease_In:
-                return a - v * pow(t,strength);
-            case Ease_Out:
-                return a + v * (1 - pow(1-t,strength));
-            case Ease_InOut:
-                if (t < 0.5)
-                    return a + v * 0.5f * pow(2*t,strength);
-                return a + v * (1 - 0.5f * pow(2*(1 - t), strength));
+        case Linear:
+            return a + v * t;
+        case Ease_In:
+            return a - v * pow(t, strength);
+        case Ease_Out:
+            return a + v * (1 - pow(1 - t, strength));
+        case Ease_InOut:
+            if (t < 0.5)
+                return a + v * 0.5f * pow(2 * t, strength);
+            return a + v * (1 - 0.5f * pow(2 * (1 - t), strength));
 
-            default: return a + v * t;
+        default:
+            return a + v * t;
         }
     }
-}
+} // namespace Game::Render

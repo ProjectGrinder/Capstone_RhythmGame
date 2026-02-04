@@ -5,7 +5,6 @@
 #include "system/ecs.h"
 #include "system/input.h"
 #include "system/intent_storage.h"
-#include "system/render_packet.h"
 
 namespace System
 {

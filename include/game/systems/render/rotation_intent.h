@@ -2,10 +2,10 @@
 
 namespace Game::Render
 {
-    template <typename T>
-    void RotationIntent([[maybe_unused]] T& syscall, System::ECS::Query<Rotation, IntentHandle> &query)
+    template<typename T>
+    void RotationIntent([[maybe_unused]] T &syscall, System::ECS::Query<Rotation, IntentHandle> &query)
     {
-        for (auto &[id, comps] : query)
+        for (auto &[id, comps]: query)
         {
             const size_t &intent_id = comps.get<IntentHandle>().handle_id;
             std::optional<System::DrawIntent> &intent = System::RenderStorage::get_intent(intent_id);
@@ -20,4 +20,4 @@ namespace Game::Render
             common.rotation_z = rotation.angleZ;
         }
     }
-}
+} // namespace Game::Render

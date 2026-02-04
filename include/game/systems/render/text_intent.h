@@ -5,7 +5,7 @@ namespace Game::Render
     template<typename T>
     void TextIntent([[maybe_unused]] T &syscall, System::ECS::Query<Text, IntentHandle> &query)
     {
-        for (auto &[id, comps] : query)
+        for (auto &[id, comps]: query)
         {
             const size_t &intent_id = comps.get<IntentHandle>().handle_id;
             std::optional<System::DrawIntent> &intent = System::RenderStorage::get_intent(intent_id);
@@ -37,4 +37,4 @@ namespace Game::Render
             font_size = text_component.font_size;
         }
     }
-}
+} // namespace Game::Render

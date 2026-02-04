@@ -1,7 +1,7 @@
 #pragma once
+#include <string>
 #include <utility>
 #include <vector>
-#include <string>
 
 namespace Game::Battle
 {
@@ -26,7 +26,8 @@ namespace Game::Battle
         int timing_end;
         NoteData() : is_hold(false), timing(0), timing_end(0)
         {}
-        explicit NoteData(const bool is_hold, const int timing, const int timing_end) : is_hold(is_hold), timing(timing), timing_end(timing_end)
+        explicit NoteData(const bool is_hold, const int timing, const int timing_end) :
+            is_hold(is_hold), timing(timing), timing_end(timing_end)
         {}
     };
 
@@ -47,7 +48,8 @@ namespace Game::Battle
         int difficulty;
         Difficulty() : instrument(NO_INSTRUMENT), difficulty(0)
         {}
-        explicit Difficulty(const Instrument instrument,const int difficulty) : instrument(instrument), difficulty(difficulty)
+        explicit Difficulty(const Instrument instrument, const int difficulty) :
+            instrument(instrument), difficulty(difficulty)
         {}
     };
 
@@ -59,7 +61,9 @@ namespace Game::Battle
         int miss_count;
         JudgementCount() : perfect_count(0), great_count(0), fine_count(0), miss_count(0)
         {}
-        explicit JudgementCount(const int perfect_count, const int great_count, const int fine_count, const int miss_count) : perfect_count(perfect_count), great_count(great_count), fine_count(fine_count), miss_count(miss_count)
+        explicit JudgementCount(
+                const int perfect_count, const int great_count, const int fine_count, const int miss_count) :
+            perfect_count(perfect_count), great_count(great_count), fine_count(fine_count), miss_count(miss_count)
         {}
     };
 
@@ -108,11 +112,25 @@ namespace Game::Battle
         JudgementCount judgement_count;
         CurrentPhase current_phase;
         BattleState() :
-            max_hp(0), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(0), current_phase(BULLET_HELL)
+            max_hp(0),
+            hp(0),
+            score(0),
+            clock_time(0),
+            total_accept(0),
+            current_accept(0),
+            max_accept_gauge(0),
+            current_phase(BULLET_HELL)
         {}
-        explicit BattleState(
-                const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :
-            max_hp(max_hp), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), difficulty(difficulty), current_phase(BULLET_HELL)
+        explicit BattleState(const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :
+            max_hp(max_hp),
+            hp(0),
+            score(0),
+            clock_time(0),
+            total_accept(0),
+            current_accept(0),
+            max_accept_gauge(max_accept_gauge),
+            difficulty(difficulty),
+            current_phase(BULLET_HELL)
         {}
     };
 
@@ -120,7 +138,7 @@ namespace Game::Battle
     {
         int graze;
         int iframe_time;
-        BulletHellState(): graze(0), iframe_time(0)
+        BulletHellState() : graze(0), iframe_time(0)
         {}
     };
 
@@ -163,8 +181,13 @@ namespace Game::Battle
                 BpmInfo bpm_info,
                 PhaseInfo phase_info,
                 std::vector<Difficulty> difficulties) :
-            title(std::move(title)), artist_name(std::move(artist_name)), genre_name(std::move(genre_name)), main_bpm(main_bpm),
-            bpm_info(std::move(bpm_info)), phase_info(std::move(phase_info)), difficulties(std::move(difficulties))
+            title(std::move(title)),
+            artist_name(std::move(artist_name)),
+            genre_name(std::move(genre_name)),
+            main_bpm(main_bpm),
+            bpm_info(std::move(bpm_info)),
+            phase_info(std::move(phase_info)),
+            difficulties(std::move(difficulties))
         {}
     };
-}
+} // namespace Game::Battle

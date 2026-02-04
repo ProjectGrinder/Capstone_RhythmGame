@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vector>
 #include <optional>
 #include <variant>
+#include <vector>
 
 namespace System
 {
@@ -16,15 +16,17 @@ namespace System
 
     struct Color
     {
-        float r,g,b,a;
-        Color() : r(0),g(0),b(0),a(0) {}
-        explicit Color(const float r, const float g, const float b, const float a) : r(r),g(g),b(b),a(a) {}
-        Color & operator=(const Color &) noexcept = default;
+        float r, g, b, a;
+        Color() : r(0), g(0), b(0), a(0)
+        {}
+        explicit Color(const float r, const float g, const float b, const float a) : r(r), g(g), b(b), a(a)
+        {}
+        Color &operator=(const Color &) noexcept = default;
     };
 
     struct Rect
     {
-        float u0,v0,u1,v1;
+        float u0, v0, u1, v1;
     };
 
     // Intention
@@ -132,10 +134,11 @@ namespace System
         // TODO: Change storage from any to DrawDescription
         std::vector<std::optional<DrawIntent>> _intent_storage{};
         std::vector<RenderPacket> _packet_storage{};
+
     public:
         static size_t alloc_slot();
         static void free_slot(size_t slot);
         static RenderStorage &instance();
-        static std::optional<DrawIntent> & get_intent(size_t slot);
+        static std::optional<DrawIntent> &get_intent(size_t slot);
     };
-}
+} // namespace System

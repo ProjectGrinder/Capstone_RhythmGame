@@ -3,10 +3,10 @@
 
 namespace Game::Render
 {
-    template <typename T>
+    template<typename T>
     void MaterialIntent([[maybe_unused]] T &syscall, System::ECS::Query<Material, IntentHandle> &query)
     {
-        for (auto &[id, comps] : query)
+        for (auto &[id, comps]: query)
         {
             const size_t &intent_id = comps.get<IntentHandle>().handle_id;
             std::optional<System::DrawIntent> &intent = System::RenderStorage::get_intent(intent_id);
@@ -24,4 +24,4 @@ namespace Game::Render
             common.color = System::Color(material.color.r, material.color.g, material.color.b, material.color.a);
         }
     }
-}
+} // namespace Game::Render

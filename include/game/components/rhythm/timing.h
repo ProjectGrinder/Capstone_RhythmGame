@@ -8,4 +8,4 @@ namespace Game::Rhythm
         explicit Timing(const int timing) : timing(timing)
         {}
     };
-}
+} // namespace Game::Rhythm

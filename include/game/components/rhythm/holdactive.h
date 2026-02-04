@@ -10,4 +10,4 @@ namespace Game::Rhythm
         explicit HoldActive(const bool hold_active) : hold_active(hold_active)
         {}
     };
-}
+} // namespace Game::Rhythm

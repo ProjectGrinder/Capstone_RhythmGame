@@ -2,8 +2,9 @@
 
 namespace Game::Battle
 {
-    template <typename T>
-    void PhaseChange([[maybe_unused]] T &syscall, System::ECS::Query<LevelData> &query, System::ECS::Query<BattleState> &query2)
+    template<typename T>
+    void PhaseChange(
+            [[maybe_unused]] T &syscall, System::ECS::Query<LevelData> &query, System::ECS::Query<BattleState> &query2)
     {
         if (query.begin() == query.end())
             return;
@@ -21,4 +22,4 @@ namespace Game::Battle
             phase_info.idx++;
         }
     }
-}
+} // namespace Game::Battle

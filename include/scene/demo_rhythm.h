@@ -1,6 +1,6 @@
 #pragma once
-#include "system.h"
 #include "game.h"
+#include "system.h"
 
 namespace Scene
 {
@@ -62,13 +62,11 @@ namespace Scene
         return (chart);
     }
 
-    template <typename T>
+    template<typename T>
     void setup_demo_rhythm_scene([[maybe_unused]] T &syscall)
-    {
+    {}
 
-    }
-
-    template <typename T>
+    template<typename T>
     void time_check([[maybe_unused]] T &syscall, System::ECS::Query<Game::Battle::BattleState> &query)
     {
         if (query.begin() == query.end())
@@ -90,42 +88,43 @@ namespace Scene
         // declare scene parameters
         constexpr static size_t MaxResource = 500;
         using ComponentTuple = std::tuple<
-            Game::Battle::BattleState,
-            Game::Battle::RhythmState,
-            Game::Battle::ChartData,
-            Game::Battle::LevelData, // structure required to satisfy HandleBPM
-            Game::BulletHell::Input, // structure required to satisfy InputSystem
-            Game::Rhythm::KeyInput,
-            Game::Rhythm::Lane,
-            Game::Rhythm::NoteSpeed,
-            Game::Rhythm::Timing,
-            Game::Rhythm::TimingEnd,
-            Game::Rhythm::HoldActive
-            >;
+                Game::Battle::BattleState,
+                Game::Battle::RhythmState,
+                Game::Battle::ChartData,
+                Game::Battle::LevelData, // structure required to satisfy HandleBPM
+                Game::BulletHell::Input, // structure required to satisfy InputSystem
+                Game::Rhythm::KeyInput,
+                Game::Rhythm::Lane,
+                Game::Rhythm::NoteSpeed,
+                Game::Rhythm::Timing,
+                Game::Rhythm::TimingEnd,
+                Game::Rhythm::HoldActive>;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
-        using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
-            Game::Battle::InputSystem<Syscall>,
-            Game::Rhythm::HandleRhythm<Syscall>,
-            Game::Rhythm::HandleMissNote<Syscall>,
-            Game::Rhythm::HandleBPM<Syscall>,
-            time_check<Syscall>
-            >;
-        
+        using TaskManager = System::ECS::TaskManager<
+                ResourceManager,
+                Syscall,
+                Game::Battle::InputSystem<Syscall>,
+                Game::Rhythm::HandleRhythm<Syscall>,
+                Game::Rhythm::HandleMissNote<Syscall>,
+                Game::Rhythm::HandleBPM<Syscall>,
+                time_check<Syscall>>;
+
         static TaskManager Init()
         {
             auto tm = TaskManager{};
             // Create and configure BattleState
-            tm.create_entity<Game::Battle::BattleState,
-            Game::Battle::RhythmState,
-            Game::Battle::ChartData,
-            Game::Rhythm::KeyInput, Game::Rhythm::NoteSpeed>
-            (
-                Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
-                Game::Battle::RhythmState(1, 1, 32, 1.0f),
-                create_demo_chart(),
-                Game::Rhythm::KeyInput(),
-                Game::Rhythm::NoteSpeed(1.0f));
+            tm.create_entity<
+                    Game::Battle::BattleState,
+                    Game::Battle::RhythmState,
+                    Game::Battle::ChartData,
+                    Game::Rhythm::KeyInput,
+                    Game::Rhythm::NoteSpeed>(
+                    Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
+                    Game::Battle::RhythmState(1, 1, 32, 1.0f),
+                    create_demo_chart(),
+                    Game::Rhythm::KeyInput(),
+                    Game::Rhythm::NoteSpeed(1.0f));
 
 
             // Create Lane and NoteSpeed components
@@ -139,4 +138,4 @@ namespace Scene
 
         static std::vector<ComponentTuple> Exit();
     };
-}
+} // namespace Scene

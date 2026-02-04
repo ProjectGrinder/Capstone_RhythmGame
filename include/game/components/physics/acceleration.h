@@ -13,4 +13,4 @@ namespace Game::Physics
         explicit Acceleration(const float ax, const float ay, float max_speed) : ax(ax), ay(ay), max_speed(max_speed)
         {}
     };
-}
+} // namespace Game::Physics

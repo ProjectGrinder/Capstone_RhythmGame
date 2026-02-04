@@ -11,4 +11,4 @@ namespace Game::Physics
         explicit Velocity(const float vx, const float vy) : vx(vx), vy(vy)
         {}
     };
-}
+} // namespace Game::Physics

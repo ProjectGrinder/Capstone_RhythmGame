@@ -34,4 +34,4 @@ namespace System
         instance()._intent_storage[slot] = std::nullopt;
     }
 
-}
+} // namespace System

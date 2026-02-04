@@ -8,4 +8,4 @@ namespace System
         constexpr static uint32_t VertexQueueSize = 4;
         constexpr static uint32_t RendererQueueSize = 4;
     };
-}
+} // namespace System

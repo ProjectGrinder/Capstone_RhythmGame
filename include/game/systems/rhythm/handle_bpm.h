@@ -5,7 +5,11 @@
 namespace Game::Rhythm
 {
     template<typename T>
-    void HandleBPM([[maybe_unused]] T &syscall, System::ECS::Query<Battle::LevelData> &query, System::ECS::Query<Battle::RhythmState> &query2, System::ECS::Query<Battle::BattleState> &query3)
+    void HandleBPM(
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<Battle::LevelData> &query,
+            System::ECS::Query<Battle::RhythmState> &query2,
+            System::ECS::Query<Battle::BattleState> &query3)
     {
         if (query.begin() == query.end())
             return;
@@ -39,4 +43,4 @@ namespace Game::Rhythm
             rhythm_state.note_speed *= new_bpm / old_bpm;
         }
     }
-}
+} // namespace Game::Rhythm

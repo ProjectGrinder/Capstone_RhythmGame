@@ -1,6 +1,6 @@
 #pragma once
-#include "system.h"
 #include "game.h"
+#include "system.h"
 
 namespace Scene
 {
@@ -10,8 +10,8 @@ namespace Scene
         int number;
     };
 
-    template <typename T>
-    void please_work([[maybe_unused]] T &syscall, System::ECS::Query<test_component>& query)
+    template<typename T>
+    void please_work([[maybe_unused]] T &syscall, System::ECS::Query<test_component> &query)
     {
         for (auto &entry: query)
         {

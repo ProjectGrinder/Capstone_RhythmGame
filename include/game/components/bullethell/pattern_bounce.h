@@ -5,8 +5,8 @@ namespace Game::BulletHell
     struct Bounce
     {
         int bounce_time;
-        //                       Left, Right, Up , Down
-        bool reflect_side[4] = { true, true, true, true };
+        //                       Left, Right, Up, Down
+        bool reflect_side[4] = {true, true, true, true};
         Bounce() : bounce_time(1)
         {}
         explicit Bounce(const int bounce_time, const bool reflect_side[4]) : bounce_time(bounce_time)
@@ -15,4 +15,4 @@ namespace Game::BulletHell
                 this->reflect_side[i] = reflect_side[i];
         }
     };
-}
+} // namespace Game::BulletHell

@@ -4,8 +4,11 @@
 
 namespace Game::BulletHell
 {
-    template <typename T>
-    void BulletSystem([[maybe_unused]] T &syscall, System::ECS::Query<Bullet> &query, System::ECS::Query<Battle::BattleState> &query2)
+    template<typename T>
+    void BulletSystem(
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<Bullet> &query,
+            System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
@@ -17,7 +20,7 @@ namespace Game::BulletHell
 
         constexpr auto frame_time = 1; // 1ms
 
-        for (auto &[id, comps] : query)
+        for (auto &[id, comps]: query)
         {
             auto &bullet = comps.get<Bullet>();
             if (!bullet.is_active)
@@ -36,4 +39,4 @@ namespace Game::BulletHell
             }
         }
     }
-}
+} // namespace Game::BulletHell

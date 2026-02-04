@@ -4,11 +4,8 @@
 namespace Game::Rhythm
 {
     template<typename T>
-    void create_note_entity(
-            T &syscall,
-            Battle::RhythmState &rhythm_state,
-            Battle::LaneInfo &lane,
-            Battle::NoteData &note)
+    void
+    create_note_entity(T &syscall, Battle::RhythmState &rhythm_state, Battle::LaneInfo &lane, Battle::NoteData &note)
     {
         if (note.is_hold)
         {
@@ -21,15 +18,16 @@ namespace Game::Rhythm
         else
         {
             syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive>(
-                    Lane{lane.lane_number},
-                    NoteSpeed{rhythm_state.note_speed},
-                    Timing{note.timing},
-                    TimingEnd{0});
+                    Lane{lane.lane_number}, NoteSpeed{rhythm_state.note_speed}, Timing{note.timing}, TimingEnd{0});
         }
     }
 
     template<typename T>
-    void LoadNotes(T &syscall, System::ECS::Query<Battle::ChartData> &query, System::ECS::Query<Battle::BattleState> &query2, System::ECS::Query<Battle::RhythmState> &query3)
+    void LoadNotes(
+            T &syscall,
+            System::ECS::Query<Battle::ChartData> &query,
+            System::ECS::Query<Battle::BattleState> &query2,
+            System::ECS::Query<Battle::RhythmState> &query3)
     {
         constexpr float lookahead = 5;
 
@@ -39,7 +37,7 @@ namespace Game::Rhythm
         const auto &clock = battle_state.clock_time;
 
         // repeat for each lane
-        for (auto &[lanes] = chart_data; Battle::LaneInfo & lane: lanes)
+        for (auto &[lanes] = chart_data; Battle::LaneInfo &lane: lanes)
         {
             if (lane.current_note == lane.notes.size())
             {

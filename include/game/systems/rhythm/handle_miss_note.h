@@ -6,9 +6,9 @@ namespace Game::Rhythm
 {
     template<typename T>
     void HandleMissNote(
-        T &syscall,
-        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive> &note_query,
-        System::ECS::Query<Battle::BattleState> &battle_query)
+            T &syscall,
+            System::ECS::Query<Lane, Timing, TimingEnd, HoldActive> &note_query,
+            System::ECS::Query<Battle::BattleState> &battle_query)
     {
 
         if (battle_query.begin() == battle_query.end())
@@ -22,7 +22,7 @@ namespace Game::Rhythm
         constexpr auto miss_timing = 100;
         auto &current_timing = battle_query.front().get<Battle::BattleState>().clock_time;
 
-        for (auto &[id, comps] : note_query)
+        for (auto &[id, comps]: note_query)
         {
             if (comps.get<Timing>().timing - current_timing < -1 * miss_timing)
             {
@@ -36,8 +36,9 @@ namespace Game::Rhythm
                 }
                 syscall.remove_entity(id);
             }
-        // Handle miss for an entire hold note, which counts as two misses (start and end)
-        // If the note is held but released too early, it should be handled in handle_rhythm.h to be checked along with other judgements
+            // Handle miss for an entire hold note, which counts as two misses (start and end)
+            // If the note is held but released too early, it should be handled in handle_rhythm.h to be checked along
+            // with other judgements
         }
     }
-}
+} // namespace Game::Rhythm

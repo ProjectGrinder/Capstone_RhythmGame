@@ -89,7 +89,8 @@ namespace System::ECS
         }
 
     public:
-        explicit Syscall(ResourceManager<MaxResource, Resources...> &rm) : _resource_manager_ref(rm) {}
+        explicit Syscall(ResourceManager<MaxResource, Resources...> &rm) : _resource_manager_ref(rm)
+        {}
 
         template<typename Component>
         void add_component(pid id, Component &&component)

@@ -6,8 +6,12 @@
 
 namespace Game::Battle
 {
-    template <typename T>
-    void InputSystem([[maybe_unused]] T &syscall, System::ECS::Query<BattleState> &query1, System::ECS::Query<BulletHell::Input> &bullet_hell_input, System::ECS::Query<Rhythm::KeyInput> &rhythm_input)
+    template<typename T>
+    void InputSystem(
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<BattleState> &query1,
+            System::ECS::Query<BulletHell::Input> &bullet_hell_input,
+            System::ECS::Query<Rhythm::KeyInput> &rhythm_input)
     {
         if (query1.begin() == query1.end())
             return;
@@ -33,8 +37,10 @@ namespace Game::Battle
             {
                 break;
             }
-            bullet_hell_input.front().get<BulletHell::Input>().axis_x = static_cast<float>(get_key_state(LEFT) - get_key_state(RIGHT));
-            bullet_hell_input.front().get<BulletHell::Input>().axis_y = static_cast<float>(get_key_state(UP) - get_key_state(DOWN));
+            bullet_hell_input.front().get<BulletHell::Input>().axis_x =
+                    static_cast<float>(get_key_state(LEFT) - get_key_state(RIGHT));
+            bullet_hell_input.front().get<BulletHell::Input>().axis_y =
+                    static_cast<float>(get_key_state(UP) - get_key_state(DOWN));
             bullet_hell_input.front().get<BulletHell::Input>().x = get_key_state(X);
             bullet_hell_input.front().get<BulletHell::Input>().z = get_key_state(Z);
             bullet_hell_input.front().get<BulletHell::Input>().shift = get_key_state(LSHIFT);
@@ -99,4 +105,4 @@ namespace Game::Battle
             LOG_INFO("Rhythm KEY4");
         }
     }
-}
+} // namespace Game::Battle

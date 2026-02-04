@@ -11,4 +11,4 @@ namespace Game::Rhythm
         KeyInput() : input1(false), input2(false), input3(false), input4(false)
         {}
     };
-}
+} // namespace Game::Rhythm

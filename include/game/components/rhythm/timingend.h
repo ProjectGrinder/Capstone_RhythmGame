@@ -8,4 +8,4 @@ namespace Game::Rhythm
         explicit TimingEnd(const int timing_end) : timing_end(timing_end)
         {}
     };
-}
+} // namespace Game::Rhythm

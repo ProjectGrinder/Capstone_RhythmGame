@@ -4,8 +4,11 @@
 
 namespace Game::BulletHell
 {
-    template <typename T>
-    void PlayerSystem([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BulletHellState> &query, System::ECS::Query<Battle::BattleState> &query2)
+    template<typename T>
+    void PlayerSystem(
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<Battle::BulletHellState> &query,
+            System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
@@ -29,4 +32,4 @@ namespace Game::BulletHell
             }
         }
     }
-}
+} // namespace Game::BulletHell

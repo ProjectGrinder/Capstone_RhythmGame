@@ -1,7 +1,6 @@
 #pragma once
 
 #include "components/battle/battlestate.h"
-
 #include "components/bullethell/bullet.h"
 #include "components/bullethell/emitter.h"
 #include "components/bullethell/input.h"
@@ -14,20 +13,19 @@
 #include "components/physics/acceleration.h"
 #include "components/physics/angular_velocity.h"
 #include "components/physics/circular_collider.h"
-#include "components/physics/rectangular_collider.h"
 #include "components/physics/position.h"
+#include "components/physics/rectangular_collider.h"
 #include "components/physics/rotation.h"
 #include "components/physics/scale.h"
-#include "components/physics/velocity.h"
 #include "components/physics/shaker.h"
+#include "components/physics/velocity.h"
 #include "components/render/animator.h"
-#include "components/render/material.h"
 #include "components/render/camera.h"
 #include "components/render/intent_handle.h"
+#include "components/render/material.h"
+#include "components/render/rotation.h"
 #include "components/render/sprite.h"
 #include "components/render/text.h"
-#include "components/render/rotation.h"
-
 #include "components/rhythm/holdactive.h"
 #include "components/rhythm/judgetext.h"
 #include "components/rhythm/keyinput.h"
