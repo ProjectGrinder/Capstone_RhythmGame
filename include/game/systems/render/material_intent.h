@@ -9,7 +9,7 @@ namespace Game::Render
         for (auto &[id, comps] : query)
         {
             const size_t &intent_id = comps.get<IntentHandle>().handle_id;
-            std::optional<System::DrawIntent> &intent = System::IntentStorage::get_intent(intent_id);
+            std::optional<System::DrawIntent> &intent = System::RenderStorage::get_intent(intent_id);
             const Material &material = comps.get<Material>();
 
             if (!intent.has_value())

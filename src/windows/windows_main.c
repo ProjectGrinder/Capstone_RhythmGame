@@ -33,7 +33,7 @@ static SystemInfo system_info = {
         .vertex_queue = NULL,
         .rendering_queue = NULL,
         .scene_manager = NULL,
-        .intent_storage = NULL,
+        .render_storage = NULL,
         .directx = NULL,
 };
 
@@ -47,9 +47,9 @@ void *get_scene_manager()
     return (system_info.scene_manager);
 }
 
-void *get_intent_storage()
+void *get_render_storage()
 {
-    return (system_info.intent_storage);
+    return (system_info.render_storage);
 }
 
 HRESULT directx_init(_In_ DirectXHandler *directx_api)
@@ -103,7 +103,7 @@ int real_main()
         goto exit;
     }
 
-    error = intent_storage_init(&system_info.intent_storage);
+    error = intent_storage_init(&system_info.render_storage);
     if (error != ERROR_SUCCESS)
     {
         LOG_ERROR("intent_storage_init failed, Code 0x%08lx", error);

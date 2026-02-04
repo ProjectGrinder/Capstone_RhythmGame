@@ -57,6 +57,6 @@ typedef struct
     RenderingQueue *rendering_queue;
 
     SceneManagerHandler scene_manager;
-    IntentStorageHandler intent_storage;
+    IntentStorageHandler render_storage;
     DirectxHandler directx;
 } SystemInfo;

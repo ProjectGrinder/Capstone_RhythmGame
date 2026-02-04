@@ -6,6 +6,7 @@
 
 namespace System
 {
+    // Common
     enum class DrawKind : uint8_t
     {
         KIND_UNKNOWN = 0,
@@ -25,6 +26,8 @@ namespace System
     {
         float u0,v0,u1,v1;
     };
+
+    // Intention
 
     struct DrawCommon
     {
@@ -76,14 +79,63 @@ namespace System
         std::variant<SpriteDrawDesc, TextDrawDesc> special{};
     };
 
-    class IntentStorage
+    // Render Packet
+
+    struct RenderSortKey
+    {
+        uint32_t layer = 0;
+        uint32_t render_prior = 0;
+        uint32_t order = 0;
+    };
+
+    struct RenderPacket
+    {
+        DrawKind kind = DrawKind::KIND_UNKNOWN;
+        RenderSortKey sort{};
+
+        // Pipeline selection (resolved once from intent strings).
+        uint32_t vert_shader = 0;
+        uint32_t pixel_shader = 0;
+
+        // Resource binding keys
+        // For sprites: texture asset id. For text: font atlas id (can be 0 for now).
+        uint32_t resource0 = 0;
+
+        // Common per-draw params
+        Color color{};
+        float rotation_z = 0.0f;
+        bool visible = true;
+
+        // Draw-specific payload
+        union
+        {
+            struct
+            {
+                Rect src_rect{};
+                Rect dst_rect{};
+                bool flipX = false;
+                bool flipY = false;
+            } sprite;
+
+            struct
+            {
+                std::string_view text{};
+                const char *font_name = nullptr;
+                uint32_t font_size = 0;
+                Rect dst_rect{}; // optional: can be used as anchor/box if you want
+            } text;
+        } as{};
+    };
+
+    class RenderStorage
     {
         // TODO: Change storage from any to DrawDescription
-        std::vector<std::optional<DrawIntent>> _storage;
+        std::vector<std::optional<DrawIntent>> _intent_storage{};
+        std::vector<RenderPacket> _packet_storage{};
     public:
         static size_t alloc_slot();
         static void free_slot(size_t slot);
-        static IntentStorage &instance();
+        static RenderStorage &instance();
         static std::optional<DrawIntent> & get_intent(size_t slot);
     };
 }
