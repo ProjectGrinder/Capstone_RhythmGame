@@ -140,11 +140,11 @@ TEST(ECS, check_exist_test)
 TEST(ECS, exec_add_component)
 {
     TestResource resource;
-    TestSyscall syscall{};
+    TestSyscall syscall{resource};
     const pid id_1 = resource.reserve_process();
     syscall.add_component(id_1, test_component{1});
     EXPECT_FALSE(resource.query<test_component>().has(id_1));
-    syscall.exec(resource);
+    syscall.exec();
     EXPECT_EQ(resource.query<test_component>().get(id_1).value, 1);
     EXPECT_TRUE(resource.query<test_component>().has(id_1));
 }
@@ -152,36 +152,36 @@ TEST(ECS, exec_add_component)
 TEST(ECS, exec_create_entity)
 {
     TestResource resource;
-    TestSyscall syscall{};
-    const pid id_1 = syscall.create_entity(resource, test_component{1});
+    TestSyscall syscall{resource};
+    const pid id_1 = syscall.create_entity(test_component{1});
     EXPECT_FALSE(resource.query<test_component>().has(id_1));
-    syscall.exec(resource);
+    syscall.exec();
     EXPECT_TRUE(resource.query<test_component>().has(id_1));
 }
 
 TEST(ECS, exec_remove_component)
 {
     TestResource resource;
-    TestSyscall syscall{};
+    TestSyscall syscall{resource};
     const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     syscall.remove_component<test_component>(id_1);
     EXPECT_TRUE(resource.query<test_component>().has(id_1));
-    syscall.exec(resource);
+    syscall.exec();
     EXPECT_FALSE(resource.query<test_component>().has(id_1));
 }
 
 TEST(ECS, exec_remove_entity)
 {
     TestResource resource;
-    TestSyscall syscall{};
+    TestSyscall syscall{resource};
     const pid id_1 = resource.reserve_process();
     resource.add_resource<test_component>(id_1, test_component{1});
     resource.add_resource<test_component_2>(id_1, test_component_2{2});
     syscall.remove_entity(id_1);
     EXPECT_TRUE(resource.query<test_component>().has(id_1));
     EXPECT_TRUE(resource.query<test_component_2>().has(id_1));
-    syscall.exec(resource);
+    syscall.exec();
     EXPECT_FALSE(resource.query<test_component>().has(id_1));
     EXPECT_FALSE(resource.query<test_component_2>().has(id_1));
 }
@@ -217,7 +217,7 @@ TEST(ECS, system_sequence_test)
 
 TEST(ECS, system_defer_syscall_test)
 {
-    TaskManager<TestResource, TestSyscall, test_system_3, test_system_2, test_system> task_manager{};
+    TaskManager<TestResource, TestSyscall, test_system_3, test_system_2, test_system> task_manager;
     TestResource *resource = task_manager.get_rm();
 
     const pid id_1 = resource->reserve_process();
@@ -229,7 +229,7 @@ TEST(ECS, system_defer_syscall_test)
 
 TEST(ECS, system_interaction_test)
 {
-    TaskManager<TestResource, TestSyscall, test_system_4> task_manager{};
+    TaskManager<TestResource, TestSyscall, test_system_4> task_manager;
     TestResource *resource = task_manager.get_rm();
 
     const pid id_1 = resource->reserve_process();

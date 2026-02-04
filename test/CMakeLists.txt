@@ -10,6 +10,11 @@ add_executable(unit_test
     ${TEST_FILES}
 )
 
+list(APPEND
+        LIBS
+        os_utils
+)
+
 target_link_libraries(unit_test
     PRIVATE
         ${LIBS}

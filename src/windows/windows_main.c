@@ -10,6 +10,7 @@
 #include "utils/windows_utils.h"
 
 #include "directx/directx_api.h"
+#include "scenes/intent_api.h"
 #include "scenes/scenes_api.h"
 
 #include "windows_functions.h"
@@ -32,6 +33,7 @@ static SystemInfo system_info = {
         .vertex_queue = NULL,
         .rendering_queue = NULL,
         .scene_manager = NULL,
+        .render_storage = NULL,
         .directx = NULL,
 };
 
@@ -43,6 +45,11 @@ HWND get_window_handler()
 void *get_scene_manager()
 {
     return (system_info.scene_manager);
+}
+
+void *get_render_storage()
+{
+    return (system_info.render_storage);
 }
 
 HRESULT directx_init(_In_ DirectXHandler *directx_api)
@@ -93,6 +100,13 @@ int real_main()
     if (error != ERROR_SUCCESS)
     {
         LOG_ERROR("scene_manager_init failed, Code 0x%08lx", error);
+        goto exit;
+    }
+
+    error = intent_storage_init(&system_info.render_storage);
+    if (error != ERROR_SUCCESS)
+    {
+        LOG_ERROR("intent_storage_init failed, Code 0x%08lx", error);
         goto exit;
     }
 
