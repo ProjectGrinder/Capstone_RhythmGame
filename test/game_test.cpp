@@ -91,13 +91,14 @@ pid CreateRectangleBullet(BulletHell_Resource *resource, Bullet bullet = {}, Rec
 }
 
 
-pid CreateBoomerBullet(BulletHell_Resource *resource, Bullet bullet = {}, Booming booming = {},Delay delay = Delay(0),
+pid CreateBoomerBullet(BulletHell_Resource *resource, Bullet bullet = {}, Booming booming = {},Delay delay = Delay(0), Particle particle = {},
     Position pos = {}, CircularCollider cc = {})
 {
     const pid id = resource->reserve_process();
     resource->add_resource<Bullet>(id, Bullet(bullet));
     resource->query<Bullet>().get(id).pierce = 999;
     resource->add_resource<Delay>(id, Delay(delay));
+    resource->add_resource<Particle>(id, Particle(particle));
     resource->add_resource<Booming>(id, Booming(booming));
     resource->add_resource<Position>(id, Position(pos));
     resource->add_resource<Rotation>(id,{});
@@ -107,13 +108,14 @@ pid CreateBoomerBullet(BulletHell_Resource *resource, Bullet bullet = {}, Boomin
     return id;
 }
 
-pid CreateLaserBullet(BulletHell_Resource *resource, Bullet bullet = {}, Laser laser = {},Delay delay = Delay(0),
+pid CreateLaserBullet(BulletHell_Resource *resource, Bullet bullet = {}, Laser laser = {},Delay delay = Delay(0), Particle particle = {},
     Rotation rot = {}, Scale scl = {}, RectangularCollider rc = {})
 {
     const pid id = resource->reserve_process();
     resource->add_resource<Bullet>(id, Bullet(bullet));
     resource->query<Bullet>().get(id).pierce = 999;
     resource->add_resource<Delay>(id, Delay(delay));
+    resource->add_resource<Particle>(id, Particle(particle));
     resource->add_resource<Laser>(id, Laser(laser));
     resource->add_resource<Position>(id, Position());
     resource->add_resource<Rotation>(id,Rotation(rot));
@@ -440,11 +442,11 @@ TEST(Game, bullets_damagable)
 
 TEST(Game, bullets_booming)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, Boomer_System<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ParticleSystem<BulletHell_Syscall>, Boomer_System<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
-    const pid id = CreateBoomerBullet(resource, {}, Booming(3,5, 0,2), Delay(3) );
+    const pid id = CreateBoomerBullet(resource, {}, Booming(3,2), Delay(3), Particle(10) );
     task_manager.run_all();
     EXPECT_EQ(resource->query<Delay>().get(id).delay, 2);
     EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 3);
@@ -460,31 +462,28 @@ TEST(Game, bullets_booming)
     EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 1.5f);
     EXPECT_EQ(resource->query<Scale>().get(id).scaleY, 1.5f);
     EXPECT_EQ(resource->query<Game::Render::Material>().get(id).color.a, 1);
-    EXPECT_EQ(resource->query<Booming>().get(id).lifetime, 4);
+    EXPECT_EQ(resource->query<Particle>().get(id).lifetime, 7);
     task_manager.run_all();
     task_manager.run_all();
     task_manager.run_all();
-    EXPECT_EQ(resource->query<Delay>().get(id).delay, 0);
+    EXPECT_EQ(resource->query<Delay>().get(id).delay, 1);
     EXPECT_GE(resource->query<Scale>().get(id).scaleX, 2.75f);
     EXPECT_GE(resource->query<Scale>().get(id).scaleY, 2.75f);
     EXPECT_EQ(resource->query<Game::Render::Material>().get(id).color.a, 1);
-    EXPECT_EQ(resource->query<Booming>().get(id).lifetime, 1);
+    EXPECT_EQ(resource->query<Particle>().get(id).lifetime, 4);
     task_manager.run_all();
-    task_manager.run_all();
-    EXPECT_EQ(round(resource->query<Scale>().get(id).scaleX), 1);
-    task_manager.run_all();
-    task_manager.run_all();
+    EXPECT_LE(resource->query<Scale>().get(id).scaleY, 2.75f);
     task_manager.run_all();
     EXPECT_EQ(round(resource->query<Scale>().get(id).scaleX), 0);
 }
 
 TEST(Game, bullets_laser)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, Laser_System<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ParticleSystem<BulletHell_Syscall>, Laser_System<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
-    const pid id = CreateLaserBullet(resource, {}, Laser(2,2,3,5,1), Delay(3), Rotation(30) );
+    const pid id = CreateLaserBullet(resource, {}, Laser(2,2,3,1), Delay(3), Particle(10),Rotation(30) );
     task_manager.run_all();
     EXPECT_EQ(resource->query<Delay>().get(id).delay, 2);
     EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 3);
@@ -505,29 +504,24 @@ TEST(Game, bullets_laser)
     EXPECT_EQ(round(resource->query<Position>().get(id).x * 100)/100.f, 2.43f);
     EXPECT_EQ(resource->query<Position>().get(id).y, 2.25);
     EXPECT_EQ(resource->query<Game::Render::Material>().get(id).color.a, 1);
-    EXPECT_EQ(resource->query<Laser>().get(id).lifetime, 4);
+    EXPECT_EQ(resource->query<Particle>().get(id).lifetime, 7);
     task_manager.run_all();
     EXPECT_EQ(round(resource->query<Position>().get(id).x * 100)/100.f, 2.87f);
     EXPECT_EQ(resource->query<Position>().get(id).y, 2.5);
     task_manager.run_all();
-    task_manager.run_all();
-    EXPECT_EQ(resource->query<Delay>().get(id).delay, 0);
+
+    EXPECT_EQ(resource->query<Delay>().get(id).delay, 1);
     EXPECT_GE(resource->query<Scale>().get(id).scaleX, 3);
     EXPECT_EQ(round(resource->query<Position>().get(id).x * 100)/100.f, 3.3f);
     EXPECT_EQ(resource->query<Position>().get(id).y, 2.75f);
     EXPECT_EQ(resource->query<Game::Render::Material>().get(id).color.a, 1);
-    EXPECT_EQ(resource->query<Laser>().get(id).lifetime, 1);
-    task_manager.run_all();
-    task_manager.run_all();
-    EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 2);
-    EXPECT_EQ(round(resource->query<Position>().get(id).x * 100)/100.f, 4.17f);
-    EXPECT_EQ(resource->query<Position>().get(id).y, 3.25);
+    EXPECT_EQ(resource->query<Particle>().get(id).lifetime, 5);
     task_manager.run_all();
     task_manager.run_all();
     task_manager.run_all();
     EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 0);
-    EXPECT_EQ(round(resource->query<Position>().get(id).x), 6);
-    EXPECT_EQ(round(resource->query<Position>().get(id).y), 4);
+    EXPECT_EQ(round(resource->query<Position>().get(id).x * 100)/100.f, 5.9f);
+    EXPECT_EQ(resource->query<Position>().get(id).y, 4.25);
 }
 
 // Collision
@@ -646,21 +640,22 @@ TEST(Game, bullet_collision3)
 
 TEST(Game, bullet_collision4)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ShotDelaySystem<BulletHell_Syscall>, Boomer_System<BulletHell_Syscall>, Laser_System<BulletHell_Syscall>, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ParticleSystem<BulletHell_Syscall>, ShotDelaySystem<BulletHell_Syscall>, Boomer_System<BulletHell_Syscall>, Laser_System<BulletHell_Syscall>, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
     const pid bhs = CreateBulletHellState(resource);
 
     CreatePlayer(resource, CircularCollider(2));
     //Missing boom
-    CreateBoomerBullet(resource,Bullet(false, 5), Booming(1.5f, 2), Delay(3), Position(4,0), CircularCollider(1.f,1.f));
+    CreateBoomerBullet(resource,Bullet(false, 5), Booming(1.5f, 1), Delay(4), Particle(3), Position(4,0), CircularCollider(1.f,1.f));
     //Hit Laser
-    CreateLaserBullet(resource,Bullet(false, 5), Laser(4.f, -4.f, 10, 3, 10), Delay(6), Rotation(135), Scale(2),RectangularCollider(1.f,1.f));
+    CreateLaserBullet(resource,Bullet(false, 5), Laser(4.f, -4.f, 10, 10), Delay(6), Particle(8), Rotation(135), Scale(2),RectangularCollider(1.f,1.f));
     // Hit boom
-    CreateBoomerBullet(resource,Bullet(false, 5), Booming(3.f, 2), Delay(10), Position(4,0),CircularCollider(1.f,1.f));
+    CreateBoomerBullet(resource,Bullet(false, 5), Booming(3.f, 1), Delay(11), Particle(11), Position(4,0),CircularCollider(1.f,1.f));
     // Rotate to hit laser
-    const pid laser_id = CreateLaserBullet(resource,Bullet(false, 5), Laser(7.f, 0, 10, 9, 10), Delay(14), Rotation(135), Scale(2),RectangularCollider(1.f,1.f));
+    const pid laser_id = CreateLaserBullet(resource,Bullet(false, 5), Laser(7.f, 0, 10, 10), Delay(20), Particle(20), Rotation(135), Scale(2),RectangularCollider(1.f,1.f));
 
+    task_manager.run_all();
     task_manager.run_all();
     EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
 
@@ -687,7 +682,7 @@ TEST(Game, bullet_collision4)
     task_manager.run_all();
 
     // LaserSpin Come
-    EXPECT_LE(resource->query<Delay>().get(laser_id).delay,0);
+    EXPECT_GT(resource->query<Scale>().get(laser_id).scaleX,0);
     EXPECT_LE(resource->query<BulletHellState>().get(bhs).iframe_time,0);
     for (int i=0;i<5;i++)
     {

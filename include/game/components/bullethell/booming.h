@@ -6,19 +6,15 @@ namespace Game::BulletHell
     struct Booming
     {
         float max_size;
-        float lifetime;
 
-        float init_size;
-        float divider; // size = (max_size - size) / divider
+        int boom_frame;
+        bool is_activated = false;
 
-        Booming() : max_size(0), lifetime(0), init_size(0), divider(0)
+        Booming(): max_size(0), boom_frame(1)
         {}
 
-        Booming(const float max_size, const float lifetime) : max_size(max_size), lifetime(lifetime), init_size(0), divider(1)
-        {}
-
-        Booming(const float max_size, const float lifetime, const float init_size, const float divider) :
-            max_size(max_size), lifetime(lifetime), init_size(init_size), divider(divider)
+        explicit Booming(const float max_size,  const int boom_frame = 1) :
+            max_size(max_size), boom_frame(boom_frame)
         {}
     };
 }
