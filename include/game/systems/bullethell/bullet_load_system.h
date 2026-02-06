@@ -5,14 +5,14 @@
 namespace Game::BulletHell
 {
     template<typename T>
-    void SpawnBullet(T &syscall, const Battle::BulletData& bullet_data)
+    void SpawnBullet(T &syscall, const Battle::BulletData& bullet_data, const Battle::BulletHellState bhs)
     {
         const System::ECS::pid bullet = syscall.template create_entity<Position, Patterns, Delay>(Position(bullet_data.posX,bullet_data.posY), Patterns(bullet_data.patterns), Delay(bullet_data.delay_frame));
 
         syscall.addcomponent(bullet, Rotation(), Physics::Scale(), Velocity(), Acceleration(), AngularVelocity());
 
         const Battle::BulletGraphicMap bullet_info = Battle::bulletGraphicMap[bullet_data.graphicID];
-        syscall.addcomponent(bullet, Bullet(false, bullet_info.damage, bullet_info.pierce), Particle(bullet_info.lifetime));
+        syscall.addcomponent(bullet, Bullet(false, static_cast<int>(bullet_info.damage_mul * static_cast<float>(bhs.damage)), bullet_info.pierce), Particle(bullet_info.lifetime));
 
         if (bullet_info.special_bullet_data.type == Battle::Booming) syscall.addcomponent(bullet, Booming(bullet_info.special_bullet_data.size, bullet_info.special_bullet_data.frame));
         else if (bullet_info.special_bullet_data.type == Battle::Laser) syscall.addcomponent(bullet, Laser(bullet_data.posX, bullet_data.posY, bullet_info.special_bullet_data.size, bullet_info.special_bullet_data.frame));
@@ -26,9 +26,12 @@ namespace Game::BulletHell
     }
 
     template<typename T>
-    void LoadBullets(T &syscall, System::ECS::Query<Battle::BulletLoader> &query)
+    void LoadBullets(T &syscall, System::ECS::Query<Battle::BulletLoader> &query, System::ECS::Query<Battle::BulletHellState> &query2)
     {
         constexpr auto frame_time = 1;
+
+        if (query2.begin() == query2.end())
+            return;
 
         auto &bullet_loader = query.front().get<Battle::BulletLoader>();
         auto &pointer = bullet_loader.pointer;
@@ -38,7 +41,7 @@ namespace Game::BulletHell
         while (pointer < batches.size() && batches[pointer].frame <= current_frame)
         {
             for (auto& b : batches[pointer].bullets)
-                SpawnBullet(syscall, b);
+                SpawnBullet(syscall, b, query2.front());
 
             pointer++;
         }

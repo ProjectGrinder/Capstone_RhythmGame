@@ -47,6 +47,12 @@ namespace Game::BulletHell
     struct Patterns
     {
         std::vector<std::pair<float, MoveParam>> patterns;
+        Patterns() = default;
+        explicit Patterns(const float delay, const float speed = 0, const float angle = 0, const float acceleration = 0, const float angular_velocity = 0, float max_speed = UNASSIGNED, const float loopDelay = UNASSIGNED)
+        {
+            if (max_speed == UNASSIGNED) max_speed = speed;
+            patterns.emplace_back(delay,MoveParam(speed, angle, acceleration, angular_velocity,max_speed,loopDelay));
+        }
         void AddPattern(const float delay, const float speed, const float angle)
         {
             patterns.emplace_back(delay,MoveParam(speed, angle, UNASSIGNED,UNASSIGNED,UNASSIGNED, UNASSIGNED));

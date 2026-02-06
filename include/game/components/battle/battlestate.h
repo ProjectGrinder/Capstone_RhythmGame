@@ -124,7 +124,8 @@ namespace Game::Battle
     {
         int graze;
         int iframe_time;
-        BulletHellState(): graze(0), iframe_time(0)
+        int damage;
+        BulletHellState(): graze(0), iframe_time(0), damage(0)
         {}
     };
 
@@ -163,7 +164,7 @@ namespace Game::Battle
     {
         Physics::ColliderType type;
         float offsetX, offsetY, colX, colY;
-        ColliderData(): type(Physics::CIRCLE), offsetX(0), offsetY(0), colX(0), colY(0)
+        ColliderData(): type(Physics::CIRCLE), offsetX(0), offsetY(0), colX(1), colY(1)
         {}
         ColliderData(const Physics::ColliderType type,
                 const float col):
@@ -194,21 +195,21 @@ namespace Game::Battle
         ColliderData collider_data;
         GraphicData graphic_data;
         SpecialBulletData special_bullet_data;
-        int damage;
+        float damage_mul;
         int pierce;
         int lifetime;
 
-        BulletGraphicMap() : damage(0), pierce(1), lifetime(10)
+        BulletGraphicMap() : damage_mul(0), pierce(1), lifetime(10)
         {}
 
-        BulletGraphicMap(
+        explicit BulletGraphicMap(
                 const ColliderData &collider_data,
-                const GraphicData &graphic_data,
-                const SpecialBulletData &special_bullet_data,
-                const int damage = 0,
+                const GraphicData &graphic_data = {},
+                const SpecialBulletData &special_bullet_data = {},
+                const float damage_mul = 1,
                 const int pierce = 1,
                 const int lifetime = 10 ) :
-            collider_data(collider_data), graphic_data(graphic_data), special_bullet_data(special_bullet_data), damage(damage), pierce(pierce), lifetime(lifetime)
+            collider_data(collider_data), graphic_data(graphic_data), special_bullet_data(special_bullet_data), damage_mul(damage_mul), pierce(pierce), lifetime(lifetime)
         {}
     };
 
@@ -243,7 +244,7 @@ namespace Game::Battle
             current_frame(0), pointer(0)
         {}
 
-        void CreateBullet(const int frame, const BulletData& data)
+        BulletData CreateBullet(const int frame, const BulletData& data)
         {
             if (batches.empty() || batches.back().frame != frame)
             {
@@ -251,6 +252,7 @@ namespace Game::Battle
             }
 
             batches.back().bullets.push_back(data);
+            return batches.back().bullets.back();
         }
     };
 
