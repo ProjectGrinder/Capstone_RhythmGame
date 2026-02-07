@@ -12,6 +12,9 @@ namespace Game::Battle
         if (query1.begin() == query1.end())
             return;
 
+        if (bullet_hell_input.begin() == bullet_hell_input.end() || rhythm_input.begin() == rhythm_input.end())
+            return;
+
         // TODO: Change fixed key bindings to be rebindable
         constexpr auto LEFT = 0x25;
         constexpr auto UP = 0x26;

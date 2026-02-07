@@ -38,11 +38,11 @@ namespace Scene
         // Pattern 4: Repeated taps
         for (int i = 0; i < 3; ++i)
         {
-            chart.lanes[0].notes.emplace_back(false, 20000 + i * 250, 0);
+            chart.lanes[0].notes.emplace_back(false, 20000 + i * 100, 0);
         }
         for (int j = 0; j < 3; ++j)
         {
-            chart.lanes[3].notes.emplace_back(false, 22000 + j * 250, 0);
+            chart.lanes[3].notes.emplace_back(false, 21000 + j * 100, 0);
         }
 
         // Pattern 5: Mixed notes
@@ -118,7 +118,7 @@ namespace Scene
             Game::Rhythm::KeyInput, Game::Rhythm::NoteSpeed>
             (
                 Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
-                Game::Battle::RhythmState(1, 1, 32, 1.0f),
+                Game::Battle::RhythmState(1, 1, 20, 1.0f),
                 create_demo_chart(),
                 Game::Rhythm::KeyInput(),
                 Game::Rhythm::NoteSpeed(1.0f));

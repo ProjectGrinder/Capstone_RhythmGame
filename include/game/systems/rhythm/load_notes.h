@@ -31,9 +31,28 @@ namespace Game::Rhythm
     }
 
     template<typename T>
-    void LoadNotes(T &syscall, System::ECS::Query<Battle::ChartData> &query, System::ECS::Query<Battle::BattleState> &query2, System::ECS::Query<Battle::RhythmState> &query3)
+    void LoadNotes(T &syscall,
+        System::ECS::Query<Battle::ChartData> &query,
+        System::ECS::Query<Battle::BattleState> &query2,
+        System::ECS::Query<Battle::RhythmState> &query3)
     {
-        constexpr float lookahead = 5;
+        if (query.begin() == query.end())
+        {
+            LOG_ERROR("No ChartData found!");
+            return;
+        }
+        if (query2.begin() == query2.end())
+        {
+            LOG_ERROR("No BattleState entity found!");
+            return;
+        }
+        if (query3.begin() == query3.end())
+        {
+            LOG_ERROR("No RhythmState entity found!");
+            return;
+        }
+
+        constexpr int lookahead = 5;
 
         auto &battle_state = query2.front().get<Battle::BattleState>();
         auto &chart_data = query.front().get<Battle::ChartData>();
