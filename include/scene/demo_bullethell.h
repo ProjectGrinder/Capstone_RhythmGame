@@ -25,13 +25,13 @@ namespace Scene
 
         BulletLoader loader;
         loader.CreateBullet(30, BulletData(5, 5, Patterns(0,1, 135), 10, 0));
-        loader.CreateBullet(30, BulletData(5, 5, Patterns(0,0.9, 120), 10, 0));
-        loader.CreateBullet(30, BulletData(5, 5, Patterns(0,0.8, 105), 10, 0));
-        loader.CreateBullet(30, BulletData(5, 5, Patterns(0,0.9, 150), 10, 0));
-        loader.CreateBullet(30, BulletData(5, 5, Patterns(0, 0.8, 165), 10, 0));
+        loader.CreateBullet(30, BulletData(5, 5, Patterns(0,0.9f, 120), 10, 0));
+        loader.CreateBullet(30, BulletData(5, 5, Patterns(0,0.8f, 105), 10, 0));
+        loader.CreateBullet(30, BulletData(5, 5, Patterns(0,0.9f, 150), 10, 0));
+        loader.CreateBullet(30, BulletData(5, 5, Patterns(0, 0.8f, 165), 10, 0));
 
         auto patterns1 = Patterns(0,1, 135);
-        patterns1.AddPattern(30,1,45,0.1,0, 2);
+        patterns1.AddPattern(30,1,45,0.1f,0, 2);
         loader.CreateBullet(60, BulletData(10, 5, patterns1, 0, 1));
         loader.CreateBullet(70, BulletData(20, 5, patterns1, 0, 1));
         loader.CreateBullet(80, BulletData(30, 5, patterns1, 0, 1));
@@ -66,6 +66,7 @@ namespace Scene
         using ComponentTuple = std::tuple<
             Game::Battle::BattleState,
             Game::Battle::BulletHellState,
+            Game::Battle::BulletLoader,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
             Game::Battle::LevelData,
@@ -114,6 +115,8 @@ namespace Scene
             Game::BulletHell::BouncePatternSystem<Syscall>,
             Game::BulletHell::HomingPatternSystem<Syscall>
             >;
+
+        static void test();
 
         static TaskManager Init()
         {

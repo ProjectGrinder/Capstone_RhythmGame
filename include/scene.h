@@ -12,7 +12,7 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = DemoRhythm;
+    using StartingScene = DemoBulletHell;
 
 }
 

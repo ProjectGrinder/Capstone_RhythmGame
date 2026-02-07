@@ -2,13 +2,14 @@
 #include <any>
 #include <variant>
 #include "demo.h"
+#include "demo_bullethell.h"
 
 namespace Scene
 {
     /* Optimizable */
     class SceneManager
     {
-        std::variant<std::monostate, Demo, BattleScene, DemoRhythm> _current_scene_template;
+        std::variant<std::monostate, Demo, BattleScene, DemoBulletHell> _current_scene_template;
         std::any _current_manager;
 
     public:

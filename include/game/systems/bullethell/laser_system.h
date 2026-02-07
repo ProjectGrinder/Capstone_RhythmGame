@@ -9,7 +9,6 @@ namespace Game::BulletHell
         if (query2.begin() == query2.end())
             return;
 
-        constexpr auto frame_time = 1;
         for (auto &[id, comps] : query)
         {
             auto &laser = comps.get<Booming>();

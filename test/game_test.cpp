@@ -483,7 +483,7 @@ TEST(Game, bullets_laser)
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
-    const pid id = CreateLaserBullet(resource, {}, Laser(2,2,3,1), Delay(3), Particle(10),Rotation(30) );
+    const pid id = CreateLaserBullet(resource, {}, Laser(2,2,3,3), Delay(3), Particle(10),Rotation(30) );
     task_manager.run_all();
     EXPECT_EQ(resource->query<Delay>().get(id).delay, 2);
     EXPECT_EQ(resource->query<Scale>().get(id).scaleX, 3);
@@ -649,11 +649,11 @@ TEST(Game, bullet_collision4)
     //Missing boom
     CreateBoomerBullet(resource,Bullet(false, 5), Booming(1.5f, 1), Delay(4), Particle(3), Position(4,0), CircularCollider(1.f,1.f));
     //Hit Laser
-    CreateLaserBullet(resource,Bullet(false, 5), Laser(4.f, -4.f, 10, 10), Delay(6), Particle(8), Rotation(135), Scale(2),RectangularCollider(1.f,1.f));
+    CreateLaserBullet(resource,Bullet(false, 5), Laser(4.f, -4.f, 10, 1), Delay(6), Particle(8), Rotation(135), Scale(2),RectangularCollider(1.f,1.f));
     // Hit boom
     CreateBoomerBullet(resource,Bullet(false, 5), Booming(3.f, 1), Delay(11), Particle(11), Position(4,0),CircularCollider(1.f,1.f));
     // Rotate to hit laser
-    const pid laser_id = CreateLaserBullet(resource,Bullet(false, 5), Laser(7.f, 0, 10, 10), Delay(20), Particle(20), Rotation(135), Scale(2),RectangularCollider(1.f,1.f));
+    const pid laser_id = CreateLaserBullet(resource,Bullet(false, 5), Laser(7.f, 0, 10, 1), Delay(20), Particle(20), Rotation(135), Scale(2),RectangularCollider(1.f,1.f));
 
     task_manager.run_all();
     task_manager.run_all();
