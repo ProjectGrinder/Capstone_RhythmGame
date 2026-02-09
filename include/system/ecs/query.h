@@ -90,6 +90,10 @@ namespace System::ECS
         {
             return (_entries.end());
         }
+        size_t size() const
+        {
+            return (_entries.size());
+        }
     };
 
 } // namespace System::ECS
