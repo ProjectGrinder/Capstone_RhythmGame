@@ -15,6 +15,8 @@
 #include "game/systems/bullethell/special_pattern_system.h"
 #include "game/systems/bullethell/particle_system.h"
 #include "game/systems/bullethell/bullet_load_system.h"
+#include "game/systems/bullethell/logging_system.h" // Only for demo
+
 // Rhythm Part
 #include "game/systems/rhythm/handle_rhythm.h" // TODO: Pooh implement this system
 #include "game/systems/rhythm/handle_miss_note.h"

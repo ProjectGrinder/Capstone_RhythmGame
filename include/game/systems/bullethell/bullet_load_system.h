@@ -23,6 +23,8 @@ namespace Game::BulletHell
         if (const Battle::ColliderData bullet_collider = bullet_info.collider_data;
             bullet_collider.type == Physics::RECTANGLE) syscall.addcomponent(bullet, Physics::RectangularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
         else if (bullet_collider.type == Physics::CIRCLE) syscall.addcomponent(bullet, Physics::CircularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
+
+
     }
 
     template<typename T>

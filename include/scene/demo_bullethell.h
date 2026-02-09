@@ -113,10 +113,9 @@ namespace Scene
             Game::BulletHell::Boomer_System<Syscall>,
             Game::BulletHell::Laser_System<Syscall>,
             Game::BulletHell::BouncePatternSystem<Syscall>,
-            Game::BulletHell::HomingPatternSystem<Syscall>
+            Game::BulletHell::HomingPatternSystem<Syscall>,
+            Game::BulletHell::LoggingSystem<Syscall>
             >;
-
-        static void test();
 
         static TaskManager Init()
         {
@@ -134,7 +133,14 @@ namespace Scene
                 Game::BulletHell::Input()
                 );
 
-
+            tm.create_entity<Game::BulletHell::Player,
+            Position, Rotation,
+            Game::Physics::Scale,
+            Velocity,
+            Acceleration,
+            AngularVelocity, Game::Physics::CircularCollider>(
+                {}, {}, {}, {}, {}, {}, {}, {}
+            );
             tm.run_all();
             return (tm);
         }
