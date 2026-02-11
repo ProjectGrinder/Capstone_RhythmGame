@@ -14,10 +14,11 @@ namespace Game::BulletHell
         if (query3.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
+        constexpr auto frame_time = 1;
         for (auto &[id, comps] : query2)
         {
             const auto &input = query1.front().get<Input>();
-            const float velocity_factor = input.shift ? 4.0f : 1.0f;
+            const float velocity_factor = frame_time * input.shift ? 4.0f : 1.0f;
 
             comps.get<Physics::Velocity>().vx = input.axis_x * velocity_factor;
             comps.get<Physics::Velocity>().vy = input.axis_y * velocity_factor;

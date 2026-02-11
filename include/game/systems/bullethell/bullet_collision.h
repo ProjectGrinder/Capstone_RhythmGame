@@ -82,7 +82,7 @@ namespace Game::BulletHell
 
 		    // TODO : Make this const
 		    // Activate Player iFrame
-		    state.iframe_time = 120;
+		    state.iframe_time = 30;
 
 		    // Deactivate the bullet
 		    bullet.pierce --;
@@ -140,7 +140,7 @@ namespace Game::BulletHell
 
 	        // TODO : Make this const
 	        // Activate Player iFrame
-	        state.iframe_time = 120;
+	        state.iframe_time = 30;
 
 	        // Deactivate the bullet
 	        bullet.pierce--;

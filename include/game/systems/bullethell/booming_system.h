@@ -21,7 +21,7 @@ namespace Game::BulletHell
             if (!boomer.is_activated)
             {
                 //Change after frame time. This logic sucks.
-                if (delay_comp.delay > 1)
+                if (delay_comp.delay > 1000)
                 {
                     scl.scaleX = boomer.max_size;
                     scl.scaleY = boomer.max_size;

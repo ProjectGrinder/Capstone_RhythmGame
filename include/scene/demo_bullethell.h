@@ -24,35 +24,35 @@ namespace Scene
         initBulletGraphic(bulletGraphicMap);
 
         BulletLoader loader;
-        loader.CreateBullet(30, BulletData(5, 5, Patterns(0,1, 135), 10, 0));
-        loader.CreateBullet(30, BulletData(5, 5, Patterns(0,0.9f, 120), 10, 0));
-        loader.CreateBullet(30, BulletData(5, 5, Patterns(0,0.8f, 105), 10, 0));
-        loader.CreateBullet(30, BulletData(5, 5, Patterns(0,0.9f, 150), 10, 0));
-        loader.CreateBullet(30, BulletData(5, 5, Patterns(0, 0.8f, 165), 10, 0));
+        loader.CreateBullet(1000, BulletData(5, 5, Patterns(0,1, 135), 100, 0));
+        loader.CreateBullet(1000, BulletData(5, 5, Patterns(0,0.9f, 120), 100, 0));
+        loader.CreateBullet(1000, BulletData(5, 5, Patterns(0,0.8f, 105), 100, 0));
+        loader.CreateBullet(1000, BulletData(5, 5, Patterns(0,0.9f, 150), 100, 0));
+        loader.CreateBullet(1000, BulletData(5, 5, Patterns(0, 0.8f, 165), 100, 0));
 
         auto patterns1 = Patterns(0,1, 135);
-        patterns1.AddPattern(30,1,45,0.1f,0, 2);
-        loader.CreateBullet(60, BulletData(10, 5, patterns1, 0, 1));
-        loader.CreateBullet(70, BulletData(20, 5, patterns1, 0, 1));
-        loader.CreateBullet(80, BulletData(30, 5, patterns1, 0, 1));
-        loader.CreateBullet(90, BulletData(40, 5, patterns1, 0, 1));
-        loader.CreateBullet(100, BulletData(50, 5, patterns1, 0, 1));
+        patterns1.AddPattern(500,1,45,0.1f,0, 2);
+        loader.CreateBullet(2000, BulletData(10, 5, patterns1, 0, 1));
+        loader.CreateBullet(2200, BulletData(20, 5, patterns1, 0, 1));
+        loader.CreateBullet(2400, BulletData(30, 5, patterns1, 0, 1));
+        loader.CreateBullet(2600, BulletData(40, 5, patterns1, 0, 1));
+        loader.CreateBullet(2800, BulletData(50, 5, patterns1, 0, 1));
 
-        loader.CreateBullet(120, BulletData(25, 25, {}, 0, 3));
-        loader.CreateBullet(150, BulletData(50, 50, {}, 0, 3));
-        loader.CreateBullet(180, BulletData(75, 75, {}, 0, 3));
+        loader.CreateBullet(4000, BulletData(25, 25, {}, 0, 3));
+        loader.CreateBullet(4250, BulletData(50, 50, {}, 0, 3));
+        loader.CreateBullet(4500, BulletData(75, 75, {}, 0, 3));
 
-        loader.CreateBullet(240, BulletData(150, 25, {}, 0, 3));
-        loader.CreateBullet(270, BulletData(125, 50, {}, 0, 3));
-        loader.CreateBullet(300, BulletData(100, 75, {}, 0, 3));
+        loader.CreateBullet(5000, BulletData(150, 25, {}, 0, 3));
+        loader.CreateBullet(5250, BulletData(125, 50, {}, 0, 3));
+        loader.CreateBullet(5500, BulletData(100, 75, {}, 0, 3));
 
-        loader.CreateBullet(330, BulletData(25, 25, {}, 15, 4));
-        loader.CreateBullet(360, BulletData(50, 50, {}, 15, 4));
-        loader.CreateBullet(390, BulletData(75, 75, {}, 15, 4));
+        loader.CreateBullet(6000, BulletData(25, 25, {}, 150, 4));
+        loader.CreateBullet(6250, BulletData(50, 50, {}, 150, 4));
+        loader.CreateBullet(6500, BulletData(75, 75, {}, 150, 4));
 
-        loader.CreateBullet(420, BulletData(150, 25, {}, 15, 4));
-        loader.CreateBullet(450, BulletData(125, 50, {}, 15, 4));
-        loader.CreateBullet(480, BulletData(100, 75, {}, 15, 4));
+        loader.CreateBullet(7000, BulletData(150, 25, {}, 150, 4));
+        loader.CreateBullet(7250, BulletData(125, 50, {}, 150, 4));
+        loader.CreateBullet(7500, BulletData(100, 75, {}, 150, 4));
         return loader;
     }
 
@@ -98,6 +98,7 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
+            Game::BulletHell::LoadBullets<Syscall>,
             Game::Battle::InputSystem<Syscall>,
             Game::BulletHell::InputToVelocity<Syscall>,
             Game::BulletHell::PatternSystem<Syscall>,

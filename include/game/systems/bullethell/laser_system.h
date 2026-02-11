@@ -22,7 +22,7 @@ namespace Game::BulletHell
             if (!laser.is_activated)
             {
                 //Change after frame time. This logic sucks.
-                if (delay_comp.delay > 1)
+                if (delay_comp.delay > 1000)
                 {
                     scl.scaleX = laser.length;
                     pos.x = laser.start_pos_x + scl.scaleX*cos(angleZ)/2;
