@@ -104,8 +104,7 @@ namespace Scene
             Game::Rhythm::HandleRhythm<Syscall>,
             Game::Rhythm::HandleMissNote<Syscall>,
             Game::Rhythm::HandleBPM<Syscall>,
-            Game::Rhythm::LoadNotes<Syscall>,
-            time_check<Syscall>
+            Game::Rhythm::LoadNotes<Syscall>
             >;
         
         static TaskManager Init()
