@@ -100,7 +100,7 @@ namespace System::ECS
         template<typename ...Components>
         void add_components(pid id, Components &&...components)
         {
-            (_to_add_components.add_resource(id, std::forward<Components>(components)), ...);
+            (add_component(id, std::forward<Components>(components)), ...);
         }
 
         template<typename Component>
