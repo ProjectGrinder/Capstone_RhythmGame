@@ -7,7 +7,7 @@ namespace Game::BulletHell
     template<typename T>
     void SpawnBullet(T &syscall, const Battle::BulletData& bullet_data, const Battle::BulletHellState bhs)
     {
-        const System::ECS::pid bullet = syscall.template create_entity<Position, Patterns, Delay>(Position(bullet_data.posX,bullet_data.posY), Patterns(bullet_data.patterns), Delay(bullet_data.delay_frame));
+        const System::ECS::pid bullet = syscall.create_entity(Position(bullet_data.posX,bullet_data.posY), Patterns(bullet_data.patterns), Delay(bullet_data.delay_frame));
 
         syscall.add_components(bullet, Rotation(), Physics::Scale(), Velocity(), Acceleration(), AngularVelocity());
 
@@ -39,7 +39,7 @@ namespace Game::BulletHell
         auto &pointer = bullet_loader.pointer;
         auto &batches = bullet_loader.batches;
         auto &current_frame = bullet_loader.current_frame;
-
+        syscall.create_entity(Delay{});
         while (pointer < batches.size() && batches[pointer].frame <= current_frame)
         {
             for (auto& b : batches[pointer].bullets)
