@@ -111,15 +111,24 @@ namespace Scene
         {
             auto tm = TaskManager{};
             // Create and configure BattleState
+            auto config_battle_state = []
+            {
+                Game::Battle::BattleState state(100, 100, Game::Battle::Difficulty());
+                state.current_phase = Game::Battle::RHYTHM;
+                return (state);
+            };
             tm.create_entity<Game::Battle::BattleState,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
-            Game::Rhythm::KeyInput, Game::Rhythm::NoteSpeed>
+            Game::Rhythm::KeyInput,
+            Game::BulletHell::Input,
+            Game::Rhythm::NoteSpeed>
             (
-                Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
+                config_battle_state(),
                 Game::Battle::RhythmState(1, 1, 20, 1.0f),
                 create_demo_chart(),
                 Game::Rhythm::KeyInput(),
+                Game::BulletHell::Input(),
                 Game::Rhythm::NoteSpeed(1.0f));
 
 
