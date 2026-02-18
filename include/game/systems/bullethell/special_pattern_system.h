@@ -56,15 +56,7 @@ namespace Game::BulletHell
             const auto &pos = comps.get<Physics::Position>();
             auto &rot = comps.get<Physics::Rotation>();
             const auto &homing_c = comps.get<Homing>();
-            Physics::Position target_pos;
-            if (homing_c.targetPlayer)
-            {
-                target_pos = query2.front().get<Physics::Position>();
-            }
-            else
-            {
-                target_pos = homing_c.targetPosition;
-            }
+            const Physics::Position target_pos = query2.front().get<Physics::Position>();
 
             float target_angle = Physics::get_direction(pos,target_pos);
             if (abs(target_angle - rot.angleZ) < homing_c.strength)
