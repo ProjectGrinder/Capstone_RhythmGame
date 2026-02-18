@@ -22,12 +22,13 @@ namespace Game::Rhythm
         }
         else
         {
-            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive>(
+            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive, NoteType>(
                     Lane{lane.lane_number},
                     NoteSpeed{rhythm_state.note_speed},
                     Timing{note.timing},
                     TimingEnd{0},
-                    HoldActive{false});
+                    HoldActive{false},
+                    NoteType{note.note_type});
         }
     }
 
@@ -53,7 +54,7 @@ namespace Game::Rhythm
             return;
         }
 
-        constexpr int lookahead = 5;
+        constexpr int lookahead = 200;
 
         auto &battle_state = query2.front().get<Battle::BattleState>();
         auto &chart_data = query.front().get<Battle::ChartData>();
