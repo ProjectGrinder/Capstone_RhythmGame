@@ -2,18 +2,12 @@
 
 namespace Game::Rhythm
 {
-    enum RhythmType
-    {
-        NORMAL,
-        ACCENT,
-        RAIN,
-    };
     struct NoteType
     {
-        RhythmType type;
-        NoteType() : type(NORMAL)
+        int type;
+        NoteType() : type(0) // 0 - normal, 1 - accent, 2 - rain
         {}
-        explicit NoteType(const RhythmType type) : type(type)
+        explicit NoteType(const int type) : type(type)
         {}
     };
 }

@@ -19,14 +19,22 @@ namespace Game::Battle
         RHYTHM
     };
 
+    enum RhythmType
+    {
+        NORMAL,
+        ACCENT,
+        RAIN,
+    };
+
     struct NoteData
     {
         bool is_hold;
         int timing;
         int timing_end;
-        NoteData() : is_hold(false), timing(0), timing_end(0)
+        RhythmType note_type;
+        NoteData() : is_hold(false), timing(0), timing_end(0), note_type(NORMAL)
         {}
-        explicit NoteData(const bool is_hold, const int timing, const int timing_end) : is_hold(is_hold), timing(timing), timing_end(timing_end)
+        explicit NoteData(const bool is_hold, const int timing, const int timing_end, const RhythmType note_type) : is_hold(is_hold), timing(timing), timing_end(timing_end), note_type(note_type)
         {}
     };
 

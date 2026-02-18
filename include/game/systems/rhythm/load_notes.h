@@ -12,12 +12,13 @@ namespace Game::Rhythm
     {
         if (note.is_hold)
         {
-            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive>(
+            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive, NoteType>(
                     Lane{lane.lane_number},
                     NoteSpeed{rhythm_state.note_speed},
                     Timing{note.timing},
                     TimingEnd{note.timing_end},
-                    HoldActive{false});
+                    HoldActive{false},
+                    NoteType{note.note_type});
         }
         else
         {
