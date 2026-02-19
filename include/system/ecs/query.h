@@ -30,6 +30,9 @@ namespace System::ECS
         {
             std::tuple<std::reference_wrapper<Components>...> components{};
 
+            explicit StoredTuple(Components &...comps) : components(std::ref(comps)...)
+            {} // Add constructor
+
             template<typename Component>
             decltype(auto) get()
             {
@@ -65,6 +68,11 @@ namespace System::ECS
         void add(pid id, Comps &...components)
         {
             _entries.emplace_back(QueryEntry{id, StoredTuple{std::ref(components)...}});
+        }
+
+        QueryEntry front()
+        {
+            return (_entries.front());
         }
 
         auto begin()

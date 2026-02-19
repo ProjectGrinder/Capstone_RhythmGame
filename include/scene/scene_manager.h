@@ -2,14 +2,13 @@
 #include <any>
 #include <variant>
 #include "demo.h"
-#include "system.h"
 
 namespace Scene
 {
     /* Optimizable */
     class SceneManager
     {
-        std::variant<std::monostate, Demo> _current_scene_template;
+        std::variant<std::monostate, Demo, BattleScene, DemoRhythm> _current_scene_template;
         std::any _current_manager;
 
     public:
@@ -22,7 +21,7 @@ namespace Scene
                     {
                         if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
                         {
-                            scene.Exit();
+                            scene.exit();
                         }
                     },
                     scene_template);
@@ -30,7 +29,7 @@ namespace Scene
             LOG_INFO("Info: Changing scene to %s", T::name);
             scene_template = T::instance();
             instance()._current_manager.reset();
-            instance()._current_manager = T::Init();
+            instance()._current_manager = T::init();
         }
 
         static void update();
