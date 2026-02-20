@@ -90,45 +90,6 @@ namespace System::Render
         uint32_t order = 0;
     };
 
-    struct RenderPacket
-    {
-        DrawKind kind = DrawKind::KIND_UNKNOWN;
-        RenderSortKey sort{};
-
-        // Pipeline selection (resolved once from intent strings).
-        uint32_t vert_shader = 0;
-        uint32_t pixel_shader = 0;
-
-        // Resource binding keys
-        // For sprites: texture asset id. For text: font atlas id (can be 0 for now).
-        uint32_t resource0 = 0;
-
-        // Common per-draw params
-        Color color{};
-        float rotation_z = 0.0f;
-        bool visible = true;
-
-        // Draw-specific payload
-        union
-        {
-            struct
-            {
-                Rect src_rect{};
-                Rect dst_rect{};
-                bool flipX = false;
-                bool flipY = false;
-            } sprite;
-
-            struct
-            {
-                std::string_view text{};
-                const char *font_name = nullptr;
-                uint32_t font_size = 0;
-                Rect dst_rect{}; // optional: can be used as anchor/box if you want
-            } text;
-        } as{};
-    };
-
     struct Camera
     {
         float offsetX, offsetY;
@@ -141,7 +102,6 @@ namespace System::Render
     {
         // TODO: Change storage from any to DrawDescription
         std::vector<std::optional<DrawIntent>> _intent_storage{};
-        std::vector<RenderPacket> _packet_storage{};
         Camera _camera{};
 
     public:
