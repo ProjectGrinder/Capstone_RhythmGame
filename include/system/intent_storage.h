@@ -131,7 +131,10 @@ namespace System::Render
 
     struct Camera
     {
-
+        float offsetX, offsetY;
+        float scaleX, scaleY;
+        float rotation;
+        float zoom;
     };
 
     class IntentStorage
@@ -139,11 +142,13 @@ namespace System::Render
         // TODO: Change storage from any to DrawDescription
         std::vector<std::optional<DrawIntent>> _intent_storage{};
         std::vector<RenderPacket> _packet_storage{};
+        Camera _camera{};
 
     public:
         static size_t alloc_slot();
         static void free_slot(size_t slot);
         static IntentStorage &instance();
         static std::optional<DrawIntent> &get_intent(size_t slot);
+        static Camera &get_camera();
     };
-} // namespace System
+} // namespace System::Render

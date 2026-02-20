@@ -34,4 +34,9 @@ namespace System::Render
         instance()._intent_storage[slot] = std::nullopt;
     }
 
+    Camera &IntentStorage::get_camera()
+    {
+        return (instance()._camera);
+    }
+
 } // namespace System
