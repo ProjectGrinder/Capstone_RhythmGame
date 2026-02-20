@@ -4,7 +4,7 @@
 #include <variant>
 #include <vector>
 
-namespace System
+namespace System::Render
 {
     // Common
     enum class DrawKind : uint8_t
@@ -129,7 +129,12 @@ namespace System
         } as{};
     };
 
-    class RenderStorage
+    struct Camera
+    {
+
+    };
+
+    class IntentStorage
     {
         // TODO: Change storage from any to DrawDescription
         std::vector<std::optional<DrawIntent>> _intent_storage{};
@@ -138,7 +143,7 @@ namespace System
     public:
         static size_t alloc_slot();
         static void free_slot(size_t slot);
-        static RenderStorage &instance();
+        static IntentStorage &instance();
         static std::optional<DrawIntent> &get_intent(size_t slot);
     };
 } // namespace System

@@ -2,14 +2,14 @@
 
 #include "utils/print_debug.h"
 
-namespace System
+namespace System::Render
 {
     typedef void *IntentStorageHandler;
     extern "C" IntentStorageHandler get_render_storage();
 
-    RenderStorage &RenderStorage::instance()
+    IntentStorage &IntentStorage::instance()
     {
-        auto *instance = static_cast<RenderStorage *>(get_render_storage());
+        auto *instance = static_cast<IntentStorage *>(get_render_storage());
         if (instance == nullptr)
         {
             LOG_ERROR("IntentStorage used before initialization or after cleanup");
@@ -18,18 +18,18 @@ namespace System
         return (*instance);
     }
 
-    size_t RenderStorage::alloc_slot()
+    size_t IntentStorage::alloc_slot()
     {
         instance()._intent_storage.emplace_back(std::nullopt);
         return (instance()._intent_storage.size() - 1);
     }
 
-    std::optional<DrawIntent> &RenderStorage::get_intent(const size_t slot)
+    std::optional<DrawIntent> &IntentStorage::get_intent(const size_t slot)
     {
         return (instance()._intent_storage[slot]);
     }
 
-    void RenderStorage::free_slot(const size_t slot)
+    void IntentStorage::free_slot(const size_t slot)
     {
         instance()._intent_storage[slot] = std::nullopt;
     }

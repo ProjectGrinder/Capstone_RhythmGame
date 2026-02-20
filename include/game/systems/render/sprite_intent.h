@@ -9,27 +9,27 @@ namespace Game::Render
         for (auto &[id, comps]: query)
         {
             const size_t &intent_id = comps.get<IntentHandle>().handle_id;
-            std::optional<System::DrawIntent> &intent = System::RenderStorage::get_intent(intent_id);
+            std::optional<System::Render::DrawIntent> &intent = System::Render::IntentStorage::get_intent(intent_id);
             const Sprite &sprite = comps.get<Sprite>();
 
             if (!intent.has_value())
             {
-                intent = System::DrawIntent{};
+                intent = System::Render::DrawIntent{};
             }
 
             switch (intent.value().kind)
             {
-            case System::DrawKind::KIND_UNKNOWN:
-                intent.value().kind = System::DrawKind::KIND_SPRITE;
-            case System::DrawKind::KIND_SPRITE:
+            case System::Render::DrawKind::KIND_UNKNOWN:
+                intent.value().kind = System::Render::DrawKind::KIND_SPRITE;
+            case System::Render::DrawKind::KIND_SPRITE:
                 break;
             default:
                 return;
             }
 
-            if (!std::holds_alternative<System::SpriteDrawDesc>(intent.value().special))
+            if (!std::holds_alternative<System::Render::SpriteDrawDesc>(intent.value().special))
             {
-                intent.value().special = System::SpriteDrawDesc{};
+                intent.value().special = System::Render::SpriteDrawDesc{};
             }
 
             auto &common = intent.value().common;
@@ -37,10 +37,10 @@ namespace Game::Render
             common.order = sprite.order;
 
             auto &[texture, src_rect, dst_rect, flipX, flipY] =
-                    std::get<System::SpriteDrawDesc>(intent.value().special);
+                    std::get<System::Render::SpriteDrawDesc>(intent.value().special);
             texture = sprite.texture;
-            src_rect = System::Rect{sprite.src_rect.u0, sprite.src_rect.v0, sprite.src_rect.u1, sprite.src_rect.v1};
-            dst_rect = System::Rect{sprite.dst_rect.u0, sprite.dst_rect.v0, sprite.dst_rect.u1, sprite.dst_rect.v1};
+            src_rect = System::Render::Rect{sprite.src_rect.u0, sprite.src_rect.v0, sprite.src_rect.u1, sprite.src_rect.v1};
+            dst_rect = System::Render::Rect{sprite.dst_rect.u0, sprite.dst_rect.v0, sprite.dst_rect.u1, sprite.dst_rect.v1};
             flipX = sprite.flipX;
             flipY = sprite.flipY;
         }

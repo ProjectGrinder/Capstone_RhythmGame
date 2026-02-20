@@ -122,6 +122,7 @@ int real_main()
 exit:
     LOG_INFO("Cleaning up");
     scene_manager_cleanup(&system_info.scene_manager);
+    intent_storage_cleanup(&system_info.render_storage);
     directx_clean_up(&system_info.directx);
     assets_cleanup();
     log_cleanup();
