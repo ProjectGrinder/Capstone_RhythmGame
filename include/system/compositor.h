@@ -45,8 +45,7 @@ namespace Math
     }
 
     // Takes a world-space axis-aligned rect and returns its 4 corners in NDC:
-    // order: (x0,y0), (x1,y0), (x1,y1), (x0,y1) in the rect's local orientation (still axis-aligned in world),
-    // but camera rotation will rotate them in view/ndc.
+    // order: (x0,y0), (x1,y0), (x1,y1), (x0,y1) in the rect's local orientation
     static inline std::array<Vector2<float>, 4>
     project_rect_world_to_ndc(const System::Render::Rect &dstWorld, const System::Render::Camera &cam)
     {
@@ -67,19 +66,66 @@ namespace Math
 
         return (std::array{view_to_ndc(v0, cam), view_to_ndc(v1, cam), view_to_ndc(v2, cam), view_to_ndc(v3, cam)});
     }
+
+    static bool ndc_in_camera(const std::array<Vector2<float>, 4> &coords)
+    {
+        for (const auto& coord : coords)
+        {
+            if (coord.x < -1.0f || coord.x > 1.0f || coord.y < -1.0f || coord.y > 1.0f)
+            {
+                return (false);
+            }
+        }
+        return (true);
+    }
+
+    // TextDrawDesc -> NDC (projects the text's anchor point position).
+    // Note: Without font metrics we can't compute a full NDC quad here; this gives you the
+    //       projected position you can feed into your text renderer / batching logic.
+    static inline Vector2<float>
+    project_text_anchor_world_to_ndc(const System::Render::TextDrawDesc &text, const System::Render::Camera &cam)
+    {
+        const Vector2 world{text.x, text.y};
+        const Vector2 view = world_to_view(world, cam);
+        return (view_to_ndc(view, cam));
+    }
+
+    int project_text_anchor_world_to_ndc(int _cpp_par_);
 } // namespace Math
 
 namespace System::Render
 {
+    struct ComposedSpriteDesc
+    {
+        const char *texture = nullptr;
+        Rect src_rect{};
+        std::array<Math::Vector2<float>, 4> dst_rect{};
+
+        bool flipX = false;
+        bool flipY = false;
+    };
+
+    struct ComposedTextDesc
+    {
+        std::string_view text{};
+        const char *font_name = nullptr;
+        uint32_t font_size = 0;
+        Math::Vector2<float> position{};
+        Math::Vector2<float> anchor{};
+    };
+
     struct CompositorItem
     {
-
+        DrawKind kind = DrawKind::KIND_UNKNOWN;
+        DrawCommon common;
+        std::variant<ComposedSpriteDesc, ComposedTextDesc> special;
     };
 
     class Compositor
     {
         std::vector<CompositorItem> _items;
 
-        static void compose();
+        static void compose(const std::vector<std::optional<DrawIntent>> &intents, const Camera &camera);
+        static Compositor& instance();
     };
 } // namespace System::Render

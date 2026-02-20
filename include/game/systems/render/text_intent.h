@@ -31,10 +31,12 @@ namespace Game::Render
                 intent.value().special = System::Render::TextDrawDesc{};
             }
 
-            auto &[text, font_name, font_size] = std::get<System::Render::TextDrawDesc>(intent.value().special);
+            auto &[text, font_name, font_size, x, y, anchor_x, anchor_y] = std::get<System::Render::TextDrawDesc>(intent.value().special);
             text = std::string_view(text_component.text);
             font_name = text_component.font_name;
             font_size = text_component.font_size;
+            x = text_component.x;
+            y = text_component.y;
         }
     }
 } // namespace Game::Render

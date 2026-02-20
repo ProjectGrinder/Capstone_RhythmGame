@@ -72,6 +72,12 @@ namespace System::Render
         std::string_view text{};
         const char *font_name = nullptr;
         uint32_t font_size = 0;
+
+        // Placement (world space)
+        float x = 0.0f;
+        float y = 0.0f;
+        float anchor_x = 0.5f;
+        float anchor_y = 0.5f;
     };
 
     struct DrawIntent
