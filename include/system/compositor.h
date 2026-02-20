@@ -72,10 +72,14 @@ namespace Math
 namespace System::Render
 {
     struct CompositorItem
-    {};
+    {
+
+    };
 
     class Compositor
     {
         std::vector<CompositorItem> _items;
+
+        static void compose();
     };
 } // namespace System::Render
