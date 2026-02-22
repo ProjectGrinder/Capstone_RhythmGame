@@ -1,14 +1,30 @@
-#include "../assets_manager/assets_manager.h"
+
 #include "system/compositor.h"
 #include <variant>
 #include "utils/print_debug.h"
 
 namespace System::Render
 {
-
     typedef void *CompositorHandler;
     extern "C"
     {
+        typedef enum
+        {
+            FLOAT32BITS,
+            FLOAT16BITS,
+            FLOAT8BITS,
+
+            UINT32BITS,
+            UINT16BITS,
+            UINT8BITS,
+        } InputType;
+
+        typedef struct
+        {
+            char *semantic;
+            InputType type;
+            size_t offset;
+        } InputAttributeDescription;
         typedef uint32_t assets_id;
         assets_id get_assets_id(const char *name);
         assets_id load_sprite(const char *path, const char *name, size_t width, size_t height);

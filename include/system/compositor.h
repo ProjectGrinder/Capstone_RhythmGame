@@ -94,6 +94,10 @@ namespace Math
 
 namespace System::Render
 {
+    extern "C" {
+        typedef uint32_t assets_id;
+    }
+
     struct ComposedDrawCommon
     {
         // Pipeline selection (names)
