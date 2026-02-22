@@ -116,5 +116,6 @@ namespace System::Render
         static IntentStorage &instance();
         static std::optional<DrawIntent> &get_intent(size_t slot);
         static Camera &get_camera();
+        static std::vector<std::optional<DrawIntent>> &get_intents();
     };
 } // namespace System::Render

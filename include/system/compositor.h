@@ -67,7 +67,7 @@ namespace Math
         return (std::array{view_to_ndc(v0, cam), view_to_ndc(v1, cam), view_to_ndc(v2, cam), view_to_ndc(v3, cam)});
     }
 
-    static bool ndc_in_camera(const std::array<Vector2<float>, 4> &coords)
+    static inline bool ndc_in_camera(const std::array<Vector2<float>, 4> &coords)
     {
         for (const auto& coord : coords)
         {
@@ -89,8 +89,6 @@ namespace Math
         const Vector2 view = world_to_view(world, cam);
         return (view_to_ndc(view, cam));
     }
-
-    int project_text_anchor_world_to_ndc(int _cpp_par_);
 } // namespace Math
 
 namespace System::Render
@@ -124,7 +122,7 @@ namespace System::Render
     class Compositor
     {
         std::vector<CompositorItem> _items;
-
+    public:
         static void compose(const std::vector<std::optional<DrawIntent>> &intents, const Camera &camera);
         static Compositor& instance();
     };

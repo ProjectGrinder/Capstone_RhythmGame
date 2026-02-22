@@ -39,4 +39,9 @@ namespace System::Render
         return (instance()._camera);
     }
 
+    std::vector<std::optional<DrawIntent>> &IntentStorage::get_intents()
+    {
+        return (instance()._intent_storage);
+    }
+
 } // namespace System

@@ -1,13 +1,21 @@
 #include "system.h"
+#include "utils/print_debug.h"
 
 namespace System::Render
 {
 
+    typedef void *CompositorHandler;
+    extern "C" CompositorHandler get_compositor();
+
     Compositor &Compositor::instance()
     {
-        // TODO: change this to do that extern "C" thing
-        static Compositor compositor;
-        return compositor;
+        auto *instance = static_cast<Compositor *>(get_compositor());
+        if (instance == nullptr)
+        {
+            LOG_ERROR("Compositor used before initialization or after cleanup");
+            std::abort();
+        }
+        return (*instance);
     }
 
     void Compositor::compose(const std::vector<std::optional<DrawIntent>> &intents, const Camera &camera)
