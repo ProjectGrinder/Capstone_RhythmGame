@@ -33,12 +33,11 @@ namespace System::Render
 
     struct DrawCommon
     {
-        // Pipeline selection (names/ids, not GPU objects)
+        // Pipeline selection (names)
         const char *vert_shader = nullptr;
         const char *pixel_shader = nullptr;
 
-
-        /* render_prior: coarse render priority; larger values are drawn later (on top). */
+        /* render_prior: coarse render priority */
         uint32_t render_prior = 0;
 
         // Per-draw parameters
@@ -48,11 +47,10 @@ namespace System::Render
         uint32_t layer = 0;
         uint32_t order = 0;
 
-        // 2D-friendly rotation hint (radians or degrees will depend on convention;
-        // this merely carries the value through)
+        // 2D-friendly rotation hint
         float rotation_z = 0.0f;
 
-        // Render intent
+        // Is visible
         bool visible = true;
     };
 

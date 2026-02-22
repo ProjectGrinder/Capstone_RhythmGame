@@ -115,6 +115,14 @@ assets_id load_pixel_shader(const char *path, const char *name, InputAttributeDe
     return (load_assets(path, name, info));
 }
 
+assets_id load_font(const char *path, const char *name, size_t size)
+{
+    AssetsInfo info = {0};
+    info.type = FONT;
+    info.info.as_font.font_size = size;
+    return (load_assets(path, name, info));
+}
+
 /* TODO: Change this shit to hash map or my ass will get whip */
 assets_id get_assets_id(const char *name)
 {
@@ -126,6 +134,12 @@ assets_id get_assets_id(const char *name)
     }
 
     return (-1);
+}
+
+// I'm so uncivilized - Midfield
+int has_assets(const char *name)
+{
+    return (get_assets_id(name) != -1);
 }
 
 void free_assets(assets_id id)

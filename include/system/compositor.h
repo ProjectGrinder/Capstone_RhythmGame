@@ -93,9 +93,30 @@ namespace Math
 
 namespace System::Render
 {
+    struct ComposedDrawCommon
+    {
+        // Pipeline selection (names)
+        assets_id vert_shader = static_cast<assets_id>(-1);
+        assets_id pixel_shader = static_cast<assets_id>(-1);
+
+        /* render_prior: coarse render priority */
+        uint32_t render_prior = 0;
+
+        // Per-draw parameters
+        Color color{};
+
+        // Sorting (kept here so both sprite/text can be sorted uniformly)
+        uint32_t layer = 0;
+        uint32_t order = 0;
+
+        // Rotation (what do you mean you still haven't rotated?)
+        // TODO: figure out if rotation happens here
+        float rotation_z = 0.0f;
+    };
+
     struct ComposedSpriteDesc
     {
-        const char *texture = nullptr;
+        assets_id texture = static_cast<assets_id>(-1);
         Rect src_rect{};
         std::array<Math::Vector2<float>, 4> dst_rect{};
 
@@ -106,7 +127,7 @@ namespace System::Render
     struct ComposedTextDesc
     {
         std::string_view text{};
-        const char *font_name = nullptr;
+        assets_id font = static_cast<assets_id>(-1);
         uint32_t font_size = 0;
         Math::Vector2<float> position{};
         Math::Vector2<float> anchor{};
@@ -115,7 +136,7 @@ namespace System::Render
     struct CompositorItem
     {
         DrawKind kind = DrawKind::KIND_UNKNOWN;
-        DrawCommon common;
+        ComposedDrawCommon common;
         std::variant<ComposedSpriteDesc, ComposedTextDesc> special;
     };
 
@@ -124,6 +145,10 @@ namespace System::Render
         std::vector<CompositorItem> _items;
     public:
         static void compose(const std::vector<std::optional<DrawIntent>> &intents, const Camera &camera);
+        static std::vector<CompositorItem>& items()
+        {
+            return instance()._items;
+        };
         static Compositor& instance();
     };
 } // namespace System::Render
