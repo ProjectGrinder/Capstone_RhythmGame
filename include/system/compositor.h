@@ -3,6 +3,7 @@
 #include <cmath>
 #include <maths/vector2.h>
 #include "system/intent_storage.h"
+#include <array>
 
 // helpers
 namespace Math

@@ -1,12 +1,23 @@
 #include "../assets_manager/assets_manager.h"
-#include "system.h"
+#include "system/compositor.h"
+#include <variant>
 #include "utils/print_debug.h"
 
 namespace System::Render
 {
 
     typedef void *CompositorHandler;
-    extern "C" CompositorHandler get_compositor();
+    extern "C"
+    {
+        typedef uint32_t assets_id;
+        assets_id get_assets_id(const char *name);
+        assets_id load_sprite(const char *path, const char *name, size_t width, size_t height);
+        assets_id load_vertex_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count);
+        assets_id load_pixel_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count);
+        assets_id load_font(const char *path, const char *name, size_t size);
+        int has_assets(const char *name);
+        CompositorHandler get_compositor();
+    }
 
     Compositor &Compositor::instance()
     {
