@@ -4,7 +4,7 @@
 #include <variant>
 #include <vector>
 
-namespace System
+namespace System::Render
 {
     // Common
     enum class DrawKind : uint8_t
@@ -33,12 +33,11 @@ namespace System
 
     struct DrawCommon
     {
-        // Pipeline selection (names/ids, not GPU objects)
+        // Pipeline selection (names)
         const char *vert_shader = nullptr;
         const char *pixel_shader = nullptr;
 
-
-        /* render_prior: coarse render priority; larger values are drawn later (on top). */
+        /* render_prior: coarse render priority */
         uint32_t render_prior = 0;
 
         // Per-draw parameters
@@ -48,11 +47,10 @@ namespace System
         uint32_t layer = 0;
         uint32_t order = 0;
 
-        // 2D-friendly rotation hint (radians or degrees will depend on convention;
-        // this merely carries the value through)
+        // 2D-friendly rotation hint
         float rotation_z = 0.0f;
 
-        // Render intent
+        // Is visible
         bool visible = true;
     };
 
@@ -72,6 +70,12 @@ namespace System
         std::string_view text{};
         const char *font_name = nullptr;
         uint32_t font_size = 0;
+
+        // Placement (world space)
+        float x = 0.0f;
+        float y = 0.0f;
+        float anchor_x = 0.5f;
+        float anchor_y = 0.5f;
     };
 
     struct DrawIntent
@@ -90,55 +94,26 @@ namespace System
         uint32_t order = 0;
     };
 
-    struct RenderPacket
+    struct Camera
     {
-        DrawKind kind = DrawKind::KIND_UNKNOWN;
-        RenderSortKey sort{};
-
-        // Pipeline selection (resolved once from intent strings).
-        uint32_t vert_shader = 0;
-        uint32_t pixel_shader = 0;
-
-        // Resource binding keys
-        // For sprites: texture asset id. For text: font atlas id (can be 0 for now).
-        uint32_t resource0 = 0;
-
-        // Common per-draw params
-        Color color{};
-        float rotation_z = 0.0f;
-        bool visible = true;
-
-        // Draw-specific payload
-        union
-        {
-            struct
-            {
-                Rect src_rect{};
-                Rect dst_rect{};
-                bool flipX = false;
-                bool flipY = false;
-            } sprite;
-
-            struct
-            {
-                std::string_view text{};
-                const char *font_name = nullptr;
-                uint32_t font_size = 0;
-                Rect dst_rect{}; // optional: can be used as anchor/box if you want
-            } text;
-        } as{};
+        float offsetX, offsetY;
+        float scaleX, scaleY;
+        float rotation;
+        float zoom;
     };
 
-    class RenderStorage
+    class IntentStorage
     {
         // TODO: Change storage from any to DrawDescription
         std::vector<std::optional<DrawIntent>> _intent_storage{};
-        std::vector<RenderPacket> _packet_storage{};
+        Camera _camera{};
 
     public:
         static size_t alloc_slot();
         static void free_slot(size_t slot);
-        static RenderStorage &instance();
+        static IntentStorage &instance();
         static std::optional<DrawIntent> &get_intent(size_t slot);
+        static Camera &get_camera();
+        static std::vector<std::optional<DrawIntent>> &get_intents();
     };
-} // namespace System
+} // namespace System::Render

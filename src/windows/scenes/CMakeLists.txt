@@ -13,6 +13,7 @@ add_library(os_scene
 target_link_libraries(os_scene
         PRIVATE
         scene
+        renderer
         user32
         gdi32
         kernel32

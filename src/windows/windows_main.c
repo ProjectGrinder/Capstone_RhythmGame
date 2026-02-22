@@ -11,6 +11,7 @@
 
 #include "directx/directx_api.h"
 #include "scenes/intent_api.h"
+#include "scenes/compositor_api.h"
 #include "scenes/scenes_api.h"
 
 #include "windows_functions.h"
@@ -34,6 +35,7 @@ static SystemInfo system_info = {
         .rendering_queue = NULL,
         .scene_manager = NULL,
         .render_storage = NULL,
+        .compositor = NULL,
         .directx = NULL,
 };
 
@@ -50,6 +52,11 @@ void *get_scene_manager()
 void *get_render_storage()
 {
     return (system_info.render_storage);
+}
+
+void *get_compositor()
+{
+    return (system_info.compositor);
 }
 
 HRESULT directx_init(_In_ DirectXHandler *directx_api)
@@ -110,11 +117,19 @@ int real_main()
         goto exit;
     }
 
+    error = compositor_init(&system_info.compositor);
+    if (error != ERROR_SUCCESS)
+    {
+        LOG_ERROR("compositor_init failed, Code 0x%08lx", error);
+        goto exit;
+    }
+
     while (system_info.is_running)
     {
         process_system_message(&system_info, &msg);
 
         scene_manager_update(&system_info.scene_manager);
+        compositor_compose(&system_info.render_storage, &system_info.compositor);
 
         sleep(system_info.precision);
     }
@@ -122,6 +137,8 @@ int real_main()
 exit:
     LOG_INFO("Cleaning up");
     scene_manager_cleanup(&system_info.scene_manager);
+    intent_storage_cleanup(&system_info.render_storage);
+    compositor_cleanup(&system_info.compositor);
     directx_clean_up(&system_info.directx);
     assets_cleanup();
     log_cleanup();

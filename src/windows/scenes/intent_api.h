@@ -5,7 +5,6 @@
 extern "C"
 {
 #endif
-    /* This scene will run on seperate threads */
     typedef void *IntentStorageHandler;
 
     HRESULT intent_storage_init(IntentStorageHandler *api);
