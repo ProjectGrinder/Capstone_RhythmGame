@@ -34,21 +34,21 @@ namespace Game::Rhythm
 
     template<typename T>
     void LoadNotes(T &syscall,
-        System::ECS::Query<Battle::ChartData> &query,
-        System::ECS::Query<Battle::BattleState> &query2,
-        System::ECS::Query<Battle::RhythmState> &query3)
+        System::ECS::Query<Battle::ChartData> &chart_query,
+        System::ECS::Query<Battle::BattleState> &battle_query,
+        System::ECS::Query<Battle::RhythmState> &rhythm_query)
     {
-        if (query.begin() == query.end())
+        if (chart_query.begin() == chart_query.end())
         {
             LOG_ERROR("No ChartData found!");
             return;
         }
-        if (query2.begin() == query2.end())
+        if (battle_query.begin() == battle_query.end())
         {
             LOG_ERROR("No BattleState entity found!");
             return;
         }
-        if (query3.begin() == query3.end())
+        if (rhythm_query.begin() == rhythm_query.end())
         {
             LOG_ERROR("No RhythmState entity found!");
             return;
@@ -56,9 +56,9 @@ namespace Game::Rhythm
 
         constexpr int lookahead = 200;
 
-        auto &battle_state = query2.front().get<Battle::BattleState>();
-        auto &chart_data = query.front().get<Battle::ChartData>();
-        auto &rhythm_state = query3.front().get<Battle::RhythmState>();
+        auto &battle_state = battle_query.front().get<Battle::BattleState>();
+        auto &chart_data = chart_query.front().get<Battle::ChartData>();
+        auto &rhythm_state = rhythm_query.front().get<Battle::RhythmState>();
         const auto &clock = battle_state.clock_time;
 
         // repeat for each lane
