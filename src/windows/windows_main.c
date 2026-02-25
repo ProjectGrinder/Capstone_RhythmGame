@@ -103,13 +103,6 @@ int real_main()
         goto exit;
     }
 
-    error = scene_manager_init(&system_info.scene_manager);
-    if (error != ERROR_SUCCESS)
-    {
-        LOG_ERROR("scene_manager_init failed, Code 0x%08lx", error);
-        goto exit;
-    }
-
     error = intent_storage_init(&system_info.render_storage);
     if (error != ERROR_SUCCESS)
     {
@@ -121,6 +114,13 @@ int real_main()
     if (error != ERROR_SUCCESS)
     {
         LOG_ERROR("compositor_init failed, Code 0x%08lx", error);
+        goto exit;
+    }
+
+    error = scene_manager_init(&system_info.scene_manager);
+    if (error != ERROR_SUCCESS)
+    {
+        LOG_ERROR("scene_manager_init failed, Code 0x%08lx", error);
         goto exit;
     }
 

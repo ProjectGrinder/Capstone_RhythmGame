@@ -20,6 +20,7 @@ namespace System::Render
 
     size_t IntentStorage::alloc_slot()
     {
+        LOG_INFO("An IntentHandle was allocated");
         instance()._intent_storage.emplace_back(std::nullopt);
         return (instance()._intent_storage.size() - 1);
     }

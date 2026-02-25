@@ -74,7 +74,7 @@ namespace System::ECS
     {
     private:
         SyscallResource<MaxResource, Resources...> _to_add_components{};
-        std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components;
+        std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components{};
         std::bitset<MaxResource> _to_remove_entities{};
 
         ResourceManager<MaxResource, Resources...> &_resource_manager_ref;
