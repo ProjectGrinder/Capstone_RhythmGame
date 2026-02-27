@@ -9,26 +9,37 @@ namespace Game::Rhythm
         [[maybe_unused]] T &syscall,
         const int &time_diff,
         System::ECS::pid &id,
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType>::StoredTuple *comp,
         System::ECS::Query<Battle::BattleState> &battle_query)
     {
-        if (time_diff >= -50 && time_diff <= 50)
+        constexpr auto perfect_judge = 50;
+        constexpr auto great_judge = 75;
+        constexpr auto fine_judge = 100;
+        if (time_diff >= -1 * perfect_judge && time_diff <= perfect_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             LOG_INFO("Timing %d Lane %d: Perfect");
         }
-        else if (time_diff >= -75 && time_diff <= 75)
+        else if (time_diff >= -1 * great_judge && time_diff <= great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
             LOG_INFO("Timing %d Lane %d: Great");
         }
-        else if (time_diff >= -100 && time_diff <= 100)
+        else if (time_diff >= -1 * fine_judge && time_diff <= fine_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
             LOG_INFO("Timing %d Lane %d: Fine");
         }
         else return;
 
-        syscall.remove_entity(id);
+        if (comp->get<TimingEnd>().timing_end == 0)
+        {
+            syscall.remove_entity(id); // remove tap notes
+        }
+        else
+        {
+            comp->get<HoldActive>().hold_active = true; // start holding
+        }
     }
 
     template<typename T>
@@ -36,12 +47,22 @@ namespace Game::Rhythm
         [[maybe_unused]] T &syscall,
         const int &time_diff,
         System::ECS::pid &id,
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType>::StoredTuple *comp,
         System::ECS::Query<Battle::BattleState> &battle_query)
     {
         if (time_diff >= -100 && time_diff <= 100)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-            syscall.remove_entity(id);
+        }
+        else return;
+
+        if (comp->get<TimingEnd>().timing_end == 0)
+        {
+            syscall.remove_entity(id); // remove tap notes
+        }
+        else
+        {
+            comp->get<HoldActive>().hold_active = true; // start holding
         }
     }
 
@@ -119,74 +140,63 @@ namespace Game::Rhythm
         const auto &current_time = battle_query.front().get<Battle::BattleState>().clock_time;
         const auto &note_time = note_comp->get<Timing>().timing;
         const auto note_type = note_comp->get<NoteType>().type;
+        auto &hold_active = note_comp->get<HoldActive>().hold_active;
 
-        if (note_comp->get<TimingEnd>().timing_end == 0)
+        if (!hold_active)
         {
-            // it's a tap note
             const auto time_diff = current_time - note_time;
 
-            if (note_type == 1)
+            // handle both tap notes and "un-hold" hold notes
+            for (auto &[id3, comp3] : input_query) // check when stop holding
             {
-                HandleAccentNote(syscall, time_diff, note_id, battle_query);
-            }
-            else if (note_type == 2)
-            {
-                HandleRainNote(syscall, time_diff, note_id, battle_query);
-            }
-            else
-            {
-                HandleNormalNote(syscall, time_diff, note_id, battle_query);
-            }
-        }
-        else
-        {
-            // it's a hold note
-            auto hold_active = note_comp->get<HoldActive>().hold_active;
-
-            if (!hold_active)
-            {
-                auto time_diff_start = current_time - note_time;
-
-                if (note_type == 1)
+                if ((lane_num == 0 && comp3.get<KeyInput>().key1_pressed == true) ||
+                (lane_num == 1 && comp3.get<KeyInput>().key2_pressed == true) ||
+                (lane_num == 2 && comp3.get<KeyInput>().key3_pressed == true) ||
+                (lane_num == 3 && comp3.get<KeyInput>().key4_pressed == true))
                 {
-                    HandleAccentNote(syscall, time_diff_start, note_id, battle_query);
+                    if (note_type == 1)
+                    {
+                        HandleAccentNote(syscall, time_diff, note_id, note_comp, battle_query);
+                    }
+                    else
+                    {
+                        HandleNormalNote(syscall, time_diff, note_id, note_comp, battle_query);
+                    }
                 }
                 else if (note_type == 2)
                 {
-                    HandleRainNote(syscall, time_diff_start, note_id, battle_query);
+                    HandleRainNote(syscall, time_diff, note_id, battle_query);
                 }
-                else
-                {
-                    HandleNormalNote(syscall, time_diff_start, note_id, battle_query);
-                }
-
-                note_comp->get<HoldActive>().hold_active = true; // start holding
             }
-            else
+
+
+
+        }
+        else
+        {
+            const auto &end_time = note_comp->get<TimingEnd>().timing_end;
+            const auto time_diff_end = current_time - end_time;
+
+            // handle holding
+            for (auto &[id4, comp4] : input_query) // check when stop holding
             {
-                for (auto &[id3, comp3] : input_query) // check when stop holding
+                if ((lane_num == 0 && comp4.get<KeyInput>().key1_hold == false) ||
+                (lane_num == 1 && comp4.get<KeyInput>().key2_hold == false) ||
+                (lane_num == 2 && comp4.get<KeyInput>().key3_hold == false) ||
+                (lane_num == 3 && comp4.get<KeyInput>().key4_hold == false))
                 {
-                    const auto &end_time = note_comp->get<TimingEnd>().timing_end;
-                    const auto time_diff_end = current_time - end_time;
-
-                    if ((lane_num == 0 && comp3.get<KeyInput>().key1_pressed == false) ||
-                        (lane_num == 1 && comp3.get<KeyInput>().key2_pressed == false) ||
-                        (lane_num == 2 && comp3.get<KeyInput>().key3_pressed == false) ||
-                        (lane_num == 3 && comp3.get<KeyInput>().key4_pressed == false))
-                        {
-                            HandleHoldNoteRelease(syscall, time_diff_end, note_id, battle_query);
-                            break;
-                        }
-
-                    if (time_diff_end == 0) // check for perfect end timing
-                    {
-                        battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-                        LOG_INFO("Timing %d Lane %d: End Hold Perfect", end_time, lane_num);
-
-                        syscall.remove_entity(note_id);
-                        break;
-                    }
+                    HandleHoldNoteRelease(syscall, time_diff_end, note_id, battle_query);
+                    break;
                 }
+
+                if (time_diff_end <= 0) // check for perfect end timing
+                {
+                    battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+                    LOG_INFO("Timing %d Lane %d: End Hold Perfect", end_time, lane_num);
+
+                    syscall.remove_entity(note_id);
+                    break;
+                    }
             }
         }
     }
@@ -212,21 +222,22 @@ namespace Game::Rhythm
         // This system should check the input, remove a note if it was hit correctly, and update score/hp/etc. correctly
         // If you need to adjust components or data structures you can ask what structures implement what data to
         // Midfield
+        // Check key down in lane first. If it's tap note then we have to check again
         for (auto &[id, comp] : input_query)
         {
-            if (comp.get<KeyInput>().key1_pressed == true)
+            if (comp.get<KeyInput>().key1_hold == true)
             {
                 HandleNoteFromLane(0, syscall, note_query, battle_query, input_query);
             }
-            if (comp.get<KeyInput>().key2_pressed == true)
+            if (comp.get<KeyInput>().key2_hold == true)
             {
                 HandleNoteFromLane(1, syscall, note_query, battle_query, input_query);
             }
-            if (comp.get<KeyInput>().key3_pressed == true)
+            if (comp.get<KeyInput>().key3_hold == true)
             {
                 HandleNoteFromLane(2, syscall, note_query, battle_query, input_query);
             }
-            if (comp.get<KeyInput>().key4_pressed == true)
+            if (comp.get<KeyInput>().key4_hold == true)
             {
                 HandleNoteFromLane(3, syscall, note_query, battle_query, input_query);
             }
