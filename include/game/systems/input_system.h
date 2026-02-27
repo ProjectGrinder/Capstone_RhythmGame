@@ -47,47 +47,110 @@ namespace Game::Battle
             {
                 break;
             }
-            rhythm_input.front().get<Rhythm::KeyInput>().key1_hold = get_key_state(D);
-            rhythm_input.front().get<Rhythm::KeyInput>().key2_hold = get_key_state(F);
-            rhythm_input.front().get<Rhythm::KeyInput>().key3_hold = get_key_state(J);
-            rhythm_input.front().get<Rhythm::KeyInput>().key4_hold = get_key_state(K);
 
+            if (get_key_state(D))
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key1_hold = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed &&
+                    !rhythm_input.front().get<Rhythm::KeyInput>().key1_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed = true;
+                }
+            }
+            else
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key1_hold = false;
+                rhythm_input.front().get<Rhythm::KeyInput>().key1_lock = false;
+            }
             if (rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed)
             {
-                rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed = false;
-            }
-            else if (rhythm_input.front().get<Rhythm::KeyInput>().key1_hold)
-            {
-                rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key1_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key1_lock = true;
+                }
+                else
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed = false;
+                }
             }
 
+            if (get_key_state(F))
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key2_hold = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed &&
+                    !rhythm_input.front().get<Rhythm::KeyInput>().key2_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed = true;
+                }
+            }
+            else
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key2_hold = false;
+                rhythm_input.front().get<Rhythm::KeyInput>().key2_lock = false;
+            }
             if (rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed)
             {
-                rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed = false;
-            }
-            else if (rhythm_input.front().get<Rhythm::KeyInput>().key2_hold)
-            {
-                rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key2_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key2_lock = true;
+                }
+                else
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed = false;
+                }
             }
 
+            if (get_key_state(J))
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key3_hold = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed &&
+                    !rhythm_input.front().get<Rhythm::KeyInput>().key3_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed = true;
+                }
+            }
+            else
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key3_hold = false;
+                rhythm_input.front().get<Rhythm::KeyInput>().key3_lock = false;
+            }
             if (rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed)
             {
-                rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed = false;
-            }
-            else if (rhythm_input.front().get<Rhythm::KeyInput>().key3_hold)
-            {
-                rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key3_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key3_lock = true;
+                }
+                else
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed = false;
+                }
             }
 
+            if (get_key_state(K))
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key4_hold = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed &&
+                    !rhythm_input.front().get<Rhythm::KeyInput>().key4_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed = true;
+                }
+            }
+            else
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key4_hold = false;
+                rhythm_input.front().get<Rhythm::KeyInput>().key4_lock = false;
+            }
             if (rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed)
             {
-                rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed = false;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key4_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key4_lock = true;
+                }
+                else
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed = false;
+                }
             }
-            else if (rhythm_input.front().get<Rhythm::KeyInput>().key4_hold)
-            {
-                rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed = true;
-            }
-
             break;
         default:
             break;
