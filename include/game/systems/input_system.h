@@ -47,10 +47,47 @@ namespace Game::Battle
             {
                 break;
             }
-            rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed = get_key_state(D);
-            rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed = get_key_state(F);
-            rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed = get_key_state(J);
-            rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed = get_key_state(K);
+            rhythm_input.front().get<Rhythm::KeyInput>().key1_hold = get_key_state(D);
+            rhythm_input.front().get<Rhythm::KeyInput>().key2_hold = get_key_state(F);
+            rhythm_input.front().get<Rhythm::KeyInput>().key3_hold = get_key_state(J);
+            rhythm_input.front().get<Rhythm::KeyInput>().key4_hold = get_key_state(K);
+
+            if (rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed)
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed = false;
+            }
+            else if (rhythm_input.front().get<Rhythm::KeyInput>().key1_hold)
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed = true;
+            }
+
+            if (rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed)
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed = false;
+            }
+            else if (rhythm_input.front().get<Rhythm::KeyInput>().key2_hold)
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed = true;
+            }
+
+            if (rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed)
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed = false;
+            }
+            else if (rhythm_input.front().get<Rhythm::KeyInput>().key3_hold)
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed = true;
+            }
+
+            if (rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed)
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed = false;
+            }
+            else if (rhythm_input.front().get<Rhythm::KeyInput>().key4_hold)
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed = true;
+            }
+
             break;
         default:
             break;
