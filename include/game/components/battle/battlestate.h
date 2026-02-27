@@ -7,9 +7,9 @@
 #include "game/components/physics/base_collider.h"
 #include "game/components/render/sprite.h"
 
-
 namespace Game::Battle
 {
+
     // intermediate structures
     enum Instrument
     {
@@ -98,6 +98,7 @@ namespace Game::Battle
     };
 
     // use these structures
+
 
     struct BattleState
     {
@@ -218,11 +219,11 @@ namespace Game::Battle
     struct BulletData
     {
         float posX, posY;
-        BulletHell::Patterns patterns;
+        //BulletHell::Patterns patterns;
         int delay_frame;
         int graphicID;
-        BulletData(const float posX, const float posY, BulletHell::Patterns patterns, const int delay_frame, const int graphicID):
-            posX(posX), posY(posY), patterns(std::move(patterns)), delay_frame(delay_frame), graphicID(graphicID)
+        BulletData(const float posX, const float posY, const int delay_frame, const int graphicID):
+            posX(posX), posY(posY), delay_frame(delay_frame), graphicID(graphicID)
         {}
     };
 

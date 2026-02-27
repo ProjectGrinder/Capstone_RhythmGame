@@ -5,7 +5,6 @@
 #include "components/bullethell/booming.h"
 #include "components/bullethell/bullet.h"
 #include "components/bullethell/delay.h"
-#include "components/bullethell/emitter.h"
 #include "components/bullethell/input.h"
 #include "components/bullethell/laser.h"
 #include "components/bullethell/particle.h"

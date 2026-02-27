@@ -7,7 +7,7 @@ namespace Game::BulletHell
         float expire_time;
         float strength;
         Homing() : expire_time(0.0f), strength(0.0f) {}
-        explicit Homing(const float expire_time, const float strength = 1.0f) :expire_time(expire_time), strength(1)
+        explicit Homing(const float expire_time, const float strength = 1.0f) :expire_time(expire_time), strength(strength)
         {}
 
     };

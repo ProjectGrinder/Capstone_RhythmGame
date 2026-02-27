@@ -7,7 +7,7 @@ namespace Game::BulletHell
     template<typename T>
     void SpawnBullet(T &syscall, const Battle::BulletData& bullet_data, const Battle::BulletHellState bhs)
     {
-        const System::ECS::pid bullet = syscall.create_entity(Position(bullet_data.posX,bullet_data.posY), Patterns(bullet_data.patterns), Delay(bullet_data.delay_frame));
+        const System::ECS::pid bullet = syscall.create_entity(Position(bullet_data.posX,bullet_data.posY), Delay(bullet_data.delay_frame));
 
         syscall.add_components(bullet, Rotation(), Physics::Scale(), Velocity(), Acceleration(), AngularVelocity());
 
