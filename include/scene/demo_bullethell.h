@@ -74,6 +74,7 @@ namespace Scene
             Game::BulletHell::Input,
             Game::Rhythm::KeyInput,
             Game::BulletHell::Player,
+            Game::BulletHell::Pattern,
             Game::BulletHell::Bounce,
             Game::BulletHell::Homing,
             Game::BulletHell::Particle,
