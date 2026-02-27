@@ -47,10 +47,10 @@ namespace Game::Battle
             {
                 break;
             }
-            rhythm_input.front().get<Rhythm::KeyInput>().input1 = get_key_state(D);
-            rhythm_input.front().get<Rhythm::KeyInput>().input2 = get_key_state(F);
-            rhythm_input.front().get<Rhythm::KeyInput>().input3 = get_key_state(J);
-            rhythm_input.front().get<Rhythm::KeyInput>().input4 = get_key_state(K);
+            rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed = get_key_state(D);
+            rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed = get_key_state(F);
+            rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed = get_key_state(J);
+            rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed = get_key_state(K);
             break;
         default:
             break;
@@ -85,19 +85,19 @@ namespace Game::Battle
         {
             LOG_INFO("BulletHell X");
         }
-        if (rhythm_input.front().get<Rhythm::KeyInput>().input1)
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed)
         {
             LOG_INFO("Rhythm KEY1");
         }
-        if (rhythm_input.front().get<Rhythm::KeyInput>().input2)
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed)
         {
             LOG_INFO("Rhythm KEY2");
         }
-        if (rhythm_input.front().get<Rhythm::KeyInput>().input3)
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed)
         {
             LOG_INFO("Rhythm KEY3");
         }
-        if (rhythm_input.front().get<Rhythm::KeyInput>().input4)
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed)
         {
             LOG_INFO("Rhythm KEY4");
         }

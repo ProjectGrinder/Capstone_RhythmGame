@@ -169,10 +169,10 @@ namespace Game::Rhythm
                     const auto &end_time = note_comp->get<TimingEnd>().timing_end;
                     const auto time_diff_end = current_time - end_time;
 
-                    if ((lane_num == 0 && comp3.get<KeyInput>().input1 == false) ||
-                        (lane_num == 1 && comp3.get<KeyInput>().input2 == false) ||
-                        (lane_num == 2 && comp3.get<KeyInput>().input3 == false) ||
-                        (lane_num == 3 && comp3.get<KeyInput>().input4 == false))
+                    if ((lane_num == 0 && comp3.get<KeyInput>().key1_pressed == false) ||
+                        (lane_num == 1 && comp3.get<KeyInput>().key2_pressed == false) ||
+                        (lane_num == 2 && comp3.get<KeyInput>().key3_pressed == false) ||
+                        (lane_num == 3 && comp3.get<KeyInput>().key4_pressed == false))
                         {
                             HandleHoldNoteRelease(syscall, time_diff_end, note_id, battle_query);
                             break;
@@ -214,19 +214,19 @@ namespace Game::Rhythm
         // Midfield
         for (auto &[id, comp] : input_query)
         {
-            if (comp.get<KeyInput>().input1 == true)
+            if (comp.get<KeyInput>().key1_pressed == true)
             {
                 HandleNoteFromLane(0, syscall, note_query, battle_query, input_query);
             }
-            if (comp.get<KeyInput>().input2 == true)
+            if (comp.get<KeyInput>().key2_pressed == true)
             {
                 HandleNoteFromLane(1, syscall, note_query, battle_query, input_query);
             }
-            if (comp.get<KeyInput>().input3 == true)
+            if (comp.get<KeyInput>().key3_pressed == true)
             {
                 HandleNoteFromLane(2, syscall, note_query, battle_query, input_query);
             }
-            if (comp.get<KeyInput>().input4 == true)
+            if (comp.get<KeyInput>().key4_pressed == true)
             {
                 HandleNoteFromLane(3, syscall, note_query, battle_query, input_query);
             }
