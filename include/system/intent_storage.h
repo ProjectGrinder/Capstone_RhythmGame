@@ -12,6 +12,7 @@ namespace System::Render
         KIND_UNKNOWN = 0,
         KIND_SPRITE,
         KIND_TEXT,
+        KIND_TRIANGLE,
     };
 
     struct Color
@@ -78,11 +79,16 @@ namespace System::Render
         float anchor_y = 0.5f;
     };
 
+    struct TriangleDrawDesc
+    {
+        float u0, v0, u1, v1, u2, v2;
+    };
+
     struct DrawIntent
     {
         DrawKind kind{DrawKind::KIND_UNKNOWN};
         DrawCommon common{};
-        std::variant<SpriteDrawDesc, TextDrawDesc> special{};
+        std::variant<SpriteDrawDesc, TextDrawDesc, TriangleDrawDesc> special{};
     };
 
     // Render Packet

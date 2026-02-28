@@ -24,3 +24,4 @@
 #include "systems/render/sprite_intent.h"
 #include "systems/render/text_intent.h"
 #include "systems/render/set_camera.h"
+#include "systems/render/triangle_intent.h"

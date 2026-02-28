@@ -142,7 +142,7 @@ namespace System::Render
     {
         DrawKind kind = DrawKind::KIND_UNKNOWN;
         ComposedDrawCommon common;
-        std::variant<ComposedSpriteDesc, ComposedTextDesc> special;
+        std::variant<ComposedSpriteDesc, ComposedTextDesc, TriangleDrawDesc> special;
     };
 
     class Compositor

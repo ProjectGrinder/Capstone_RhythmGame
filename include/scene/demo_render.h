@@ -11,13 +11,24 @@ namespace Scene
 
         // declare scene parameters
         constexpr static size_t MaxResource = 1000;
-        using ComponentTuple = std::tuple<Game::Render::Camera2D, Game::Render::Sprite, Game::Render::Material, Game::Render::Text, Game::Render::IntentHandle, Game::Render::Rotation>;
+        using ComponentTuple = std::tuple<
+                Game::Render::Camera2D,
+                Game::Render::Sprite,
+                Game::Render::Material,
+                Game::Render::Text,
+                Game::Render::IntentHandle,
+                Game::Render::Rotation,
+                Game::Render::Triangle>;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
-        using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall, Game::Render::set_camera<Syscall>, Game::Render::sprite_intent<Syscall>>;
+        using TaskManager = System::ECS::TaskManager<
+                ResourceManager,
+                Syscall,
+                Game::Render::set_camera<Syscall>,
+                Game::Render::sprite_intent<Syscall>>;
 
         // declare functions
         static TaskManager init();
         static std::vector<ComponentTuple> exit();
     };
-}
+} // namespace Scene

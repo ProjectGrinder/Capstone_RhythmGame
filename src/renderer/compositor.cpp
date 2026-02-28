@@ -102,7 +102,7 @@ namespace System::Render
             common.order = drawIntent.common.order;
             common.rotation_z = drawIntent.common.rotation_z;
 
-            std::variant<ComposedSpriteDesc, ComposedTextDesc> special{};
+            std::variant<ComposedSpriteDesc, ComposedTextDesc, TriangleDrawDesc> special{};
             switch (drawIntent.kind)
             {
             case DrawKind::KIND_SPRITE: {
@@ -140,8 +140,11 @@ namespace System::Render
             case DrawKind::KIND_UNKNOWN: {
                 break;
             }
+            case DrawKind::KIND_TRIANGLE:
+                special = std::get<TriangleDrawDesc>(intent.value().special);
+                break;
             }
-            compositor._items.push_back({drawIntent.kind, common, std::move(special)});
+            compositor._items.push_back(CompositorItem{drawIntent.kind, common, std::move(special)});
         }
         auto intent_size = intents.size();
         auto items_size = compositor._items.size();
