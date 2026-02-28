@@ -60,27 +60,42 @@ namespace System::Render
             auto &drawIntent = intent.value();
 
             ComposedDrawCommon common{};
-            if (!has_assets(drawIntent.common.pixel_shader))
+            if (drawIntent.common.pixel_shader != nullptr)
             {
-                // TODO: Encode InputAttributeDescription and Count
-                common.pixel_shader =
-                        load_pixel_shader(drawIntent.common.pixel_shader, drawIntent.common.pixel_shader, nullptr, 0);
+                if (!has_assets(drawIntent.common.pixel_shader))
+                {
+                    // TODO: Encode InputAttributeDescription and Count
+                    common.pixel_shader =
+                            load_pixel_shader(drawIntent.common.pixel_shader, drawIntent.common.pixel_shader, nullptr, 0);
+                }
+                else
+                {
+                    common.pixel_shader = get_assets_id(drawIntent.common.pixel_shader);
+                }
             }
             else
             {
-                common.pixel_shader = get_assets_id(drawIntent.common.pixel_shader);
+                common.pixel_shader = static_cast<assets_id>(-1);
             }
 
-            if (!has_assets(drawIntent.common.vert_shader))
+            if (drawIntent.common.vert_shader != nullptr)
             {
-                // TODO: Encode InputAttributeDescription and Count
-                common.vert_shader =
-                        load_vertex_shader(drawIntent.common.vert_shader, drawIntent.common.vert_shader, nullptr, 0);
+                if (!has_assets(drawIntent.common.vert_shader))
+                {
+                    // TODO: Encode InputAttributeDescription and Count
+                    common.vert_shader =
+                            load_vertex_shader(drawIntent.common.vert_shader, drawIntent.common.vert_shader, nullptr, 0);
+                }
+                else
+                {
+                    common.vert_shader = get_assets_id(drawIntent.common.vert_shader);
+                }
             }
             else
             {
-                common.vert_shader = get_assets_id(drawIntent.common.vert_shader);
+                common.vert_shader = static_cast<assets_id>(-1);
             }
+
             common.render_prior = drawIntent.common.render_prior;
             common.color = drawIntent.common.color;
             common.layer = drawIntent.common.layer;
@@ -93,7 +108,7 @@ namespace System::Render
             case DrawKind::KIND_SPRITE: {
                 auto &sprite_draw_desc = std::get<SpriteDrawDesc>(drawIntent.special);
                 special = ComposedSpriteDesc{};
-                ComposedSpriteDesc &sprite = std::get<ComposedSpriteDesc>(special);
+                auto &sprite = std::get<ComposedSpriteDesc>(special);
                 sprite.texture = get_assets_id(sprite_draw_desc.texture);
                 if (sprite.texture == -1)
                 {
@@ -112,7 +127,7 @@ namespace System::Render
             case DrawKind::KIND_TEXT: {
                 auto &text_draw_desc = std::get<TextDrawDesc>(drawIntent.special);
                 special = ComposedTextDesc{};
-                ComposedTextDesc &text = std::get<ComposedTextDesc>(special);
+                auto &text = std::get<ComposedTextDesc>(special);
                 // text, fontname, fontsize, position, anchor
                 text.text = text_draw_desc.text;
                 text.font = get_assets_id(text_draw_desc.font_name);
@@ -126,7 +141,10 @@ namespace System::Render
                 break;
             }
             }
-            compositor._items.push_back({drawIntent.kind, std::move(common), std::move(special)});
+            compositor._items.push_back({drawIntent.kind, common, std::move(special)});
         }
+        auto intent_size = intents.size();
+        auto items_size = compositor._items.size();
+        LOG_INFO("Composed %d intents into %d items", intent_size, items_size);
     }
 } // namespace System::Render

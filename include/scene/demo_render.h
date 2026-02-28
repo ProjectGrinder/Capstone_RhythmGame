@@ -1,6 +1,5 @@
 #pragma once
 #include "game.h"
-#include "system.h"
 
 namespace Scene
 {
@@ -15,7 +14,7 @@ namespace Scene
         using ComponentTuple = std::tuple<Game::Render::Camera2D, Game::Render::Sprite, Game::Render::Material, Game::Render::Text, Game::Render::IntentHandle, Game::Render::Rotation>;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
-        using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall, Game::Render::set_camera<Syscall>>;
+        using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall, Game::Render::set_camera<Syscall>, Game::Render::sprite_intent<Syscall>>;
 
         // declare functions
         static TaskManager init();
