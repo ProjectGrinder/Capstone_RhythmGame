@@ -25,7 +25,7 @@ namespace Scene
                 ResourceManager,
                 Syscall,
                 Game::Render::set_camera<Syscall>,
-                Game::Render::sprite_intent<Syscall>>;
+                Game::Render::triangle_intent<Syscall>>;
 
         // declare functions
         static TaskManager init();
