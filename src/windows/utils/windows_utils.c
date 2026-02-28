@@ -116,7 +116,7 @@ DWORD file_read(_Out_ FileContent **content, _In_ const char *path)
         goto exit;
     }
 
-    LOG_INFO("Openning file at: %s", full_path);
+    LOG_INFO("Opening file at: %s", full_path);
     byte_read = 0;
     const HANDLE hfile =
             CreateFile(full_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
