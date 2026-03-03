@@ -1,16 +1,14 @@
 #pragma once
 
-namespace Game::BulletHell
+namespace Game::Battle
 {
     enum PatternOp : uint8_t
     {
         OP_SET,
         OP_ADD
     };
-    constexpr int MAX_PATTERNS = 16;
+    constexpr int MAX_PATTERNS = 128;
     constexpr int MAX_PATTERN_SEQUENCE = 16;
-
-
 
     struct PatternStep
     {
@@ -33,12 +31,17 @@ namespace Game::BulletHell
     {
         bool isLoop;
         uint16_t stepCount;
-        PatternStep *step;
+        uint32_t *step;
         PatternSequence() = default;
-        explicit PatternSequence(PatternStep steps[16], const uint16_t stepCount, const bool isLoop = false) :
+        explicit PatternSequence(uint32_t *steps, const uint16_t stepCount, const bool isLoop = false) :
             isLoop(isLoop), stepCount(stepCount), step(steps)
         {}
     };
 
-    inline PatternSequence pattern_sequences[MAX_PATTERN_SEQUENCE];
+    struct PatternContainer
+    {
+        PatternSequence pattern_sequences[MAX_PATTERN_SEQUENCE];
+        PatternStep pattern_steps[MAX_PATTERNS];
+    };
+
 }

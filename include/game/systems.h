@@ -28,7 +28,3 @@
 #include "systems/bullethell/shaking_system.h"
 // Render Pipeline
 #include "game/draw_description.h"
-
-
-// Should be in util but error
-#include "game/systems/bullethell/pattern_container.h"

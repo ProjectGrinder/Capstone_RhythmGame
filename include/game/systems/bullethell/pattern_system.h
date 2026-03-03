@@ -1,6 +1,6 @@
 #pragma once
+
 #include "game/components.h"
-#include "pattern_container.h"
 
 // FIXME: Part of physics, consider separation into its own thread
 namespace Game::BulletHell
@@ -9,13 +9,18 @@ namespace Game::BulletHell
     void PatternSystem(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Pattern, Velocity, Rotation, Acceleration, AngularVelocity> &query,
-            System::ECS::Query<Battle::BattleState> &query2)
+            System::ECS::Query<Battle::BattleState> &query2,
+            System::ECS::Query<Battle::PatternContainer> &query3)
     {
         if (query2.begin() == query2.end())
             return;
 
         if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
+
+        if (query3.begin() == query3.end()) return;
+
+        const auto &[pattern_sequences, pattern_steps] = query3.front().get<Battle::PatternContainer>();
 
         constexpr auto frame_time = 1;
 
@@ -30,7 +35,7 @@ namespace Game::BulletHell
             // Init
             if (patt_c.sequenceIdx == -1)
             {
-                patt_c.delay = patt_seq.step[0].delay;
+                patt_c.delay = pattern_steps[patt_seq.step[0]].delay;
                 patt_c.sequenceIdx = patt_c.sequenceIdx + 1;
                 continue;
             }
@@ -42,7 +47,7 @@ namespace Game::BulletHell
 
             else
             {
-                const auto patt = pattern_sequences[patt_c.sequenceID].step[patt_c.sequenceIdx];
+                const auto patt = pattern_steps[pattern_sequences[patt_c.sequenceID].step[patt_c.sequenceIdx]];
                 patt_c.delay = patt.delay;
                 uint8_t p_idx = 0;
 

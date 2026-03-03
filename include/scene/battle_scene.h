@@ -18,6 +18,8 @@ namespace Scene
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
             Game::Battle::LevelData,
+            Game::Battle::BulletLoader,
+            Game::Battle::PatternContainer,
             Game::BulletHell::Bullet,
             Game::BulletHell::Input,
             Game::BulletHell::Player,

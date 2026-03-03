@@ -1,6 +1,8 @@
 #pragma once
 
 #include "components/battle/battlestate.h"
+#include "components/battle/bullet_data.h"
+#include "components/battle/pattern_container.h"
 
 #include "components/bullethell/booming.h"
 #include "components/bullethell/bullet.h"
