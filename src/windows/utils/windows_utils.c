@@ -286,9 +286,11 @@ static FORCEINLINE void *__inline_memcpy(void *dest, const void *src, size_t siz
     return dest;
 }
 
+/*
 void *memcpy(void *dest, const void *src, size_t size)
 {
     if (size >= SMALL_SIZE)
         return (__asm_memcpy(dest, src, size));
     return (__inline_memcpy(dest, src, size));
 }
+*/

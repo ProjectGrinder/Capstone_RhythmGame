@@ -13,7 +13,7 @@ Scene::DemoRender::TaskManager Scene::DemoRender::init()
     tm.create_entity(Game::Render::Camera2D{});
     tm.create_entity(
             Game::Render::Triangle{{{0,0}, {0.5, 0.5}, {1, 1}},0, 0},
-            Game::Render::Material{const_cast<char *>("shaders/vs/rainbow.hlsl"), const_cast<char *>("shaders/ps/rainbow.hlsl")},
+            Game::Render::Material{const_cast<char *>("shaders/vs/rainbow.cso"), const_cast<char *>("shaders/ps/rainbow.cso")},
             Game::Render::IntentHandle{});
     tm.run_all();
     return (tm);
