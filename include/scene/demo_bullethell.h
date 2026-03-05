@@ -56,6 +56,25 @@ namespace Scene
         return loader;
     }
 
+    inline Game::Battle::PatternContainer create_pattern_container()
+    {
+        using namespace Game::Battle;
+        PatternStep demo_step[] = {
+            PatternStep(30, OP_ADD, 2, 15),  // 30s Rot+15
+            PatternStep(30, OP_ADD, 2, -15), // 30s Rot-15
+            PatternStep(30, OP_SET, 1, 3),   // 30s Vel=3
+        };
+        PatternSequence demo_pattern[] = {
+            PatternSequence(false),
+            PatternSequence(false, 0, 1),
+            PatternSequence(false, 1, 2),
+            PatternSequence(true, 0, 2),
+            PatternSequence(true, 1, 2),
+        };
+        auto demo_pattern_container = PatternContainer(demo_step,3,demo_pattern,4);
+        return { PatternContainer(demo_pattern_container) };
+    }
+
     struct DemoBulletHell
     {
         static DemoBulletHell instance();
@@ -67,6 +86,7 @@ namespace Scene
             Game::Battle::BattleState,
             Game::Battle::BulletHellState,
             Game::Battle::BulletLoader,
+            Game::Battle::PatternContainer,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
             Game::Battle::LevelData,
@@ -125,11 +145,13 @@ namespace Scene
             tm.create_entity<Game::Battle::BattleState,
             Game::Battle::BulletHellState,
             Game::Battle::BulletLoader,
+            Game::Battle::PatternContainer,
             Game::Rhythm::KeyInput, Game::BulletHell::Input>
             (
                 Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
                 Game::Battle::BulletHellState(),
                 create_bullet_data(),
+                create_pattern_container(),
                 Game::Rhythm::KeyInput(),
                 Game::BulletHell::Input()
                 );

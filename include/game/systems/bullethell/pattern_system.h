@@ -27,15 +27,21 @@ namespace Game::BulletHell
         for (auto &[id, comps]: query)
         {
             auto &patt_c = comps.get<Pattern>();
+
+            if (patt_c.sequenceID == 0)
+            {
+                // Remove Component?
+            }
+
             const auto &patt_seq = pattern_sequences[patt_c.sequenceID];
 
-            // Check End (Choose be pop out component?)
+            // Check End (Should be -> Remove component?)
             if (patt_c.sequenceIdx >= patt_seq.stepCount) continue;
 
             // Init
             if (patt_c.sequenceIdx == -1)
             {
-                patt_c.delay = pattern_steps[patt_seq.step[0]].delay;
+                patt_c.delay = pattern_steps[patt_seq.steps[0]].delay;
                 patt_c.sequenceIdx = patt_c.sequenceIdx + 1;
                 continue;
             }
@@ -47,28 +53,29 @@ namespace Game::BulletHell
 
             else
             {
-                const auto patt = pattern_steps[pattern_sequences[patt_c.sequenceID].step[patt_c.sequenceIdx]];
+                const auto patt = pattern_steps[pattern_sequences[patt_c.sequenceID].steps[patt_c.sequenceIdx]];
                 patt_c.delay = patt.delay;
                 uint8_t p_idx = 0;
+                const auto op = static_cast<float>(patt.op);
 
-                if (patt.mask & 8 > 0)
+                if ((patt.mask & 8) > 0)
                 {
-                    comps.get<Velocity>().vx = comps.get<Velocity>().vx * patt.op + patt.p[p_idx];
+                    comps.get<Velocity>().vx = comps.get<Velocity>().vx * op + patt.p[p_idx];
                     p_idx++;
                 }
-                if (patt.mask & 4 > 0)
+                if ((patt.mask & 4) > 0)
                 {
-                    comps.get<Rotation>().angleZ = comps.get<Rotation>().angleZ * patt.op + patt.p[p_idx];
+                    comps.get<Rotation>().angleZ = comps.get<Rotation>().angleZ * op + patt.p[p_idx];
                     p_idx++;
                 }
-                if (patt.mask & 2 > 0)
+                if ((patt.mask & 2) > 0)
                 {
-                    comps.get<Acceleration>().ax = comps.get<Acceleration>().ax * patt.op + patt.p[p_idx];
+                    comps.get<Acceleration>().ax = comps.get<Acceleration>().ax * op + patt.p[p_idx];
                     p_idx++;
                 }
-                if (patt.mask & 1 > 0)
+                if ((patt.mask & 1) > 0)
                 {
-                    comps.get<AngularVelocity>().v = comps.get<AngularVelocity>().v * patt.op + patt.p[p_idx];
+                    comps.get<AngularVelocity>().v = comps.get<AngularVelocity>().v * op + patt.p[p_idx];
                 }
 
                 patt_c.sequenceIdx = patt_c.sequenceIdx + 1;

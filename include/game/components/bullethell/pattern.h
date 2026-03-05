@@ -7,14 +7,14 @@ namespace Game::BulletHell
     struct Pattern
     {
         uint16_t sequenceID;
-        uint16_t sequenceIdx = -1;
+        int sequenceIdx = -1; // Would not be good but require for init
         float delay = 0;
 
         Pattern() : sequenceID(0)
         {}
 
         explicit Pattern(
-                const float sequenceID) :
+                const uint16_t sequenceID) :
             sequenceID(sequenceID)
         {}
     };

@@ -77,11 +77,69 @@ namespace Game::Battle
     struct BulletData
     {
         float posX, posY;
-        //BulletHell::Patterns patterns;
+        float vel, rot;
+        float acc, wvel;
+        uint32_t patternID;
         int delay_frame;
         int graphicID;
-        BulletData(const float posX, const float posY, const int delay_frame, const int graphicID):
-            posX(posX), posY(posY), delay_frame(delay_frame), graphicID(graphicID)
+        BulletData(
+                const float posX,
+                const float posY,
+                const float vel,
+                const float rot,
+                const int delay_frame,
+                const int graphicID) :
+            posX(posX),
+            posY(posY),
+            vel(vel),
+            rot(rot),
+            acc(0),
+            wvel(0),
+            patternID(0),
+            delay_frame(delay_frame),
+            graphicID(graphicID)
+        {}
+        BulletData(
+                const float posX,
+                const float posY,
+                const float vel,
+                const float rot,
+                const uint32_t patternID,
+                const int delay_frame,
+                const int graphicID) :
+            posX(posX), posY(posY), vel(vel), rot(rot), acc(0), wvel(0), patternID(patternID), delay_frame(delay_frame), graphicID(graphicID)
+        {}
+        BulletData(
+                const float posX,
+                const float posY,
+                const float vel,
+                const float rot,
+                const float acc,
+                const float wvel,
+                const int delay_frame,
+                const int graphicID) :
+            posX(posX),
+            posY(posY),
+            vel(vel),
+            rot(rot),
+            acc(acc),
+            wvel(wvel),
+            patternID(0),
+            delay_frame(delay_frame),
+            graphicID(graphicID)
+        {}
+
+        BulletData(
+                const float posX,
+                const float posY,
+                const float vel,
+                const float rot,
+                const float acc,
+                const float wvel,
+                const uint32_t patternID,
+                const int delay_frame,
+                const int graphicID) :
+            posX(posX), posY(posY), vel(vel), rot(rot), acc(acc), wvel(wvel), patternID(patternID), delay_frame(delay_frame), graphicID(graphicID)
         {}
     };
 
