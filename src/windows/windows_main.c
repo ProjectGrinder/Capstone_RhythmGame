@@ -12,6 +12,7 @@
 #include "directx/directx_api.h"
 #include "scenes/intent_api.h"
 #include "scenes/compositor_api.h"
+#include "scenes/dx11_adapter_api.h"
 #include "scenes/scenes_api.h"
 
 #include "windows_functions.h"
@@ -34,8 +35,9 @@ static SystemInfo system_info = {
         .vertex_queue = NULL,
         .rendering_queue = NULL,
         .scene_manager = NULL,
-        .render_storage = NULL,
+        .intent_storage = NULL,
         .compositor = NULL,
+        .dx11_adapter = NULL,
         .directx = NULL,
 };
 
@@ -49,14 +51,19 @@ void *get_scene_manager()
     return (system_info.scene_manager);
 }
 
-void *get_render_storage()
+void *get_intent_storage()
 {
-    return (system_info.render_storage);
+    return (system_info.intent_storage);
 }
 
 void *get_compositor()
 {
     return (system_info.compositor);
+}
+
+void *get_dx11_adapter()
+{
+    return (system_info.dx11_adapter);
 }
 
 HRESULT directx_init(_In_ DirectXHandler *directx_api)
@@ -103,7 +110,7 @@ int real_main()
         goto exit;
     }
 
-    error = intent_storage_init(&system_info.render_storage);
+    error = intent_storage_init(&system_info.intent_storage);
     if (error != ERROR_SUCCESS)
     {
         LOG_ERROR("intent_storage_init failed, Code 0x%08lx", error);
@@ -114,6 +121,13 @@ int real_main()
     if (error != ERROR_SUCCESS)
     {
         LOG_ERROR("compositor_init failed, Code 0x%08lx", error);
+        goto exit;
+    }
+
+    error = dx11_adapter_init(&system_info.dx11_adapter);
+    if (error != ERROR_SUCCESS)
+    {
+        LOG_ERROR("dx11_adapter_init failed, Code 0x%08lx", error);
         goto exit;
     }
 
@@ -129,7 +143,7 @@ int real_main()
         process_system_message(&system_info, &msg);
 
         scene_manager_update(&system_info.scene_manager);
-        compositor_compose(&system_info.render_storage, &system_info.compositor);
+        compositor_compose(&system_info.intent_storage, &system_info.compositor);
 
         sleep(system_info.precision);
     }
@@ -137,7 +151,7 @@ int real_main()
 exit:
     LOG_INFO("Cleaning up");
     scene_manager_cleanup(&system_info.scene_manager);
-    intent_storage_cleanup(&system_info.render_storage);
+    intent_storage_cleanup(&system_info.intent_storage);
     compositor_cleanup(&system_info.compositor);
     directx_clean_up(&system_info.directx);
     assets_cleanup();
