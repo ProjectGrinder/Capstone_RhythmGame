@@ -11,7 +11,6 @@ extern "C" {
 
         FLOAT32BITS,
         FLOAT16BITS,
-        FLOAT8BITS,
 
         UINT32BITS,
         UINT16BITS,

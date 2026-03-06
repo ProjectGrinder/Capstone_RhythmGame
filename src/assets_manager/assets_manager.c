@@ -142,6 +142,12 @@ int has_assets(const char *name)
     return (get_assets_id(name) != -1);
 }
 
+AssetsRecord get_assets_record(const assets_id id)
+{
+    const uint16_t index = ASSET_INDEX(id);
+    return (assets_records[index]);
+}
+
 void free_assets(assets_id id)
 {
     uint16_t index = ASSET_INDEX(id);

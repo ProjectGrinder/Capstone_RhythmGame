@@ -1,7 +1,7 @@
 #include "system/compositor.h"
 #include <variant>
-#include "utils/print_debug.h"
 #include "../assets_manager/assets_manager.h"
+#include "utils/print_debug.h"
 
 namespace System::Render
 {
@@ -41,8 +41,11 @@ namespace System::Render
                 if (!has_assets(drawIntent.common.pixel_shader))
                 {
                     // TODO: Encode InputAttributeDescription and Count
-                    common.pixel_shader =
-                            load_pixel_shader(drawIntent.common.pixel_shader, drawIntent.common.pixel_shader, drawIntent.common.pixel_shader_input_attributes, 0);
+                    common.pixel_shader = load_pixel_shader(
+                            drawIntent.common.pixel_shader,
+                            drawIntent.common.pixel_shader,
+                            drawIntent.common.pixel_shader_input_attributes,
+                            drawIntent.common.pixel_shader_input_attributes_count);
                 }
                 else
                 {
@@ -59,8 +62,11 @@ namespace System::Render
                 if (!has_assets(drawIntent.common.vert_shader))
                 {
                     // TODO: Encode InputAttributeDescription and Count
-                    common.vert_shader =
-                            load_vertex_shader(drawIntent.common.vert_shader, drawIntent.common.vert_shader, drawIntent.common.vert_shader_input_attributes, 0);
+                    common.vert_shader = load_vertex_shader(
+                            drawIntent.common.vert_shader,
+                            drawIntent.common.vert_shader,
+                            drawIntent.common.vert_shader_input_attributes,
+                            drawIntent.common.vert_shader_input_attributes_count);
                 }
                 else
                 {

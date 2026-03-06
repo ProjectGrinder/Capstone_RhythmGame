@@ -22,14 +22,13 @@ Scene::DemoRender::TaskManager Scene::DemoRender::init()
     tm.create_entity(Game::Render::Camera2D{});
     tm.create_entity(
             Game::Render::Triangle{{{-0.5, 0, 0, 1, 0, 0, 1}, {0, 0.5, 0, 0, 1, 0, 1}, {0.5, 0, 0, 0, 0, 1, 1}}, 0, 0},
-            Game::Render::Material{
-                    .vert_shader = const_cast<char *>("shaders/vs/rainbow.cso"),
-                    .vert_shader_input_attributes = rainbow_vs_input_attributes,
-                    .pixel_shader = const_cast<char *>("shaders/ps/rainbow.cso"),
-                    .pixel_shader_input_attributes = rainbow_ps_input_attributes,
-                    .visible = true,
-                    .render_prior = 0,
-                    .color = {1, 1, 1, 1}},
+            Game::Render::Material(
+                    const_cast<char *>("shaders/vs/rainbow.cso"),
+                    rainbow_vs_input_attributes,
+                    2,
+                    const_cast<char *>("shaders/ps/rainbow.cso"),
+                    rainbow_ps_input_attributes,
+                    2),
             Game::Render::IntentHandle{});
     tm.run_all();
     return (tm);

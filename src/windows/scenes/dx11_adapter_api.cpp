@@ -1,5 +1,5 @@
 #include "dx11_adapter_api.h"
-#include "system.h"
+#include "../directx/dx11_adapter.h"
 
 HRESULT dx11_adapter_init(Dx11AdapterHandler *handler)
 {

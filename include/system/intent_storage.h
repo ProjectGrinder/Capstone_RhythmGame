@@ -40,8 +40,10 @@ namespace System::Render
         // Pipeline selection (names)
         const char *vert_shader = nullptr;
         InputAttributeDescription *vert_shader_input_attributes = nullptr;
+        size_t vert_shader_input_attributes_count = 0;
         const char *pixel_shader = nullptr;
         InputAttributeDescription *pixel_shader_input_attributes = nullptr;
+        size_t pixel_shader_input_attributes_count = 0;
 
         /* render_prior: coarse render priority */
         uint32_t render_prior = 0;
