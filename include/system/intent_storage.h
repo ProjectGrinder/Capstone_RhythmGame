@@ -4,6 +4,8 @@
 #include <variant>
 #include <vector>
 
+#include "maths.h"
+
 namespace System::Render
 {
     // Common
@@ -81,7 +83,9 @@ namespace System::Render
 
     struct TriangleDrawDesc
     {
-        float u0, v0, u1, v1, u2, v2;
+        Math::Point p1{};
+        Math::Point p2{};
+        Math::Point p3{};
     };
 
     struct DrawIntent

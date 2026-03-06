@@ -40,13 +40,10 @@ namespace Game::Render
             common.layer = triangle.layer;
             common.order = triangle.order;
 
-            auto &[u0, v0, u1, v1, u2, v2] = std::get<System::Render::TriangleDrawDesc>(intent.value().special);
-            u0 = triangle.points[0].x;
-            v0 = triangle.points[0].y;
-            u1 = triangle.points[1].x;
-            v1 = triangle.points[1].y;
-            u2 = triangle.points[2].x;
-            v2 = triangle.points[2].y;
+            auto &special = std::get<System::Render::TriangleDrawDesc>(intent.value().special);
+            special.p1 = triangle.points[0];
+            special.p2 = triangle.points[1];
+            special.p3 = triangle.points[2];
         }
     }
 }
