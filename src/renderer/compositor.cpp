@@ -42,7 +42,7 @@ namespace System::Render
                 {
                     // TODO: Encode InputAttributeDescription and Count
                     common.pixel_shader =
-                            load_pixel_shader(drawIntent.common.pixel_shader, drawIntent.common.pixel_shader, nullptr, 0);
+                            load_pixel_shader(drawIntent.common.pixel_shader, drawIntent.common.pixel_shader, drawIntent.common.pixel_shader_input_attributes, 0);
                 }
                 else
                 {
@@ -60,7 +60,7 @@ namespace System::Render
                 {
                     // TODO: Encode InputAttributeDescription and Count
                     common.vert_shader =
-                            load_vertex_shader(drawIntent.common.vert_shader, drawIntent.common.vert_shader, nullptr, 0);
+                            load_vertex_shader(drawIntent.common.vert_shader, drawIntent.common.vert_shader, drawIntent.common.vert_shader_input_attributes, 0);
                 }
                 else
                 {

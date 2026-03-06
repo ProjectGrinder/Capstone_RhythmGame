@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "maths.h"
+#include "utils/input_attribute_description.h"
 
 namespace System::Render
 {
@@ -38,7 +39,9 @@ namespace System::Render
     {
         // Pipeline selection (names)
         const char *vert_shader = nullptr;
+        InputAttributeDescription *vert_shader_input_attributes = nullptr;
         const char *pixel_shader = nullptr;
+        InputAttributeDescription *pixel_shader_input_attributes = nullptr;
 
         /* render_prior: coarse render priority */
         uint32_t render_prior = 0;

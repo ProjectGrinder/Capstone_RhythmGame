@@ -17,7 +17,9 @@ namespace Game::Render
     struct Material
     {
         char *vert_shader{};  // Vertex shader name
+        InputAttributeDescription *vert_shader_input_attributes{};
         char *pixel_shader{}; // Pixel shader name
+        InputAttributeDescription *pixel_shader_input_attributes{};
 
         bool visible{};          // Active State if this object should be rendered
         uint32_t render_prior{}; // Render Priority for GPU
