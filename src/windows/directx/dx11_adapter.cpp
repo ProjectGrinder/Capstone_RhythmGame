@@ -172,6 +172,16 @@ namespace System::Render
 
         const auto compositor_items_count = items.size();
         const auto render_objects_count = instance()._items.size();
-        LOG_INFO("Composed %d items into %d render objects", compositor_items_count, render_objects_count);
+        LOG_INFO("Converted %d composed items into %d render objects", compositor_items_count, render_objects_count);
+    }
+
+    void Dx11Adapter::render_all_items()
+    {
+        const auto &items = instance()._items;
+        auto env = instance()._environment;
+        for (auto &item: items)
+        {
+            render(&env, &item);
+        }
     }
 } // namespace System::Render

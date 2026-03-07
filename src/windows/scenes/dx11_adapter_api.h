@@ -11,6 +11,7 @@ extern "C"
 
     HRESULT dx11_adapter_init(Dx11AdapterHandler *handler, DirectXHandler *directx);
     void dx11_adapter_convert(Dx11AdapterHandler *api, DirectXHandler *directx, CompositorHandler *compositor);
+    void dx11_adapter_render(Dx11AdapterHandler *api);
     void dx11_adapter_cleanup(Dx11AdapterHandler *api);
 #ifdef __cplusplus
 }

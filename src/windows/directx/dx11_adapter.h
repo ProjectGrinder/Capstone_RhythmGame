@@ -16,5 +16,6 @@ namespace System::Render
         explicit Dx11Adapter(Windows::DeviceResources &resources);
         static Dx11Adapter& instance();
         static void convert(Windows::DeviceResources &resources, const std::vector<CompositorItem> &items);
+        static void render_all_items();
     };
 }

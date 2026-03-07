@@ -52,6 +52,16 @@ void dx11_adapter_convert(Dx11AdapterHandler *api, DirectXHandler *directx, Comp
     System::Render::Dx11Adapter::convert(*resources, compositor_items);
 }
 
+void dx11_adapter_render(Dx11AdapterHandler *api)
+{
+    if (api == nullptr)
+    {
+        return;
+    }
+
+    System::Render::Dx11Adapter::render_all_items();
+}
+
 void dx11_adapter_cleanup(Dx11AdapterHandler *api)
 {
     if (api == nullptr)
