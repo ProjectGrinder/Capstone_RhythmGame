@@ -160,6 +160,7 @@ int real_main()
 
         scene_manager_update(&system_info.scene_manager);
         compositor_compose(&system_info.intent_storage, &system_info.compositor);
+        dx11_adapter_convert(&system_info.dx11_adapter, &system_info.directx, &system_info.compositor);
 
         sleep(system_info.precision);
         QueryPerformanceCounter(&end);

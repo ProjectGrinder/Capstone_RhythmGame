@@ -2,7 +2,7 @@
 #include "../directx/dx11_adapter.h"
 #include "utils/print_debug.h"
 
-HRESULT dx11_adapter_init(Dx11AdapterHandler *handler, const DirectXHandler *directx)
+HRESULT dx11_adapter_init(Dx11AdapterHandler *handler, DirectXHandler *directx)
 {
     auto *device_resources = static_cast<Windows::DeviceResources *>(*directx);
     HRESULT error = HRESULT_FROM_WIN32(ERROR_SUCCESS);
@@ -29,10 +29,35 @@ HRESULT dx11_adapter_init(Dx11AdapterHandler *handler, const DirectXHandler *dir
         return (error);
 }
 
+void dx11_adapter_convert(Dx11AdapterHandler *api, DirectXHandler *directx, CompositorHandler *compositor)
+{
+    if (api == nullptr)
+    {
+        return;
+    }
+
+    if (directx == nullptr)
+    {
+        return;
+    }
+
+    if (compositor == nullptr)
+    {
+        return;
+    }
+
+    auto resources = static_cast<Windows::DeviceResources *>(*directx);
+    auto compositor_items = System::Render::Compositor::items();
+
+    System::Render::Dx11Adapter::convert(*resources, compositor_items);
+}
+
 void dx11_adapter_cleanup(Dx11AdapterHandler *api)
 {
     if (api == nullptr)
+    {
         return;
+    }
 
     auto *manager = static_cast<System::Render::Dx11Adapter *>(*api);
     manager->~Dx11Adapter();

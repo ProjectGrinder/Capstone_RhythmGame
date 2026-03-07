@@ -74,8 +74,14 @@ namespace System::Render
             HRESULT hr = S_OK;
 
             const auto vs = get_assets_record(common.vert_shader);
+            const auto vs_input_attribute_desc = vs.info.info.as_shader.data;
+            const auto vs_input_attribute_count = vs.info.info.as_shader.count;
 
             ID3D11VertexShader *vertex_shader = nullptr;
+            ID3D11PixelShader *pixel_shader = nullptr;
+            ID3D11InputLayout *vert_input_layout = nullptr;
+            std::vector<D3D11_INPUT_ELEMENT_DESC> vert_input_element_desc{};
+
 
             hr = device->CreateVertexShader(
                 vs.data->data,
@@ -87,19 +93,18 @@ namespace System::Render
             if (FAILED(hr))
             {
                 LOG_ERROR("Failed to create vertex shader, Code 0x%08lx", hr);
-                goto render_failure;
+                continue;
             }
 
             render_object.vertex_shader = vertex_shader;
 
-            const auto vs_input_attribute_desc = vs.info.info.as_shader.data;
-            const auto vs_input_attribute_count = vs.info.info.as_shader.count;
-            std::vector<D3D11_INPUT_ELEMENT_DESC> vert_input_element_desc{};
+
+
             for (size_t i = 0; i < vs_input_attribute_count; ++i)
             {
                 vert_input_element_desc.push_back(create_input_element_desc(vs_input_attribute_desc[i]));
             }
-            ID3D11InputLayout *vert_input_layout = nullptr;
+
             hr = device->CreateInputLayout(
                     vert_input_element_desc.data(),
                     static_cast<UINT>(vert_input_element_desc.size()),
@@ -110,12 +115,12 @@ namespace System::Render
             if (FAILED(hr))
             {
                 LOG_ERROR("Failed to create input layout, Code 0x%08lx", hr);
-                goto render_failure;
+                continue;
             }
             render_object.input_layout = vert_input_layout;
 
             const auto ps = get_assets_record(common.pixel_shader);
-            ID3D11PixelShader *pixel_shader = nullptr;
+
             hr = device->CreatePixelShader(
                 ps.data->data,
                 ps.data->size,
@@ -125,7 +130,7 @@ namespace System::Render
             if (FAILED(hr))
             {
                 LOG_ERROR("Failed to create pixel shader, Code 0x%08lx", hr);
-                goto render_failure;
+                continue;
             }
             render_object.pixel_shader = pixel_shader;
 
@@ -150,7 +155,7 @@ namespace System::Render
                 if (FAILED(hr))
                 {
                     LOG_ERROR("Failed to create vertex buffer, Code 0x%08lx", hr);
-                    goto render_failure;
+                    continue;
                 }
 
                 render_object.stride = sizeof(Math::Point);
@@ -163,9 +168,10 @@ namespace System::Render
             }
 
             instance()._items.push_back(render_object);
-            continue;
-render_failure:
-            LOG_ERROR("Failed to create render object");
         }
+
+        const auto compositor_items_count = items.size();
+        const auto render_objects_count = instance()._items.size();
+        LOG_INFO("Composed %d items into %d render objects", compositor_items_count, render_objects_count);
     }
 } // namespace System::Render
