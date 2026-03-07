@@ -257,6 +257,7 @@ void *memset(void *dest, int ch, size_t count)
 
 extern void *__asm_memcpy(void *dest, const void *src, size_t size);
 
+/*
 static FORCEINLINE __attribute__((unused)) void *__inline_memcpy(void *dest, const void *src, size_t size)
 {
     u8 *dptr = (u8 *) dest;
@@ -294,6 +295,7 @@ static FORCEINLINE __attribute__((unused)) void *__inline_memcpy(void *dest, con
 
     return dest;
 }
+*/
 
 /*
 void *memcpy(void *dest, const void *src, size_t size)

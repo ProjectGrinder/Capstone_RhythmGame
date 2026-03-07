@@ -4,6 +4,7 @@
 
 HRESULT dx11_adapter_init(Dx11AdapterHandler *handler, const DirectXHandler *directx)
 {
+    auto *device_resources = static_cast<Windows::DeviceResources *>(*directx);
     HRESULT error = HRESULT_FROM_WIN32(ERROR_SUCCESS);
     System::Render::Dx11Adapter *manager = nullptr;
     void *manager_alloc = nullptr;
@@ -15,13 +16,11 @@ HRESULT dx11_adapter_init(Dx11AdapterHandler *handler, const DirectXHandler *dir
         goto exit;
     }
 
-    if (directx == nullptr)
+    if (device_resources == nullptr)
     {
         LOG_ERROR("Dx11Adapter initialized before argument DirectXHandler");
         goto exit;
     }
-
-    auto *device_resources = static_cast<Windows::DeviceResources *>(*directx);
 
     manager = new (manager_alloc) System::Render::Dx11Adapter(*device_resources);
 

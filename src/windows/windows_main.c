@@ -58,7 +58,7 @@ void *get_scene_manager(void)
     return (system_info.scene_manager);
 }
 
-void *get_render_storage(void)
+void *get_intent_storage(void)
 {
     return (system_info.intent_storage);
 }

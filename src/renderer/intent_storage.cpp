@@ -5,7 +5,7 @@
 namespace System::Render
 {
     typedef void *IntentStorageHandler;
-    extern "C" IntentStorageHandler get_intent_storage();
+    extern "C" IntentStorageHandler get_intent_storage(void);
 
     IntentStorage &IntentStorage::instance()
     {
