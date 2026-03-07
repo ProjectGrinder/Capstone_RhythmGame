@@ -141,7 +141,7 @@ int real_main()
     while (system_info.is_running)
     {
         QueryPerformanceCounter(&start);
-        LOG_INFO("Delta Time: %d us", (unsigned int) (get_delta_time() * 1000));
+        // LOG_INFO("Delta Time: %d us", (unsigned int) (get_delta_time() * 1000));
         process_system_message(&system_info, &msg);
 
         scene_manager_update(&system_info.scene_manager);

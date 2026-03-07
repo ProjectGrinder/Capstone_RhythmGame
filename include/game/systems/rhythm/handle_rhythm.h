@@ -5,7 +5,7 @@
 namespace Game::Rhythm
 {
     template<typename T>
-    void HandleNormalNote(
+    void handle_normal_note(
         [[maybe_unused]] T &syscall,
         const int &time_diff,
         System::ECS::pid &id,
@@ -43,7 +43,7 @@ namespace Game::Rhythm
     }
 
     template<typename T>
-    void HandleAccentNote(
+    void handle_accent_note(
         [[maybe_unused]] T &syscall,
         const int &time_diff,
         System::ECS::pid &id,
@@ -67,7 +67,7 @@ namespace Game::Rhythm
     }
 
     template<typename T>
-    void HandleRainNote(
+    void handle_rain_note(
         [[maybe_unused]] T &syscall,
         const int &time_diff,
         System::ECS::pid &id,
@@ -81,7 +81,7 @@ namespace Game::Rhythm
     }
 
     template<typename T>
-    void HandleHoldNoteRelease(
+    void handle_hold_note_release(
         T &syscall,
         const int &time_diff_end,
         System::ECS::pid &id,
@@ -111,7 +111,7 @@ namespace Game::Rhythm
     }
 
     template<typename T>
-    void HandleNoteFromLane(
+    void handle_note_from_lane(
         const int lane_num, // assume that first lane is 0
         [[maybe_unused]] T &syscall,
         System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType> &note_query,
@@ -156,16 +156,16 @@ namespace Game::Rhythm
                 {
                     if (note_type == 1)
                     {
-                        HandleAccentNote(syscall, time_diff, note_id, note_comp, battle_query);
+                        handle_accent_note(syscall, time_diff, note_id, note_comp, battle_query);
                     }
                     else
                     {
-                        HandleNormalNote(syscall, time_diff, note_id, note_comp, battle_query);
+                        handle_normal_note(syscall, time_diff, note_id, note_comp, battle_query);
                     }
                 }
                 else if (note_type == 2)
                 {
-                    HandleRainNote(syscall, time_diff, note_id, battle_query);
+                    handle_rain_note(syscall, time_diff, note_id, battle_query);
                 }
             }
 
@@ -185,7 +185,7 @@ namespace Game::Rhythm
                 (lane_num == 2 && comp4.get<KeyInput>().key3_hold == false) ||
                 (lane_num == 3 && comp4.get<KeyInput>().key4_hold == false))
                 {
-                    HandleHoldNoteRelease(syscall, time_diff_end, note_id, battle_query);
+                    handle_hold_note_release(syscall, time_diff_end, note_id, battle_query);
                     break;
                 }
 
@@ -202,7 +202,7 @@ namespace Game::Rhythm
     }
 
     template<typename T>
-    void HandleRhythm(
+    void handle_rhythm(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<KeyInput> &input_query,
@@ -227,19 +227,19 @@ namespace Game::Rhythm
         {
             if (comp.get<KeyInput>().key1_hold == true)
             {
-                HandleNoteFromLane(0, syscall, note_query, battle_query, input_query);
+                handle_note_from_lane(0, syscall, note_query, battle_query, input_query);
             }
             if (comp.get<KeyInput>().key2_hold == true)
             {
-                HandleNoteFromLane(1, syscall, note_query, battle_query, input_query);
+                handle_note_from_lane(1, syscall, note_query, battle_query, input_query);
             }
             if (comp.get<KeyInput>().key3_hold == true)
             {
-                HandleNoteFromLane(2, syscall, note_query, battle_query, input_query);
+                handle_note_from_lane(2, syscall, note_query, battle_query, input_query);
             }
             if (comp.get<KeyInput>().key4_hold == true)
             {
-                HandleNoteFromLane(3, syscall, note_query, battle_query, input_query);
+                handle_note_from_lane(3, syscall, note_query, battle_query, input_query);
             }
         }
     }

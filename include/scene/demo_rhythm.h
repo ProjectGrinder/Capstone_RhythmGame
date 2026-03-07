@@ -120,14 +120,14 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
-            Game::Battle::InputSystem<Syscall>,
-            Game::Rhythm::HandleRhythm<Syscall>,
-            Game::Rhythm::HandleMissNote<Syscall>,
-            Game::Rhythm::HandleBPM<Syscall>,
-            Game::Rhythm::LoadNotes<Syscall>
+            Game::Battle::input_system<Syscall>,
+            Game::Rhythm::handle_rhythm<Syscall>,
+            Game::Rhythm::handle_miss_note<Syscall>,
+            Game::Rhythm::handle_bpm<Syscall>,
+            Game::Rhythm::load_notes<Syscall>
             >;
         
-        static TaskManager Init()
+        static TaskManager init()
         {
             auto tm = TaskManager{};
             // Create and configure BattleState
@@ -161,6 +161,6 @@ namespace Scene
             return (tm);
         }
 
-        static std::vector<ComponentTuple> Exit();
+        static std::vector<ComponentTuple> exit();
     };
 }
