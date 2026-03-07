@@ -124,6 +124,15 @@ assets_id get_assets_id(const char *name)
     return (-1);
 }
 
+<<<<<<< Updated upstream
+=======
+// I'm so uncivilized - Midfield
+int has_assets(const char *name)
+{
+    return (get_assets_id(name) != (uint32_t) -1);
+}
+
+>>>>>>> Stashed changes
 void free_assets(assets_id id)
 {
     uint16_t index = ASSET_INDEX(id);
