@@ -17,7 +17,7 @@
 #include "windows_functions.h"
 #include "windows_types.h"
 
-extern void assets_cleanup();
+extern void assets_cleanup(void);
 
 static SystemInfo system_info = {
         .window = {.width = 1280, .height = 720},
@@ -41,32 +41,32 @@ static SystemInfo system_info = {
         .directx = NULL,
 };
 
-HWND get_window_handler()
+HWND get_window_handler(void)
 {
     return (system_info.window_handler);
 }
 
-LARGE_INTEGER get_perf_frequency()
+LARGE_INTEGER get_perf_frequency(void)
 {
     return (system_info.perf_frequency);
 }
 
-void *get_scene_manager()
+void *get_scene_manager(void)
 {
     return (system_info.scene_manager);
 }
 
-void *get_render_storage()
+void *get_render_storage(void)
 {
     return (system_info.render_storage);
 }
 
-void *get_compositor()
+void *get_compositor(void)
 {
     return (system_info.compositor);
 }
 
-long double get_delta_time()
+long double get_delta_time(void)
 {
     return (system_info.delta_time);
 }
@@ -141,6 +141,7 @@ int real_main()
     while (system_info.is_running)
     {
         QueryPerformanceCounter(&start);
+        LOG_INFO("Delta Time: %d us", (unsigned int) (get_delta_time() * 1000));
         process_system_message(&system_info, &msg);
 
         scene_manager_update(&system_info.scene_manager);
@@ -148,8 +149,8 @@ int real_main()
 
         sleep(system_info.precision);
         QueryPerformanceCounter(&end);
-        system_info.delta_time =
-                (long double) (end.QuadPart - start.QuadPart) * 1000 / system_info.perf_frequency.QuadPart;
+        system_info.delta_time = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
+                                 (long double) system_info.perf_frequency.QuadPart;
     }
 
 exit:
