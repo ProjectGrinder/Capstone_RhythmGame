@@ -22,6 +22,7 @@ namespace System::Render
         {}
         explicit Color(const float r, const float g, const float b, const float a) : r(r), g(g), b(b), a(a)
         {}
+        Color(const Color &) noexcept = default;
         Color &operator=(const Color &) noexcept = default;
     };
 

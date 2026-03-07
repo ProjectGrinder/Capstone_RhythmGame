@@ -22,6 +22,7 @@ namespace Game::Render
         uint32_t order;     // Order of render in layer
         bool flipX = false; // Flip Image in X-axis
         bool flipY = false; // Flip Image in Y-axis
+        uint32_t id;
 
         Sprite() : texture(nullptr), layer(0), order(0)
         {}

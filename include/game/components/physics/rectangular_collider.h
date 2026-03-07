@@ -14,7 +14,7 @@ namespace Game::Physics
                 const Position &size,
                 const unsigned int layer = 0,
                 const unsigned int mask = 0) :
-            size(size), BaseCollider(offset, layer, mask)
+            BaseCollider(offset, layer, mask), size(size)
         {}
     };
 } // namespace Game::Physics
