@@ -92,7 +92,7 @@ namespace System::Render
                 special = ComposedSpriteDesc{};
                 auto &sprite = std::get<ComposedSpriteDesc>(special);
                 sprite.texture = get_assets_id(sprite_draw_desc.texture);
-                if (sprite.texture == -1)
+                if (sprite.texture == (uint32_t) -1)
                 {
                     sprite.texture = load_sprite(sprite_draw_desc.texture, sprite_draw_desc.texture, 0, 0);
                 }
@@ -113,7 +113,7 @@ namespace System::Render
                 // text, fontname, fontsize, position, anchor
                 text.text = text_draw_desc.text;
                 text.font = get_assets_id(text_draw_desc.font_name);
-                if (text.font == -1)
+                if (text.font == (uint32_t) -1)
                 {
                     text.font = load_font(text_draw_desc.font_name, text_draw_desc.font_name, 0);
                 }

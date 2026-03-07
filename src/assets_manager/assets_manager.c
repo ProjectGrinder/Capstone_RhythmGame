@@ -139,7 +139,7 @@ assets_id get_assets_id(const char *name)
 // I'm so uncivilized - Midfield
 int has_assets(const char *name)
 {
-    return (get_assets_id(name) != -1);
+    return (get_assets_id(name) != (uint32_t) -1);
 }
 
 AssetsRecord get_assets_record(const assets_id id)
