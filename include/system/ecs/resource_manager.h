@@ -33,61 +33,32 @@ namespace System::ECS
             }
         }
 
-
         template<typename Resource>
-        void _import_pool(SyscallResource<MaxResource, Resources...> &other, pid id, bool &has_any_component)
+        void _import_from_pool(SyscallResource<MaxResource, Resources...> &other)
         {
+            auto &source_pool = other.template query<Resource>();
             auto &target_pool = this->query<Resource>();
-
-            if (auto &source_pool = other.template query<Resource>(); source_pool.has(id))
+            for (auto [id, component]: source_pool)
             {
-                has_any_component = true;
                 if (target_pool.has(id))
                 {
-                    // UNUSED: dirty mark is not implemented in the current algorithm
-                    // Case: Both source and target have the component -> Update the existing component
-                    target_pool.set(id, source_pool.get(id));
+                    // Update existing component - make a copy explicitly
+                    target_pool.set(id, Resource(component));
                 }
                 else
                 {
-                    // Case: Source has a component, target doesn't -> Add the new component
-                    target_pool.add(id, source_pool.get(id));
+                    // Add new component - make a copy explicitly
+                    target_pool.add(id, Resource(component));
                     ++_component_count[id];
+                    _occupied.set(id);
                 }
-            }
-            else if (_dirty.test(id) && target_pool.has(id))
-            {
-                // UNUSED: dirty mark is not implemented in the current algorithm
-                // Case 1: Target has a component but the source doesn't -> Remove the old component
-                target_pool.remove(id);
             }
         }
 
         template<size_t... I>
         void _import_impl(SyscallResource<MaxResource, Resources...> &other, std::index_sequence<I...>)
         {
-            for (pid id = 0; id < MaxResource; ++id)
-            {
-                if (_dirty.test(id))
-                {
-                    // UNUSED: dirty mark is not implemented in the current algorithm
-                    bool has_any_component = false;
-                    (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other, id, has_any_component),
-                     ...);
-
-                    if (has_any_component)
-                    {
-                        _dirty.reset(id);
-                    }
-                }
-                else
-                {
-                    // For non-dirty entities, only import if they don't exist in target
-                    bool has_any_component = false;
-                    (_import_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other, id, has_any_component),
-                     ...);
-                }
-            }
+            (_import_from_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other), ...);
         }
 
 
@@ -149,7 +120,7 @@ namespace System::ECS
             while (empty_id < MaxResource && _component_count[empty_id] != 0)
                 ++empty_id;
 
-            return empty_id;
+            return (empty_id);
         }
 
     public:
@@ -209,7 +180,7 @@ namespace System::ECS
                 else
                 {
                     _occupied.set(_id);
-                    return _id++;
+                    return (_id++);
                 }
             }
 
@@ -226,7 +197,7 @@ namespace System::ECS
                 else
                 {
                     _occupied.set(_id);
-                    return _id++;
+                    return (_id++);
                 }
             }
 
@@ -260,9 +231,9 @@ namespace System::ECS
         }
 
         template<typename T>
-        [[nodiscard]]constexpr static bool has_resource_type()
+        [[nodiscard]] constexpr static bool has_resource_type()
         {
-            return(contains_type_v<T, Resources...>);
+            return (contains_type_v<T, Resources...>);
         }
     };
 } // namespace System::ECS

@@ -1,4 +1,5 @@
 add_subdirectory(asm)
+enable_language(C)
 
 file(GLOB
         WINDOWS_UTILS_FILES
