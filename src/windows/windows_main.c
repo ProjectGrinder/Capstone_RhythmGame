@@ -10,9 +10,9 @@
 #include "utils/windows_utils.h"
 
 #include "directx/directx_api.h"
-#include "scenes/intent_api.h"
 #include "scenes/compositor_api.h"
 #include "scenes/dx11_adapter_api.h"
+#include "scenes/intent_api.h"
 #include "scenes/scenes_api.h"
 
 #include "windows_functions.h"
@@ -32,6 +32,8 @@ static SystemInfo system_info = {
         .display_type = DT_WINDOW,
         .is_running = 0,
         .precision = 15,
+        .perf_frequency = {0},
+        .delta_time = 0,
         .vertex_queue = NULL,
         .rendering_queue = NULL,
         .scene_manager = NULL,
@@ -44,6 +46,11 @@ static SystemInfo system_info = {
 HWND get_window_handler()
 {
     return (system_info.window_handler);
+}
+
+LARGE_INTEGER get_perf_frequency()
+{
+    return (system_info.perf_frequency);
 }
 
 void *get_scene_manager()
@@ -64,6 +71,11 @@ void *get_compositor()
 void *get_dx11_adapter()
 {
     return (system_info.dx11_adapter);
+}
+
+long double get_delta_time()
+{
+    return (system_info.delta_time);
 }
 
 HRESULT directx_init(_In_ DirectXHandler *directx_api)
@@ -93,7 +105,7 @@ int real_main()
     system_info.is_running = 1;
 
     log_init();
-    sleep_init();
+    sleep_init(&system_info.perf_frequency);
 
     LOG_INFO("Starting...");
     error = create_window(&system_info);
@@ -138,14 +150,20 @@ int real_main()
         goto exit;
     }
 
+    LARGE_INTEGER start, end;
+
     while (system_info.is_running)
     {
+        QueryPerformanceCounter(&start);
         process_system_message(&system_info, &msg);
 
         scene_manager_update(&system_info.scene_manager);
         compositor_compose(&system_info.intent_storage, &system_info.compositor);
 
         sleep(system_info.precision);
+        QueryPerformanceCounter(&end);
+        system_info.delta_time =
+                (long double) (end.QuadPart - start.QuadPart) * 1000 / system_info.perf_frequency.QuadPart;
     }
 
 exit:
