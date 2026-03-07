@@ -80,13 +80,13 @@ namespace Game::BulletHell
             auto &rot = comps.get<Rotation>();
             const auto &bounce_c = comps.get<Bounce>();
 
-            if (bounce_c.reflect_side[0] && pos.x < stage_bound_x_min ||
-                bounce_c.reflect_side[1] && pos.x > stage_bound_x_max)
+            if ((bounce_c.reflect_side[0] && pos.x < stage_bound_x_min) ||
+                (bounce_c.reflect_side[1] && pos.x > stage_bound_x_max))
                 rot.angleZ = 180 - rot.angleZ;
 
             else if (
-                    bounce_c.reflect_side[2] && pos.y < stage_bound_y_min ||
-                    bounce_c.reflect_side[3] && pos.y > stage_bound_y_max)
+                    (bounce_c.reflect_side[2] && pos.y < stage_bound_y_min) ||
+                    (bounce_c.reflect_side[3] && pos.y > stage_bound_y_max))
                 rot.angleZ = 360 - rot.angleZ;
         }
     }

@@ -1,9 +1,9 @@
 #pragma once
 
+#include <array>
 #include <cmath>
 #include <maths/vector2.h>
 #include "system/intent_storage.h"
-#include <array>
 
 // helpers
 namespace Math
@@ -70,7 +70,7 @@ namespace Math
 
     static inline bool ndc_in_camera(const std::array<Vector2<float>, 4> &coords)
     {
-        for (const auto& coord : coords)
+        for (const auto &coord: coords)
         {
             if (coord.x < -1.0f || coord.x > 1.0f || coord.y < -1.0f || coord.y > 1.0f)
             {
@@ -94,7 +94,8 @@ namespace Math
 
 namespace System::Render
 {
-    extern "C" {
+    extern "C"
+    {
         typedef uint32_t assets_id;
     }
 
@@ -148,12 +149,13 @@ namespace System::Render
     class Compositor
     {
         std::vector<CompositorItem> _items;
+
     public:
         static void compose(const std::vector<std::optional<DrawIntent>> &intents, const Camera &camera);
-        static std::vector<CompositorItem>& items()
+        static std::vector<CompositorItem> &items()
         {
             return instance()._items;
         };
-        static Compositor& instance();
+        static Compositor &instance();
     };
 } // namespace System::Render
