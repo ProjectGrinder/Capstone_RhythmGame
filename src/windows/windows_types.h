@@ -53,6 +53,8 @@ typedef struct
     char is_running;
 
     LONGLONG precision;
+    LARGE_INTEGER perf_frequency;
+    long double delta_time;
 
     VertexQueue *vertex_queue;
     RenderingQueue *rendering_queue;
