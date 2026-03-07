@@ -6,25 +6,30 @@ static char log_initialize = 0;
 
 void log_init(void)
 {
+#ifdef _DEBUG
     if (!log_initialize)
     {
         InitializeCriticalSection(&log_lock);
         log_initialize = 1;
     }
+#endif
 }
 
 void log_cleanup(void)
 {
+#ifdef _DEBUG
     if (log_initialize)
     {
         DeleteCriticalSection(&log_lock);
         log_initialize = 0;
     }
+#endif
 }
 
 #pragma warning(disable : 4200)
 void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const char *format, _In_...)
 {
+#ifdef _DEBUG
     /* We can use va_* because it's compiler directive hence no CRT */
     SYSTEMTIME st = {0};
     va_list args = NULL;
@@ -49,6 +54,9 @@ void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const
     case LL_ERROR:
         type = "Error";
         break;
+    default:
+        type = "Unknown";
+        break;
     }
 
     GetLocalTime(&st);
@@ -72,6 +80,7 @@ void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const
     EnterCriticalSection(&log_lock);
     OutputDebugString(final);
     LeaveCriticalSection(&log_lock);
+#endif
 
 exit:
     return;
@@ -248,7 +257,7 @@ void *memset(void *dest, int ch, size_t count)
 
 extern void *__asm_memcpy(void *dest, const void *src, size_t size);
 
-static FORCEINLINE void *__inline_memcpy(void *dest, const void *src, size_t size)
+static FORCEINLINE __attribute__((unused)) void *__inline_memcpy(void *dest, const void *src, size_t size)
 {
     u8 *dptr = (u8 *) dest;
     const u8 *sptr = (const u8 *) src;
