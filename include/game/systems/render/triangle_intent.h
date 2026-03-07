@@ -41,9 +41,9 @@ namespace Game::Render
             common.order = triangle.order;
 
             auto &special = std::get<System::Render::TriangleDrawDesc>(intent.value().special);
-            special.p1 = triangle.points[0];
-            special.p2 = triangle.points[1];
-            special.p3 = triangle.points[2];
+            special.points[0] = triangle.points[0];
+            special.points[1] = triangle.points[1];
+            special.points[2] = triangle.points[2];
         }
     }
 }

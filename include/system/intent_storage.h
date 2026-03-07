@@ -89,9 +89,7 @@ namespace System::Render
 
     struct TriangleDrawDesc
     {
-        Math::Point p1{};
-        Math::Point p2{};
-        Math::Point p3{};
+        Math::Point points[3];
     };
 
     struct DrawIntent
