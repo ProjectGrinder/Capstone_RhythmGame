@@ -8,7 +8,7 @@ Scene::DemoRhythm Scene::DemoRhythm::instance()
     return (instance);
 }
 
-std::vector<Scene::DemoRhythm::ComponentTuple> Scene::DemoRhythm::Exit()
+std::vector<Scene::DemoRhythm::ComponentTuple> Scene::DemoRhythm::exit()
 {
     LOG_INFO("Exiting DemoRhythm Scene.");
     return {};

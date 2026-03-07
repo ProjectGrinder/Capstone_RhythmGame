@@ -118,7 +118,7 @@ TEST(Game, value_change)
 //Movement
 TEST(Game, bullet_movement1)
 {
-    TaskManager<BulletResource, BulletSyscall, MovementSystem<BulletSyscall>> task_manager{};
+    TaskManager<BulletResource, BulletSyscall, movement_system<BulletSyscall>> task_manager{};
     BulletResource *resource = task_manager.get_rm();
 
     const pid id = CreateBullet(resource);
@@ -151,7 +151,7 @@ TEST(Game, bullet_movement1)
 
 TEST(Game, bullet_movement2)
 {
-    TaskManager<BulletResource, BulletSyscall, MovementSystem<BulletSyscall>> task_manager{};
+    TaskManager<BulletResource, BulletSyscall, movement_system<BulletSyscall>> task_manager{};
     BulletResource *resource = task_manager.get_rm();
 
     const pid id = CreateBullet(resource);
@@ -185,7 +185,7 @@ TEST(Game, bullet_movement2)
 
 TEST(Game, bullet_movement3)
 {
-    TaskManager<BulletResource, BulletSyscall, MovementSystem<BulletSyscall>> task_manager{};
+    TaskManager<BulletResource, BulletSyscall, movement_system<BulletSyscall>> task_manager{};
     BulletResource *resource = task_manager.get_rm();
 
     const pid id = CreateBullet(resource);
@@ -219,7 +219,7 @@ TEST(Game, bullet_movement3)
 
 TEST(Game, bullet_movement4)
 {
-    TaskManager<BulletResource, BulletSyscall, RotationSystem<BulletSyscall>> task_manager{};
+    TaskManager<BulletResource, BulletSyscall, rotation_system<BulletSyscall>> task_manager{};
     BulletResource *resource = task_manager.get_rm();
 
     const pid id = CreateBullet(resource);
@@ -241,7 +241,7 @@ TEST(Game, bullet_movement4)
 
 TEST(Game, bullet_movement5)
 {
-    TaskManager<BulletResource, BulletSyscall, MovementSystem<BulletSyscall>, RotationSystem<BulletSyscall>> task_manager{};
+    TaskManager<BulletResource, BulletSyscall, movement_system<BulletSyscall>, rotation_system<BulletSyscall>> task_manager{};
     BulletResource *resource = task_manager.get_rm();
 
     const pid id = CreateBullet(resource);
@@ -271,7 +271,7 @@ TEST(Game, bullet_movement5)
 
 TEST(Game, bullets_movement6)
 {
-    TaskManager<BulletResource, BulletSyscall, MovementSystem<BulletSyscall>, RotationSystem<BulletSyscall>> task_manager{};
+    TaskManager<BulletResource, BulletSyscall, movement_system<BulletSyscall>, rotation_system<BulletSyscall>> task_manager{};
     BulletResource *resource = task_manager.get_rm();
 
     const pid id_1 = CreateBullet(resource,{},Position(1,1),Velocity(1,1),Rotation(0),Acceleration(1,-1),AngularVelocity(90));
@@ -307,7 +307,7 @@ TEST(Game, bullets_movement6)
 
 TEST(Game, bullets_damagable)
 {
-    TaskManager<BulletResource, BulletSyscall, BulletSystem<BulletSyscall>> task_manager{};
+    TaskManager<BulletResource, BulletSyscall, bullet_system<BulletSyscall>> task_manager{};
     BulletResource *resource = task_manager.get_rm();
 
     const pid id = CreateBullet(resource,Bullet(2,3));

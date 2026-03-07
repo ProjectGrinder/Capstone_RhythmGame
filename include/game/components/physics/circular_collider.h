@@ -13,8 +13,7 @@ namespace Game::Physics
         {}
         explicit CircularCollider(
                 const Position &offset, const float radius, const unsigned int layer = 0, const unsigned int mask = 0) :
-            radius(radius), BaseCollider(offset, layer, mask)
-        {
-        }
+            BaseCollider(offset, layer, mask), radius(radius)
+        {}
     };
-}
+} // namespace Game::Physics

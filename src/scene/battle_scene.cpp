@@ -7,7 +7,7 @@ Scene::BattleScene Scene::BattleScene::instance()
     return instance;
 }
 
-Scene::BattleScene::TaskManager Scene::BattleScene::Init()
+Scene::BattleScene::TaskManager Scene::BattleScene::init()
 {
     LOG_INFO("Initialization called");
     auto tm = TaskManager{};
@@ -18,7 +18,7 @@ Scene::BattleScene::TaskManager Scene::BattleScene::Init()
     return (tm);
 }
 
-std::vector<Scene::BattleScene::ComponentTuple> Scene::BattleScene::Exit()
+std::vector<Scene::BattleScene::ComponentTuple> Scene::BattleScene::exit()
 {
     LOG_INFO("Exiting Battle Scene.");
     return {};

@@ -74,7 +74,7 @@ namespace System::ECS
     {
     private:
         SyscallResource<MaxResource, Resources...> _to_add_components{};
-        std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components;
+        std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components{};
         std::bitset<MaxResource> _to_remove_entities{};
 
         ResourceManager<MaxResource, Resources...> &_resource_manager_ref;
@@ -89,7 +89,8 @@ namespace System::ECS
         }
 
     public:
-        explicit Syscall(ResourceManager<MaxResource, Resources...> &rm) : _resource_manager_ref(rm) {}
+        explicit Syscall(ResourceManager<MaxResource, Resources...> &rm) : _resource_manager_ref(rm)
+        {}
 
         template<typename Component>
         void add_component(pid id, Component &&component)
@@ -108,7 +109,7 @@ namespace System::ECS
         {
             pid id = _resource_manager_ref.reserve_process();
             (add_component(id, std::forward<Components>(components)), ...);
-            return id;
+            return (id);
         }
 
         void remove_entity(const pid id)

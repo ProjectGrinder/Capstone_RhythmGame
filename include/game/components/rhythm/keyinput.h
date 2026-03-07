@@ -21,4 +21,4 @@ namespace Game::Rhythm
         key1_lock(false), key2_lock(false), key3_lock(false), key4_lock(false)
         {}
     };
-}
+} // namespace Game::Rhythm

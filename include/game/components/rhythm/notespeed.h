@@ -8,4 +8,4 @@ namespace Game::Rhythm
         explicit NoteSpeed(const float speed) : speed(speed)
         {}
     };
-}
+} // namespace Game::Rhythm

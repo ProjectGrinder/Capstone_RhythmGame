@@ -10,12 +10,14 @@
 #include "utils/windows_utils.h"
 
 #include "directx/directx_api.h"
+#include "scenes/compositor_api.h"
+#include "scenes/intent_api.h"
 #include "scenes/scenes_api.h"
 
 #include "windows_functions.h"
 #include "windows_types.h"
 
-extern void assets_cleanup();
+extern void assets_cleanup(void);
 
 static SystemInfo system_info = {
         .window = {.width = 1280, .height = 720},
@@ -29,20 +31,44 @@ static SystemInfo system_info = {
         .display_type = DT_WINDOW,
         .is_running = 0,
         .precision = 15,
+        .perf_frequency = {0},
+        .delta_time = 0,
         .vertex_queue = NULL,
         .rendering_queue = NULL,
         .scene_manager = NULL,
+        .render_storage = NULL,
+        .compositor = NULL,
         .directx = NULL,
 };
 
-HWND get_window_handler()
+HWND get_window_handler(void)
 {
     return (system_info.window_handler);
 }
 
-void *get_scene_manager()
+LARGE_INTEGER get_perf_frequency(void)
+{
+    return (system_info.perf_frequency);
+}
+
+void *get_scene_manager(void)
 {
     return (system_info.scene_manager);
+}
+
+void *get_render_storage(void)
+{
+    return (system_info.render_storage);
+}
+
+void *get_compositor(void)
+{
+    return (system_info.compositor);
+}
+
+long double get_delta_time(void)
+{
+    return (system_info.delta_time);
 }
 
 HRESULT directx_init(_In_ DirectXHandler *directx_api)
@@ -72,7 +98,7 @@ int real_main()
     system_info.is_running = 1;
 
     log_init();
-    sleep_init();
+    sleep_init(&system_info.perf_frequency);
 
     LOG_INFO("Starting...");
     error = create_window(&system_info);
@@ -89,6 +115,20 @@ int real_main()
         goto exit;
     }
 
+    error = intent_storage_init(&system_info.render_storage);
+    if (error != ERROR_SUCCESS)
+    {
+        LOG_ERROR("intent_storage_init failed, Code 0x%08lx", error);
+        goto exit;
+    }
+
+    error = compositor_init(&system_info.compositor);
+    if (error != ERROR_SUCCESS)
+    {
+        LOG_ERROR("compositor_init failed, Code 0x%08lx", error);
+        goto exit;
+    }
+
     error = scene_manager_init(&system_info.scene_manager);
     if (error != ERROR_SUCCESS)
     {
@@ -96,18 +136,28 @@ int real_main()
         goto exit;
     }
 
+    LARGE_INTEGER start, end;
+
     while (system_info.is_running)
     {
+        QueryPerformanceCounter(&start);
+        LOG_INFO("Delta Time: %d us", (unsigned int) (get_delta_time() * 1000));
         process_system_message(&system_info, &msg);
 
         scene_manager_update(&system_info.scene_manager);
+        compositor_compose(&system_info.render_storage, &system_info.compositor);
 
         sleep(system_info.precision);
+        QueryPerformanceCounter(&end);
+        system_info.delta_time = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
+                                 (long double) system_info.perf_frequency.QuadPart;
     }
 
 exit:
     LOG_INFO("Cleaning up");
     scene_manager_cleanup(&system_info.scene_manager);
+    intent_storage_cleanup(&system_info.render_storage);
+    compositor_cleanup(&system_info.compositor);
     directx_clean_up(&system_info.directx);
     assets_cleanup();
     log_cleanup();

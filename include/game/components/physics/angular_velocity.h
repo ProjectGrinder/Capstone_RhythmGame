@@ -11,4 +11,4 @@ namespace Game::Physics
         explicit AngularVelocity(const float v) : v(v)
         {}
     };
-}
+} // namespace Game::Physics

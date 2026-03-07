@@ -12,7 +12,7 @@ namespace Scene
 
     SceneManager &SceneManager::instance()
     {
-        SceneManager *instance = static_cast<SceneManager *>(get_scene_manager());
+        auto *instance = static_cast<SceneManager *>(get_scene_manager());
         if (instance == nullptr)
         {
             LOG_ERROR("SceneManager used before initialization or after cleanup");
@@ -42,14 +42,14 @@ namespace Scene
 
     SceneManager::~SceneManager()
     {
-        LOG_INFO("Cleaning up...");
+        LOG_INFO("Cleaning up SceneManager...");
         _current_manager.reset();
         std::visit(
                 []<typename S>(S &&scene)
                 {
                     if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
                     {
-                        scene.Exit();
+                        scene.exit();
                     }
                 },
                 _current_scene_template);

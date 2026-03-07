@@ -51,7 +51,7 @@ namespace System::ECS
         template<typename ArgsTuple, std::size_t... I>
         auto _run_impl(std::index_sequence<I...>)
         {
-            return std::make_tuple(_make_query<std::tuple_element_t<I + 1, ArgsTuple>>()...);
+            return (std::make_tuple(_make_query<std::tuple_element_t<I + 1, ArgsTuple>>()...));
         }
 
         template<auto Task>
@@ -71,8 +71,7 @@ namespace System::ECS
 
     public:
         TaskManager() : _syscall(_resource_manager)
-        {
-        }
+        {}
 
         inline void run_all()
         {
@@ -80,7 +79,7 @@ namespace System::ECS
             _syscall.exec();
         }
 
-        template <typename Component>
+        template<typename Component>
         void add_component(pid id, Component &&component)
         {
             _syscall.template add_component<Component>(id, std::forward<Component>(component));
@@ -95,7 +94,7 @@ namespace System::ECS
         template<typename... Components>
         pid create_entity(Components &&...components)
         {
-            return _syscall.template create_entity<Components...>(std::forward<Components>(components)...);
+            return (_syscall.template create_entity<Components...>(std::forward<Components>(components)...));
         }
 
         void remove_entity(const pid id)
