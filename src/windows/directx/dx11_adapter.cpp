@@ -1,5 +1,5 @@
 #include "dx11_adapter.h"
-#include "dxgiformat.h"
+#include <d3d11.h>
 #include "utils/input_attribute_description.h"
 #include "utils/print_debug.h"
 #include "../../assets_manager/assets_manager.h"
@@ -58,16 +58,44 @@ namespace System::Render
 
     void Dx11Adapter::convert([[maybe_unused]] const std::vector<CompositorItem> &items)
     {
-        /*
         for (auto &[kind, common, special]: items)
         {
-            auto vs = get_assets_record(common.vert_shader);
+            HRESULT hr = S_OK;
+            const auto vs = get_assets_record(common.vert_shader);
+            auto vs_shader_data = vs.data->data;
             auto vs_input_attribute_desc = vs.info.info.as_shader.data;
+            auto vs_input_attribute_count = vs.info.info.as_shader.count;
+            std::vector<D3D11_INPUT_ELEMENT_DESC> vert_input_element_desc{};
+            for (size_t i = 0; i < vs_input_attribute_count; ++i)
+            {
+                vert_input_element_desc.push_back(create_input_element_desc(vs_input_attribute_desc[i]));
+            }
+            ID3D11InputLayout *vert_input_layout = nullptr;
+            CreateInputLayout(
+                vert_input_element_desc.data(),
+                static_cast<UINT>(vert_input_element_desc.size()),
+                vs.data->data,
+                vs.data->size,
+                &vert_input_layout
+            );
 
             auto ps = get_assets_record(common.pixel_shader);
             auto ps_input_attribute_desc = ps.info.info.as_shader.data;
+            auto ps_input_attribute_count = ps.info.info.as_shader.count;
+            std::vector<D3D11_INPUT_ELEMENT_DESC> pixel_input_element_desc{};
+            for (size_t i = 0; i < ps_input_attribute_count; ++i)
+            {
+                pixel_input_element_desc.push_back(create_input_element_desc(ps_input_attribute_desc[i]));
+            }
+            ID3D11InputLayout *pixel_input_layout = nullptr;
+            CreateInputLayout(
+                pixel_input_element_desc.data(),
+                static_cast<UINT>(pixel_input_element_desc.size()),
+                ps.data->data,
+                ps.data->size,
+                &pixel_input_layout
+            );
 
         }
-        */
     }
 } // namespace System::Render
