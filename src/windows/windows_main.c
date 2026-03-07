@@ -136,7 +136,7 @@ int real_main()
         goto exit;
     }
 
-    error = dx11_adapter_init(&system_info.dx11_adapter);
+    error = dx11_adapter_init(&system_info.dx11_adapter, &system_info.directx);
     if (error != ERROR_SUCCESS)
     {
         LOG_ERROR("dx11_adapter_init failed, Code 0x%08lx", error);

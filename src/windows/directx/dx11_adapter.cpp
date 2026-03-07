@@ -47,6 +47,11 @@ namespace System::Render
         return (desc_out);
     }
 
+    Dx11Adapter::Dx11Adapter(Windows::DeviceResources &resources)
+    {
+        _environment.context = resources.get_context();
+    }
+
     Dx11Adapter &Dx11Adapter::instance()
     {
         auto *instance = static_cast<Dx11Adapter *>(get_dx11_adapter());
@@ -83,22 +88,6 @@ namespace System::Render
             );
 
             const auto ps = get_assets_record(common.pixel_shader);
-            const auto ps_input_attribute_desc = ps.info.info.as_shader.data;
-            const auto ps_input_attribute_count = ps.info.info.as_shader.count;
-            std::vector<D3D11_INPUT_ELEMENT_DESC> pixel_input_element_desc{};
-            for (size_t i = 0; i < ps_input_attribute_count; ++i)
-            {
-                pixel_input_element_desc.push_back(create_input_element_desc(ps_input_attribute_desc[i]));
-            }
-            ID3D11InputLayout *pixel_input_layout = nullptr;
-            hr = device->CreateInputLayout(
-                pixel_input_element_desc.data(),
-                static_cast<UINT>(pixel_input_element_desc.size()),
-                ps.data->data,
-                ps.data->size,
-                &pixel_input_layout
-            );
-
         }
     }
 } // namespace System::Render
