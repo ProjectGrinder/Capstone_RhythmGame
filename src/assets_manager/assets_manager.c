@@ -2,6 +2,7 @@
 #pragma warning(disable : 4245)
 
 #include "assets_manager.h"
+
 #include "utils/print_debug.h"
 #include "utils/str_utils.h"
 
