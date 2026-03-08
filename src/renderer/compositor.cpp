@@ -122,7 +122,10 @@ namespace System::Render
                 break;
             }
             case DrawKind::KIND_TRIANGLE:
-                special = std::get<TriangleDrawDesc>(intent.value().special);
+                auto &triangle_draw_desc = std::get<TriangleDrawDesc>(intent.value().special);
+                special = TriangleDrawDesc{};
+                auto &triangle = std::get<TriangleDrawDesc>(special);
+                triangle = Math::project_triangle_world_to_ndc(triangle_draw_desc, camera);
                 break;
             }
             compositor._items.push_back(CompositorItem{drawIntent.kind, common, std::move(special)});

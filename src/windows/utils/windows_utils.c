@@ -248,12 +248,14 @@ static FORCEINLINE void *__inline_memset(void *dest, int ch, size_t count)
     return (dest);
 }
 
+/*
 void *memset(void *dest, int ch, size_t count)
 {
     if (count >= SMALL_SIZE)
         return (__asm_memset(dest, ch, count));
     return (__inline_memset(dest, ch, count));
 }
+*/
 
 extern void *__asm_memcpy(void *dest, const void *src, size_t size);
 

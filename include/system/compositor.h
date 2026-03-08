@@ -9,11 +9,46 @@
 namespace Math
 {
 
+    static inline Point rotate(const Point &p, const float radians)
+    {
+        const float c = std::cos(radians);
+        const float s = std::sin(radians);
+        return (
+                Point{p.pos[0] * c - p.pos[1] * s,
+                      p.pos[0] * s + p.pos[1] * c,
+                      p.pos[2],
+                      p.color[0],
+                      p.color[1],
+                      p.color[2],
+                      p.color[3]});
+    }
+
     static inline Vector2<float> rotate(const Vector2<float> &p, const float radians)
     {
         const float c = std::cos(radians);
         const float s = std::sin(radians);
         return (Vector2{p.x * c - p.y * s, p.x * s + p.y * c});
+    }
+
+    static inline Point world_to_view(const Point &world, const System::Render::Camera &cam)
+    {
+        // Move world relative to camera position
+        Point p{world.pos[0] - cam.offsetX,
+                world.pos[1] - cam.offsetY,
+                world.pos[2],
+                world.color[0],
+                world.color[1],
+                world.color[2],
+                world.color[3]};
+
+        // Apply inverse camera rotation (i.e., rotate the world opposite the camera)
+        p = rotate(p, -cam.rotation);
+
+        // Zoom in means things appear bigger -> multiply coordinates by zoom in view space
+        p.pos[0] *= cam.zoom;
+        p.pos[1] *= cam.zoom;
+
+        return (p);
     }
 
     // World space -> camera view space
@@ -32,6 +67,17 @@ namespace Math
         return (p);
     }
 
+    static inline Point view_to_ndc(const Point &view, const System::Render::Camera &cam)
+    {
+        const float halfW = cam.scaleX * 0.5f;
+        const float halfH = cam.scaleY * 0.5f;
+
+        const float invHalfW = (halfW != 0.0f) ? (1.0f / halfW) : 0.0f;
+        const float invHalfH = (halfH != 0.0f) ? (1.0f / halfH) : 0.0f;
+
+        return (Point{view.pos[0] * invHalfW, -view.pos[1] * invHalfH, view.pos[2], view.color[0], view.color[1], view.color[2], view.color[3]});
+    }
+
     // Camera view space -> Normalized device coordinates
     static inline Vector2<float> view_to_ndc(const Vector2<float> &view, const System::Render::Camera &cam)
     {
@@ -43,6 +89,17 @@ namespace Math
 
         // Map view-space to NDC. Flip Y so +Y is up in NDC.
         return (Vector2{view.x * invHalfW, -view.y * invHalfH});
+    }
+
+    // Takes a world-space axis-aligned triangle draw desc and returns it in NDC
+    static inline System::Render::TriangleDrawDesc
+    project_triangle_world_to_ndc(const System::Render::TriangleDrawDesc &triangle, const System::Render::Camera &cam)
+    {
+        const auto p1 = world_to_view(triangle.points[0], cam);
+        const auto p2 = world_to_view(triangle.points[1], cam);
+        const auto p3 = world_to_view(triangle.points[2], cam);
+
+        return (System::Render::TriangleDrawDesc{view_to_ndc(p1, cam), view_to_ndc(p3, cam), view_to_ndc(p2, cam)});
     }
 
     // Takes a world-space axis-aligned rect and returns its 4 corners in NDC:
@@ -66,6 +123,18 @@ namespace Math
         const Vector2 v3 = world_to_view(w3, cam);
 
         return (std::array{view_to_ndc(v0, cam), view_to_ndc(v1, cam), view_to_ndc(v2, cam), view_to_ndc(v3, cam)});
+    }
+
+    static inline bool ndc_in_camera(const System::Render::TriangleDrawDesc &triangle)
+    {
+        for (const auto point : triangle.points)
+        {
+            if (point.pos[0] < -1.0f || point.pos[0] > 1.0f || point.pos[1] < -1.0f || point.pos[1] > 1.0f)
+            {
+                return (false);
+            }
+        }
+        return (true);
     }
 
     static inline bool ndc_in_camera(const std::array<Vector2<float>, 4> &coords)

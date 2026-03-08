@@ -24,6 +24,7 @@ namespace Scene
         using TaskManager = System::ECS::TaskManager<
                 ResourceManager,
                 Syscall,
+                Game::Render::spin_camera<Syscall>,
                 Game::Render::set_camera<Syscall>,
                 Game::Render::material_intent<Syscall>,
                 Game::Render::triangle_intent<Syscall>>;

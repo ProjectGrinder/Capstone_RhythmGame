@@ -25,3 +25,5 @@
 #include "systems/render/text_intent.h"
 #include "systems/render/set_camera.h"
 #include "systems/render/triangle_intent.h"
+// Test
+#include "systems/test/spin_camera.h"
