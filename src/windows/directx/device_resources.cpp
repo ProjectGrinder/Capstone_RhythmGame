@@ -120,16 +120,27 @@ HRESULT Windows::DeviceResources::configure_back_buffer()
     dsd.ArraySize = 1;
     dsd.MipLevels = 1;
     dsd.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    dsd.SampleDesc.Count = 1;
+    dsd.SampleDesc.Quality = 0;
+    dsd.Usage = D3D11_USAGE_DEFAULT;
+    dsd.CPUAccessFlags = 0;
+    dsd.MiscFlags = 0;
 
-    _device->CreateTexture2D(&dsd, nullptr, &_depth_stencil);
+    hr = _device->CreateTexture2D(&dsd, nullptr, &_depth_stencil);
+    if (FAILED(hr))
+        goto exit;
 
-    _device->CreateDepthStencilView(_depth_stencil.Get(), &dsvd, _depth_stencil_view.GetAddressOf());
+    hr = _device->CreateDepthStencilView(_depth_stencil.Get(), &dsvd, _depth_stencil_view.GetAddressOf());
+    if (FAILED(hr))
+        goto exit;
 
     ZeroMemory(&_viewport, sizeof(_viewport));
     _viewport.Height = (float) _texture_desc.Height;
     _viewport.Width = (float) _texture_desc.Width;
 
     _context->RSSetViewports(1, &_viewport);
+
+    _context->OMSetRenderTargets(1, _render_target_view.GetAddressOf(), _depth_stencil_view.Get());
 exit:
     return (hr);
 }

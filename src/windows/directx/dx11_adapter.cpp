@@ -66,7 +66,20 @@ namespace System::Render
     void
     Dx11Adapter::convert([[maybe_unused]] Windows::DeviceResources &resources, const std::vector<CompositorItem> &items)
     {
+
+        for (auto &item: instance()._items)
+        {
+            if (item.vertex_shader)
+                item.vertex_shader->Release();
+            if (item.pixel_shader)
+                item.pixel_shader->Release();
+            if (item.input_layout)
+                item.input_layout->Release();
+            if (item.vertex_buffer)
+                item.vertex_buffer->Release();
+        }
         instance()._items.clear();
+
         auto device = resources.get_device();
 
         for (auto &[kind, common, special]: items)
@@ -162,17 +175,51 @@ namespace System::Render
 
         const auto compositor_items_count = items.size();
         const auto render_objects_count = instance()._items.size();
+
         LOG_INFO("Converted %d composed items into %d render objects", compositor_items_count, render_objects_count);
     }
 
-    void Dx11Adapter::render_all_items()
+    void Dx11Adapter::render_all_items(Windows::DeviceResources &device)
     {
         LOG_INFO("Rendering all items");
         const auto &items = instance()._items;
-        auto env = instance()._environment;
+        auto rtv = device.get_rtv();
+        auto &env = instance()._environment;
+        auto dsv = device.get_depth_stencil();
+
+        float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
+        env.context->ClearRenderTargetView(rtv, clearColor);
+        env.context->OMSetRenderTargets(1, &rtv, dsv);
+
+        if (dsv)
+        {
+            env.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+        }
+
         for (auto &item: items)
         {
             render(&env, &item);
         }
+    }
+
+    Dx11Adapter::~Dx11Adapter()
+    {
+        if (_environment.context)
+        {
+            _environment.context->ClearState();
+            _environment.context->Flush();
+        }
+        for (auto &item: instance()._items)
+        {
+            if (item.vertex_shader)
+                item.vertex_shader->Release();
+            if (item.pixel_shader)
+                item.pixel_shader->Release();
+            if (item.input_layout)
+                item.input_layout->Release();
+            if (item.vertex_buffer)
+                item.vertex_buffer->Release();
+        }
+        instance()._items.clear();
     }
 } // namespace System::Render

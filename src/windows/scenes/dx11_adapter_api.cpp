@@ -52,14 +52,15 @@ void dx11_adapter_convert(Dx11AdapterHandler *api, DirectXHandler *directx, Comp
     System::Render::Dx11Adapter::convert(*resources, compositor_items);
 }
 
-void dx11_adapter_render(Dx11AdapterHandler *api)
+void dx11_adapter_render(Dx11AdapterHandler *api, DirectXHandler *directx)
 {
     if (api == nullptr)
     {
         return;
     }
 
-    System::Render::Dx11Adapter::render_all_items();
+    auto resources = static_cast<Windows::DeviceResources *>(*directx);
+    System::Render::Dx11Adapter::render_all_items(*resources);
 }
 
 void dx11_adapter_cleanup(Dx11AdapterHandler *api)
@@ -75,4 +76,3 @@ void dx11_adapter_cleanup(Dx11AdapterHandler *api)
     HeapFree(GetProcessHeap(), 0, manager);
     *api = nullptr;
 }
-

@@ -89,7 +89,12 @@ HRESULT directx_init(_In_ DirectXHandler *directx_api)
     return (directx_device_init(directx_api, &config));
 }
 
-__forceinline void directx_clean_up(_In_ DirectxHandler *directx_api)
+__forceinline void render_present(_In_ DirectXHandler *directx_api)
+{
+    return (directx_device_present(directx_api));
+}
+
+__forceinline void directx_clean_up(_In_ DirectXHandler *directx_api)
 {
     directx_device_clean_up(directx_api);
 }
@@ -155,18 +160,21 @@ int real_main()
     while (system_info.is_running)
     {
         QueryPerformanceCounter(&start);
-        LOG_INFO("Delta Time: %d us", (unsigned int) (get_delta_time() * 1000));
         process_system_message(&system_info, &msg);
 
         scene_manager_update(&system_info.scene_manager);
         compositor_compose(&system_info.intent_storage, &system_info.compositor);
         dx11_adapter_convert(&system_info.dx11_adapter, &system_info.directx, &system_info.compositor);
-        dx11_adapter_render(&system_info.dx11_adapter);
+        dx11_adapter_render(&system_info.dx11_adapter, &system_info.directx);
+        render_present(&system_info.directx);
 
-        sleep(system_info.precision);
         QueryPerformanceCounter(&end);
         system_info.delta_time = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
                                  (long double) system_info.perf_frequency.QuadPart;
+        LOG_INFO("Process Time: %d us", (int) system_info.delta_time * 1000L);
+
+        sleep(max(system_info.precision - system_info.delta_time, 0));
+        system_info.delta_time = max(system_info.delta_time, system_info.precision);
     }
 
 exit:
@@ -174,6 +182,7 @@ exit:
     scene_manager_cleanup(&system_info.scene_manager);
     intent_storage_cleanup(&system_info.intent_storage);
     compositor_cleanup(&system_info.compositor);
+    dx11_adapter_cleanup(&system_info.dx11_adapter);
     directx_clean_up(&system_info.directx);
     assets_cleanup();
     log_cleanup();
