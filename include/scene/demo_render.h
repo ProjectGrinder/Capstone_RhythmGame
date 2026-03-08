@@ -25,6 +25,7 @@ namespace Scene
                 ResourceManager,
                 Syscall,
                 Game::Render::spin_camera<Syscall>,
+                Game::Render::spin_triangle<Syscall>,
                 Game::Render::set_camera<Syscall>,
                 Game::Render::material_intent<Syscall>,
                 Game::Render::triangle_intent<Syscall>,

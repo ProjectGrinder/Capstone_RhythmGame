@@ -34,6 +34,20 @@ Scene::DemoRender::TaskManager Scene::DemoRender::init()
                     Math::Point{2, 2, 0, 0, 0, 0, 0}, 0, 0, 0},
             Game::Render::IntentHandle{});
     tm.run_all();
+    tm.create_entity(
+        Game::Render::Triangle{
+                {{{-0.5, 0, 0}, {1, 0, 0, 1}}, {{0, 0.5, 0}, {0, 1, 0, 1}}, {{0.5, 0, 0}, {0, 0, 1, 1}}}, 0, 0},
+        Game::Render::Material(
+                const_cast<char *>("shaders/vs/rainbow.cso"),
+                rainbow_vs_input_attributes,
+                2,
+                const_cast<char *>("shaders/ps/rainbow.cso"),
+                rainbow_ps_input_attributes,
+                2),
+        Game::Render::Transform{
+                Math::Point{-2, -2, 0, 0, 0, 0, 0}, 0, 0, 0},
+        Game::Render::IntentHandle{});
+    tm.run_all();
     return (tm);
 }
 
