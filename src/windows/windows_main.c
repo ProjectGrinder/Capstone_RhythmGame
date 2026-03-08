@@ -91,7 +91,7 @@ HRESULT directx_init(_In_ DirectXHandler *directx_api)
 
 __forceinline void render_present(_In_ DirectXHandler *directx_api)
 {
-    return (directx_device_present(directx_api));
+    directx_device_present(directx_api);
 }
 
 __forceinline void directx_clean_up(_In_ DirectXHandler *directx_api)
@@ -199,7 +199,7 @@ int real_main()
                 (int) ((render - convert) * 1000.0L),
                 (int) ((system_info.delta_time - render) * 1000));
 
-        sleep(max(system_info.precision - system_info.delta_time, 0));
+        sleep(max(system_info.precision - (LONGLONG)system_info.delta_time, 0));
         system_info.delta_time = max(system_info.delta_time, system_info.precision);
     }
 
