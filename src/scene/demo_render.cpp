@@ -19,7 +19,7 @@ Scene::DemoRender::TaskManager Scene::DemoRender::init()
             InputAttributeDescription{const_cast<char *>("Color"), InputType::R32G32B32A32_FLOAT, 16}};
 
     auto tm = TaskManager{};
-    tm.create_entity(Game::Render::Camera2D{});
+    tm.create_entity(Game::Render::Camera2D{.scaleX = 16, .scaleY = 9, .rotation = 0});
     tm.create_entity(
             Game::Render::Triangle{
                     {{{-0.5, 0, 0}, {1, 0, 0, 1}}, {{0, 0.5, 0}, {0, 1, 0, 1}}, {{0.5, 0, 0}, {0, 0, 1, 1}}}, 0, 0},
