@@ -2,24 +2,27 @@
 #include <concepts>
 #include <stdexcept>
 
-template <typename T>
+template<typename T>
 concept arithmetic = std::integral<T> || std::floating_point<T>;
 
 namespace Math
 {
-    template <arithmetic T>
+    template<arithmetic T>
     struct Vector2
     {
         T x;
         T y;
-        Vector2() : x(0), y(0) {}
-        Vector2(T x, T y) : x(x), y(y) {}
-        Vector2(const Vector2& other) : x(other.x), y(other.y) {}
-        Vector2 operator+(const Vector2& other) const
+        Vector2() : x(0), y(0)
+        {}
+        Vector2(T x, T y) : x(x), y(y)
+        {}
+        Vector2(const Vector2 &other) : x(other.x), y(other.y)
+        {}
+        Vector2 operator+(const Vector2 &other) const
         {
             return (Vector2(x + other.x, y + other.y));
         }
-        Vector2 operator-(const Vector2& other) const
+        Vector2 operator-(const Vector2 &other) const
         {
             return (Vector2(x - other.x, y - other.y));
         }
@@ -35,11 +38,11 @@ namespace Math
             }
             else
             {
-                throw (std::runtime_error("Division by zero"));
+                throw(std::runtime_error("Division by zero"));
             }
         }
 
-        Vector2& operator=(const Vector2& other)
+        Vector2 &operator=(const Vector2 &other)
         {
             if (this != &other)
             {
@@ -49,9 +52,9 @@ namespace Math
             return (*this);
         }
 
-        bool operator==(const Vector2& other) const
+        bool operator==(const Vector2 &other) const
         {
             return (x == other.x && y == other.y);
         }
     };
-}
+} // namespace Math

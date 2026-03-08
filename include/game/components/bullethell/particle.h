@@ -18,4 +18,4 @@ namespace Game::BulletHell
         explicit Particle(const int lifetime, const ParticleDestroyEffect destroy_effect = Disappear) : lifetime(lifetime), destroy_effect(destroy_effect)
         {}
     };
-}
+} // namespace Game::BulletHell

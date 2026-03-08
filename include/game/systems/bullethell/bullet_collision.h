@@ -1,12 +1,15 @@
 #pragma once
 
+#include <cmath>
+
+
 #include "game/components.h"
 
 namespace Game::BulletHell
 {
     // No layer/mask implemented yet
 	template<typename T>
-	void BulletCollision([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState> &battle_query,
+	void bullet_collision([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState> &battle_query,
 	                     System::ECS::Query<Battle::BulletHellState> &state_query,
 						 System::ECS::Query<Bullet,Physics::Position, Physics::Rotation, Physics::Scale, Physics::RectangularCollider> &bullet_query1,
 						 System::ECS::Query<Bullet,Physics::Position, Physics::Rotation, Physics::Scale, Physics::CircularCollider> &bullet_query2,
@@ -15,15 +18,15 @@ namespace Game::BulletHell
 		if (battle_query.begin() == battle_query.end())
 			return;
 
-		if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
-		{
-			return;
-		}
+        if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
+        {
+            return;
+        }
 
-		if (player_query.begin() == player_query.end())
+        if (player_query.begin() == player_query.end())
             return;
 
-		if (player_query.front().get<Player>().is_active == false)
+        if (player_query.front().get<Player>().is_active == false)
             return;
 
 	    const auto &player_pos = player_query.front().get<Physics::Position>();
@@ -74,11 +77,11 @@ namespace Game::BulletHell
                                                                         : (.0f));
 		    if (distX * distX + distY * distY >= player_hitbox_size * player_hitbox_size) continue;
 
-		    // Reduce player HP
-		    auto &battle_state = battle_query.front().get<Battle::BattleState>();
-		    battle_state.hp -= bullet.damage;
-		    if (battle_state.hp < 0)
-		        battle_state.hp = 0;
+            // Reduce player HP
+            auto &battle_state = battle_query.front().get<Battle::BattleState>();
+            battle_state.hp -= bullet.damage;
+            if (battle_state.hp < 0)
+                battle_state.hp = 0;
 
 		    // TODO : Make this const
 		    // Activate Player iFrame

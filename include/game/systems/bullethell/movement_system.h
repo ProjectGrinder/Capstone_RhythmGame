@@ -5,16 +5,16 @@
 #include "game/utils/physics_util.h"
 
 // FIXME: Part of physics, consider separation into its own thread
-using Position = Game::Physics::Position;
-using Velocity = Game::Physics::Velocity;
-using Rotation = Game::Physics::Rotation;
-using Acceleration = Game::Physics::Acceleration;
-using AngularVelocity = Game::Physics::AngularVelocity;
-
 namespace Game::BulletHell
 {
+    using Position = Physics::Position;
+    using Velocity = Physics::Velocity;
+    using Rotation = Physics::Rotation;
+    using Acceleration = Physics::Acceleration;
+    using AngularVelocity = Physics::AngularVelocity;
+
     template <typename T>
-    void MovementSystem([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void movement_system([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
@@ -24,7 +24,7 @@ namespace Game::BulletHell
 
         constexpr auto frame_time = 1;
 
-        for (auto &[id, comps] : query)
+        for (auto &[id, comps]: query)
         {
             auto &pos = comps.get<Position>();
             auto &vel = comps.get<Velocity>();
@@ -62,12 +62,12 @@ namespace Game::BulletHell
         }
     }
 
-    template <typename T>
-    void RotationSystem([[maybe_unused]] T &task_manager, System::ECS::Query<Rotation, AngularVelocity>& query2)
+    template<typename T>
+    void rotation_system([[maybe_unused]] T &task_manager, System::ECS::Query<Rotation, AngularVelocity> &query2)
     {
         constexpr auto frame_time = 1;
 
-        for (auto &[id, comps] : query2)
+        for (auto &[id, comps]: query2)
         {
             comps.get<Rotation>().angleZ += comps.get<AngularVelocity>().v * frame_time;
             if (comps.get<Rotation>().angleZ >= 360)
@@ -76,4 +76,4 @@ namespace Game::BulletHell
             }
         }
     }
-}
+} // namespace Game::BulletHell

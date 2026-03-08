@@ -15,4 +15,4 @@ namespace Game::BulletHell
         explicit Tag(const TagType type) : type(type)
         {}
     };
-}
+} // namespace Game::BulletHell

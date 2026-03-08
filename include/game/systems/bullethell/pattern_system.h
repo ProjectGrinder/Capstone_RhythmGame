@@ -6,7 +6,7 @@
 namespace Game::BulletHell
 {
     template<typename T>
-    void PatternSystem(
+    void pattern_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Pattern, Velocity, Rotation, Acceleration, AngularVelocity> &query,
             System::ECS::Query<Battle::BattleState> &query2,
@@ -24,7 +24,7 @@ namespace Game::BulletHell
 
         constexpr auto frame_time = 1;
 
-        for (auto &[id, comps]: query)
+        for (auto &[id, comps] : query)
         {
             auto &patt_c = comps.get<Pattern>();
 
@@ -89,4 +89,4 @@ namespace Game::BulletHell
             }
         }
     }
-}
+} // namespace Game::BulletHell

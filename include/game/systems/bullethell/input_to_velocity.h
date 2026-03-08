@@ -2,8 +2,12 @@
 
 namespace Game::BulletHell
 {
-    template <typename T>
-    void InputToVelocity([[maybe_unused]] T &syscall, System::ECS::Query<Input> &query1, System::ECS::Query<Player, Physics::Velocity> &query2, System::ECS::Query<Battle::BattleState> &query3)
+    template<typename T>
+    void input_to_velocity(
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<Input> &query1,
+            System::ECS::Query<Player, Physics::Velocity> &query2,
+            System::ECS::Query<Battle::BattleState> &query3)
     {
         if (query1.begin() == query1.end())
             return;
@@ -24,4 +28,4 @@ namespace Game::BulletHell
             comps.get<Physics::Velocity>().vy = input.axis_y * velocity_factor;
         }
     }
-}
+} // namespace Game::BulletHell

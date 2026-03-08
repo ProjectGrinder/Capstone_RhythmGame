@@ -10,4 +10,4 @@ namespace Game::BulletHell
         explicit Player(const bool is_active) : is_active(is_active)
         {}
     };
-}
+} // namespace Game::BulletHell

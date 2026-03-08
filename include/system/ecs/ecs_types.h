@@ -47,7 +47,7 @@ namespace System::ECS
     struct function_traits;
 
     template<typename Ret, typename... Args>
-    struct function_traits<Ret (Args...)>
+    struct function_traits<Ret(Args...)>
     {
         using args_tuple = std::tuple<Args...>;
     };

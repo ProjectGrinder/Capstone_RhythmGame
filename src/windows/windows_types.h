@@ -4,7 +4,10 @@
 #define INLINEOPTIMIZE static inline __attribute__((always_inline)) __forceinline
 
 typedef void *SceneManagerHandler;
-typedef void *DirectxHandler;
+typedef void *IntentStorageHandler;
+typedef void *CompositorHandler;
+typedef void *DirectXHandler;
+typedef void *Dx11AdapterHandler;
 
 typedef enum
 {
@@ -51,10 +54,15 @@ typedef struct
     char is_running;
 
     LONGLONG precision;
+    LARGE_INTEGER perf_frequency;
+    long double delta_time;
 
     VertexQueue *vertex_queue;
     RenderingQueue *rendering_queue;
 
     SceneManagerHandler scene_manager;
-    DirectxHandler directx;
+    IntentStorageHandler intent_storage;
+    CompositorHandler compositor;
+    Dx11AdapterHandler dx11_adapter;
+    DirectXHandler directx;
 } SystemInfo;

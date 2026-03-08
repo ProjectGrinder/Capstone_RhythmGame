@@ -18,4 +18,4 @@ namespace Game::BulletHell
             sequenceID(sequenceID)
         {}
     };
-}
+} // namespace Game::BulletHell

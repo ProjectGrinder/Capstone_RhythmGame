@@ -6,25 +6,30 @@ static char log_initialize = 0;
 
 void log_init(void)
 {
+#ifdef _DEBUG
     if (!log_initialize)
     {
         InitializeCriticalSection(&log_lock);
         log_initialize = 1;
     }
+#endif
 }
 
 void log_cleanup(void)
 {
+#ifdef _DEBUG
     if (log_initialize)
     {
         DeleteCriticalSection(&log_lock);
         log_initialize = 0;
     }
+#endif
 }
 
 #pragma warning(disable : 4200)
 void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const char *format, _In_...)
 {
+#ifdef _DEBUG
     /* We can use va_* because it's compiler directive hence no CRT */
     SYSTEMTIME st = {0};
     va_list args = NULL;
@@ -49,6 +54,9 @@ void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const
     case LL_ERROR:
         type = "Error";
         break;
+    default:
+        type = "Unknown";
+        break;
     }
 
     GetLocalTime(&st);
@@ -72,6 +80,7 @@ void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const
     EnterCriticalSection(&log_lock);
     OutputDebugString(final);
     LeaveCriticalSection(&log_lock);
+#endif
 
 exit:
     return;
@@ -116,7 +125,7 @@ DWORD file_read(_Out_ FileContent **content, _In_ const char *path)
         goto exit;
     }
 
-    LOG_INFO("Openning file at: %s", full_path);
+    LOG_INFO("Opening file at: %s", full_path);
     byte_read = 0;
     const HANDLE hfile =
             CreateFile(full_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -239,16 +248,19 @@ static FORCEINLINE void *__inline_memset(void *dest, int ch, size_t count)
     return (dest);
 }
 
+/*
 void *memset(void *dest, int ch, size_t count)
 {
     if (count >= SMALL_SIZE)
         return (__asm_memset(dest, ch, count));
     return (__inline_memset(dest, ch, count));
 }
+*/
 
 extern void *__asm_memcpy(void *dest, const void *src, size_t size);
 
-static FORCEINLINE void *__inline_memcpy(void *dest, const void *src, size_t size)
+/*
+static FORCEINLINE __attribute__((unused)) void *__inline_memcpy(void *dest, const void *src, size_t size)
 {
     u8 *dptr = (u8 *) dest;
     const u8 *sptr = (const u8 *) src;
@@ -285,10 +297,13 @@ static FORCEINLINE void *__inline_memcpy(void *dest, const void *src, size_t siz
 
     return dest;
 }
+*/
 
+/*
 void *memcpy(void *dest, const void *src, size_t size)
 {
     if (size >= SMALL_SIZE)
         return (__asm_memcpy(dest, src, size));
     return (__inline_memcpy(dest, src, size));
 }
+*/

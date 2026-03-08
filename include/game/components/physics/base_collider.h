@@ -24,4 +24,4 @@ namespace Game::Physics
             offset_x(offset_x), offset_y(offset_y), layer(layer), mask(mask)
         {}
     };
-}
+} // namespace Game::Physics

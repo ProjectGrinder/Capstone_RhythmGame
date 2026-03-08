@@ -2,7 +2,7 @@
 
 #include "utils/windows_utils.h"
 
-LARGE_INTEGER perf_frequency;
+extern LARGE_INTEGER get_perf_frequency();
 
 LRESULT CALLBACK
 window_process(_In_ const HWND hwnd, _In_ const UINT msg, _In_ const WPARAM w_param, _In_ const LPARAM l_param)
@@ -203,9 +203,9 @@ Exit:
     return (error);
 }
 
-void __vectorcall sleep_init(void)
+void __vectorcall sleep_init(LARGE_INTEGER *perf_frequency)
 {
-    QueryPerformanceFrequency(&perf_frequency);
+    QueryPerformanceFrequency(perf_frequency);
 }
 
 void __vectorcall process_system_message(_In_ SystemInfo *system_info, _In_ MSG *msg)
@@ -223,6 +223,7 @@ void __vectorcall sleep(_In_ const LONGLONG amount)
     LARGE_INTEGER start, end;
 
     QueryPerformanceCounter(&start);
+    LARGE_INTEGER perf_frequency = get_perf_frequency();
 
     do
     {

@@ -37,4 +37,4 @@ namespace Game::Physics
             radius_y = new_radius;
         }
     };
-}
+} // namespace Game::Physics

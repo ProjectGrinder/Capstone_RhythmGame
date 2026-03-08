@@ -15,4 +15,4 @@ namespace Game::Physics
         ax(ax), ay(ay), max_speed_x(max_speed_x), max_speed_y(max_speed_y), min_speed_x(min_speed_x), min_speed_y(min_speed_y)
         {}
     };
-}
+} // namespace Game::Physics

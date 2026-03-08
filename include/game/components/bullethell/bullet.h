@@ -20,4 +20,4 @@ namespace Game::BulletHell
         explicit Bullet(const bool damageable, const int damage, const int pierce) : is_active(true), is_damageable(damageable), damage(damage), pierce(pierce)
         {}
     };
-}
+} // namespace Game::BulletHell

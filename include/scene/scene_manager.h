@@ -22,7 +22,7 @@ namespace Scene
                     {
                         if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
                         {
-                            scene.Exit();
+                            scene.exit();
                         }
                     },
                     scene_template);
@@ -30,7 +30,7 @@ namespace Scene
             LOG_INFO("Info: Changing scene to %s", T::name);
             scene_template = T::instance();
             instance()._current_manager.reset();
-            instance()._current_manager = T::Init();
+            instance()._current_manager = T::init();
         }
 
         static void update();

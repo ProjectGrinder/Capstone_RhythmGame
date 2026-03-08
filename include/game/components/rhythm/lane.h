@@ -8,4 +8,4 @@ namespace Game::Rhythm
         explicit Lane(const int lane) : lane(lane)
         {}
     };
-}
+} // namespace Game::Rhythm

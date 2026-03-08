@@ -1,11 +1,12 @@
 #pragma once
 
 #include "base_collider.h"
+#include "position.h"
 
 // FIXME: May separate thread
 namespace Game::Physics
 {
-    struct RectangularCollider: BaseCollider
+    struct RectangularCollider : BaseCollider
     {
         float size_x;
         float size_y;
@@ -20,4 +21,4 @@ namespace Game::Physics
             BaseCollider(offset_x, offset_y, layer, mask), size_x(size_x), size_y(size_y)
         {}
     };
-}
+} // namespace Game::Physics

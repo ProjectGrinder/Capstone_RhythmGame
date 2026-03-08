@@ -11,4 +11,4 @@ namespace Game::BulletHell
         {}
 
     };
-}
+} // namespace Game::BulletHell
