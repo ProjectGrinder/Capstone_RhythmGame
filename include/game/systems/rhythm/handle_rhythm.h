@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/components.h"
+#include "utils/print_debug.h"
 
 namespace Game::Rhythm
 {
@@ -15,20 +16,21 @@ namespace Game::Rhythm
         constexpr auto perfect_judge = 50;
         constexpr auto great_judge = 75;
         constexpr auto fine_judge = 100;
+        const auto timing = battle_query.front().get<Battle::BattleState>().clock_time;
         if (time_diff >= -1 * perfect_judge && time_diff <= perfect_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-            LOG_INFO("Timing %d Lane %d: Perfect");
+            LOG_INFO("Timing %d: Perfect", timing);
         }
         else if (time_diff >= -1 * great_judge && time_diff <= great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
-            LOG_INFO("Timing %d Lane %d: Great");
+            LOG_INFO("Timing %d: Great", timing);
         }
         else if (time_diff >= -1 * fine_judge && time_diff <= fine_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
-            LOG_INFO("Timing %d Lane %d: Fine");
+            LOG_INFO("Timing %d: Fine", timing);
         }
         else return;
 
@@ -87,25 +89,26 @@ namespace Game::Rhythm
         System::ECS::pid &id,
         System::ECS::Query<Battle::BattleState> &battle_query)
     {
+        const auto timing = battle_query.front().get<Battle::BattleState>().clock_time;
         if (time_diff_end >= -50)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-            LOG_INFO("Timing %d Lane %d: End Hold Perfect");
+            LOG_INFO("Timing %d: End Hold Perfect", timing);
         }
         else if (time_diff_end >= -75)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
-            LOG_INFO("Timing %d Lane %d: End Hold Great");
+            LOG_INFO("Timing %d: End Hold Great", timing);
         }
         else if (time_diff_end >= -100)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
-            LOG_INFO("Timing %d Lane %d: End Hold Fine");
+            LOG_INFO("Timing %d: End Hold Fine", timing);
         }
         else
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
-            LOG_INFO("Timing %d Lane %d: End Hold Miss");
+            LOG_INFO("Timing %d: End Hold Miss", timing);
         }
         syscall.remove_entity(id);
     }
@@ -192,7 +195,7 @@ namespace Game::Rhythm
                 if (time_diff_end <= 0) // check for perfect end timing
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-                    LOG_INFO("Timing %d Lane %d: End Hold Perfect", end_time, lane_num);
+                    LOG_INFO("Timing %d: End Hold Perfect", end_time);
 
                     syscall.remove_entity(note_id);
                     break;
