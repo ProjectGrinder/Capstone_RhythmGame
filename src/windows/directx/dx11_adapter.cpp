@@ -83,12 +83,7 @@ namespace System::Render
             std::vector<D3D11_INPUT_ELEMENT_DESC> vert_input_element_desc{};
 
 
-            hr = device->CreateVertexShader(
-                vs.data->data,
-                vs.data->size,
-                nullptr,
-                &vertex_shader
-            );
+            hr = device->CreateVertexShader(vs.data->data, vs.data->size, nullptr, &vertex_shader);
 
             if (FAILED(hr))
             {
@@ -97,7 +92,6 @@ namespace System::Render
             }
 
             render_object.vertex_shader = vertex_shader;
-
 
 
             for (size_t i = 0; i < vs_input_attribute_count; ++i)
@@ -121,12 +115,7 @@ namespace System::Render
 
             const auto ps = get_assets_record(common.pixel_shader);
 
-            hr = device->CreatePixelShader(
-                ps.data->data,
-                ps.data->size,
-                nullptr,
-                &pixel_shader
-            );
+            hr = device->CreatePixelShader(ps.data->data, ps.data->size, nullptr, &pixel_shader);
             if (FAILED(hr))
             {
                 LOG_ERROR("Failed to create pixel shader, Code 0x%08lx", hr);

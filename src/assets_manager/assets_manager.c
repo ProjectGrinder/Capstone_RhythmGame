@@ -94,6 +94,8 @@ assets_id load_vertex_shader(const char *path, const char *name, InputAttributeD
     /* need to copy */
     InputAttributeDescription *cpy = heap_alloc(sizeof(*attributes) * count);
     memcpy(cpy, attributes, count);
+    cpy->semantic = strdup(attributes->semantic);
+    LOG_INFO("original: %s, copy: %s", attributes->semantic, cpy->semantic);
 
     AssetsInfo info = {0};
     info.type = VERTEX_SHADER;
@@ -107,6 +109,8 @@ assets_id load_pixel_shader(const char *path, const char *name, InputAttributeDe
     /* need to copy */
     InputAttributeDescription *cpy = heap_alloc(sizeof(*attributes) * count);
     memcpy(cpy, attributes, count);
+    cpy->semantic = strdup(attributes->semantic);
+    LOG_INFO("original: %s, copy: %s", attributes->semantic, cpy->semantic);
 
     AssetsInfo info = {0};
     info.type = PIXEL_SHADER;
@@ -158,6 +162,7 @@ void free_assets(assets_id id)
     {
     case VERTEX_SHADER:
     case PIXEL_SHADER:
+        heap_free(current->info.info.as_shader.data->semantic);
         heap_free(current->info.info.as_shader.data);
         break;
     default:

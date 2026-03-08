@@ -25,8 +25,8 @@ HRESULT dx11_adapter_init(Dx11AdapterHandler *handler, DirectXHandler *directx)
     manager = new (manager_alloc) System::Render::Dx11Adapter(*device_resources);
 
     *handler = manager;
-    exit:
-        return (error);
+exit:
+    return (error);
 }
 
 void dx11_adapter_convert(Dx11AdapterHandler *api, DirectXHandler *directx, CompositorHandler *compositor)
@@ -75,3 +75,4 @@ void dx11_adapter_cleanup(Dx11AdapterHandler *api)
     HeapFree(GetProcessHeap(), 0, manager);
     *api = nullptr;
 }
+
