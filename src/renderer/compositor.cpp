@@ -81,12 +81,16 @@ namespace System::Render
             common.color = drawIntent.common.color;
             common.layer = drawIntent.common.layer;
             common.order = drawIntent.common.order;
-            common.rotation_z = drawIntent.common.rotation_z;
+
+            // rotate on global
+            const auto pivot = drawIntent.common.pivot;
+            const auto rotation_z = drawIntent.common.rotation_z;
 
             std::variant<ComposedSpriteDesc, ComposedTextDesc, TriangleDrawDesc> special{};
             switch (drawIntent.kind)
             {
             case DrawKind::KIND_SPRITE: {
+                /*
                 auto &sprite_draw_desc = std::get<SpriteDrawDesc>(drawIntent.special);
                 special = ComposedSpriteDesc{};
                 auto &sprite = std::get<ComposedSpriteDesc>(special);
@@ -103,9 +107,11 @@ namespace System::Render
                 }
                 sprite.flipX = sprite_draw_desc.flipX;
                 sprite.flipY = sprite_draw_desc.flipY;
+                */
                 break;
             }
             case DrawKind::KIND_TEXT: {
+                /*
                 auto &text_draw_desc = std::get<TextDrawDesc>(drawIntent.special);
                 special = ComposedTextDesc{};
                 auto &text = std::get<ComposedTextDesc>(special);
@@ -116,6 +122,7 @@ namespace System::Render
                 {
                     text.font = load_font(text_draw_desc.font_name, text_draw_desc.font_name, 0);
                 }
+                */
                 break;
             }
             case DrawKind::KIND_UNKNOWN: {
@@ -125,7 +132,7 @@ namespace System::Render
                 auto &triangle_draw_desc = std::get<TriangleDrawDesc>(intent.value().special);
                 special = TriangleDrawDesc{};
                 auto &triangle = std::get<TriangleDrawDesc>(special);
-                triangle = Math::project_triangle_world_to_ndc(triangle_draw_desc, camera);
+                triangle = Math::local_to_ndc(triangle_draw_desc, rotation_z, pivot, camera);
                 break;
             }
             compositor._items.push_back(CompositorItem{drawIntent.kind, common, std::move(special)});

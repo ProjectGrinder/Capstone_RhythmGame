@@ -17,7 +17,7 @@ namespace Scene
                 Game::Render::Material,
                 Game::Render::Text,
                 Game::Render::IntentHandle,
-                Game::Render::Rotation,
+                Game::Render::Transform,
                 Game::Render::Triangle>;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -27,7 +27,8 @@ namespace Scene
                 Game::Render::spin_camera<Syscall>,
                 Game::Render::set_camera<Syscall>,
                 Game::Render::material_intent<Syscall>,
-                Game::Render::triangle_intent<Syscall>>;
+                Game::Render::triangle_intent<Syscall>,
+                Game::Render::transform_intent<Syscall>>;
 
         // declare functions
         static TaskManager init();

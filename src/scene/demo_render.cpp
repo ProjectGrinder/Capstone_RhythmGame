@@ -30,6 +30,8 @@ Scene::DemoRender::TaskManager Scene::DemoRender::init()
                     const_cast<char *>("shaders/ps/rainbow.cso"),
                     rainbow_ps_input_attributes,
                     2),
+            Game::Render::Transform{
+                    Math::Point{2, 2, 0, 0, 0, 0, 0}, 0, 0, 0},
             Game::Render::IntentHandle{});
     tm.run_all();
     return (tm);

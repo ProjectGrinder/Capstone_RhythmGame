@@ -56,7 +56,8 @@ namespace System::Render
         uint32_t layer = 0;
         uint32_t order = 0;
 
-        // 2D-friendly rotation hint
+        // transform hint
+        Math::Point pivot;
         float rotation_z = 0.0f;
 
         // Is visible
@@ -110,7 +111,7 @@ namespace System::Render
 
     struct Camera
     {
-        float offsetX, offsetY;
+        Math::Point offset;
         float scaleX, scaleY;
         float rotation;
         float zoom;
