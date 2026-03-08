@@ -108,10 +108,11 @@ namespace Scene
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             Game::Battle::input_system<Syscall>,
-            Game::Rhythm::load_notes<Syscall>,
-            Game::Rhythm::handle_rhythm<Syscall>,
-            Game::Rhythm::handle_miss_note<Syscall>,
-            Game::Rhythm::handle_bpm<Syscall>,
+            // Game::Rhythm::load_notes<Syscall>,
+            // Game::Rhythm::handle_rhythm<Syscall>,
+            // Game::Rhythm::handle_miss_note<Syscall>,
+            // Game::Rhythm::handle_bpm<Syscall>,
+            Game::Rhythm::test_rhythm<Syscall>,
             Game::Battle::update_global_clock<Syscall>
             >;
         
