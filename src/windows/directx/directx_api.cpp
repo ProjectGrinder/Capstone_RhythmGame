@@ -40,3 +40,13 @@ void directx_device_clean_up(DirectXHandler *api)
     HeapFree(GetProcessHeap(), 0, manager);
     *api = nullptr;
 }
+
+
+void directx_device_present(_In_ DirectXHandler *api)
+{
+    if (api == nullptr)
+        return;
+
+    auto *manager = static_cast<Windows::DeviceResources *>(*api);
+    manager->present();
+}

@@ -25,6 +25,7 @@ void log_init(void);
 void log_cleanup(void);
 void log_message(_In_ LogLevel level, _In_ const char *function_name, _In_ const char *format, _In_...);
 
+/*
 FORCEINLINE size_t strlen(_In_ const char *str)
 {
     size_t cnt = 0;
@@ -32,6 +33,7 @@ FORCEINLINE size_t strlen(_In_ const char *str)
         ++cnt;
     return (cnt);
 }
+*/
 
 #pragma warning(disable : 4200)
 typedef struct

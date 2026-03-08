@@ -6,7 +6,8 @@
 typedef void *SceneManagerHandler;
 typedef void *IntentStorageHandler;
 typedef void *CompositorHandler;
-typedef void *DirectxHandler;
+typedef void *DirectXHandler;
+typedef void *Dx11AdapterHandler;
 
 typedef enum
 {
@@ -60,7 +61,8 @@ typedef struct
     RenderingQueue *rendering_queue;
 
     SceneManagerHandler scene_manager;
-    IntentStorageHandler render_storage;
+    IntentStorageHandler intent_storage;
     CompositorHandler compositor;
-    DirectxHandler directx;
+    Dx11AdapterHandler dx11_adapter;
+    DirectXHandler directx;
 } SystemInfo;

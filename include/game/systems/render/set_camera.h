@@ -8,11 +8,10 @@ namespace Game::Render
         if (query.begin() == query.end())
             return;
 
-        const auto &[offsetX, offsetY, scaleX, scaleY, rotation, zoom] = query.front().get<Game::Render::Camera2D>();
+        const auto &[offset, scaleX, scaleY, rotation, zoom] = query.front().get<Game::Render::Camera2D>();
         // ReSharper disable once CppUseStructuredBinding
         auto &intent_camera = System::Render::IntentStorage::get_camera();
-        intent_camera.offsetX = offsetX;
-        intent_camera.offsetY = offsetY;
+        intent_camera.offset = offset;
         intent_camera.scaleX = scaleX;
         intent_camera.scaleY = scaleY;
         intent_camera.zoom = zoom;

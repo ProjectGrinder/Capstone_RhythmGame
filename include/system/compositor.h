@@ -8,32 +8,57 @@
 // helpers
 namespace Math
 {
-
-    static inline Vector2<float> rotate(const Vector2<float> &p, const float radians)
+    // rotates a point around the origin with angle radians in the Z clockwise direction
+    static inline Point rotate(const Point &p, const float radians)
     {
         const float c = std::cos(radians);
         const float s = std::sin(radians);
-        return (Vector2{p.x * c - p.y * s, p.x * s + p.y * c});
+        return (
+                Point{p.pos[0] * c - p.pos[1] * s,
+                      p.pos[0] * s + p.pos[1] * c,
+                      p.pos[2],
+                      p.color[0],
+                      p.color[1],
+                      p.color[2],
+                      p.color[3]});
     }
 
-    // World space -> camera view space
-    static inline Vector2<float> world_to_view(const Vector2<float> &world, const System::Render::Camera &cam)
+    // transfers a local coordinate to world coordinates using a center-of-object coordinate
+    static inline Point local_to_world(const Point &p, const Point &center)
+    {
+        return (
+                Point{p.pos[0] + center.pos[0],
+                      p.pos[1] + center.pos[1],
+                      p.pos[2],
+                      p.color[0],
+                      p.color[1],
+                      p.color[2],
+                      p.color[3]});
+    }
+
+    // transfer coordinates from world space to camera view space
+    static inline Point world_to_view(const Point &world, const System::Render::Camera &cam)
     {
         // Move world relative to camera position
-        Vector2 p{world.x - cam.offsetX, world.y - cam.offsetY};
+        Point p{world.pos[0] - cam.offset.pos[0],
+                world.pos[1] - cam.offset.pos[1],
+                world.pos[2],
+                world.color[0],
+                world.color[1],
+                world.color[2],
+                world.color[3]};
 
         // Apply inverse camera rotation (i.e., rotate the world opposite the camera)
         p = rotate(p, -cam.rotation);
 
-        // Zoom in means things appear bigger => multiply coordinates by zoom in view space
-        p.x *= cam.zoom;
-        p.y *= cam.zoom;
+        // Zoom in means things appear bigger -> multiply coordinates by zoom in view space
+        p.pos[0] *= cam.zoom;
+        p.pos[1] *= cam.zoom;
 
         return (p);
     }
 
-    // Camera view space -> Normalized device coordinates
-    static inline Vector2<float> view_to_ndc(const Vector2<float> &view, const System::Render::Camera &cam)
+    static inline Point view_to_ndc(const Point &view, const System::Render::Camera &cam)
     {
         const float halfW = cam.scaleX * 0.5f;
         const float halfH = cam.scaleY * 0.5f;
@@ -41,55 +66,30 @@ namespace Math
         const float invHalfW = (halfW != 0.0f) ? (1.0f / halfW) : 0.0f;
         const float invHalfH = (halfH != 0.0f) ? (1.0f / halfH) : 0.0f;
 
-        // Map view-space to NDC. Flip Y so +Y is up in NDC.
-        return (Vector2{view.x * invHalfW, -view.y * invHalfH});
+        return (
+                Point{view.pos[0] * invHalfW,
+                      view.pos[1] * invHalfH,
+                      view.pos[2],
+                      view.color[0],
+                      view.color[1],
+                      view.color[2],
+                      view.color[3]});
     }
 
-    // Takes a world-space axis-aligned rect and returns its 4 corners in NDC:
-    // order: (x0,y0), (x1,y0), (x1,y1), (x0,y1) in the rect's local orientation
-    static inline std::array<Vector2<float>, 4>
-    project_rect_world_to_ndc(const System::Render::Rect &dstWorld, const System::Render::Camera &cam)
+    // Takes a local coordinate TriangleDrawDesc, add rotation in Z clockwise direction, then transform to NDC.
+    static inline System::Render::TriangleDrawDesc local_to_ndc(
+            const System::Render::TriangleDrawDesc &desc,
+            const float rotation_z,
+            const Point &pivot,
+            const System::Render::Camera &cam)
     {
-        const float x0 = dstWorld.u0;
-        const float y0 = dstWorld.v0;
-        const float x1 = dstWorld.u1;
-        const float y1 = dstWorld.v1;
-
-        const Vector2 w0{x0, y0};
-        const Vector2 w1{x1, y0};
-        const Vector2 w2{x1, y1};
-        const Vector2 w3{x0, y1};
-
-        const Vector2 v0 = world_to_view(w0, cam);
-        const Vector2 v1 = world_to_view(w1, cam);
-        const Vector2 v2 = world_to_view(w2, cam);
-        const Vector2 v3 = world_to_view(w3, cam);
-
-        return (std::array{view_to_ndc(v0, cam), view_to_ndc(v1, cam), view_to_ndc(v2, cam), view_to_ndc(v3, cam)});
+        return System::Render::TriangleDrawDesc{
+            view_to_ndc(world_to_view(local_to_world(rotate(desc.points[0], rotation_z), pivot), cam), cam),
+            view_to_ndc(world_to_view(local_to_world(rotate(desc.points[1], rotation_z), pivot), cam), cam),
+            view_to_ndc(world_to_view(local_to_world(rotate(desc.points[2], rotation_z), pivot), cam), cam)
+        };
     }
 
-    static inline bool ndc_in_camera(const std::array<Vector2<float>, 4> &coords)
-    {
-        for (const auto &coord: coords)
-        {
-            if (coord.x < -1.0f || coord.x > 1.0f || coord.y < -1.0f || coord.y > 1.0f)
-            {
-                return (false);
-            }
-        }
-        return (true);
-    }
-
-    // TextDrawDesc -> NDC (projects the text's anchor point position).
-    // Note: Without font metrics we can't compute a full NDC quad here; this gives you the
-    //       projected position you can feed into your text renderer / batching logic.
-    static inline Vector2<float>
-    project_text_anchor_world_to_ndc(const System::Render::TextDrawDesc &text, const System::Render::Camera &cam)
-    {
-        const Vector2 world{text.x, text.y};
-        const Vector2 view = world_to_view(world, cam);
-        return (view_to_ndc(view, cam));
-    }
 } // namespace Math
 
 namespace System::Render
@@ -114,10 +114,6 @@ namespace System::Render
         // Sorting (kept here so both sprite/text can be sorted uniformly)
         uint32_t layer = 0;
         uint32_t order = 0;
-
-        // Rotation (what do you mean you still haven't rotated?)
-        // TODO: figure out if rotation happens here
-        float rotation_z = 0.0f;
     };
 
     struct ComposedSpriteDesc

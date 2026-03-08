@@ -5,11 +5,11 @@
 namespace System::Render
 {
     typedef void *IntentStorageHandler;
-    extern "C" IntentStorageHandler get_render_storage();
+    extern "C" IntentStorageHandler get_intent_storage(void);
 
     IntentStorage &IntentStorage::instance()
     {
-        auto *instance = static_cast<IntentStorage *>(get_render_storage());
+        auto *instance = static_cast<IntentStorage *>(get_intent_storage());
         if (instance == nullptr)
         {
             LOG_ERROR("IntentStorage used before initialization or after cleanup");

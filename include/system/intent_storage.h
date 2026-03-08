@@ -4,6 +4,9 @@
 #include <variant>
 #include <vector>
 
+#include "maths.h"
+#include "utils/input_attribute_description.h"
+
 namespace System::Render
 {
     // Common
@@ -37,7 +40,11 @@ namespace System::Render
     {
         // Pipeline selection (names)
         const char *vert_shader = nullptr;
+        std::vector<InputAttributeDescription> vert_shader_input_attributes{};
+        size_t vert_shader_input_attributes_count = 0;
         const char *pixel_shader = nullptr;
+        std::vector<InputAttributeDescription> pixel_shader_input_attributes{};
+        size_t pixel_shader_input_attributes_count = 0;
 
         /* render_prior: coarse render priority */
         uint32_t render_prior = 0;
@@ -49,7 +56,8 @@ namespace System::Render
         uint32_t layer = 0;
         uint32_t order = 0;
 
-        // 2D-friendly rotation hint
+        // transform hint
+        Math::Point pivot;
         float rotation_z = 0.0f;
 
         // Is visible
@@ -82,7 +90,7 @@ namespace System::Render
 
     struct TriangleDrawDesc
     {
-        float u0, v0, u1, v1, u2, v2;
+        Math::Point points[3];
     };
 
     struct DrawIntent
@@ -103,7 +111,7 @@ namespace System::Render
 
     struct Camera
     {
-        float offsetX, offsetY;
+        Math::Point offset;
         float scaleX, scaleY;
         float rotation;
         float zoom;
