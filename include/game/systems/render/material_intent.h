@@ -25,7 +25,8 @@ namespace Game::Render
             common.pixel_shader_input_attributes_count = material.pixel_shader_input_attributes_count;
             common.visible = material.visible;
             common.render_prior = material.render_prior;
-            common.color = System::Render::Color(material.color.r, material.color.g, material.color.b, material.color.a);
+            common.color =
+                    System::Render::Color(material.color.r, material.color.g, material.color.b, material.color.a);
         }
     }
 } // namespace Game::Render

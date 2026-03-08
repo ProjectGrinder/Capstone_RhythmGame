@@ -34,7 +34,6 @@ namespace System::Render
             }
 
             auto &drawIntent = intent.value();
-
             ComposedDrawCommon common{};
             if (drawIntent.common.pixel_shader != nullptr)
             {

@@ -91,31 +91,20 @@ assets_id load_sprite(const char *path, const char *name, size_t width, size_t h
 
 assets_id load_vertex_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count)
 {
-    /* need to copy */
-    InputAttributeDescription *cpy = heap_alloc(sizeof(*attributes) * count);
-    memcpy(cpy, attributes, count);
-    cpy->semantic = strdup(attributes->semantic);
-    LOG_INFO("original: %s, copy: %s", attributes->semantic, cpy->semantic);
 
     AssetsInfo info = {0};
     info.type = VERTEX_SHADER;
     info.info.as_shader.count = count;
-    info.info.as_shader.data = cpy;
+    info.info.as_shader.data = attributes;
     return (load_assets(path, name, info));
 }
 
 assets_id load_pixel_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count)
 {
-    /* need to copy */
-    InputAttributeDescription *cpy = heap_alloc(sizeof(*attributes) * count);
-    memcpy(cpy, attributes, count);
-    cpy->semantic = strdup(attributes->semantic);
-    LOG_INFO("original: %s, copy: %s", attributes->semantic, cpy->semantic);
-
     AssetsInfo info = {0};
     info.type = PIXEL_SHADER;
     info.info.as_shader.count = count;
-    info.info.as_shader.data = cpy;
+    info.info.as_shader.data = attributes;
     return (load_assets(path, name, info));
 }
 
@@ -157,17 +146,6 @@ void free_assets(assets_id id)
     uint16_t index = ASSET_INDEX(id);
     AssetsRecord *current = &assets_records[index];
     AssetsIDMapping *map = &id_map[index];
-
-    switch (current->info.type)
-    {
-    case VERTEX_SHADER:
-    case PIXEL_SHADER:
-        heap_free(current->info.info.as_shader.data->semantic);
-        heap_free(current->info.info.as_shader.data);
-        break;
-    default:
-        break;
-    }
 
     file_free(&current->data);
     heap_free(map->name);
