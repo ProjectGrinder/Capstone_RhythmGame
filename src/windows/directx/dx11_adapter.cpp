@@ -66,6 +66,7 @@ namespace System::Render
     void
     Dx11Adapter::convert([[maybe_unused]] Windows::DeviceResources &resources, const std::vector<CompositorItem> &items)
     {
+        instance()._items.clear();
         auto device = resources.get_device();
 
         for (auto &[kind, common, special]: items)
@@ -166,6 +167,7 @@ namespace System::Render
 
     void Dx11Adapter::render_all_items()
     {
+        LOG_INFO("Rendering all items");
         const auto &items = instance()._items;
         auto env = instance()._environment;
         for (auto &item: items)

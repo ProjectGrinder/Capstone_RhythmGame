@@ -43,7 +43,7 @@ namespace System::Render
                     common.pixel_shader = load_pixel_shader(
                             drawIntent.common.pixel_shader,
                             drawIntent.common.pixel_shader,
-                            drawIntent.common.pixel_shader_input_attributes,
+                            drawIntent.common.pixel_shader_input_attributes.data(),
                             drawIntent.common.pixel_shader_input_attributes_count);
                 }
                 else
@@ -64,7 +64,7 @@ namespace System::Render
                     common.vert_shader = load_vertex_shader(
                             drawIntent.common.vert_shader,
                             drawIntent.common.vert_shader,
-                            drawIntent.common.vert_shader_input_attributes,
+                            drawIntent.common.vert_shader_input_attributes.data(),
                             drawIntent.common.vert_shader_input_attributes_count);
                 }
                 else

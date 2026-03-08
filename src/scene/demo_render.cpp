@@ -9,12 +9,12 @@ Scene::DemoRender Scene::DemoRender::instance()
 
 Scene::DemoRender::TaskManager Scene::DemoRender::init()
 {
-    InputAttributeDescription rainbow_vs_input_attributes[] = {
+    std::vector<InputAttributeDescription> rainbow_vs_input_attributes = {
             InputAttributeDescription{const_cast<char *>("Pos"), InputType::R32G32B32_FLOAT, 0},
             InputAttributeDescription{const_cast<char *>("Color"), InputType::R32G32B32A32_FLOAT, 12},
     };
 
-    InputAttributeDescription rainbow_ps_input_attributes[] = {
+    std::vector<InputAttributeDescription> rainbow_ps_input_attributes = {
             InputAttributeDescription{const_cast<char *>("SV_POSITION"), InputType::R32G32B32A32_FLOAT, 0},
             InputAttributeDescription{const_cast<char *>("Color"), InputType::R32G32B32A32_FLOAT, 16}};
 

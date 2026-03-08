@@ -9,8 +9,10 @@ typedef unsigned long DWORD;
 
 extern DWORD __stdcall file_read(FileContent **content, const char *path);
 extern void __stdcall file_free(FileContent **content);
+extern void *heap_alloc(size_t size);
 extern void heap_free(void *data);
 extern void *memcpy(void *dst, const void *src, size_t size);
+extern char *strdup(const char *src);
 
 // Leave -1 for error indication
 static AssetsRecord assets_records[(SHORT_MAX - 1)] = {0};
@@ -18,6 +20,27 @@ static AssetsRecord assets_records[(SHORT_MAX - 1)] = {0};
 static AssetsIDMapping id_map[(SHORT_MAX - 1)];
 static uint16_t record_index = 0;
 
+static InputAttributeDescription *copy_input_attributes(const InputAttributeDescription *attributes, size_t count)
+{
+    size_t bytes = 0;
+    InputAttributeDescription *copy = NULL;
+
+    if (attributes == NULL || count == 0)
+    {
+        return NULL;
+    }
+
+    bytes = sizeof(InputAttributeDescription) * count;
+    copy = (InputAttributeDescription *) heap_alloc(bytes);
+    if (copy == NULL)
+    {
+        LOG_ERROR("Failed to allocate shader input attribute copy");
+        return NULL;
+    }
+
+    memcpy(copy, attributes, bytes);
+    return copy;
+}
 
 static inline assets_id make_id(uint16_t index, uint16_t gen)
 {
@@ -89,22 +112,29 @@ assets_id load_sprite(const char *path, const char *name, size_t width, size_t h
     return (load_assets(path, name, info));
 }
 
-assets_id load_vertex_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count)
+assets_id load_vertex_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count)
 {
-
     AssetsInfo info = {0};
     info.type = VERTEX_SHADER;
     info.info.as_shader.count = count;
-    info.info.as_shader.data = attributes;
+    info.info.as_shader.data = copy_input_attributes(attributes, count);
+    if (count > 0 && info.info.as_shader.data == NULL)
+    {
+        return (uint32_t) -1;
+    }
     return (load_assets(path, name, info));
 }
 
-assets_id load_pixel_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count)
+assets_id load_pixel_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count)
 {
     AssetsInfo info = {0};
     info.type = PIXEL_SHADER;
     info.info.as_shader.count = count;
-    info.info.as_shader.data = attributes;
+    info.info.as_shader.data = copy_input_attributes(attributes, count);
+    if (count > 0 && info.info.as_shader.data == NULL)
+    {
+        return (uint32_t) -1;
+    }
     return (load_assets(path, name, info));
 }
 
@@ -147,6 +177,13 @@ void free_assets(assets_id id)
     AssetsRecord *current = &assets_records[index];
     AssetsIDMapping *map = &id_map[index];
 
+    if (current->info.type == VERTEX_SHADER || current->info.type == PIXEL_SHADER)
+    {
+        heap_free(current->info.info.as_shader.data);
+        current->info.info.as_shader.data = NULL;
+        current->info.info.as_shader.count = 0;
+    }
+
     file_free(&current->data);
     heap_free(map->name);
 
@@ -169,6 +206,8 @@ void assets_cleanup(void)
         case VERTEX_SHADER:
         case PIXEL_SHADER:
             heap_free(curr->info.info.as_shader.data);
+            curr->info.info.as_shader.data = NULL;
+            curr->info.info.as_shader.count = 0;
             break;
         default:
             break;

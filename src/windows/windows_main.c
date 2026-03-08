@@ -160,9 +160,7 @@ int real_main()
 
         scene_manager_update(&system_info.scene_manager);
         compositor_compose(&system_info.intent_storage, &system_info.compositor);
-        LOG_INFO("Calling Convert");
         dx11_adapter_convert(&system_info.dx11_adapter, &system_info.directx, &system_info.compositor);
-        LOG_INFO("Calling Render");
         dx11_adapter_render(&system_info.dx11_adapter);
 
         sleep(system_info.precision);
