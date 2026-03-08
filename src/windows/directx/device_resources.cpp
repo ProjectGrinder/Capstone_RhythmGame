@@ -28,14 +28,7 @@ exit:
 HRESULT Windows::DeviceResources::create_device_resources()
 {
     HRESULT hr = S_OK;
-    D3D_FEATURE_LEVEL levels[] = {
-            D3D_FEATURE_LEVEL_9_1,
-            D3D_FEATURE_LEVEL_9_2,
-            D3D_FEATURE_LEVEL_9_3,
-            D3D_FEATURE_LEVEL_10_0,
-            D3D_FEATURE_LEVEL_10_1,
-            D3D_FEATURE_LEVEL_11_0,
-            D3D_FEATURE_LEVEL_11_1};
+    D3D_FEATURE_LEVEL levels[] = {D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_11_1};
 
     UINT device_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #if defined(DEBUG) || defined(_DEBUG)

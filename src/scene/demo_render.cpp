@@ -21,7 +21,8 @@ Scene::DemoRender::TaskManager Scene::DemoRender::init()
     auto tm = TaskManager{};
     tm.create_entity(Game::Render::Camera2D{});
     tm.create_entity(
-            Game::Render::Triangle{{{-0.5, 0, 0, 1, 0, 0, 1}, {0, 0.5, 0, 0, 1, 0, 1}, {0.5, 0, 0, 0, 0, 1, 1}}, 0, 0},
+            Game::Render::Triangle{
+                    {{{-0.5, 0, 0}, {1, 0, 0, 1}}, {{0, 0.5, 0}, {0, 1, 0, 1}}, {{0.5, 0, 0}, {0, 0, 1, 1}}}, 0, 0},
             Game::Render::Material(
                     const_cast<char *>("shaders/vs/rainbow.cso"),
                     rainbow_vs_input_attributes,
