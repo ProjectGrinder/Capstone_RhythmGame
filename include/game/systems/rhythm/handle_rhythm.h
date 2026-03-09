@@ -264,15 +264,15 @@ namespace Game::Rhythm
         }
         if (key_input.key2_hold == true && first_timing2 < 999999)
         {
-            handle_note_from_lane(1, syscall, note_id2, note_comp2, note_query, battle_query, input_query);
+            handle_note_from_lane(1, syscall, note_id2, note_comp2, battle_query, input_query);
         }
         if (key_input.key3_hold == true && first_timing3 < 999999)
         {
-            handle_note_from_lane(2, syscall, note_id3, note_comp3, note_query, battle_query, input_query);
+            handle_note_from_lane(2, syscall, note_id3, note_comp3, battle_query, input_query);
         }
         if (key_input.key4_hold == true && first_timing4 < 999999)
         {
-            handle_note_from_lane(3, syscall, note_id4, note_comp4, note_query, battle_query, input_query);
+            handle_note_from_lane(3, syscall, note_id4, note_comp4, battle_query, input_query);
         }
     }
 } // namespace Game::Rhythm
