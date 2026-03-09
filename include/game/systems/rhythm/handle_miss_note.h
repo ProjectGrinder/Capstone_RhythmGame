@@ -19,7 +19,7 @@ namespace Game::Rhythm
             return;
         }
 
-        auto &current_timing = battle_query.front().get<Battle::BattleState>().clock_time;
+        const auto &current_timing = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
 
         for (auto &[id, comps]: note_query)
         {

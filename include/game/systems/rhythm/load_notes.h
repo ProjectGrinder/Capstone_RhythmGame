@@ -59,7 +59,7 @@ namespace Game::Rhythm
         auto &battle_state = battle_query.front().get<Battle::BattleState>();
         auto &chart_data = chart_query.front().get<Battle::ChartData>();
         auto &rhythm_state = rhythm_query.front().get<Battle::RhythmState>();
-        const auto &clock = battle_state.clock_time;
+        const auto &clock = battle_state.clock_time / 1000;
 
         // repeat for each lane
         for (auto &lane: chart_data.lanes)
