@@ -1,8 +1,5 @@
 #pragma once
 
-
-#include "position.h"
-
 // FIXME: May separate thread
 namespace Game::Physics
 {

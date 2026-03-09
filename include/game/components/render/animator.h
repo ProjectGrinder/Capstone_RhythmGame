@@ -48,7 +48,7 @@ namespace Game::Render
         explicit Animation(const unsigned int keyN, const bool is_loop) :
             is_loop(is_loop), currentKey(0), keyN(keyN), keyFrameFrame{}, keyframes{}
         {}
-        void AddFrame(const unsigned int frame, AnimationFrame animationFrame)
+        void AddFrame(const unsigned int frame, const AnimationFrame &animationFrame)
         {
             isInitialized = false;
             keyFrameFrame[currentKey] = frame;

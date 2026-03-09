@@ -4,7 +4,7 @@ namespace Game::BulletHell
 {
     // Default FadeIn/Out
     template <typename T>
-    void Laser_System([[maybe_unused]] T &syscall, System::ECS::Query<Laser, Particle, Delay, Physics::Scale, Position, Rotation, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void laser_system([[maybe_unused]] T &syscall, System::ECS::Query<Laser, Particle, Delay, Physics::Scale, Position, Rotation, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;

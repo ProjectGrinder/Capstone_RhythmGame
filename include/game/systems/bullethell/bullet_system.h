@@ -38,7 +38,7 @@ namespace Game::BulletHell
     }
 
     template <typename T>
-    void ShotDelaySystem([[maybe_unused]] T &syscall, System::ECS::Query<Bullet, Delay> &query, System::ECS::Query<Battle::BattleState> &query2)
+    void shot_delay_system([[maybe_unused]] T &syscall, System::ECS::Query<Bullet, Delay> &query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;

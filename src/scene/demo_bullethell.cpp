@@ -6,7 +6,7 @@ Scene::DemoBulletHell Scene::DemoBulletHell::instance()
     return (instance);
 }
 
-std::vector<Scene::DemoBulletHell::ComponentTuple> Scene::DemoBulletHell::Exit()
+std::vector<Scene::DemoBulletHell::ComponentTuple> Scene::DemoBulletHell::exit()
 {
     LOG_INFO("Exiting DemoBulletHell Scene.");
     return {};

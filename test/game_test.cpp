@@ -307,7 +307,7 @@ TEST(Game, bullet_movement2)
 
 TEST(Game, bullet_movement3)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, movement_system<BulletHell_Syscall>, AccelerationSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, movement_system<BulletHell_Syscall>, acceleration_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
@@ -365,7 +365,7 @@ TEST(Game, bullet_movement4)
 
 TEST(Game, bullet_movement5)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, movement_system<BulletHell_Syscall>, AccelerationSystem<BulletHell_Syscall>, rotation_system<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, movement_system<BulletHell_Syscall>, acceleration_system<BulletHell_Syscall>, rotation_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
@@ -396,7 +396,7 @@ TEST(Game, bullet_movement5)
 
 TEST(Game, bullets_movement6)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, movement_system<BulletHell_Syscall>, AccelerationSystem<BulletHell_Syscall>, rotation_system<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, movement_system<BulletHell_Syscall>, acceleration_system<BulletHell_Syscall>, rotation_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
@@ -453,7 +453,7 @@ TEST(Game, bullets_damagable)
 
 TEST(Game, bullets_booming)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ParticleSystem<BulletHell_Syscall>, Boomer_System<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ParticleSystem<BulletHell_Syscall>, boomer_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
@@ -651,7 +651,7 @@ TEST(Game, bullet_collision3)
 
 TEST(Game, bullet_collision4)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ParticleSystem<BulletHell_Syscall>, ShotDelaySystem<BulletHell_Syscall>, Boomer_System<BulletHell_Syscall>, Laser_System<BulletHell_Syscall>, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ParticleSystem<BulletHell_Syscall>, ShotDelaySystem<BulletHell_Syscall>, boomer_system<BulletHell_Syscall>, Laser_System<BulletHell_Syscall>, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
     const pid bhs = CreateBulletHellState(resource);
@@ -744,7 +744,7 @@ TEST(Game, bullet_collision5)
 
 TEST(Game, bullet_pattern1)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, PatternSystem<BulletHell_Syscall>, MovementSystem<BulletHell_Syscall>, AccelerationSystem<BulletHell_Syscall>, RotationSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, PatternSystem<BulletHell_Syscall>, MovementSystem<BulletHell_Syscall>, acceleration_system<BulletHell_Syscall>, RotationSystem<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
     CreatePatternContainer(resource);

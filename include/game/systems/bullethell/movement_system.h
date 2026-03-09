@@ -5,13 +5,14 @@
 #include "game/utils/physics_util.h"
 
 // FIXME: Part of physics, consider separation into its own thread
+using Position = Game::Physics::Position;
+using Velocity = Game::Physics::Velocity;
+using Rotation = Game::Physics::Rotation;
+using Acceleration = Game::Physics::Acceleration;
+using AngularVelocity = Game::Physics::AngularVelocity;
 namespace Game::BulletHell
 {
-    using Position = Physics::Position;
-    using Velocity = Physics::Velocity;
-    using Rotation = Physics::Rotation;
-    using Acceleration = Physics::Acceleration;
-    using AngularVelocity = Physics::AngularVelocity;
+
 
     template <typename T>
     void movement_system([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity>& query, System::ECS::Query<Battle::BattleState> &query2)
@@ -38,7 +39,7 @@ namespace Game::BulletHell
     }
 
     template <typename T>
-    void AccelerationSystem([[maybe_unused]] T &syscall, System::ECS::Query<Velocity,Acceleration>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void acceleration_system([[maybe_unused]] T &syscall, System::ECS::Query<Velocity,Acceleration>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;

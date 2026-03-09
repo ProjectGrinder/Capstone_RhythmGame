@@ -1,8 +1,6 @@
 #pragma once
 
 #include "base_collider.h"
-#include "position.h"
-
 // FIXME: May separate thread
 namespace Game::Physics
 {

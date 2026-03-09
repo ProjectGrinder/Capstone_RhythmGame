@@ -85,7 +85,7 @@ namespace Scene
         using ComponentTuple = std::tuple<
             Game::Battle::BattleState,
             Game::Battle::BulletHellState,
-            Game::Battle::BulletLoader,
+//            Game::Battle::BulletLoader,
             Game::Battle::PatternContainer,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
@@ -109,7 +109,7 @@ namespace Scene
             Game::Physics::Rotation,
             Game::Physics::Velocity,
             Game::Physics::Scale,
-            Game::Render::Rotation,
+            Game::Render::Transform,
             Game::Render::Sprite,
             Game::Render::Material,
             Game::Render::Text,
@@ -118,40 +118,40 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
-            Game::BulletHell::LoadBullets<Syscall>,
-            Game::Battle::InputSystem<Syscall>,
-            Game::BulletHell::InputToVelocity<Syscall>,
-            Game::BulletHell::PatternSystem<Syscall>,
-            Game::BulletHell::MovementSystem<Syscall>,
-            Game::BulletHell::AccelerationSystem<Syscall>,
-            Game::BulletHell::RotationSystem<Syscall>,
-            Game::BulletHell::BulletCollision<Syscall>,
-            Game::BulletHell::PlayerSystem<Syscall>,
-            Game::BulletHell::DelaySystem<Syscall>,
-            Game::BulletHell::ShotDelaySystem<Syscall>,
-            Game::BulletHell::BulletSystem<Syscall>,
-            Game::BulletHell::ParticleSystem<Syscall>,
-            Game::BulletHell::Boomer_System<Syscall>,
-            Game::BulletHell::Laser_System<Syscall>,
-            Game::BulletHell::BouncePatternSystem<Syscall>,
-            Game::BulletHell::HomingPatternSystem<Syscall>,
-            Game::BulletHell::LoggingSystem<Syscall>
+//            Game::BulletHell::load_bullets<Syscall>,
+            Game::Battle::input_system<Syscall>,
+            Game::BulletHell::input_to_velocity<Syscall>,
+            Game::BulletHell::particle_system<Syscall>,
+            Game::BulletHell::movement_system<Syscall>,
+            Game::BulletHell::acceleration_system<Syscall>,
+            Game::BulletHell::rotation_system<Syscall>,
+            Game::BulletHell::bullet_collision<Syscall>,
+            Game::BulletHell::player_system<Syscall>,
+            Game::BulletHell::delay_system<Syscall>,
+            Game::BulletHell::shot_delay_system<Syscall>,
+            Game::BulletHell::bullet_system<Syscall>,
+            Game::BulletHell::particle_system<Syscall>,
+            Game::BulletHell::boomer_system<Syscall>,
+            Game::BulletHell::laser_system<Syscall>,
+            Game::BulletHell::bounce_pattern_system<Syscall>,
+            Game::BulletHell::homing_pattern_system<Syscall>,
+            Game::BulletHell::logging_system<Syscall>
             >;
 
-        static TaskManager Init()
+        static TaskManager init()
         {
             auto tm = TaskManager{};
             // Create and configure BattleState
             tm.create_entity<Game::Battle::BattleState,
             Game::Battle::BulletHellState,
-            Game::Battle::BulletLoader,
-            Game::Battle::PatternContainer,
+            //Game::Battle::BulletLoader,
+            //Game::Battle::PatternContainer,
             Game::Rhythm::KeyInput, Game::BulletHell::Input>
             (
                 Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
                 Game::Battle::BulletHellState(),
-                create_bullet_data(),
-                create_pattern_container(),
+                //create_bullet_data(),
+                //create_pattern_container(),
                 Game::Rhythm::KeyInput(),
                 Game::BulletHell::Input()
                 );
@@ -168,6 +168,6 @@ namespace Scene
             return (tm);
         }
 
-        static std::vector<ComponentTuple> Exit();
+        static std::vector<ComponentTuple> exit();
     };
 }

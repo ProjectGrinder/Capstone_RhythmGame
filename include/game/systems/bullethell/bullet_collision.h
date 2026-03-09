@@ -61,10 +61,12 @@ namespace Game::BulletHell
                                                                 : bullet_hitbox_size_y) * 0.5f;
             if (distance_squared > collision_distance * collision_distance || !bullet.is_damageable) continue;
 		    //Narrow check : SAT
-            const auto player_hitbox_pos = Position(player_pos.x + player_hitbox.offset_x, player_pos.y + player_hitbox.offset_y);
-		    const auto bullet_hitbox_pos = Position(bullet_pos.x + bullet_hitbox.offset_x, bullet_pos.y + bullet_hitbox.offset_y);
+            const auto player_hitbox_pos =
+                    Physics::Position(player_pos.x + player_hitbox.offset_x, player_pos.y + player_hitbox.offset_y);
+		    const auto bullet_hitbox_pos =
+                    Physics::Position(bullet_pos.x + bullet_hitbox.offset_x, bullet_pos.y + bullet_hitbox.offset_y);
 
-		    const auto distVec = Position(player_hitbox_pos.x - bullet_hitbox_pos.x, player_hitbox_pos.y - bullet_hitbox_pos.y);
+		    const auto distVec = Physics::Position(player_hitbox_pos.x - bullet_hitbox_pos.x, player_hitbox_pos.y - bullet_hitbox_pos.y);
 
 		    const float dot_x = distVec.x * cos(bullet_angle) + distVec.y * sin(bullet_angle);
 		    const float dot_y = distVec.x * -sin(bullet_angle) + distVec.y * cos(bullet_angle);
@@ -119,9 +121,10 @@ namespace Game::BulletHell
 	            continue;
 
 	        // Ellipse vs circle collision
-	        const auto player_hitbox_pos = Position(player_pos.x + player_hitbox.offset_x, player_pos.y + player_hitbox.offset_y);
+	        const auto player_hitbox_pos =
+                    Physics::Position(player_pos.x + player_hitbox.offset_x, player_pos.y + player_hitbox.offset_y);
 	        const auto bullet_hitbox_pos =
-                    Position(bullet_pos.x + bullet_hitbox.offset_x, bullet_pos.y + bullet_hitbox.offset_y);
+                    Physics::Position(bullet_pos.x + bullet_hitbox.offset_x, bullet_pos.y + bullet_hitbox.offset_y);
             const float dist_x = player_hitbox_pos.x - bullet_hitbox_pos.x;
             const float dist_y = player_hitbox_pos.y - bullet_hitbox_pos.y;
 

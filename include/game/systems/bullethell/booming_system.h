@@ -5,7 +5,7 @@ namespace Game::BulletHell
 {
         // Default FadeIn/Out
     template <typename T>
-    void Boomer_System([[maybe_unused]] T &syscall, System::ECS::Query<Booming , Particle,Delay, Physics::Scale, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void boomer_system([[maybe_unused]] T &syscall, System::ECS::Query<Booming , Particle,Delay, Physics::Scale, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;

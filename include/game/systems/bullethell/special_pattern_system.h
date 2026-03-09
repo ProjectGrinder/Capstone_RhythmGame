@@ -6,7 +6,7 @@
 namespace Game::BulletHell
 {
     template <typename T>
-        void BouncePatternSystem([[maybe_unused]] T &syscall, System::ECS::Query<Bounce, Physics::Position, Physics::Rotation>& query, System::ECS::Query<Battle::BattleState> &query2)
+        void bounce_pattern_system([[maybe_unused]] T &syscall, System::ECS::Query<Bounce, Physics::Position, Physics::Rotation>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         // TODO: Replace with real bound
         constexpr float stage_bound_x_min = 0;
@@ -37,7 +37,7 @@ namespace Game::BulletHell
     }
 
     template <typename T>
-    void HomingPatternSystem([[maybe_unused]] T &syscall,
+    void homing_pattern_system([[maybe_unused]] T &syscall,
         System::ECS::Query<Homing, Physics::Position, Physics::Rotation>& query,
         System::ECS::Query<Player, Physics::Position> & query2,
         System::ECS::Query<Battle::BattleState> &query3)

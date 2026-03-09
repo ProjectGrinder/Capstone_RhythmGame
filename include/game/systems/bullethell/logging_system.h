@@ -5,7 +5,7 @@
 namespace Game::BulletHell
 {
     template <typename T>
-    void LoggingSystem([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState, Battle::BulletHellState, Battle::BulletLoader> &query, System::ECS::Query<Player, Position> &query2, System::ECS::Query<Bullet, Delay, Position, Rotation, Physics::Scale, Velocity> &query3)
+    void logging_system([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState, Battle::BulletHellState, Battle::BulletLoader> &query, System::ECS::Query<Player, Position> &query2, System::ECS::Query<Bullet, Delay, Position, Rotation, Physics::Scale, Velocity> &query3)
     {
         if (query.begin() == query.end())
             return;

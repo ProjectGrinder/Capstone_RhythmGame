@@ -5,7 +5,7 @@
 namespace Game::BulletHell
 {
     template <typename T>
-    void DelaySystem([[maybe_unused]] T &syscall, System::ECS::Query<Delay> &query, System::ECS::Query<Battle::BattleState> &query2)
+    void delay_system([[maybe_unused]] T &syscall, System::ECS::Query<Delay> &query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
