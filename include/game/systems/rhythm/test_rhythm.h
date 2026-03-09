@@ -12,15 +12,15 @@ namespace Game::Rhythm
         constexpr auto perfect_judge = 50;
         constexpr auto great_judge = 75;
         constexpr auto fine_judge = 100;
-        if (time_diff >= -1 * perfect_judge && time_diff <= perfect_judge)
+        if (time_diff > -1 * perfect_judge && time_diff < perfect_judge)
         {
             LOG_INFO("Timing %d: Perfect (Diff: %d ms)", note_timing, time_diff);
         }
-        else if (time_diff >= -1 * great_judge && time_diff <= great_judge)
+        else if (time_diff > -1 * great_judge && time_diff < great_judge)
         {
             LOG_INFO("Timing %d: Great (Diff: %d ms)", note_timing, time_diff);
         }
-        else if (time_diff >= -1 * fine_judge && time_diff <= fine_judge)
+        else if (time_diff > -1 * fine_judge && time_diff < fine_judge)
         {
             LOG_INFO("Timing %d: Fine (Diff: %d ms)", note_timing, time_diff);
         }
@@ -44,7 +44,7 @@ namespace Game::Rhythm
         //Check only key 2 (F)
         if (input_query.front().get<KeyInput>().key2_pressed)
         {
-            auto current_timing = battle_query.front().get<Battle::BattleState>().clock_time;
+            auto current_timing = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
             if (current_timing < 5100)
             {
                 check_judgement(5000, current_timing);

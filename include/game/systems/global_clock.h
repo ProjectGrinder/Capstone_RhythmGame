@@ -14,9 +14,9 @@ namespace Game::Battle
         if (battle_query.begin() == battle_query.end())
             return;
 
-        battle_query.front().get<BattleState>().clock_time += static_cast<int>(get_delta_time());
+        battle_query.front().get<BattleState>().clock_time += static_cast<int>(get_delta_time() * 1000);
 
-        auto time = battle_query.front().get<BattleState>().clock_time;
+        auto time = battle_query.front().get<BattleState>().clock_time / 1000;
         if (time % 1000 < 10)
         LOG_INFO("Time: %d s", time / 1000);
     }

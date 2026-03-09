@@ -17,17 +17,17 @@ namespace Game::Rhythm
         constexpr auto great_judge = 75;
         constexpr auto fine_judge = 100;
         const auto timing = battle_query.front().get<Battle::BattleState>().clock_time;
-        if (time_diff >= -1 * perfect_judge && time_diff <= perfect_judge)
+        if (time_diff > -1 * perfect_judge && time_diff < perfect_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             LOG_INFO("Timing %d: Perfect", timing);
         }
-        else if (time_diff >= -1 * great_judge && time_diff <= great_judge)
+        else if (time_diff > -1 * great_judge && time_diff < great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
             LOG_INFO("Timing %d: Great", timing);
         }
-        else if (time_diff >= -1 * fine_judge && time_diff <= fine_judge)
+        else if (time_diff > -1 * fine_judge && time_diff < fine_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
             LOG_INFO("Timing %d: Fine", timing);
@@ -52,7 +52,7 @@ namespace Game::Rhythm
         System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType>::StoredTuple *comp,
         System::ECS::Query<Battle::BattleState> &battle_query)
     {
-        if (time_diff >= -100 && time_diff <= 100)
+        if (time_diff > -100 && time_diff < 100)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
         }
@@ -75,7 +75,7 @@ namespace Game::Rhythm
         System::ECS::pid &id,
         System::ECS::Query<Battle::BattleState> &battle_query)
     {
-        if (time_diff >= -100 && time_diff <= 50)
+        if (time_diff > -100 && time_diff < 50)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             syscall.remove_entity(id);
@@ -90,17 +90,17 @@ namespace Game::Rhythm
         System::ECS::Query<Battle::BattleState> &battle_query)
     {
         const auto timing = battle_query.front().get<Battle::BattleState>().clock_time;
-        if (time_diff_end >= -50)
+        if (time_diff_end > -50)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             LOG_INFO("Timing %d: End Hold Perfect", timing);
         }
-        else if (time_diff_end >= -75)
+        else if (time_diff_end > -75)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
             LOG_INFO("Timing %d: End Hold Great", timing);
         }
-        else if (time_diff_end >= -100)
+        else if (time_diff_end > -100)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
             LOG_INFO("Timing %d: End Hold Fine", timing);
@@ -149,6 +149,11 @@ namespace Game::Rhythm
         {
             const auto time_diff = current_time - note_time;
 
+            if (time_diff <= -100 || time_diff >= 100)
+            {
+                return;
+            }
+
             // handle both tap notes and "un-hold" hold notes
             for (auto &[id3, comp3] : input_query) // check when stop holding
             {
@@ -161,19 +166,16 @@ namespace Game::Rhythm
                     {
                         handle_accent_note(syscall, time_diff, note_id, note_comp, battle_query);
                     }
-                    else
+                    else if (note_type == 0)
                     {
                         handle_normal_note(syscall, time_diff, note_id, note_comp, battle_query);
                     }
                 }
-                else if (note_type == 2)
+                if (note_type == 2)
                 {
                     handle_rain_note(syscall, time_diff, note_id, battle_query);
                 }
             }
-
-
-
         }
         else
         {

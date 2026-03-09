@@ -25,7 +25,7 @@ namespace Game::Rhythm
         {
             auto &note_time = comps.get<Timing>().timing;
 
-            if (current_timing - note_time > 100)
+            if (current_timing - note_time >= 100)
             {
                 if (comps.get<TimingEnd>().timing_end == 0) // tap note miss
                 {
