@@ -212,6 +212,7 @@ typedef unsigned int u32;
 typedef unsigned short u16;
 typedef unsigned char u8;
 
+/*
 static FORCEINLINE void *__inline_memset(void *dest, int ch, size_t count)
 {
     unsigned char *ptr = (unsigned char *) dest;
@@ -247,7 +248,7 @@ static FORCEINLINE void *__inline_memset(void *dest, int ch, size_t count)
 
     return (dest);
 }
-
+*/
 /*
 void *memset(void *dest, int ch, size_t count)
 {
