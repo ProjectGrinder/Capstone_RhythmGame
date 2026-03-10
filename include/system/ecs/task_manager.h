@@ -28,7 +28,6 @@ namespace System::ECS
             QueryObject query;
 
             std::for_each(
-                    std::execution::par,
                     main_pool.begin(),
                     main_pool.end(),
                     [&cached_pools, &query](const auto &pair)

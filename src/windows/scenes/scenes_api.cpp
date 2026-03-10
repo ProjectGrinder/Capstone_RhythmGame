@@ -5,21 +5,12 @@ HRESULT scene_manager_init(SceneManagerHandler *handler)
 {
     HRESULT error = HRESULT_FROM_WIN32(ERROR_SUCCESS);
     Scene::SceneManager *manager = nullptr;
-    void *manager_alloc = nullptr;
 
-    manager_alloc = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(Scene::SceneManager));
-    if (manager_alloc == nullptr)
-    {
-        error = HRESULT_FROM_WIN32(ERROR_NOT_ENOUGH_MEMORY);
-        goto exit;
-    }
-
-    manager = new (manager_alloc) Scene::SceneManager();
+    manager = new Scene::SceneManager();
 
     *handler = manager;
 
     manager->change_scene<Scene::Config::StartingScene>();
-exit:
     return (error);
 }
 
@@ -39,8 +30,7 @@ void scene_manager_cleanup(SceneManagerHandler *api)
         return;
 
     auto *manager = static_cast<Scene::SceneManager *>(*api);
-    manager->~SceneManager();
+    delete manager;
 
-    HeapFree(GetProcessHeap(), 0, manager);
     *api = nullptr;
 }
