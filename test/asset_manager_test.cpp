@@ -2,8 +2,6 @@
 #include "system.h"
 #include <string>
 
-//Warning!! : This bit is from temp/asset_manager_test that haven't been pull requested yet.
-
 extern "C"
 {
     typedef uint32_t assets_id;
