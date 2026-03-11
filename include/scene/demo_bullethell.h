@@ -4,24 +4,24 @@
 
 namespace Scene
 {
-    inline void initBulletGraphic(std::array<Game::Battle::BulletGraphicMap, 128>& map)
+    inline Game::Battle::BulletRegistry init_bullet_graphic()
     {
         using namespace Game::Battle;
         using namespace Game::Physics;
-        map = {
+        BulletGraphicMap maps[] = {
             BulletGraphicMap(ColliderData(CIRCLE, 4,4)),
             BulletGraphicMap(ColliderData(CIRCLE, 8,8)),
             BulletGraphicMap(ColliderData(CIRCLE, 8,8), {}, {}, 1, 999, 3),
             BulletGraphicMap(ColliderData(CIRCLE, 8,8), {} , SpecialBulletData(Booming, 8, 3), 1, 999, 20),
             BulletGraphicMap(ColliderData(RECTANGLE, 8,8), {} , SpecialBulletData(Laser, 8, 3), 1, 999, 20),
         };
+        return BulletRegistry(maps,5);
     }
     inline Game::Battle::BulletLoader create_bullet_data()
     {
         using namespace Game::Battle;
         using namespace Game::Physics;
 //        using Game::BulletHell::Patterns;
-        initBulletGraphic(bulletGraphicMap);
 
         BulletLoader loader;
         // loader.CreateBullet(1000, BulletData(5, 5, Patterns(0,1, 135), 100, 0));
@@ -144,12 +144,14 @@ namespace Scene
             // Create and configure BattleState
             tm.create_entity<Game::Battle::BattleState,
             Game::Battle::BulletHellState,
+            Game::Battle::BulletRegistry,
             //Game::Battle::BulletLoader,
             //Game::Battle::PatternContainer,
             Game::Rhythm::KeyInput, Game::BulletHell::Input>
             (
                 Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
                 Game::Battle::BulletHellState(),
+                init_bullet_graphic(),
                 //create_bullet_data(),
                 //create_pattern_container(),
                 Game::Rhythm::KeyInput(),

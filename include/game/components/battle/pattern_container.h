@@ -7,8 +7,8 @@ namespace Game::Battle
         OP_SET,
         OP_ADD
     };
-    constexpr int MAX_PATTERNS = 128;
-    constexpr int MAX_PATTERN_SEQUENCE = 16;
+    constexpr size_t MAX_PATTERNS = 128;
+    constexpr size_t MAX_PATTERN_SEQUENCE = 16;
 
     struct PatternStep
     {

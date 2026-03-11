@@ -104,7 +104,6 @@ pid CreateBoomerBullet(BulletHell_Resource *resource, Bullet bullet = {}, Boomin
     resource->add_resource<Position>(id, Position(pos));
     resource->add_resource<Rotation>(id,{});
     resource->add_resource<Scale>(id, Scale());
-    resource->add_resource<Game::Render::Material>(id,{});
     resource->add_resource<CircularCollider>(id, CircularCollider(cc));
     return id;
 }
@@ -121,7 +120,6 @@ pid CreateLaserBullet(BulletHell_Resource *resource, Bullet bullet = {}, Laser l
     resource->add_resource<Position>(id, Position());
     resource->add_resource<Rotation>(id,Rotation(rot));
     resource->add_resource<Scale>(id, Scale(scl));
-    resource->add_resource<Game::Render::Material>(id,{});
     resource->add_resource<RectangularCollider>(id, RectangularCollider(rc));
     return id;
 }
@@ -433,7 +431,7 @@ TEST(Game, bullets_movement6)
 
 TEST(Game, bullets_damagable)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, bullet_system<BulletHell_Syscall>, DelaySystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, bullet_system<BulletHell_Syscall>, delay_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
@@ -453,7 +451,7 @@ TEST(Game, bullets_damagable)
 
 TEST(Game, bullets_booming)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ParticleSystem<BulletHell_Syscall>, boomer_system<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, delay_system<BulletHell_Syscall>, particle_system<BulletHell_Syscall>, boomer_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
@@ -490,7 +488,7 @@ TEST(Game, bullets_booming)
 
 TEST(Game, bullets_laser)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ParticleSystem<BulletHell_Syscall>, Laser_System<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, delay_system<BulletHell_Syscall>, particle_system<BulletHell_Syscall>, laser_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
 
@@ -538,7 +536,7 @@ TEST(Game, bullets_laser)
 // Collision
 TEST(Game, bullet_collision1)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, bullet_collision<BulletHell_Syscall>, bullet_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
     const pid bhs = CreateBulletHellState(resource);
@@ -586,7 +584,7 @@ TEST(Game, bullet_collision1)
 
 TEST(Game, bullet_collision2)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, bullet_collision<BulletHell_Syscall>, bullet_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
     const pid bhs = CreateBulletHellState(resource);
@@ -622,7 +620,7 @@ TEST(Game, bullet_collision2)
 
 TEST(Game, bullet_collision3)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, MovementSystem<BulletHell_Syscall>, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, movement_system<BulletHell_Syscall>, bullet_collision<BulletHell_Syscall>, bullet_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
     const pid bhs = CreateBulletHellState(resource);
@@ -651,7 +649,7 @@ TEST(Game, bullet_collision3)
 
 TEST(Game, bullet_collision4)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, DelaySystem<BulletHell_Syscall>, ParticleSystem<BulletHell_Syscall>, ShotDelaySystem<BulletHell_Syscall>, boomer_system<BulletHell_Syscall>, Laser_System<BulletHell_Syscall>, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, delay_system<BulletHell_Syscall>, particle_system<BulletHell_Syscall>, shot_delay_system<BulletHell_Syscall>, boomer_system<BulletHell_Syscall>, laser_system<BulletHell_Syscall>, bullet_collision<BulletHell_Syscall>, bullet_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
     const pid bhs = CreateBulletHellState(resource);
@@ -710,7 +708,7 @@ TEST(Game, bullet_collision4)
 
 TEST(Game, bullet_collision5)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, MovementSystem<BulletHell_Syscall>, BulletCollision<BulletHell_Syscall>, BulletSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, movement_system<BulletHell_Syscall>, bullet_collision<BulletHell_Syscall>, bullet_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
     CreateBulletHellState(resource);
@@ -744,7 +742,7 @@ TEST(Game, bullet_collision5)
 
 TEST(Game, bullet_pattern1)
 {
-    TaskManager<BulletHell_Resource, BulletHell_Syscall, PatternSystem<BulletHell_Syscall>, MovementSystem<BulletHell_Syscall>, acceleration_system<BulletHell_Syscall>, RotationSystem<BulletHell_Syscall>> task_manager{};
+    TaskManager<BulletHell_Resource, BulletHell_Syscall, particle_system<BulletHell_Syscall>, movement_system<BulletHell_Syscall>, acceleration_system<BulletHell_Syscall>, rotation_system<BulletHell_Syscall>> task_manager{};
     BulletHell_Resource *resource = task_manager.get_rm();
     CreateBattleState(resource);
     CreatePatternContainer(resource);

@@ -7,6 +7,7 @@
 namespace Game::Battle
 {
     // TODO : Put it somewhere else I think.
+    constexpr size_t MAX_BULLETS_GRAPHIC = 128;
     enum BulletType
     {
         Bullet, Booming, Laser
@@ -40,6 +41,7 @@ namespace Game::Battle
         type(type), offsetX(offsetX), offsetY(offsetY), colX(colX), colY(colY)
         {}
     };
+
     struct GraphicData
     {
         Render::Sprite sprite;
@@ -72,7 +74,15 @@ namespace Game::Battle
         {}
     };
 
-    inline std::array<BulletGraphicMap, 128> bulletGraphicMap;
+    struct BulletRegistry
+    {
+        BulletGraphicMap bulletGraphicMaps[MAX_BULLETS_GRAPHIC];
+        BulletRegistry(BulletGraphicMap bullets[], const int count)
+        {
+            for (int i = 0; i < count && i < MAX_BULLETS_GRAPHIC; i++)
+                bulletGraphicMaps[i] = bullets[i];
+        }
+    };
 
     struct BulletData
     {
