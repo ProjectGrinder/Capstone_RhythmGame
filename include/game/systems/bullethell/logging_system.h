@@ -13,8 +13,6 @@ namespace Game::BulletHell
         if (query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
-        // constexpr auto frame_time = 0.1;
-
         const auto &bullet_loader = query.front().get<Battle::BulletLoader>();
         LOG_INFO("Frame %d", bullet_loader.current_frame);
 

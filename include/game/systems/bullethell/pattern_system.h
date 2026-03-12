@@ -22,8 +22,6 @@ namespace Game::BulletHell
 
         const auto &[pattern_sequences, pattern_steps] = query3.front().get<Battle::PatternContainer>();
 
-        constexpr auto frame_time = 1;
-
         for (auto &[id, comps] : query)
         {
             auto &patt_c = comps.get<Pattern>();
@@ -48,7 +46,7 @@ namespace Game::BulletHell
 
             if (patt_c.delay > 0)
             {
-                patt_c.delay -= frame_time;
+                patt_c.delay -= static_cast<int>(Battle::get_delta_time());
             }
 
             else

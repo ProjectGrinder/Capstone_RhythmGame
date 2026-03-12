@@ -10,14 +10,12 @@ namespace Game::BulletHell
         if (query2.begin() == query2.end())
             return;
 
-        constexpr auto frame_time = 1; // 1ms
-
         for (auto &[id, comps] : query)
         {
             auto &delay_comp = comps.get<Delay>();
             if (delay_comp.delay>0)
             {
-                delay_comp.delay -= frame_time;
+                delay_comp.delay -= static_cast<int>(Battle::get_delta_time());
             }
         }
     }

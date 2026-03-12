@@ -1,5 +1,6 @@
 #pragma once
 #include "game/components.h"
+#include "game/systems/global_clock.h"
 
 namespace Game::BulletHell
 {
@@ -29,8 +30,8 @@ namespace Game::BulletHell
                 }
                 else if (delay_comp.delay <= 0)
                 {
-                    scl.scaleX += boomer.max_size / static_cast<float>(boomer.boom_frame);
-                    scl.scaleY += boomer.max_size/ static_cast<float>(boomer.boom_frame);
+                    scl.scaleX += static_cast<float>(Battle::get_delta_time() * boomer.max_size / boomer.boom_frame);
+                    scl.scaleY += static_cast<float>(Battle::get_delta_time() * boomer.max_size/ boomer.boom_frame);
                     if (scl.scaleX >= boomer.max_size)
                     {
                         scl.scaleX = boomer.max_size;
@@ -51,8 +52,8 @@ namespace Game::BulletHell
             {
                 if (delay_comp.delay <= 0)
                 {
-                    scl.scaleX -= boomer.max_size / static_cast<float>(boomer.boom_frame);
-                    scl.scaleY -= boomer.max_size/ static_cast<float>(boomer.boom_frame);
+                    scl.scaleX -= static_cast<float>(Battle::get_delta_time() * boomer.max_size / boomer.boom_frame);
+                    scl.scaleY -= static_cast<float>(Battle::get_delta_time() * boomer.max_size/ boomer.boom_frame);
                 }
             }
         }

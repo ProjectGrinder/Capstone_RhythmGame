@@ -15,7 +15,7 @@ namespace Scene
             BulletGraphicMap(ColliderData(CIRCLE, 8,8), {} , SpecialBulletData(Booming, 8, 3), 1, 999, 20),
             BulletGraphicMap(ColliderData(RECTANGLE, 8,8), {} , SpecialBulletData(Laser, 8, 3), 1, 999, 20),
         };
-        return BulletRegistry(maps,5);
+        return {BulletRegistry(maps,5)};
     }
     inline Game::Battle::BulletLoader create_bullet_data()
     {
@@ -85,7 +85,8 @@ namespace Scene
         using ComponentTuple = std::tuple<
             Game::Battle::BattleState,
             Game::Battle::BulletHellState,
-//            Game::Battle::BulletLoader,
+            Game::Battle::BulletRegistry,
+            Game::Battle::BulletLoader,
             Game::Battle::PatternContainer,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
@@ -118,7 +119,7 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
-//            Game::BulletHell::load_bullets<Syscall>,
+            Game::BulletHell::load_bullets<Syscall>,
             Game::Battle::input_system<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::particle_system<Syscall>,
@@ -145,15 +146,15 @@ namespace Scene
             tm.create_entity<Game::Battle::BattleState,
             Game::Battle::BulletHellState,
             Game::Battle::BulletRegistry,
-            //Game::Battle::BulletLoader,
-            //Game::Battle::PatternContainer,
+            Game::Battle::BulletLoader,
+            Game::Battle::PatternContainer,
             Game::Rhythm::KeyInput, Game::BulletHell::Input>
             (
                 Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
                 Game::Battle::BulletHellState(),
                 init_bullet_graphic(),
-                //create_bullet_data(),
-                //create_pattern_container(),
+                create_bullet_data(),
+                create_pattern_container(),
                 Game::Rhythm::KeyInput(),
                 Game::BulletHell::Input()
                 );

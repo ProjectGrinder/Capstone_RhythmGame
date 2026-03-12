@@ -8,7 +8,7 @@ namespace Game::BulletHell
     {
         uint16_t sequenceID;
         int sequenceIdx = -1; // Would not be good but require for init
-        float delay = 0;
+        int delay = 0;
 
         Pattern() : sequenceID(0)
         {}

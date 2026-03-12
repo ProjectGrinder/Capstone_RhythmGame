@@ -23,8 +23,6 @@ namespace Game::BulletHell
         if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
-        constexpr auto frame_time = 1;
-
         for (auto &[id, comps]: query)
         {
             auto &pos = comps.get<Position>();
@@ -33,8 +31,8 @@ namespace Game::BulletHell
 
             const float angle = rot.angleZ * acos(0.0f)/90.0f  ;
 
-            pos.x += (vel.vx * cos(angle) - vel.vy * sin(angle)) * frame_time;
-            pos.y += (vel.vx * sin(angle) + vel.vy * cos(angle)) * frame_time;
+            pos.x += static_cast<float>((vel.vx * cos(angle) - vel.vy * sin(angle)) * Battle::get_delta_time());
+            pos.y += static_cast<float>((vel.vx * sin(angle) + vel.vy * cos(angle)) * Battle::get_delta_time());
         }
     }
 
@@ -47,17 +45,15 @@ namespace Game::BulletHell
         if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
-        constexpr auto frame_time = 1;
-
         for (auto &[id, comps] : query)
         {
             auto &vel = comps.get<Velocity>();
             const auto &acc = comps.get<Acceleration>();
 
-            vel.vx += acc.ax * frame_time;
+            vel.vx += acc.ax * static_cast<float>(Battle::get_delta_time());
             vel.vx = Physics::clamp(vel.vx, acc.min_speed_x, acc.max_speed_x);
 
-            vel.vy += acc.ay * frame_time;
+            vel.vy += acc.ay * static_cast<float>(Battle::get_delta_time());
             vel.vy = Physics::clamp(vel.vy, acc.min_speed_y, acc.max_speed_y);
 
         }
@@ -66,11 +62,9 @@ namespace Game::BulletHell
     template<typename T>
     void rotation_system([[maybe_unused]] T &task_manager, System::ECS::Query<Rotation, AngularVelocity> &query2)
     {
-        constexpr auto frame_time = 1;
-
         for (auto &[id, comps]: query2)
         {
-            comps.get<Rotation>().angleZ += comps.get<AngularVelocity>().v * frame_time;
+            comps.get<Rotation>().angleZ += comps.get<AngularVelocity>().v * static_cast<float>(Battle::get_delta_time());
             if (comps.get<Rotation>().angleZ >= 360)
             {
                 comps.get<Rotation>().angleZ -= 360;

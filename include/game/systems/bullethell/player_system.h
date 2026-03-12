@@ -16,14 +16,12 @@ namespace Game::BulletHell
         if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
-        constexpr auto frame_time = 1;
-
         for (auto &[id, comp]: query)
         {
             auto &state = comp.get<Battle::BulletHellState>();
             if (state.iframe_time > 0)
             {
-                state.iframe_time -= frame_time;
+                state.iframe_time -= static_cast<int>(Battle::get_delta_time());
             }
 
             if (state.iframe_time < 0)

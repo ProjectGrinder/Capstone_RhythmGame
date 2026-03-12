@@ -12,14 +12,14 @@ namespace Game::Battle
 
     struct PatternStep
     {
-        float delay;
+        int delay;
         PatternOp op;
         uint8_t mask;
         std::array<float, 4> p;
         PatternStep() : delay(0), op(OP_SET), mask(0), p({0,0,0,0})
         {}
         PatternStep(
-                const float delay,
+                const int delay,
                 const PatternOp op,
                 const uint8_t mask = 0,
                 const float p1 = 0, const float p2 = 0, const float p3 = 0, const float p4 = 0) :

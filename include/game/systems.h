@@ -24,6 +24,7 @@
 #include "game/systems/rhythm/handle_rhythm.h" // TODO: Pooh implement this system
 // General Battle Part
 #include "game/systems/phase_change.h"
+#include "game/systems/global_clock.h"
 // Rendering Part
 #include "game/systems/animation_system.h"
 #include "systems/bullethell/shaking_system.h"

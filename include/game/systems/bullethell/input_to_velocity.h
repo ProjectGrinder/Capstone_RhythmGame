@@ -1,4 +1,5 @@
 #pragma once
+#include "game/systems/global_clock.h"
 
 namespace Game::BulletHell
 {
@@ -18,11 +19,10 @@ namespace Game::BulletHell
         if (query3.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
-        constexpr auto frame_time = 1;
         for (auto &[id, comps] : query2)
         {
             const auto &input = query1.front().get<Input>();
-            const float velocity_factor = frame_time * input.shift ? 4.0f : 1.0f;
+            const float velocity_factor = static_cast<float>(Battle::get_delta_time()) * (input.shift ? 4.0f : 1.0f);
 
             comps.get<Physics::Velocity>().vx = input.axis_x * velocity_factor;
             comps.get<Physics::Velocity>().vy = input.axis_y * velocity_factor;

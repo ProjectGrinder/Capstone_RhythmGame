@@ -7,12 +7,10 @@ namespace Game::BulletHell
     template<typename T>
     void particle_system(T &syscall, System::ECS::Query<Particle> &query)
     {
-        constexpr auto frame_time = 1;
-
         for (auto &[id, comps]: query)
         {
             auto &comp = comps.get<Particle>();
-            comp.lifetime -= frame_time;
+            comp.lifetime -= static_cast<int>(Battle::get_delta_time());
             if (comp.lifetime < 0)
             {
                 // TODO: Animate this after renderer
