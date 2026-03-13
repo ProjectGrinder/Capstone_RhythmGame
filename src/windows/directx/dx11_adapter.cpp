@@ -81,6 +81,8 @@ namespace System::Render
     {
         _items.clear();
         _items.reserve(items.size());
+        _v_staging.clear();
+        _i_staging.clear();
 
         auto device = resources.get_device();
 
