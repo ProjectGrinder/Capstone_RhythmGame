@@ -80,8 +80,8 @@ namespace Math
         const float u0 = rect.u0, u1 = rect.u1, v0 = rect.v0, v1 = rect.v1;
         const Point p0 = Point{{u0, v0, 0}, {1, 1, 1, 1}};
         const Point p1 = Point{{u1, v0, 0}, {1, 1, 1, 1}};
-        const Point p2 = Point{{u1, v1, 0}, {1, 1, 1, 1}};
-        const Point p3 = Point{{u0, v1, 0}, {1, 1, 1, 1}};
+        const Point p2 = Point{{u0, v1, 0}, {1, 1, 1, 1}};
+        const Point p3 = Point{{u1, v1, 0}, {1, 1, 1, 1}};
 
         return std::array<Math::Point, 4>{
             view_to_ndc(world_to_view(local_to_world(rotate(p0, rotation_z), pivot), cam), cam),
@@ -121,7 +121,7 @@ namespace System::Render
     {
         assets_id texture = static_cast<assets_id>(-1);
         Rect src_rect{};
-        std::array<Math::Point, 4> dst_rect{};
+        Math::Point dst_rect[4];
 
         bool flipX = false;
         bool flipY = false;

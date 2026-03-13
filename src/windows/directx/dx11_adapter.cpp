@@ -209,6 +209,31 @@ namespace System::Render
                 _i_staging.push_back(0);
                 _i_staging.push_back(1);
                 _i_staging.push_back(2);
+                break;
+            }
+            case DrawKind::KIND_SPRITE: {
+                auto const &[texture, src_rect, points, flipX, flipY] = std::get<ComposedSpriteDesc>(special);
+                render_object.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+                render_object.vertex_base = (INT) _v_staging.size();
+                render_object.offset = (UINT) _i_staging.size();
+                render_object.count.index_count = 4;
+
+                // attempt to put a triangle strip in?
+                _v_staging.push_back(points[0]);
+                _v_staging.push_back(points[1]);
+                _v_staging.push_back(points[2]);
+                _v_staging.push_back(points[3]);
+
+                _i_staging.push_back(0);
+                _i_staging.push_back(1);
+                _i_staging.push_back(2);
+                _i_staging.push_back(3);
+
+                // TODO: help how do i use the rest
+                // Note: texture probably needs the width and height from when load_sprite is called
+                // where do i even get that stuff from actually
+                // i'll ask chatgpt later
+                break;
             }
             default:
                 break;
