@@ -50,6 +50,7 @@ static inline assets_id make_id(uint16_t index, uint16_t gen)
 
 static inline assets_id load_assets(const char *path, const char *name, AssetsInfo info)
 {
+
     FileContent *content = NULL;
     uint32_t id = (uint32_t) -1;
     uint16_t use_idx = (uint16_t) -1, i = 0;
@@ -96,7 +97,6 @@ static inline assets_id load_assets(const char *path, const char *name, AssetsIn
 
     mapping->name = strdup(name);
     mapping->id = id;
-
     if (use_idx == record_index)
         ++record_index;
 
@@ -107,15 +107,18 @@ exit:
 assets_id load_sprite(const char *path, const char *name, size_t width, size_t height)
 {
     AssetsInfo info = {0};
+    info.name = strdup(name);
     info.type = SPRITE;
     info.info.as_sprite.height = height;
     info.info.as_sprite.width = width;
     return (load_assets(path, name, info));
 }
 
-assets_id load_vertex_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count)
+assets_id
+load_vertex_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count)
 {
     AssetsInfo info = {0};
+    info.name = strdup(name);
     info.type = VERTEX_SHADER;
     info.info.as_shader.count = count;
     info.info.as_shader.data = copy_input_attributes(attributes, count);
@@ -126,9 +129,11 @@ assets_id load_vertex_shader(const char *path, const char *name, const InputAttr
     return (load_assets(path, name, info));
 }
 
-assets_id load_pixel_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count)
+assets_id
+load_pixel_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count)
 {
     AssetsInfo info = {0};
+    info.name = strdup(name);
     info.type = PIXEL_SHADER;
     info.info.as_shader.count = count;
     info.info.as_shader.data = copy_input_attributes(attributes, count);
@@ -142,6 +147,7 @@ assets_id load_pixel_shader(const char *path, const char *name, const InputAttri
 assets_id load_font(const char *path, const char *name, size_t size)
 {
     AssetsInfo info = {0};
+    info.name = strdup(name);
     info.type = FONT;
     info.info.as_font.font_size = size;
     return (load_assets(path, name, info));
@@ -172,6 +178,12 @@ AssetsRecord get_assets_record(const assets_id id)
     return (assets_records[index]);
 }
 
+const AssetsRecord *get_assets_record_ptr(const assets_id id)
+{
+    const uint16_t index = ASSET_INDEX(id);
+    return (&assets_records[index]);
+}
+
 void free_assets(assets_id id)
 {
     uint16_t index = ASSET_INDEX(id);
@@ -186,6 +198,7 @@ void free_assets(assets_id id)
     }
 
     file_free(&current->data);
+    heap_free(current->info.name);
     heap_free(map->name);
 
     ++current->gen;
@@ -217,3 +230,4 @@ void assets_cleanup(void)
         heap_free(id_map[i].name);
     }
 }
+

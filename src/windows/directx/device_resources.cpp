@@ -49,6 +49,7 @@ HRESULT Windows::DeviceResources::create_device_resources()
             &device,
             &_feature_level,
             &context);
+
     if (FAILED(hr))
     {
         LOG_ERROR("D3D11CreateDevice failed, Code 0x%08lx", hr);
