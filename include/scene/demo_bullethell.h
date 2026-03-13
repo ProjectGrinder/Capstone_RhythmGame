@@ -8,14 +8,14 @@ namespace Scene
     {
         using namespace Game::Battle;
         using namespace Game::Physics;
-        BulletGraphicMap maps[] = {
+        std::vector<BulletGraphicMap> maps = {
             BulletGraphicMap(ColliderData(CIRCLE, 4,4)),
             BulletGraphicMap(ColliderData(CIRCLE, 8,8)),
             BulletGraphicMap(ColliderData(CIRCLE, 8,8), {}, {}, 1, 999, 3),
             BulletGraphicMap(ColliderData(CIRCLE, 8,8), {} , SpecialBulletData(Booming, 8, 3), 1, 999, 20),
             BulletGraphicMap(ColliderData(RECTANGLE, 8,8), {} , SpecialBulletData(Laser, 8, 3), 1, 999, 20),
         };
-        return {BulletRegistry(maps,5)};
+        return {BulletRegistry(maps)};
     }
     inline Game::Battle::BulletLoader create_bullet_data()
     {
@@ -59,19 +59,19 @@ namespace Scene
     inline Game::Battle::PatternContainer create_pattern_container()
     {
         using namespace Game::Battle;
-        PatternStep demo_step[] = {
-            PatternStep(30, OP_ADD, 2, 15),  // 30s Rot+15
-            PatternStep(30, OP_ADD, 2, -15), // 30s Rot-15
-            PatternStep(30, OP_SET, 1, 3),   // 30s Vel=3
+        const std::vector<PatternStep> demo_step = {
+                PatternStep(30, OP_ADD, 2, 15),  // 30s Rot+15
+                PatternStep(30, OP_ADD, 2, -15), // 30s Rot-15
+                PatternStep(30, OP_SET, 1, 3),   // 30s Vel=3
         };
-        PatternSequence demo_pattern[] = {
+        const std::vector<PatternSequence> demo_pattern = {
             PatternSequence(false),
             PatternSequence(false, 0, 1),
             PatternSequence(false, 1, 2),
             PatternSequence(true, 0, 2),
             PatternSequence(true, 1, 2),
         };
-        auto demo_pattern_container = PatternContainer(demo_step,3,demo_pattern,4);
+        auto demo_pattern_container = PatternContainer(demo_step,demo_pattern);
         return { PatternContainer(demo_pattern_container) };
     }
 
@@ -129,7 +129,6 @@ namespace Scene
             Game::BulletHell::bullet_collision<Syscall>,
             Game::BulletHell::player_system<Syscall>,
             Game::BulletHell::delay_system<Syscall>,
-            Game::BulletHell::shot_delay_system<Syscall>,
             Game::BulletHell::bullet_system<Syscall>,
             Game::BulletHell::particle_system<Syscall>,
             Game::BulletHell::boomer_system<Syscall>,

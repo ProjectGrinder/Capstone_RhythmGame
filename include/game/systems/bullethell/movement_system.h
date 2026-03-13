@@ -12,8 +12,6 @@ using Acceleration = Game::Physics::Acceleration;
 using AngularVelocity = Game::Physics::AngularVelocity;
 namespace Game::BulletHell
 {
-
-
     template <typename T>
     void movement_system([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
