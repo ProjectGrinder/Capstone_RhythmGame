@@ -73,10 +73,7 @@ namespace Game::Rhythm
             auto &note = lane.notes[lane.current_note];
             while (note.timing < clock + lookahead)
             {
-                if (note.timing >= clock)
-                {
-                    create_note_entity<T>(syscall, rhythm_state, lane, note);
-                }
+                create_note_entity<T>(syscall, rhythm_state, lane, note);
 
                 // increment cursor
                 ++lane.current_note;
