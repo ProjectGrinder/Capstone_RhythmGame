@@ -76,12 +76,9 @@ namespace Game::Battle
 
     struct BulletRegistry
     {
-        BulletGraphicMap bulletGraphicMaps[MAX_BULLETS_GRAPHIC];
-        BulletRegistry(BulletGraphicMap bullets[], const int count)
-        {
-            for (int i = 0; i < count && i < MAX_BULLETS_GRAPHIC; i++)
-                bulletGraphicMaps[i] = bullets[i];
-        }
+        std::vector<BulletGraphicMap> bulletGraphicMaps;
+        explicit BulletRegistry(std::vector<BulletGraphicMap>& bulletGraphicMaps) : bulletGraphicMaps(std::move(bulletGraphicMaps))
+        {}
     };
 
     struct BulletData

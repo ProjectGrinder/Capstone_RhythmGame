@@ -29,16 +29,21 @@ namespace Game::BulletHell
             if (patt_c.sequenceID == 0)
             {
                 // Remove Component?
+                continue;
             }
-
-            const auto &patt_seq = pattern_sequences[patt_c.sequenceID];
+            const auto sequenceID = patt_c.sequenceID-1;
+            const auto &patt_seq = pattern_sequences[patt_c.sequenceID-1];
 
             // Check End (Should be -> Remove component?)
-            if (patt_c.sequenceIdx >= patt_seq.stepCount) continue;
+            if (patt_c.sequenceIdx >= static_cast<int>(patt_seq.steps.size()))
+            {
+                continue;
+            }
 
             // Init
             if (patt_c.sequenceIdx == -1)
             {
+
                 patt_c.delay = pattern_steps[patt_seq.steps[0]].delay;
                 patt_c.sequenceIdx = patt_c.sequenceIdx + 1;
                 continue;
@@ -51,38 +56,43 @@ namespace Game::BulletHell
 
             else
             {
-                const auto patt = pattern_steps[pattern_sequences[patt_c.sequenceID].steps[patt_c.sequenceIdx]];
-                patt_c.delay = patt.delay;
-                uint8_t p_idx = 0;
-                const auto op = static_cast<float>(patt.op);
+                while (patt_c.delay <= 0)
+                {
+                    const auto patt = pattern_steps[pattern_sequences[sequenceID].steps[patt_c.sequenceIdx]];
+                    uint8_t p_idx = 0;
+                    const auto op = static_cast<float>(patt.op);
 
-                if ((patt.mask & 8) > 0)
-                {
-                    comps.get<Velocity>().vx = comps.get<Velocity>().vx * op + patt.p[p_idx];
-                    p_idx++;
-                }
-                if ((patt.mask & 4) > 0)
-                {
-                    comps.get<Rotation>().angleZ = comps.get<Rotation>().angleZ * op + patt.p[p_idx];
-                    p_idx++;
-                }
-                if ((patt.mask & 2) > 0)
-                {
-                    comps.get<Acceleration>().ax = comps.get<Acceleration>().ax * op + patt.p[p_idx];
-                    p_idx++;
-                }
-                if ((patt.mask & 1) > 0)
-                {
-                    comps.get<AngularVelocity>().v = comps.get<AngularVelocity>().v * op + patt.p[p_idx];
-                }
-
-                patt_c.sequenceIdx = patt_c.sequenceIdx + 1;
-                if (patt_c.sequenceIdx >= pattern_sequences[patt_c.sequenceID].stepCount)
-                {
-                    if (pattern_sequences[patt_c.sequenceID].isLoop)
+                    if ((patt.mask & 8) > 0)
                     {
-                        patt_c.sequenceIdx = -1;
+                        comps.get<Velocity>().vx = comps.get<Velocity>().vx * op + patt.p[p_idx];
+                        p_idx++;
                     }
+                    if ((patt.mask & 4) > 0)
+                    {
+                        comps.get<Rotation>().angleZ = comps.get<Rotation>().angleZ * op + patt.p[p_idx];
+                        p_idx++;
+                    }
+                    if ((patt.mask & 2) > 0)
+                    {
+                        comps.get<Acceleration>().ax = comps.get<Acceleration>().ax * op + patt.p[p_idx];
+                        p_idx++;
+                    }
+                    if ((patt.mask & 1) > 0)
+                    {
+                        comps.get<AngularVelocity>().v = comps.get<AngularVelocity>().v * op + patt.p[p_idx];
+                    }
+
+                    patt_c.sequenceIdx = patt_c.sequenceIdx + 1;
+                    if (patt_c.sequenceIdx >= pattern_sequences[sequenceID].steps.size())
+                    {
+                        if (pattern_sequences[sequenceID].isLoop)
+                            patt_c.sequenceIdx = -1;
+                        else
+                            patt_c.sequenceID = 0;
+                        break;
+                    }
+
+                    patt_c.delay = pattern_steps[pattern_sequences[sequenceID].steps[patt_c.sequenceIdx]].delay;
                 }
             }
         }

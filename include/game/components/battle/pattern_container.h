@@ -29,42 +29,28 @@ namespace Game::Battle
 
     struct PatternSequence
     {
-        uint32_t* steps;
-        size_t stepCount;
+        std::vector<uint32_t> steps;
         bool isLoop;
 
-        PatternSequence() : steps(nullptr), stepCount(0), isLoop(false) {}
+        PatternSequence() : isLoop(false) {}
 
         template<typename... Step>
         explicit PatternSequence(const bool loop, Step... step)
-            : stepCount(sizeof...(step)), isLoop(loop)
-        {
-            if constexpr (sizeof...(step) > 0)
-            {
-                steps = new uint32_t[stepCount];
-
-                uint32_t temp[] = { static_cast<uint32_t>(step)... };
-                std::copy(temp, temp + stepCount, steps);
-            }
-            else steps = nullptr;
-        }
+            : steps{ static_cast<uint32_t>(step)... }, isLoop(loop)
+        {}
     };
 
     struct PatternContainer
     {
-        PatternSequence pattern_sequences[MAX_PATTERN_SEQUENCE];
-        PatternStep pattern_steps[MAX_PATTERNS];
+        std::vector<PatternSequence> pattern_sequences;
+        std::vector<PatternStep> pattern_steps;
 
         PatternContainer(
-        PatternStep steps[], const int step_count,
-        PatternSequence seqs[], const int seq_count)
-        {
-            for (int i = 0; i < seq_count && i < MAX_PATTERN_SEQUENCE; i++)
-                pattern_sequences[i] = seqs[i];
-
-            for (int i = 0; i < step_count && i < MAX_PATTERNS; i++)
-                pattern_steps[i] = steps[i];
-        }
+            std::vector<PatternStep> steps,
+            std::vector<PatternSequence> seqs)
+            : pattern_sequences(std::move(seqs)),
+              pattern_steps(std::move(steps))
+        {}
     };
 
 }
