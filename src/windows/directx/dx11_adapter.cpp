@@ -212,6 +212,7 @@ namespace System::Render
                 i_ptr[i_idx++] = base + 0;
                 i_ptr[i_idx++] = base + 1;
                 i_ptr[i_idx++] = base + 2;
+            }
             default:
                 break;
             }
@@ -226,7 +227,8 @@ namespace System::Render
         //        std::sort(
         //                _items.begin(),
         //                _items.end(),
-        //                [](const RenderObject &a, const RenderObject &b) { return a.get_sort_key() < b.get_sort_key();
+        //                [](const RenderObject &a, const RenderObject &b) { return a.get_sort_key() <
+        //                b.get_sort_key();
         //                });
 
         // LOG_INFO("Converted %ld items into %ld render objects (Sorted)", items.size(), _items.size());
