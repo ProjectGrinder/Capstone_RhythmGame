@@ -10,7 +10,7 @@ namespace Scene
         constexpr static auto name = "DemoRender";
 
         // declare scene parameters
-        constexpr static size_t MaxResource = 2000;
+        constexpr static size_t MaxResource = 12000;
         using ComponentTuple = std::tuple<
                 Game::Render::Camera2D,
                 Game::Render::Sprite,

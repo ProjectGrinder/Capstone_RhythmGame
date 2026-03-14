@@ -20,7 +20,7 @@ Scene::DemoRender::TaskManager Scene::DemoRender::init()
 
     auto tm = TaskManager{};
     tm.create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 16, .scaleY = 9, .rotation = 0});
-    for (float i = 0; i < 100; ++i)
+    for (float i = 0; i < 1000; ++i)
     {
         tm.create_entity(
                 Game::Render::Triangle{

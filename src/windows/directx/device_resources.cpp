@@ -216,5 +216,5 @@ ID3D11DepthStencilView *Windows::DeviceResources::get_depth_stencil()
 
 void Windows::DeviceResources::present()
 {
-    _swap_chain->Present(1, 0);
+    _swap_chain->Present(0, 0);
 }

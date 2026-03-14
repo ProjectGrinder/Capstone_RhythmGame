@@ -13,6 +13,7 @@ namespace System::Render
     extern "C" DX11AdapterHandler get_dx11_adapter();
     const UINT MAX_VERTICES = 100000;
     const UINT MAX_INDICES = 300000;
+    const INT PASSES = 8; // Radix 8 passes
 
     inline constexpr DXGI_FORMAT common_to_dxgi_format(const InputType &type)
     {
@@ -70,6 +71,7 @@ namespace System::Render
         _v_staging.reserve(MAX_VERTICES);
         _i_staging.reserve(MAX_INDICES);
         _items.reserve(1000);
+        _batched.reserve(1000);
         _input_layout_desc_scratch.reserve(16);
 
         _vs_fast_cache.assign(65536, {(uint32_t) -1, nullptr});
@@ -81,8 +83,23 @@ namespace System::Render
     {
         _items.clear();
         _items.reserve(items.size());
-        _v_staging.clear();
-        _i_staging.clear();
+        _batched.clear();
+        _batched.reserve(items.size());
+
+        D3D11_MAPPED_SUBRESOURCE v_map, i_map;
+        if (FAILED(_environment.context->Map(_global_vb.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &v_map)))
+            return;
+        if (FAILED(_environment.context->Map(_global_ib.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &i_map)))
+        {
+            _environment.context->Unmap(_global_vb.Get(), 0);
+            return;
+        }
+
+        Math::Point *v_ptr = static_cast<Math::Point *>(v_map.pData);
+        UINT *i_ptr = static_cast<UINT *>(i_map.pData);
+
+        size_t v_idx = 0;
+        size_t i_idx = 0;
 
         auto device = resources.get_device();
 
@@ -173,42 +190,28 @@ namespace System::Render
             switch (kind)
             {
             case DrawKind::KIND_TRIANGLE: {
-                //                render_object.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-                //                const auto &[points] = std::get<TriangleDrawDesc>(special);
-                //
-                //                D3D11_BUFFER_DESC vb_desc = {};
-                //                vb_desc.Usage = D3D11_USAGE_DEFAULT;
-                //                vb_desc.ByteWidth = static_cast<UINT>(sizeof(points));
-                //                vb_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-                //                vb_desc.StructureByteStride = sizeof(Math::Point);
-                //
-                //                D3D11_SUBRESOURCE_DATA vb_data = {};
-                //                vb_data.pSysMem = points;
-                //
-                //                hr = device->CreateBuffer(&vb_desc, &vb_data,
-                //                render_object.vertex_buffer.GetAddressOf()); if (FAILED(hr))
-                //                {
-                //                    LOG_ERROR("Failed to create vertex buffer, Code 0x%08lx", hr);
-                //                    continue;
-                //                }
-                //
-                //                render_object.stride = sizeof(Math::Point);
-                //                render_object.offset = 0;
-                //                render_object.count.vertex_count = 3;
-                //                break;
                 auto const &[points] = std::get<TriangleDrawDesc>(special);
-                render_object.vertex_base = (INT) _v_staging.size();
-                render_object.offset = (UINT) _i_staging.size();
+                auto base = i_idx;
+                render_object.vertex_base = (INT) v_idx;
+                render_object.offset = (UINT) base;
                 render_object.count.index_count = 3;
+
+                render_object.render_id = {
+                        .sp_id = 0xFFFFu,
+                        .ps_id = ps_idx,
+                        .vs_id = vs_idx,
+                        .padding = 0xFFu,
+                        .layer = (uint8_t) common.layer,
+                };
                 render_object.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-                _v_staging.push_back(points[0]);
-                _v_staging.push_back(points[1]);
-                _v_staging.push_back(points[2]);
+                v_ptr[v_idx++] = points[0];
+                v_ptr[v_idx++] = points[1];
+                v_ptr[v_idx++] = points[2];
 
-                _i_staging.push_back(0);
-                _i_staging.push_back(1);
-                _i_staging.push_back(2);
+                i_ptr[i_idx++] = base + 0;
+                i_ptr[i_idx++] = base + 1;
+                i_ptr[i_idx++] = base + 2;
             }
             default:
                 break;
@@ -217,25 +220,75 @@ namespace System::Render
             _items.push_back(std::move(render_object));
         }
 
-        D3D11_MAPPED_SUBRESOURCE mapped;
-        if (SUCCEEDED(_environment.context->Map(_global_vb.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
+        _environment.context->Unmap(_global_vb.Get(), 0);
+        _environment.context->Unmap(_global_ib.Get(), 0);
+
+        // O(nlogn)
+        //        std::sort(
+        //                _items.begin(),
+        //                _items.end(),
+        //                [](const RenderObject &a, const RenderObject &b) { return a.get_sort_key() < b.get_sort_key();
+        //                });
+
+        // LOG_INFO("Converted %ld items into %ld render objects (Sorted)", items.size(), _items.size());
+
+        size_t total_count = _items.size();
+        if (total_count == 0)
+            return;
+
+        if (_indices_a.size() < total_count)
         {
-            memcpy(mapped.pData, _v_staging.data(), _v_staging.size() * sizeof(Math::Point));
-            _environment.context->Unmap(_global_vb.Get(), 0);
+            _indices_a.resize(total_count);
+            _indices_b.resize(total_count);
         }
 
-        if (SUCCEEDED(_environment.context->Map(_global_ib.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
+        for (uint32_t i = 0; i < (uint32_t) total_count; ++i)
+            _indices_a[i] = i;
+
+
+        uint32_t *idx_src = _indices_a.data();
+        uint32_t *idx_dst = _indices_b.data();
+
+        for (int p = 0; p < PASSES; ++p)
         {
-            memcpy(mapped.pData, _i_staging.data(), _i_staging.size() * sizeof(UINT));
-            _environment.context->Unmap(_global_ib.Get(), 0);
+            _counts.fill(0);
+            int shift = p * 8;
+
+            for (size_t i = 0; i < total_count; ++i)
+                ++_counts[(_items[idx_src[i]].render_id.sort_key >> shift) & 0xFF];
+
+            _offsets[0] = 0;
+            for (int i = 1; i < 256; ++i)
+                _offsets[i] = _offsets[i - 1] + _counts[i - 1];
+
+            for (size_t i = 0; i < total_count; ++i)
+            {
+                uint8_t bucket = (_items[idx_src[i]].render_id.sort_key >> shift) & 0xFF;
+                idx_dst[_offsets[bucket]++] = idx_src[i];
+            }
+            std::swap(idx_src, idx_dst);
         }
 
-        std::sort(
-                _items.begin(),
-                _items.end(),
-                [](const RenderObject &a, const RenderObject &b) { return a.get_sort_key() < b.get_sort_key(); });
+        _batched.clear();
+        for (size_t i = 0; i < total_count; ++i)
+        {
+            RenderObject &current = _items[idx_src[i]];
 
-        LOG_INFO("Converted %ld items into %ld render objects (Sorted)", items.size(), _items.size());
+            if (!_batched.empty() && _batched.back().render_id.sort_key == current.render_id.sort_key)
+            {
+                if (_batched.back().vertex_base + (INT) (_batched.back().count.index_count) == current.vertex_base)
+                {
+                    _batched.back().count.index_count += current.count.index_count;
+                    continue;
+                }
+            }
+            _batched.push_back(std::move(current));
+        }
+
+        _items = std::move(_batched);
+        _batched.clear();
+
+        LOG_INFO("Radix-Batched %lu items into %lu draw calls", items.size(), _items.size());
     }
 
     void Dx11Adapter::render_all_items(Windows::DeviceResources &device)
@@ -272,5 +325,13 @@ namespace System::Render
             _environment.context->Flush();
         }
         _items.clear();
+        _batched.clear();
+
+        _vs_fast_cache.clear();
+        _ps_fast_cache.clear();
+        _input_fast_cache.clear();
+
+        _global_vb.Reset();
+        _global_ib.Reset();
     }
 } // namespace System::Render
