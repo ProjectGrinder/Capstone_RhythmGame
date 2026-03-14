@@ -18,10 +18,15 @@ namespace Game::Render
             }
             auto &common = intent.value().common;
             common.vert_shader = material.vert_shader;
+            common.vert_shader_input_attributes = material.vert_shader_input_attributes;
+            common.vert_shader_input_attributes_count = material.vert_shader_input_attributes_count;
             common.pixel_shader = material.pixel_shader;
+            common.pixel_shader_input_attributes = material.pixel_shader_input_attributes;
+            common.pixel_shader_input_attributes_count = material.pixel_shader_input_attributes_count;
             common.visible = material.visible;
             common.render_prior = material.render_prior;
-            common.color = System::Render::Color(material.color.r, material.color.g, material.color.b, material.color.a);
+            common.color =
+                    System::Render::Color(material.color.r, material.color.g, material.color.b, material.color.a);
         }
     }
 } // namespace Game::Render

@@ -12,7 +12,7 @@ namespace Game::Render
     template<typename T>
     void animation_system(
             [[maybe_unused]] T &syscall,
-            System::ECS::Query<Physics::Position, Rotation, Physics::Scale, Sprite, Animator> &query)
+            System::ECS::Query<Physics::Position, Transform, Physics::Scale, Sprite, Animator> &query)
     {
 
         for (auto &[id, comps]: query)
@@ -49,7 +49,7 @@ namespace Game::Render
             const auto &keyFrame2 = animation.keyframes[currentKey + 1];
 
             auto &position = comps.get<Physics::Position>();
-            auto &rotation = comps.get<Rotation>();
+            auto &rotation = comps.get<Transform>();
             auto &scale = comps.get<Physics::Scale>();
 
             const float t =

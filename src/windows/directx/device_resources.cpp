@@ -28,14 +28,7 @@ exit:
 HRESULT Windows::DeviceResources::create_device_resources()
 {
     HRESULT hr = S_OK;
-    D3D_FEATURE_LEVEL levels[] = {
-            D3D_FEATURE_LEVEL_9_1,
-            D3D_FEATURE_LEVEL_9_2,
-            D3D_FEATURE_LEVEL_9_3,
-            D3D_FEATURE_LEVEL_10_0,
-            D3D_FEATURE_LEVEL_10_1,
-            D3D_FEATURE_LEVEL_11_0,
-            D3D_FEATURE_LEVEL_11_1};
+    D3D_FEATURE_LEVEL levels[] = {D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_11_1};
 
     UINT device_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #if defined(DEBUG) || defined(_DEBUG)
@@ -127,16 +120,27 @@ HRESULT Windows::DeviceResources::configure_back_buffer()
     dsd.ArraySize = 1;
     dsd.MipLevels = 1;
     dsd.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    dsd.SampleDesc.Count = 1;
+    dsd.SampleDesc.Quality = 0;
+    dsd.Usage = D3D11_USAGE_DEFAULT;
+    dsd.CPUAccessFlags = 0;
+    dsd.MiscFlags = 0;
 
-    _device->CreateTexture2D(&dsd, nullptr, &_depth_stencil);
+    hr = _device->CreateTexture2D(&dsd, nullptr, &_depth_stencil);
+    if (FAILED(hr))
+        goto exit;
 
-    _device->CreateDepthStencilView(_depth_stencil.Get(), &dsvd, _depth_stencil_view.GetAddressOf());
+    hr = _device->CreateDepthStencilView(_depth_stencil.Get(), &dsvd, _depth_stencil_view.GetAddressOf());
+    if (FAILED(hr))
+        goto exit;
 
     ZeroMemory(&_viewport, sizeof(_viewport));
     _viewport.Height = (float) _texture_desc.Height;
     _viewport.Width = (float) _texture_desc.Width;
 
     _context->RSSetViewports(1, &_viewport);
+
+    _context->OMSetRenderTargets(1, _render_target_view.GetAddressOf(), _depth_stencil_view.Get());
 exit:
     return (hr);
 }

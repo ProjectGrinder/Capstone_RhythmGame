@@ -1,6 +1,6 @@
-
 #include "system/compositor.h"
 #include <variant>
+#include "../assets_manager/assets_manager.h"
 #include "utils/print_debug.h"
 
 namespace System::Render
@@ -8,32 +8,6 @@ namespace System::Render
     typedef void *CompositorHandler;
     extern "C"
     {
-        typedef enum
-        {
-            FLOAT32BITS,
-            FLOAT16BITS,
-            FLOAT8BITS,
-
-            UINT32BITS,
-            UINT16BITS,
-            UINT8BITS,
-        } InputType;
-
-        typedef struct
-        {
-            char *semantic;
-            InputType type;
-            size_t offset;
-        } InputAttributeDescription;
-        typedef uint32_t assets_id;
-        assets_id get_assets_id(const char *name);
-        assets_id load_sprite(const char *path, const char *name, size_t width, size_t height);
-        assets_id
-        load_vertex_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count);
-        assets_id
-        load_pixel_shader(const char *path, const char *name, InputAttributeDescription *attributes, size_t count);
-        assets_id load_font(const char *path, const char *name, size_t size);
-        int has_assets(const char *name);
         CompositorHandler get_compositor();
     }
 
@@ -60,7 +34,6 @@ namespace System::Render
             }
 
             auto &drawIntent = intent.value();
-
             ComposedDrawCommon common{};
             if (drawIntent.common.pixel_shader != nullptr)
             {
@@ -68,7 +41,10 @@ namespace System::Render
                 {
                     // TODO: Encode InputAttributeDescription and Count
                     common.pixel_shader = load_pixel_shader(
-                            drawIntent.common.pixel_shader, drawIntent.common.pixel_shader, nullptr, 0);
+                            drawIntent.common.pixel_shader,
+                            drawIntent.common.pixel_shader,
+                            drawIntent.common.pixel_shader_input_attributes.data(),
+                            drawIntent.common.pixel_shader_input_attributes_count);
                 }
                 else
                 {
@@ -86,7 +62,10 @@ namespace System::Render
                 {
                     // TODO: Encode InputAttributeDescription and Count
                     common.vert_shader = load_vertex_shader(
-                            drawIntent.common.vert_shader, drawIntent.common.vert_shader, nullptr, 0);
+                            drawIntent.common.vert_shader,
+                            drawIntent.common.vert_shader,
+                            drawIntent.common.vert_shader_input_attributes.data(),
+                            drawIntent.common.vert_shader_input_attributes_count);
                 }
                 else
                 {
@@ -102,12 +81,16 @@ namespace System::Render
             common.color = drawIntent.common.color;
             common.layer = drawIntent.common.layer;
             common.order = drawIntent.common.order;
-            common.rotation_z = drawIntent.common.rotation_z;
+
+            // rotate on global
+            const auto pivot = drawIntent.common.pivot;
+            const auto rotation_z = drawIntent.common.rotation_z;
 
             std::variant<ComposedSpriteDesc, ComposedTextDesc, TriangleDrawDesc> special{};
             switch (drawIntent.kind)
             {
             case DrawKind::KIND_SPRITE: {
+                /*
                 auto &sprite_draw_desc = std::get<SpriteDrawDesc>(drawIntent.special);
                 special = ComposedSpriteDesc{};
                 auto &sprite = std::get<ComposedSpriteDesc>(special);
@@ -124,9 +107,11 @@ namespace System::Render
                 }
                 sprite.flipX = sprite_draw_desc.flipX;
                 sprite.flipY = sprite_draw_desc.flipY;
+                */
                 break;
             }
             case DrawKind::KIND_TEXT: {
+                /*
                 auto &text_draw_desc = std::get<TextDrawDesc>(drawIntent.special);
                 special = ComposedTextDesc{};
                 auto &text = std::get<ComposedTextDesc>(special);
@@ -137,13 +122,17 @@ namespace System::Render
                 {
                     text.font = load_font(text_draw_desc.font_name, text_draw_desc.font_name, 0);
                 }
+                */
                 break;
             }
             case DrawKind::KIND_UNKNOWN: {
                 break;
             }
             case DrawKind::KIND_TRIANGLE:
-                special = std::get<TriangleDrawDesc>(intent.value().special);
+                auto &triangle_draw_desc = std::get<TriangleDrawDesc>(intent.value().special);
+                special = TriangleDrawDesc{};
+                auto &triangle = std::get<TriangleDrawDesc>(special);
+                triangle = Math::local_to_ndc(triangle_draw_desc, rotation_z, pivot, camera);
                 break;
             }
             compositor._items.push_back(CompositorItem{drawIntent.kind, common, std::move(special)});

@@ -5,7 +5,7 @@ namespace Game::Render
 {
     struct Triangle
     {
-        Math::Vector2<float> points[3];
+        Math::Point points[3];
         uint32_t layer;     // Layer to render
         uint32_t order;     // Order of render in layer
     };

@@ -46,7 +46,7 @@ namespace Scene
             Game::Rhythm::TimingEnd,
             Game::Rhythm::NoteType,
             Game::Render::Animator,
-            Game::Render::Rotation,
+            Game::Render::Transform,
             Game::Render::Sprite,
             Game::Render::Material,
             Game::Render::Text,
