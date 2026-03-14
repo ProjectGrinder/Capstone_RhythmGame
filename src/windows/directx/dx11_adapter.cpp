@@ -212,7 +212,6 @@ namespace System::Render
                 i_ptr[i_idx++] = base + 0;
                 i_ptr[i_idx++] = base + 1;
                 i_ptr[i_idx++] = base + 2;
-            }
             default:
                 break;
             }

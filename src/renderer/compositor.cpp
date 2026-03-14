@@ -90,7 +90,6 @@ namespace System::Render
             switch (drawIntent.kind)
             {
             case DrawKind::KIND_SPRITE: {
-                /*
                 auto &sprite_draw_desc = std::get<SpriteDrawDesc>(drawIntent.special);
                 special = ComposedSpriteDesc{};
                 auto &sprite = std::get<ComposedSpriteDesc>(special);
@@ -100,14 +99,13 @@ namespace System::Render
                     sprite.texture = load_sprite(sprite_draw_desc.texture, sprite_draw_desc.texture, 0, 0);
                 }
                 sprite.src_rect = sprite_draw_desc.src_rect;
-                sprite.dst_rect = Math::project_rect_world_to_ndc(sprite_draw_desc.dst_rect, camera);
-                if (!Math::ndc_in_camera(sprite.dst_rect))
-                {
-                    continue;
-                }
+                auto dst_rect = Math::project_rect_local_to_ndc(sprite_draw_desc.dst_rect, rotation_z, pivot, camera);
+                sprite.dst_rect[0] = dst_rect.at(0);
+                sprite.dst_rect[1] = dst_rect.at(1);
+                sprite.dst_rect[2] = dst_rect.at(2);
+                sprite.dst_rect[3] = dst_rect.at(3);
                 sprite.flipX = sprite_draw_desc.flipX;
                 sprite.flipY = sprite_draw_desc.flipY;
-                */
                 break;
             }
             case DrawKind::KIND_TEXT: {

@@ -3,6 +3,8 @@
 #include <array>
 #include <cmath>
 #include <maths/vector2.h>
+
+#include "game/components/render/sprite.h"
 #include "system/intent_storage.h"
 
 // helpers
@@ -69,6 +71,26 @@ namespace Math
                 view_to_ndc(world_to_view(local_to_world(rotate(desc.points[2], rotation_z), pivot), cam), cam)};
     }
 
+    static inline std::array<Math::Point, 4> project_rect_local_to_ndc(
+        const System::Render::Rect &rect,
+        const float rotation_z,
+        const Point &pivot,
+        const System::Render::Camera &cam)
+    {
+        const float u0 = rect.u0, u1 = rect.u1, v0 = rect.v0, v1 = rect.v1;
+        const Point p0 = Point{{u0, v0, 0}, {1, 1, 1, 1}};
+        const Point p1 = Point{{u1, v0, 0}, {1, 1, 1, 1}};
+        const Point p2 = Point{{u0, v1, 0}, {1, 1, 1, 1}};
+        const Point p3 = Point{{u1, v1, 0}, {1, 1, 1, 1}};
+
+        return std::array<Math::Point, 4>{
+            view_to_ndc(world_to_view(local_to_world(rotate(p0, rotation_z), pivot), cam), cam),
+            view_to_ndc(world_to_view(local_to_world(rotate(p1, rotation_z), pivot), cam), cam),
+            view_to_ndc(world_to_view(local_to_world(rotate(p2, rotation_z), pivot), cam), cam),
+            view_to_ndc(world_to_view(local_to_world(rotate(p3, rotation_z), pivot), cam), cam),
+        };
+    }
+
 } // namespace Math
 
 namespace System::Render
@@ -99,7 +121,7 @@ namespace System::Render
     {
         assets_id texture = static_cast<assets_id>(-1);
         Rect src_rect{};
-        std::array<Math::Vector2<float>, 4> dst_rect{};
+        Math::Point dst_rect[4];
 
         bool flipX = false;
         bool flipY = false;
