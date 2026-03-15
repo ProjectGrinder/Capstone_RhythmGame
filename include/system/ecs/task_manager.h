@@ -81,7 +81,8 @@ namespace System::ECS
         template<typename Component>
         void add_component(pid id, Component &&component)
         {
-            _syscall.template add_component<Component>(id, std::forward<Component>(component));
+            using Stored = std::remove_cvref_t<Component>;
+            _syscall.template add_component<Stored>(id, std::forward<Component>(component));
         }
 
         template<typename Component>
@@ -93,7 +94,8 @@ namespace System::ECS
         template<typename... Components>
         pid create_entity(Components &&...components)
         {
-            return (_syscall.template create_entity<Components...>(std::forward<Components>(components)...));
+            return (_syscall.template create_entity<std::remove_cvref_t<Components>...>(
+                    std::forward<Components>(components)...));
         }
 
         void remove_entity(const pid id)

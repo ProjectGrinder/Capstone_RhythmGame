@@ -78,7 +78,9 @@ namespace System::ECS
             return (Iterator(this, _data.size()));
         }
 
-        void add(pid id, const Resource &value)
+        template<typename T>
+            requires std::constructible_from<Resource, T&&>
+        void add(pid id, T &&value)
         {
             if (_has_component.test(id))
             {
@@ -86,7 +88,7 @@ namespace System::ECS
             }
 
             size_t idx = _data.size();
-            _data.push_back(value);
+            _data.emplace_back(std::forward<T>(value));
             _id_to_index[id] = idx;
             _index_to_id.push_back(id);
             _has_component.set(id);

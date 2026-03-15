@@ -1,5 +1,4 @@
 #pragma once
-#include <bitset>
 
 #include "ecs_types.h"
 
@@ -95,7 +94,9 @@ namespace System::ECS
         template<typename Component>
         void add_component(pid id, Component &&component)
         {
-            _to_add_components.add_resource(id, std::forward<Component>(component));
+            using Stored = std::remove_cvref_t<Component>;
+            static_assert(contains_type_v<Stored, Resources...>, "Component type is not registered in this ECS");
+            _to_add_components.template add_resource<Stored>(id, std::forward<Component>(component));
         }
 
         template<typename Component>
