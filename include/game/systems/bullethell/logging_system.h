@@ -13,8 +13,10 @@ namespace Game::BulletHell
         if (query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
+        LOG_INFO("----------------------------------");
+
         const auto &bullet_loader = query.front().get<Battle::BulletLoader>();
-        LOG_INFO("Frame %d", bullet_loader.current_frame);
+        LOG_INFO("Time : %d", query.front().get<Battle::BattleState>().clock_time);
 
         LOG_INFO("Hp : %d, iFrame : %d, Bullet Pointer : %d", query.front().get<Battle::BattleState>().hp, query.front().get<Battle::BulletHellState>().iframe_time, bullet_loader.pointer);
         const auto player_pos = query2.front().get<Position>();

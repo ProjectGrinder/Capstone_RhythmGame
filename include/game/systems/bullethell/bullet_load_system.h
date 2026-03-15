@@ -28,22 +28,22 @@ namespace Game::BulletHell
     }
 
     template<typename T>
-    void load_bullets(T &syscall, System::ECS::Query<Battle::BulletLoader> &query, System::ECS::Query<Battle::BulletRegistry> &query2, System::ECS::Query<Battle::BattleState,Battle::BulletHellState> &query3)
+    void load_bullets([[maybe_unused]] T &syscall,[[maybe_unused]]  System::ECS::Query<Battle::BulletLoader> &query,[[maybe_unused]]  System::ECS::Query<Battle::BulletRegistry> &query2,[[maybe_unused]]  System::ECS::Query<Battle::BattleState,Battle::BulletHellState> &query3)
     {
-        if (query3.begin() == query3.end())
-            return;
-
-        auto &bullet_loader = query.front().get<Battle::BulletLoader>();
-        auto &pointer = bullet_loader.pointer;
-        auto &batches = bullet_loader.batches;
-        const auto &current_frame = query3.front().get<Battle::BattleState>().clock_time / 1000;
-        syscall.create_entity(Delay{});
-        while (pointer < batches.size() && batches[pointer].frame <= current_frame)
-        {
-            for (auto& b : batches[pointer].bullets)
-                spawn_bullet(syscall, b, query2.front().get<Battle::BulletRegistry>(), query3.front().get<Battle::BulletHellState>());
-
-            pointer++;
-        }
+        // if (query3.begin() == query3.end())
+        //     return;
+        //
+        // auto &bullet_loader = query.front().get<Battle::BulletLoader>();
+        // auto &pointer = bullet_loader.pointer;
+        // auto &batches = bullet_loader.batches;
+        // const auto &current_frame = query3.front().get<Battle::BattleState>().clock_time / 1000;
+        // syscall.create_entity(Delay{});
+        // while (pointer < batches.size() && batches[pointer].frame <= current_frame)
+        // {
+        //     for (auto& b : batches[pointer].bullets)
+        //         spawn_bullet(syscall, b, query2.front().get<Battle::BulletRegistry>(), query3.front().get<Battle::BulletHellState>());
+        //
+        //     pointer++;
+        // }
     }
 } // namespace Game::BulletHell

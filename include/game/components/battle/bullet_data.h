@@ -86,9 +86,24 @@ namespace Game::Battle
         float posX, posY;
         float vel, rot;
         float acc, wvel;
-        uint32_t patternID;
+        uint16_t patternID;
         int delay_frame;
         int graphicID;
+        BulletData(
+                const float posX,
+                const float posY,
+                const int delay_frame,
+                const int graphicID) :
+            posX(posX),
+            posY(posY),
+            vel(0),
+            rot(0),
+            acc(0),
+            wvel(0),
+            patternID(0),
+            delay_frame(delay_frame),
+            graphicID(graphicID)
+        {}
         BulletData(
                 const float posX,
                 const float posY,
@@ -111,7 +126,7 @@ namespace Game::Battle
                 const float posY,
                 const float vel,
                 const float rot,
-                const uint32_t patternID,
+                const uint16_t patternID,
                 const int delay_frame,
                 const int graphicID) :
             posX(posX), posY(posY), vel(vel), rot(rot), acc(0), wvel(0), patternID(patternID), delay_frame(delay_frame), graphicID(graphicID)
@@ -143,7 +158,7 @@ namespace Game::Battle
                 const float rot,
                 const float acc,
                 const float wvel,
-                const uint32_t patternID,
+                const uint16_t patternID,
                 const int delay_frame,
                 const int graphicID) :
             posX(posX), posY(posY), vel(vel), rot(rot), acc(acc), wvel(wvel), patternID(patternID), delay_frame(delay_frame), graphicID(graphicID)
@@ -167,6 +182,7 @@ namespace Game::Battle
         BulletLoader() :
             current_frame(0), pointer(0)
         {}
+
 
         BulletData CreateBullet(const int frame, const BulletData& data)
         {

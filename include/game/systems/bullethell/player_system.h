@@ -21,7 +21,7 @@ namespace Game::BulletHell
             auto &state = comp.get<Battle::BulletHellState>();
             if (state.iframe_time > 0)
             {
-                state.iframe_time -= static_cast<int>(Battle::get_delta_time());
+                state.iframe_time -= static_cast<int>(Battle::get_delta_time()/1000);
             }
 
             if (state.iframe_time < 0)
