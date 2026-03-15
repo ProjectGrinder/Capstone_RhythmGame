@@ -49,6 +49,7 @@ HRESULT Windows::DeviceResources::create_device_resources()
             &device,
             &_feature_level,
             &context);
+
     if (FAILED(hr))
     {
         LOG_ERROR("D3D11CreateDevice failed, Code 0x%08lx", hr);
@@ -215,5 +216,5 @@ ID3D11DepthStencilView *Windows::DeviceResources::get_depth_stencil()
 
 void Windows::DeviceResources::present()
 {
-    _swap_chain->Present(1, 0);
+    _swap_chain->Present(0, 0);
 }
