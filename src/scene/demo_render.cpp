@@ -7,7 +7,7 @@ Scene::DemoRender Scene::DemoRender::instance()
     return (instance);
 }
 
-Scene::DemoRender::TaskManager Scene::DemoRender::init()
+std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 {
     InputAttributeDescription rainbow_vs_input_attributes[] = {
             InputAttributeDescription{"Pos", InputType::R32G32B32_FLOAT, 0},
@@ -22,20 +22,18 @@ Scene::DemoRender::TaskManager Scene::DemoRender::init()
 
     auto ps = load_pixel_shader("shaders/ps/rainbow.cso", "rainbow_ps", rainbow_ps_input_attributes, 2);
 
-    auto tm = TaskManager{};
-    tm.create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 16, .scaleY = 9, .rotation = 0});
-
-    for (float i = 0; i < 1000; ++i)
+    auto tm = std::make_shared<TaskManager>();
+    tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 16, .scaleY = 9, .rotation = 0});
+    for (float i = 0; i < 10000; ++i)
     {
-        tm.create_entity(
+        tm->create_entity(
                 Game::Render::Triangle{
                         {{{-0.5, 0, 0}, {1, 0, 0, 1}}, {{0, 0.5, 0}, {0, 1, 0, 1}}, {{0.5, 0, 0}, {0, 0, 1, 1}}}, 0, 0},
                 Game::Render::Material(vs, ps),
                 Game::Render::Transform{Math::Point{{i * 0.1f, i * 0.1f, 0}, {0, 0, 0, 0}}, 0, 0, 0},
                 Game::Render::IntentHandle{});
     }
-
-    tm.run_all();
+    tm->run_all();
     return (tm);
 }
 

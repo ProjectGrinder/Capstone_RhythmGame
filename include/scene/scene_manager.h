@@ -8,7 +8,7 @@ namespace Scene
     /* Optimizable */
     class SceneManager
     {
-        std::variant<std::monostate, Demo, BattleScene, DemoRhythm, DemoRender> _current_scene_template;
+        std::variant<std::monostate, Demo, BattleScene, DemoRender> _current_scene_template;
         std::any _current_manager;
 
     public:

@@ -30,7 +30,7 @@ namespace Scene
                 Game::Render::draw_triangle<Syscall>>;
 
         // declare functions
-        static TaskManager init();
+        static std::shared_ptr<TaskManager> init();
         static std::vector<ComponentTuple> exit();
     };
 } // namespace Scene
