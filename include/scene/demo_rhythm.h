@@ -109,17 +109,17 @@ namespace Scene
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             Game::Battle::input_system<Syscall>,
-            // Game::Rhythm::load_notes<Syscall>,
-            // Game::Rhythm::handle_rhythm<Syscall>,
-            // Game::Rhythm::handle_miss_note<Syscall>,
-            // Game::Rhythm::handle_bpm<Syscall>,
+            Game::Rhythm::load_notes<Syscall>,
+            Game::Rhythm::handle_rhythm<Syscall>,
+            Game::Rhythm::handle_miss_note<Syscall>,
+            Game::Rhythm::handle_bpm<Syscall>,
             Game::Rhythm::test_rhythm<Syscall>,
             Game::Battle::update_global_clock<Syscall>
             >;
         
-        static TaskManager init()
+        static std::shared_ptr<TaskManager> init()
         {
-            auto tm = TaskManager{};
+            auto tm = std::make_shared<TaskManager>();
             // Create and configure BattleState
             auto config_battle_state = []
             {
@@ -127,7 +127,7 @@ namespace Scene
                 state.current_phase = Game::Battle::RHYTHM;
                 return (state);
             };
-            tm.create_entity<Game::Battle::BattleState,
+            tm->create_entity<Game::Battle::BattleState,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
             Game::Rhythm::KeyInput,
@@ -143,11 +143,11 @@ namespace Scene
 
 
             // Create Lane and NoteSpeed components
-            tm.create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
-            tm.create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));
-            tm.create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
-            tm.create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
-            tm.run_all();
+            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
+            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));
+            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
+            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
+            tm->run_all();
             return (tm);
         }
 

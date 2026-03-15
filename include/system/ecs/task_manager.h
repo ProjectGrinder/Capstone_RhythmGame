@@ -72,6 +72,11 @@ namespace System::ECS
         TaskManager() : _syscall(_resource_manager)
         {}
 
+        TaskManager(const TaskManager &) = delete;
+        TaskManager &operator=(const TaskManager &) = delete;
+        TaskManager(TaskManager &&) = delete;
+        TaskManager &operator=(TaskManager &&) = delete;
+
         inline void run_all()
         {
             (_run<Tasks>(), ...);

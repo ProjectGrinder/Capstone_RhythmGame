@@ -14,12 +14,12 @@ void Scene::Demo::test()
     LOG_INFO("test call with val = {}", val.number);
 }
 
-Scene::Demo::TaskManager Scene::Demo::init()
+std::shared_ptr<Scene::Demo::TaskManager> Scene::Demo::init()
 {
     LOG_INFO("Initialization called");
-    auto tm = TaskManager{};
-    tm.create_entity(test_component{1});
-    tm.run_all();
+    auto tm = std::make_shared<TaskManager>();
+    tm->create_entity(test_component{1});
+    tm->run_all();
 
     return (tm);
 }
