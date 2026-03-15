@@ -31,11 +31,13 @@ namespace Game::Rhythm
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
                     LOG_INFO("Timing %d Lane %d: Tap Miss", note_time, comps.get<Lane>().lane);
+                    LOG_INFO("Miss Count = %d", battle_query.front().get<Battle::BattleState>().judgement_count.miss_count);
                 }
                 else if (comps.get<HoldActive>().hold_active == false) // hold note miss (not held at all)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 2;
                     LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comps.get<Lane>().lane);
+                    LOG_INFO("Miss Count = %d", battle_query.front().get<Battle::BattleState>().judgement_count.miss_count);
                 }
                 syscall.remove_entity(id);
             }
