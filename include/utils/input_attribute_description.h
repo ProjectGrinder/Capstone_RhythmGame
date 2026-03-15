@@ -1,9 +1,10 @@
 #pragma once
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-    #include <stddef.h>
+#include <stddef.h>
     typedef enum
     {
         R32G32B32A32_FLOAT,
@@ -19,7 +20,7 @@ extern "C" {
 
     typedef struct
     {
-        char *semantic;
+        const char *semantic;
         InputType type;
         size_t offset;
     } InputAttributeDescription;
@@ -27,3 +28,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+

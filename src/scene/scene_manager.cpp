@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include "scene.h"
+#include "system/intent_storage.h"
 
 namespace Scene
 {
@@ -23,6 +24,7 @@ namespace Scene
 
     void SceneManager::update()
     {
+        System::Render::IntentStorage::next_frame();
         std::visit(
                 []<typename S>([[maybe_unused]] S &&scene)
                 {

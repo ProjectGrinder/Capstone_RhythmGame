@@ -10,7 +10,7 @@ namespace Scene
         constexpr static auto name = "DemoRender";
 
         // declare scene parameters
-        constexpr static size_t MaxResource = 2000;
+        constexpr static size_t MaxResource = 12000;
         using ComponentTuple = std::tuple<
                 Game::Render::Camera2D,
                 Game::Render::Sprite,
@@ -27,9 +27,7 @@ namespace Scene
                 Game::Render::spin_camera<Syscall>,
                 Game::Render::spin_triangle<Syscall>,
                 Game::Render::set_camera<Syscall>,
-                Game::Render::material_intent<Syscall>,
-                Game::Render::triangle_intent<Syscall>,
-                Game::Render::transform_intent<Syscall>>;
+                Game::Render::draw_triangle<Syscall>>;
 
         // declare functions
         static std::shared_ptr<TaskManager> init();
