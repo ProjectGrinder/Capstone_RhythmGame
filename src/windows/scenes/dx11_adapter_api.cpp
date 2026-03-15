@@ -47,7 +47,7 @@ void dx11_adapter_convert(Dx11AdapterHandler *api, DirectXHandler *directx, Comp
     }
 
     auto resources = static_cast<Windows::DeviceResources *>(*directx);
-    auto compositor_items = System::Render::Compositor::items();
+    auto compositor_items = System::Render::Compositor::get_items();
     auto adapter = static_cast<System::Render::Dx11Adapter *>(*api);
 
     adapter->convert(*resources, compositor_items);

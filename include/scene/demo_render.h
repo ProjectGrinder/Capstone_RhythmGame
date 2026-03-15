@@ -27,9 +27,7 @@ namespace Scene
                 Game::Render::spin_camera<Syscall>,
                 Game::Render::spin_triangle<Syscall>,
                 Game::Render::set_camera<Syscall>,
-                Game::Render::material_intent<Syscall>,
-                Game::Render::triangle_intent<Syscall>,
-                Game::Render::transform_intent<Syscall>>;
+                Game::Render::draw_triangle<Syscall>>;
 
         // declare functions
         static TaskManager init();

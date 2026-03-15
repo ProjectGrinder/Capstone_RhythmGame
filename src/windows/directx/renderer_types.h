@@ -5,6 +5,17 @@
 
 using Microsoft::WRL::ComPtr;
 
+struct VertexShaderCache
+{
+    ComPtr<ID3D11VertexShader> shader;
+    ComPtr<ID3D11InputLayout> layout;
+};
+
+struct PixelShaderCache
+{
+    ComPtr<ID3D11PixelShader> shader;
+};
+
 struct RenderObject
 {
     ComPtr<ID3D11Buffer> vertex_buffer;

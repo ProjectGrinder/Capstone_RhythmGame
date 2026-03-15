@@ -1,7 +1,7 @@
 #pragma warning(disable : 4200)
 #pragma warning(disable : 4245)
 
-#include "assets_manager.h"
+#include "system/asset_manager.h"
 
 #include "utils/print_debug.h"
 #include "utils/str_utils.h"
@@ -14,6 +14,8 @@ extern void *heap_alloc(size_t size);
 extern void heap_free(void *data);
 extern void *memcpy(void *dst, const void *src, size_t size);
 extern char *strdup(const char *src);
+extern void vertex_shader_release(void **shader_handler);
+extern void pixel_shader_release(void **shader_handler);
 
 // Leave -1 for error indication
 static AssetsRecord assets_records[(SHORT_MAX - 1)] = {0};
@@ -48,7 +50,7 @@ static inline assets_id make_id(uint16_t index, uint16_t gen)
     return ((assets_id) gen << 16) | index;
 }
 
-static inline assets_id load_assets(const char *path, const char *name, AssetsInfo info)
+static inline AssetsRecord *load_assets(const char *path, const char *name, AssetsInfo info)
 {
 
     FileContent *content = NULL;
@@ -85,12 +87,13 @@ static inline assets_id load_assets(const char *path, const char *name, AssetsIn
     }
 
     current = &assets_records[use_idx];
+    current->gpu_extension = NULL;
     mapping = &id_map[use_idx];
 
     current->data = content;
     current->info = info;
 
-    id = make_id(use_idx, current->gen);
+    id = make_id(use_idx, ASSET_GEN(current->id));
 
     if (mapping->name)
         heap_free(mapping->name);
@@ -101,10 +104,10 @@ static inline assets_id load_assets(const char *path, const char *name, AssetsIn
         ++record_index;
 
 exit:
-    return (id);
+    return (current);
 }
 
-assets_id load_sprite(const char *path, const char *name, size_t width, size_t height)
+const AssetsRecord *load_sprite(const char *path, const char *name, size_t width, size_t height)
 {
     AssetsInfo info = {0};
     info.name = strdup(name);
@@ -114,7 +117,7 @@ assets_id load_sprite(const char *path, const char *name, size_t width, size_t h
     return (load_assets(path, name, info));
 }
 
-assets_id
+const AssetsRecord *
 load_vertex_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count)
 {
     AssetsInfo info = {0};
@@ -124,12 +127,12 @@ load_vertex_shader(const char *path, const char *name, const InputAttributeDescr
     info.info.as_shader.data = copy_input_attributes(attributes, count);
     if (count > 0 && info.info.as_shader.data == NULL)
     {
-        return (uint32_t) -1;
+        return NULL;
     }
     return (load_assets(path, name, info));
 }
 
-assets_id
+const AssetsRecord *
 load_pixel_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count)
 {
     AssetsInfo info = {0};
@@ -139,12 +142,12 @@ load_pixel_shader(const char *path, const char *name, const InputAttributeDescri
     info.info.as_shader.data = copy_input_attributes(attributes, count);
     if (count > 0 && info.info.as_shader.data == NULL)
     {
-        return (uint32_t) -1;
+        return NULL;
     }
     return (load_assets(path, name, info));
 }
 
-assets_id load_font(const char *path, const char *name, size_t size)
+const AssetsRecord *load_font(const char *path, const char *name, size_t size)
 {
     AssetsInfo info = {0};
     info.name = strdup(name);
@@ -201,7 +204,7 @@ void free_assets(assets_id id)
     heap_free(current->info.name);
     heap_free(map->name);
 
-    ++current->gen;
+    current->id = make_id(ASSET_INDEX(current->id), ASSET_GEN(current->id) + 1);
     current->data = NULL;
 
     map->name = NULL;
@@ -218,10 +221,24 @@ void assets_cleanup(void)
         switch (curr->info.type)
         {
         case VERTEX_SHADER:
+            heap_free(curr->info.info.as_shader.data);
+            curr->info.info.as_shader.data = NULL;
+            curr->info.info.as_shader.count = 0;
+            if (curr->gpu_extension != NULL)
+            {
+                vertex_shader_release(&curr->gpu_extension);
+                heap_free(curr->gpu_extension);
+            }
+            break;
         case PIXEL_SHADER:
             heap_free(curr->info.info.as_shader.data);
             curr->info.info.as_shader.data = NULL;
             curr->info.info.as_shader.count = 0;
+            if (curr->gpu_extension != NULL)
+            {
+                pixel_shader_release(&curr->gpu_extension);
+                heap_free(curr->gpu_extension);
+            }
             break;
         default:
             break;
@@ -230,4 +247,3 @@ void assets_cleanup(void)
         heap_free(id_map[i].name);
     }
 }
-

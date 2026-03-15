@@ -1,15 +1,16 @@
 #include "dx11_adapter.h"
 #include <algorithm>
 #include <d3d11.h>
-#include "utils/input_attribute_description.h"
-
-#include "../../assets_manager/assets_manager.h"
 #include "device_resources.hpp"
+#include "renderer_types.h"
+#include "system/asset_manager.h"
+#include "utils/input_attribute_description.h"
 #include "utils/print_debug.h"
 
 namespace System::Render
 {
     typedef void *DX11AdapterHandler;
+    extern "C" void *heap_alloc(size_t size);
     extern "C" DX11AdapterHandler get_dx11_adapter();
     const UINT MAX_VERTICES = 100000;
     const UINT MAX_INDICES = 300000;
@@ -114,22 +115,29 @@ namespace System::Render
             RenderObject render_object{};
             HRESULT hr = S_OK;
 
-            uint16_t vs_idx = ASSET_INDEX(common.vert_shader);
+            const AssetsRecord *vs_rec = common.vs;
+            const AssetsRecord *ps_rec = common.ps;
 
-            if (common.vert_shader == (uint32_t) -1 || vs_idx >= _vs_fast_cache.size())
+            uint16_t vs_idx = ASSET_INDEX(common.vs->id);
+
+            if (vs_idx >= _vs_fast_cache.size())
             {
-                LOG_ERROR("Invalid Shader ID: %u", common.vert_shader);
+                LOG_ERROR("Invalid Shader ID: %u", common.vs->info.name);
                 continue;
             }
 
-            if (_vs_fast_cache[vs_idx].full_id == common.vert_shader)
+            if (vs_rec->gpu_extension != NULL)
+            {
+                render_object.vertex_shader = ((VertexShaderCache *) vs_rec->gpu_extension)->shader;
+                render_object.input_layout = ((VertexShaderCache *) vs_rec->gpu_extension)->layout;
+            }
+            else if (_vs_fast_cache[vs_idx].full_id == vs_rec->id)
             {
                 render_object.vertex_shader = _vs_fast_cache[vs_idx].shader;
                 render_object.input_layout = _input_fast_cache[vs_idx].layout;
             }
             else
             {
-                const auto vs_rec = get_assets_record_ptr(common.vert_shader);
                 if (vs_rec && vs_rec->data)
                 {
                     hr = device->CreateVertexShader(
@@ -159,19 +167,28 @@ namespace System::Render
                         continue;
                     }
 
-                    _vs_fast_cache[vs_idx] = {common.vert_shader, render_object.vertex_shader};
-                    _input_fast_cache[vs_idx] = {common.vert_shader, render_object.input_layout};
+                    _vs_fast_cache[vs_idx] = {vs_rec->id, render_object.vertex_shader};
+                    _input_fast_cache[vs_idx] = {vs_rec->id, render_object.input_layout};
+                    VertexShaderCache *extension = (VertexShaderCache *) heap_alloc(sizeof(VertexShaderCache));
+                    extension->shader = render_object.vertex_shader;
+                    extension->layout = render_object.input_layout;
+
+                    AssetsRecord *unsafe = const_cast<AssetsRecord *>(vs_rec);
+                    unsafe->gpu_extension = (void *) extension;
                 }
             }
 
-            uint16_t ps_idx = ASSET_INDEX(common.pixel_shader);
-            if (_ps_fast_cache[ps_idx].full_id == common.pixel_shader)
+            uint16_t ps_idx = ASSET_INDEX(ps_rec->id);
+            if (ps_rec->gpu_extension != NULL)
+            {
+                render_object.pixel_shader = ((PixelShaderCache *) ps_rec->gpu_extension)->shader;
+            }
+            else if (_ps_fast_cache[ps_idx].full_id == ps_rec->id)
             {
                 render_object.pixel_shader = _ps_fast_cache[ps_idx].shader;
             }
             else
             {
-                const auto ps_rec = get_assets_record_ptr(common.pixel_shader);
                 if (ps_rec && ps_rec->data)
                 {
                     hr = device->CreatePixelShader(
@@ -183,7 +200,11 @@ namespace System::Render
                         continue;
                     }
 
-                    _ps_fast_cache[ps_idx] = {common.pixel_shader, render_object.pixel_shader};
+                    _ps_fast_cache[ps_idx] = {ps_rec->id, render_object.pixel_shader};
+                    PixelShaderCache *extension = (PixelShaderCache *) heap_alloc(sizeof(PixelShaderCache));
+                    extension->shader = render_object.pixel_shader;
+                    AssetsRecord *unsafe = const_cast<AssetsRecord *>(ps_rec);
+                    unsafe->gpu_extension = (void *) extension;
                 }
             }
 
@@ -196,13 +217,7 @@ namespace System::Render
                 render_object.offset = (UINT) base;
                 render_object.count.index_count = 3;
 
-                render_object.render_id = {
-                        .sp_id = 0xFFFFu,
-                        .ps_id = ps_idx,
-                        .vs_id = vs_idx,
-                        .padding = 0xFFu,
-                        .layer = (uint8_t) common.layer,
-                };
+                render_object.render_id.sort_key = common.key;
                 render_object.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
                 v_ptr[v_idx++] = points[0];
@@ -336,3 +351,25 @@ namespace System::Render
         _global_ib.Reset();
     }
 } // namespace System::Render
+
+extern "C"
+{
+    void vertex_shader_release(void **shader_handler)
+    {
+        auto *cache = static_cast<VertexShaderCache *>(*shader_handler);
+        if (cache->shader)
+            cache->shader->Release();
+        if (cache->layout)
+            cache->layout->Release();
+
+        *shader_handler = NULL;
+    }
+
+    void pixel_shader_release(void **shader_handler)
+    {
+        auto *cache = static_cast<PixelShaderCache *>(*shader_handler);
+        if (cache->shader)
+            cache->shader->Release();
+        *shader_handler = NULL;
+    }
+}
