@@ -137,8 +137,8 @@ namespace System::Render
             }
             compositor._items.push_back(CompositorItem{drawIntent.kind, common, std::move(special)});
         }
-        auto intent_size = intents.size();
-        auto items_size = compositor._items.size();
-        LOG_INFO("Composed %d intents into %d items", intent_size, items_size);
+        // auto intent_size = intents.size();
+        // auto items_size = compositor._items.size();
+        // LOG_INFO("Composed %d intents into %d items", intent_size, items_size);
     }
 } // namespace System::Render

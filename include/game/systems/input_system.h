@@ -16,6 +16,9 @@ namespace Game::Battle
         if (query1.begin() == query1.end())
             return;
 
+        if (bullet_hell_input.begin() == bullet_hell_input.end() || rhythm_input.begin() == rhythm_input.end())
+            return;
+
         // TODO: Change fixed key bindings to be rebindable
         constexpr auto LEFT = 0x25;
         constexpr auto UP = 0x26;
@@ -50,10 +53,110 @@ namespace Game::Battle
             {
                 break;
             }
-            rhythm_input.front().get<Rhythm::KeyInput>().input1 = get_key_state(D);
-            rhythm_input.front().get<Rhythm::KeyInput>().input2 = get_key_state(F);
-            rhythm_input.front().get<Rhythm::KeyInput>().input3 = get_key_state(J);
-            rhythm_input.front().get<Rhythm::KeyInput>().input4 = get_key_state(K);
+
+            if (get_key_state(D))
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key1_hold = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed &&
+                    !rhythm_input.front().get<Rhythm::KeyInput>().key1_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed = true;
+                }
+            }
+            else
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key1_hold = false;
+                rhythm_input.front().get<Rhythm::KeyInput>().key1_lock = false;
+            }
+            if (rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed)
+            {
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key1_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key1_lock = true;
+                }
+                else
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed = false;
+                }
+            }
+
+            if (get_key_state(F))
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key2_hold = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed &&
+                    !rhythm_input.front().get<Rhythm::KeyInput>().key2_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed = true;
+                }
+            }
+            else
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key2_hold = false;
+                rhythm_input.front().get<Rhythm::KeyInput>().key2_lock = false;
+            }
+            if (rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed)
+            {
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key2_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key2_lock = true;
+                }
+                else
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed = false;
+                }
+            }
+
+            if (get_key_state(J))
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key3_hold = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed &&
+                    !rhythm_input.front().get<Rhythm::KeyInput>().key3_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed = true;
+                }
+            }
+            else
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key3_hold = false;
+                rhythm_input.front().get<Rhythm::KeyInput>().key3_lock = false;
+            }
+            if (rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed)
+            {
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key3_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key3_lock = true;
+                }
+                else
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed = false;
+                }
+            }
+
+            if (get_key_state(K))
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key4_hold = true;
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed &&
+                    !rhythm_input.front().get<Rhythm::KeyInput>().key4_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed = true;
+                }
+            }
+            else
+            {
+                rhythm_input.front().get<Rhythm::KeyInput>().key4_hold = false;
+                rhythm_input.front().get<Rhythm::KeyInput>().key4_lock = false;
+            }
+            if (rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed)
+            {
+                if (!rhythm_input.front().get<Rhythm::KeyInput>().key4_lock)
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key4_lock = true;
+                }
+                else
+                {
+                    rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed = false;
+                }
+            }
             break;
         default:
             break;
@@ -88,19 +191,19 @@ namespace Game::Battle
         {
             LOG_INFO("BulletHell X");
         }
-        if (rhythm_input.front().get<Rhythm::KeyInput>().input1)
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed)
         {
             LOG_INFO("Rhythm KEY1");
         }
-        if (rhythm_input.front().get<Rhythm::KeyInput>().input2)
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed)
         {
             LOG_INFO("Rhythm KEY2");
         }
-        if (rhythm_input.front().get<Rhythm::KeyInput>().input3)
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed)
         {
             LOG_INFO("Rhythm KEY3");
         }
-        if (rhythm_input.front().get<Rhythm::KeyInput>().input4)
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed)
         {
             LOG_INFO("Rhythm KEY4");
         }
