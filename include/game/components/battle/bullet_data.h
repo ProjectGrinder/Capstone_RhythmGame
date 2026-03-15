@@ -60,7 +60,7 @@ namespace Game::Battle
         int pierce;
         int lifetime;
 
-        BulletGraphicMap() : damage_mul(0), pierce(1), lifetime(10)
+        BulletGraphicMap() : damage_mul(0), pierce(1), lifetime(5000)
         {}
 
         explicit BulletGraphicMap(
@@ -69,7 +69,7 @@ namespace Game::Battle
                 const SpecialBulletData &special_bullet_data = {},
                 const float damage_mul = 1,
                 const int pierce = 1,
-                const int lifetime = 10 ) :
+                const int lifetime = 5000 ) :
             collider_data(collider_data), graphic_data(graphic_data), special_bullet_data(special_bullet_data), damage_mul(damage_mul), pierce(pierce), lifetime(lifetime)
         {}
     };

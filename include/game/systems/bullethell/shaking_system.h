@@ -20,13 +20,13 @@ namespace Game::Physics
 
             if (shaker_c.delay > 0)
             {
-                shaker_c.delay -= static_cast<int>(Battle::get_delta_time()/1000);
+                shaker_c.delay -= static_cast<int>(Battle::get_delta_time());
             }
             else
             {
                 if (shaker_c.shakingTime > 0)
                 {
-                    shaker_c.shakingTime -= static_cast<int>(Battle::get_delta_time()/1000);
+                    shaker_c.shakingTime -= static_cast<int>(Battle::get_delta_time());
                     if (get_distance(shaker_c.last_position, pos) >
                         (shaker_c.magnitudeX > shaker_c.magnitudeY ? shaker_c.magnitudeX : shaker_c.magnitudeY))
                     {

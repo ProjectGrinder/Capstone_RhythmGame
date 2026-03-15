@@ -31,7 +31,7 @@ namespace Game::BulletHell
                 }
                 else if (delay_comp.delay <= 0)
                 {
-                    scl.scaleX += static_cast<float>(Battle::get_delta_time()/1000000 * laser.length/laser.boom_frame);
+                    scl.scaleX += static_cast<float>(Battle::get_delta_time()/1000 * laser.length/laser.boom_frame);
                     if (scl.scaleX >= laser.length)
                     {
                         scl.scaleX = laser.length;
@@ -55,7 +55,7 @@ namespace Game::BulletHell
             {
                 if (delay_comp.delay <= 0)
                 {
-                    const auto laser_speed = static_cast<float>(Battle::get_delta_time()/1000000 * laser.length/laser.boom_frame);
+                    const auto laser_speed = static_cast<float>(Battle::get_delta_time()/1000 * laser.length/laser.boom_frame);
                     scl.scaleX -= laser_speed;
                     pos.x += laser_speed * cos(angleZ);
                     pos.y += laser_speed * sin(angleZ);

@@ -10,7 +10,7 @@ namespace Game::BulletHell
         for (auto &[id, comps]: query)
         {
             auto &comp = comps.get<Particle>();
-            comp.lifetime -= static_cast<int>(Battle::get_delta_time()/1000);
+            comp.lifetime -= static_cast<int>(Battle::get_delta_time());
             if (comp.lifetime < 0)
             {
                 // TODO: Animate this after renderer

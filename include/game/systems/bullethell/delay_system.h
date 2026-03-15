@@ -15,7 +15,7 @@ namespace Game::BulletHell
             auto &delay_comp = comps.get<Delay>();
             if (delay_comp.delay>0)
             {
-                delay_comp.delay -= static_cast<int>(Battle::get_delta_time()/1000);
+                delay_comp.delay -= static_cast<int>(Battle::get_delta_time());
             }
         }
     }

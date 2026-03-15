@@ -9,7 +9,7 @@ namespace Game::BulletHell
     {
         const System::ECS::pid bullet = syscall.create_entity(Position(bullet_data.posX,bullet_data.posY), Delay(bullet_data.delay_frame));
 
-        syscall.add_components(bullet, Rotation(), Physics::Scale(), Velocity(), Acceleration(), AngularVelocity());
+        syscall.add_components(bullet, Rotation(bullet_data.rot), Physics::Scale(), Velocity(bullet_data.vel), Acceleration(bullet_data.acc), AngularVelocity(bullet_data.wvel), Pattern(bullet_data.patternID));
 
         const Battle::BulletGraphicMap bullet_info = bullet_registry.bulletGraphicMaps[bullet_data.graphicID];
         syscall.add_components(bullet, Bullet(static_cast<int>(bullet_info.damage_mul * static_cast<float>(bhs.damage)), bullet_info.pierce), Particle(bullet_info.lifetime));
@@ -18,32 +18,30 @@ namespace Game::BulletHell
         else if (bullet_info.special_bullet_data.type == Battle::Laser) syscall.add_components(bullet, Laser(bullet_data.posX, bullet_data.posY, bullet_info.special_bullet_data.size, bullet_info.special_bullet_data.frame));
 
         const Battle::GraphicData bullet_graphic = bullet_info.graphic_data;
-        syscall.add_components(bullet, Render::Sprite(bullet_graphic.sprite), Render::Material(nullptr, {}, 0,nullptr, {}, 0));
+        syscall.add_components(bullet, Render::Sprite(bullet_graphic.sprite), Render::Material(nullptr,nullptr, 0));
 
         if (const Battle::ColliderData bullet_collider = bullet_info.collider_data;
             bullet_collider.type == Physics::RECTANGLE) syscall.add_components(bullet, Physics::RectangularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
         else if (bullet_collider.type == Physics::CIRCLE) syscall.add_components(bullet, Physics::CircularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
-
 
     }
 
     template<typename T>
     void load_bullets([[maybe_unused]] T &syscall,[[maybe_unused]]  System::ECS::Query<Battle::BulletLoader> &query,[[maybe_unused]]  System::ECS::Query<Battle::BulletRegistry> &query2,[[maybe_unused]]  System::ECS::Query<Battle::BattleState,Battle::BulletHellState> &query3)
     {
-        // if (query3.begin() == query3.end())
-        //     return;
-        //
-        // auto &bullet_loader = query.front().get<Battle::BulletLoader>();
-        // auto &pointer = bullet_loader.pointer;
-        // auto &batches = bullet_loader.batches;
-        // const auto &current_frame = query3.front().get<Battle::BattleState>().clock_time / 1000;
-        // syscall.create_entity(Delay{});
-        // while (pointer < batches.size() && batches[pointer].frame <= current_frame)
-        // {
-        //     for (auto& b : batches[pointer].bullets)
-        //         spawn_bullet(syscall, b, query2.front().get<Battle::BulletRegistry>(), query3.front().get<Battle::BulletHellState>());
-        //
-        //     pointer++;
-        // }
+        if (query3.begin() == query3.end())
+            return;
+
+        auto &bullet_loader = query.front().get<Battle::BulletLoader>();
+        auto &pointer = bullet_loader.pointer;
+        auto &batches = bullet_loader.batches;
+        const auto &current_frame = query3.front().get<Battle::BattleState>().clock_time / 1000;
+        while (pointer < batches.size() && batches[pointer].frame <= current_frame)
+        {
+            for (auto& b : batches[pointer].bullets)
+                spawn_bullet(syscall, b, query2.front().get<Battle::BulletRegistry>(), query3.front().get<Battle::BulletHellState>());
+
+            pointer++;
+        }
     }
 } // namespace Game::BulletHell

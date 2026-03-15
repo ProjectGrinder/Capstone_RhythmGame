@@ -1,5 +1,4 @@
 #pragma once
-#include "system.h"
 #include "game.h"
 
 namespace Scene
@@ -11,9 +10,9 @@ namespace Scene
         std::vector<BulletGraphicMap> maps = {
             BulletGraphicMap(ColliderData(CIRCLE, 4,4)),
             BulletGraphicMap(ColliderData(CIRCLE, 8,8)),
-            BulletGraphicMap(ColliderData(CIRCLE, 8,8), {}, {}, 1, 999, 3),
-            BulletGraphicMap(ColliderData(CIRCLE, 8,8), {} , SpecialBulletData(Booming, 8, 3), 1, 999, 20),
-            BulletGraphicMap(ColliderData(RECTANGLE, 8,8), {} , SpecialBulletData(Laser, 8, 3), 1, 999, 20),
+            BulletGraphicMap(ColliderData(CIRCLE, 8,8), {}, {}, 1, 999, 3000),
+            BulletGraphicMap(ColliderData(CIRCLE, 8,8), {} , SpecialBulletData(Booming, 8, 3), 1, 999, 1000),
+            BulletGraphicMap(ColliderData(RECTANGLE, 8,8), {} , SpecialBulletData(Laser, 8, 3), 1, 999, 1000),
         };
         return {BulletRegistry(maps)};
     }
@@ -118,7 +117,8 @@ namespace Scene
             Game::Render::Sprite,
             Game::Render::Material,
             Game::Render::Text,
-            Game::Render::Camera2D
+            Game::Render::Camera2D,
+            Game::Rhythm::NoteType
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -143,11 +143,11 @@ namespace Scene
             Game::Battle::update_global_clock<Syscall>
             >;
 
-        static TaskManager init()
+        static std::shared_ptr<TaskManager> init()
         {
-            auto tm = TaskManager{};
+            auto tm = std::make_shared<TaskManager>();
             // Create and configure BattleState
-            tm.create_entity<Game::Battle::BattleState,
+            tm->create_entity<Game::Battle::BattleState,
             Game::Battle::BulletHellState,
             Game::Battle::BulletRegistry,
             Game::Battle::BulletLoader,
@@ -163,7 +163,7 @@ namespace Scene
                 Game::BulletHell::Input()
                 );
 
-            tm.create_entity<Game::BulletHell::Player,
+            tm->create_entity<Game::BulletHell::Player,
             Position, Rotation,
             Game::Physics::Scale,
             Velocity,
@@ -171,7 +171,7 @@ namespace Scene
             AngularVelocity, Game::Physics::CircularCollider>(
                 {}, {}, {}, {}, {}, {}, {}, {}
             );
-            tm.run_all();
+            tm->run_all();
             return (tm);
         }
 

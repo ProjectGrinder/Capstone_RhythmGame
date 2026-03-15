@@ -48,10 +48,10 @@ namespace Game::BulletHell
             auto &vel = comps.get<Velocity>();
             const auto &acc = comps.get<Acceleration>();
 
-            vel.vx += acc.ax * static_cast<float>(Battle::get_delta_time()/1000000);
+            vel.vx += acc.ax * static_cast<float>(Battle::get_delta_time()/1000);
             vel.vx = Physics::clamp(vel.vx, acc.min_speed_x, acc.max_speed_x);
 
-            vel.vy += acc.ay * static_cast<float>(Battle::get_delta_time()/1000000);
+            vel.vy += acc.ay * static_cast<float>(Battle::get_delta_time()/1000);
             vel.vy = Physics::clamp(vel.vy, acc.min_speed_y, acc.max_speed_y);
 
         }
@@ -62,7 +62,7 @@ namespace Game::BulletHell
     {
         for (auto &[id, comps]: query2)
         {
-            comps.get<Rotation>().angleZ += comps.get<AngularVelocity>().v * static_cast<float>(Battle::get_delta_time()/1000000);
+            comps.get<Rotation>().angleZ += comps.get<AngularVelocity>().v * static_cast<float>(Battle::get_delta_time()/1000);
             if (comps.get<Rotation>().angleZ >= 360)
             {
                 comps.get<Rotation>().angleZ -= 360;
