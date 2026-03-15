@@ -17,62 +17,66 @@ namespace Scene
         };
         return {BulletRegistry(maps)};
     }
-    inline Game::Battle::BulletLoader create_bullet_data()
-    {
-        using namespace Game::Battle;
-        using namespace Game::Physics;
-//        using Game::BulletHell::Patterns;
-
-        BulletLoader loader;
-        // loader.CreateBullet(1000, BulletData(5, 5, Patterns(0,1, 135), 100, 0));
-        // loader.CreateBullet(1000, BulletData(5, 5, Patterns(0,0.9f, 120), 100, 0));
-        // loader.CreateBullet(1000, BulletData(5, 5, Patterns(0,0.8f, 105), 100, 0));
-        // loader.CreateBullet(1000, BulletData(5, 5, Patterns(0,0.9f, 150), 100, 0));
-        // loader.CreateBullet(1000, BulletData(5, 5, Patterns(0, 0.8f, 165), 100, 0));
-        //
-        // auto patterns1 = Patterns(0,1, 135);
-        // patterns1.AddPattern(500,1,45,0.1f,0, 2);
-        // loader.CreateBullet(2000, BulletData(10, 5, patterns1, 0, 1));
-        // loader.CreateBullet(2200, BulletData(20, 5, patterns1, 0, 1));
-        // loader.CreateBullet(2400, BulletData(30, 5, patterns1, 0, 1));
-        // loader.CreateBullet(2600, BulletData(40, 5, patterns1, 0, 1));
-        // loader.CreateBullet(2800, BulletData(50, 5, patterns1, 0, 1));
-        //
-        // loader.CreateBullet(4000, BulletData(25, 25, {}, 0, 3));
-        // loader.CreateBullet(4250, BulletData(50, 50, {}, 0, 3));
-        // loader.CreateBullet(4500, BulletData(75, 75, {}, 0, 3));
-        //
-        // loader.CreateBullet(5000, BulletData(150, 25, {}, 0, 3));
-        // loader.CreateBullet(5250, BulletData(125, 50, {}, 0, 3));
-        // loader.CreateBullet(5500, BulletData(100, 75, {}, 0, 3));
-        //
-        // loader.CreateBullet(6000, BulletData(25, 25, {}, 150, 4));
-        // loader.CreateBullet(6250, BulletData(50, 50, {}, 150, 4));
-        // loader.CreateBullet(6500, BulletData(75, 75, {}, 150, 4));
-        //
-        // loader.CreateBullet(7000, BulletData(150, 25, {}, 150, 4));
-        // loader.CreateBullet(7250, BulletData(125, 50, {}, 150, 4));
-        // loader.CreateBullet(7500, BulletData(100, 75, {}, 150, 4));
-        return loader;
-    }
 
     inline Game::Battle::PatternContainer create_pattern_container()
     {
         using namespace Game::Battle;
         const std::vector<PatternStep> demo_step = {
-                PatternStep(30, OP_ADD, 2, 15),  // 30s Rot+15
-                PatternStep(30, OP_ADD, 2, -15), // 30s Rot-15
-                PatternStep(30, OP_SET, 1, 3),   // 30s Vel=3
-        };
+            PatternStep(30, OP_ADD, 2, 15),  // 30s Rot+15
+            PatternStep(30, OP_ADD, 2, -15), // 30s Rot-15
+            PatternStep(30, OP_SET, 1, 3),   // 30s Vel=3
+    };
         const std::vector<PatternSequence> demo_pattern = {
             PatternSequence(false),
-            PatternSequence(false, 0, 1),
+            PatternSequence(false, 0, 2),
             PatternSequence(false, 1, 2),
             PatternSequence(true, 0, 2),
             PatternSequence(true, 1, 2),
         };
         auto demo_pattern_container = PatternContainer(demo_step,demo_pattern);
         return { PatternContainer(demo_pattern_container) };
+    }
+
+    inline Game::Battle::BulletLoader create_bullet_data()
+    {
+        using namespace Game::Battle;
+        using namespace Game::Physics;
+
+        BulletLoader loader;
+        loader.CreateBullet(1000, BulletData(5, 5, 1,135, 100, 0));
+        loader.CreateBullet(1000, BulletData(5, 5,0.9f, 120 ,  100, 0));
+        loader.CreateBullet(1000, BulletData(5, 5,0.8f, 105, 100, 0));
+        loader.CreateBullet(1000, BulletData(5, 5,0.9f, 150, 100, 0));
+        loader.CreateBullet(1000, BulletData(5, 5, 0.8f, 165, 100, 0));
+
+        loader.CreateBullet(2000, BulletData(10, 5, 1,135, 1, 0, 1));
+        loader.CreateBullet(2200, BulletData(20, 5, 1,135, 1, 0, 1));
+        loader.CreateBullet(2400, BulletData(30, 5, 1,135, 1, 0, 1));
+        loader.CreateBullet(2600, BulletData(40, 5, 1,135, 1, 0, 1));
+        loader.CreateBullet(2800, BulletData(50, 5, 1,135, 1, 0, 1));
+
+        loader.CreateBullet(2000, BulletData(50, 5, 1,135, 2, 0, 1));
+        loader.CreateBullet(2200, BulletData(40, 5, 1,135, 2, 0, 1));
+        loader.CreateBullet(2400, BulletData(30, 5, 1,135, 2, 0, 1));
+        loader.CreateBullet(2600, BulletData(20, 5, 1,135, 2, 0, 1));
+        loader.CreateBullet(2800, BulletData(10, 5, 1,135, 2, 0, 1));
+
+        loader.CreateBullet(4000, BulletData(25, 25, 0, 3));
+        loader.CreateBullet(4250, BulletData(50, 50, 0, 3));
+        loader.CreateBullet(4500, BulletData(75, 75, 0, 3));
+
+        loader.CreateBullet(5000, BulletData(150, 25, 0, 3));
+        loader.CreateBullet(5250, BulletData(125, 50, 0, 3));
+        loader.CreateBullet(5500, BulletData(100, 75, 0, 3));
+
+        loader.CreateBullet(6000, BulletData(25, 25, 150, 4));
+        loader.CreateBullet(6250, BulletData(50, 50, 150, 4));
+        loader.CreateBullet(6500, BulletData(75, 75, 150, 4));
+
+        loader.CreateBullet(7000, BulletData(150, 25, 150, 4));
+        loader.CreateBullet(7250, BulletData(125, 50, 150, 4));
+        loader.CreateBullet(7500, BulletData(100, 75, 150, 4));
+        return loader;
     }
 
     struct DemoBulletHell
@@ -135,7 +139,8 @@ namespace Scene
             Game::BulletHell::laser_system<Syscall>,
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
-            Game::BulletHell::logging_system<Syscall>
+            Game::BulletHell::logging_system<Syscall>,
+            Game::Battle::update_global_clock<Syscall>
             >;
 
         static TaskManager init()

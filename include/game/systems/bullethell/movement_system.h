@@ -29,8 +29,8 @@ namespace Game::BulletHell
 
             const float angle = rot.angleZ * acos(0.0f)/90.0f  ;
 
-            pos.x += static_cast<float>((vel.vx * cos(angle) - vel.vy * sin(angle)) * Battle::get_delta_time()/1000000);
-            pos.y += static_cast<float>((vel.vx * sin(angle) + vel.vy * cos(angle)) * Battle::get_delta_time()/1000000);
+            pos.x += static_cast<float>((vel.vx * cos(angle) - vel.vy * sin(angle)) * Battle::get_delta_time()/1000);
+            pos.y += static_cast<float>((vel.vx * sin(angle) + vel.vy * cos(angle)) * Battle::get_delta_time()/1000);
         }
     }
 

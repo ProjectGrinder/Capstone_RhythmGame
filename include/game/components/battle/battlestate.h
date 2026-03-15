@@ -105,6 +105,7 @@ namespace Game::Battle
         int max_hp;
         int hp;
         int score;
+        int last_clocktime = -999;
         int clock_time;
         int total_accept;
         int current_accept;

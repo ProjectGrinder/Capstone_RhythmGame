@@ -22,10 +22,18 @@ namespace Game::BulletHell
         for (auto &[id, comps] : query2)
         {
             const auto &input = query1.front().get<Input>();
-            const float velocity_factor = static_cast<float>(Battle::get_delta_time()/1000000) * (input.shift ? 4.0f : 1.0f);
+            const float velocity_factor = (input.shift ? 1.0f : 4.0f);
 
-            comps.get<Physics::Velocity>().vx = input.axis_x * velocity_factor;
-            comps.get<Physics::Velocity>().vy = input.axis_y * velocity_factor;
+            float x = input.axis_x;
+            float y = input.axis_y;
+            if (const float length = sqrtf(x * x + y * y); length < 0.0f)
+            {
+                x/=length;
+                y/=length;
+            }
+
+            comps.get<Physics::Velocity>().vx = x * velocity_factor;
+            comps.get<Physics::Velocity>().vy = y * velocity_factor;
         }
     }
 } // namespace Game::BulletHell

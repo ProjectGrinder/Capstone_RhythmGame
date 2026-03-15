@@ -10,15 +10,23 @@ namespace Game::BulletHell
         if (query.begin() == query.end())
             return;
 
-        if (query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
+        auto &battle_state = query.front().get<Battle::BattleState>();
+
+        if (battle_state.current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
+        if (battle_state.clock_time-battle_state.last_clocktime <= 1000000)
+        {
+            return;
+        }
+
+        battle_state.last_clocktime = battle_state.clock_time;
         LOG_INFO("----------------------------------");
 
-        const auto &bullet_loader = query.front().get<Battle::BulletLoader>();
-        LOG_INFO("Time : %d", query.front().get<Battle::BattleState>().clock_time);
+        // const auto &bullet_loader = query.front().get<Battle::BulletLoader>();
+        LOG_INFO("Time : %d", battle_state.clock_time/1000000);
 
-        LOG_INFO("Hp : %d, iFrame : %d, Bullet Pointer : %d", query.front().get<Battle::BattleState>().hp, query.front().get<Battle::BulletHellState>().iframe_time, bullet_loader.pointer);
+        LOG_INFO("Hp : %d, iFrame : %d, Bullet Pointer : %d", battle_state.hp, query.front().get<Battle::BulletHellState>().iframe_time, 0);//bullet_loader.pointer);
         const auto player_pos = query2.front().get<Position>();
         LOG_INFO("Player Pos : (%d,%d)", static_cast<int>(player_pos.x), static_cast<int>(player_pos.y));
 
