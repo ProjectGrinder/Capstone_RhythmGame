@@ -26,7 +26,6 @@ struct test_component_2
     int value;
 };
 
-
 using TestResource = ResourceManager<1000, test_component, test_component_2>;
 using TestSyscall = Syscall<1000, test_component, test_component_2>;
 
@@ -253,3 +252,6 @@ TEST(ECS, system_interaction_test)
     task_manager.run_all();
     EXPECT_EQ(resource->query<test_component>().get(id_1).value, 3);
 }
+
+// -- LIFETIME TESTS --
+

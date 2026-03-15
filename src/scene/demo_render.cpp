@@ -7,7 +7,7 @@ Scene::DemoRender Scene::DemoRender::instance()
     return (instance);
 }
 
-Scene::DemoRender::TaskManager Scene::DemoRender::init()
+std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 {
     std::vector<InputAttributeDescription> rainbow_vs_input_attributes = {
             InputAttributeDescription{const_cast<char *>("Pos"), InputType::R32G32B32_FLOAT, 0},
@@ -18,11 +18,11 @@ Scene::DemoRender::TaskManager Scene::DemoRender::init()
             InputAttributeDescription{const_cast<char *>("SV_POSITION"), InputType::R32G32B32A32_FLOAT, 0},
             InputAttributeDescription{const_cast<char *>("Color"), InputType::R32G32B32A32_FLOAT, 16}};
 
-    auto tm = TaskManager{};
-    tm.create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 16, .scaleY = 9, .rotation = 0});
+    auto tm = std::make_shared<TaskManager>();
+    tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 16, .scaleY = 9, .rotation = 0});
     for (float i = 0; i < 100; ++i)
     {
-        tm.create_entity(
+        tm->create_entity(
                 Game::Render::Triangle{
                         {{{-0.5, 0, 0}, {1, 0, 0, 1}}, {{0, 0.5, 0}, {0, 1, 0, 1}}, {{0.5, 0, 0}, {0, 0, 1, 1}}}, 0, 0},
                 Game::Render::Material(
@@ -35,7 +35,7 @@ Scene::DemoRender::TaskManager Scene::DemoRender::init()
                 Game::Render::Transform{Math::Point{{i * 0.1f, i * 0.1f, 0}, {0, 0, 0, 0}}, 0, 0, 0},
                 Game::Render::IntentHandle{});
     }
-    tm.run_all();
+    tm->run_all();
     return (tm);
 }
 

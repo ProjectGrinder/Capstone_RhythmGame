@@ -3,8 +3,8 @@
 #include "utils.h"
 
 // declare scene templates here
-#include "scene/battle_scene.h"
 #include "scene/demo.h"
+#include "scene/battle_scene.h"
 #include "scene/demo_rhythm.h"
 #include "scene/demo_render.h"
 
@@ -12,8 +12,8 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = DemoRender;
+    using StartingScene = DemoRhythm;
 
-} // namespace Scene::Config
+}
 
 #include "scene/scene_manager.h"
