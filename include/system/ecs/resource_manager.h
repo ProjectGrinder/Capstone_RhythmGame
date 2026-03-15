@@ -38,16 +38,20 @@ namespace System::ECS
         {
             auto &source_pool = other.template query<Resource>();
             auto &target_pool = this->query<Resource>();
-            for (auto [id, component]: source_pool)
+
+            for (auto [id, component] : source_pool)
             {
+                if (id >= MaxResource)
+                {
+                    throw std::runtime_error("ResourceManager::import received id out of range");
+                }
+
                 if (target_pool.has(id))
                 {
-                    // Update existing component - make a copy explicitly
                     target_pool.set(id, Resource(component));
                 }
                 else
                 {
-                    // Add new component - make a copy explicitly
                     target_pool.add(id, Resource(component));
                     ++_component_count[id];
                     _occupied.set(id);
