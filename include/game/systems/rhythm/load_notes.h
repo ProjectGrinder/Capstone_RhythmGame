@@ -64,24 +64,12 @@ namespace Game::Rhythm
         // repeat for each lane
         for (auto &lane: chart_data.lanes)
         {
-            if (lane.current_note == lane.notes.size())
+            while (lane.current_note < lane.notes.size() &&
+                   lane.notes.at(lane.current_note).timing < clock + lookahead)
             {
-                // No work in this lane, move to the next lane
-                continue;
-            }
-
-            auto &note = lane.notes[lane.current_note];
-            while (note.timing < clock + lookahead)
-            {
+                auto &note = lane.notes.at(lane.current_note);
                 create_note_entity<T>(syscall, rhythm_state, lane, note);
-
-                // increment cursor
                 ++lane.current_note;
-                if (lane.current_note == lane.notes.size())
-                {
-                    break;
-                }
-                note = lane.notes[lane.current_note];
             }
         }
     }

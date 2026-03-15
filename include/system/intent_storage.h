@@ -1,11 +1,15 @@
 #pragma once
 
+#include <array>
 #include <optional>
 #include <variant>
 #include <vector>
 
 #include "maths.h"
+#include "system/asset_manager.h"
 #include "utils/input_attribute_description.h"
+
+using assets_id = uint32_t;
 
 namespace System::Render
 {
@@ -25,6 +29,7 @@ namespace System::Render
         {}
         explicit Color(const float r, const float g, const float b, const float a) : r(r), g(g), b(b), a(a)
         {}
+        Color(Color &) noexcept = default;
         Color(const Color &) noexcept = default;
         Color &operator=(const Color &) noexcept = default;
     };
@@ -34,33 +39,29 @@ namespace System::Render
         float u0, v0, u1, v1;
     };
 
-    // Intention
-
     struct DrawCommon
     {
-        // Pipeline selection (names)
-        const char *vert_shader = nullptr;
-        std::vector<InputAttributeDescription> vert_shader_input_attributes{};
-        size_t vert_shader_input_attributes_count = 0;
-        const char *pixel_shader = nullptr;
-        std::vector<InputAttributeDescription> pixel_shader_input_attributes{};
-        size_t pixel_shader_input_attributes_count = 0;
+        const AssetsRecord *vs = nullptr;
+        const AssetsRecord *ps = nullptr;
+        const AssetsRecord *sp = nullptr;
 
-        /* render_prior: coarse render priority */
-        uint32_t render_prior = 0;
+        union
+        {
+            struct
+            {
+                uint16_t sp_id;
+                uint16_t ps_id;
+                uint16_t vs_id;
+                uint8_t padding;
+                uint8_t layer;
+            } info;
+            uint64_t key;
+        };
 
-        // Per-draw parameters
         Color color{};
 
-        // Sorting (kept here so both sprite/text can be sorted uniformly)
-        uint32_t layer = 0;
-        uint32_t order = 0;
-
-        // transform hint
         Math::Point pivot;
         float rotation_z = 0.0f;
-
-        // Is visible
         bool visible = true;
     };
 
@@ -76,12 +77,10 @@ namespace System::Render
 
     struct TextDrawDesc
     {
-        // High-level text
         std::string_view text{};
         const char *font_name = nullptr;
         uint32_t font_size = 0;
 
-        // Placement (world space)
         float x = 0.0f;
         float y = 0.0f;
         float anchor_x = 0.5f;
@@ -98,15 +97,14 @@ namespace System::Render
         DrawKind kind{DrawKind::KIND_UNKNOWN};
         DrawCommon common{};
         std::variant<SpriteDrawDesc, TextDrawDesc, TriangleDrawDesc> special{};
+        uint32_t version = 0;
     };
 
     // Render Packet
 
     struct RenderSortKey
     {
-        uint32_t layer = 0;
-        uint32_t render_prior = 0;
-        uint32_t order = 0;
+        uint64_t key;
     };
 
     struct Camera
@@ -115,20 +113,43 @@ namespace System::Render
         float scaleX, scaleY;
         float rotation;
         float zoom;
+        uint32_t version = 0;
     };
 
     class IntentStorage
     {
-        // TODO: Change storage from any to DrawDescription
-        std::vector<std::optional<DrawIntent>> _intent_storage{};
+    private:
+        std::vector<DrawIntent> _intent_storage;
+        static constexpr size_t NUM_BUFFERS = 3;
+        std::array<std::vector<DrawIntent>, NUM_BUFFERS> _packed_buffers;
+
+        std::array<size_t, NUM_BUFFERS> _buffer_counts{0, 0, 0};
+
+        uint32_t _current_frame_idx = 0;
         Camera _camera{};
 
     public:
+        IntentStorage()
+        {
+            for (auto &buf: _packed_buffers)
+                buf.reserve(4096);
+            _intent_storage.reserve(1024);
+        }
+
+        static IntentStorage &instance();
+
         static size_t alloc_slot();
         static void free_slot(size_t slot);
-        static IntentStorage &instance();
-        static std::optional<DrawIntent> &get_intent(size_t slot);
-        static Camera &get_camera();
-        static std::vector<std::optional<DrawIntent>> &get_intents();
+        static DrawIntent &get_intent(size_t slot);
+        static const std::vector<DrawIntent> &get_intents();
+
+        static void next_frame();
+        static DrawIntent &allocate_packed();
+
+        static const std::vector<DrawIntent> &get_packed_for_render(uint32_t render_frame_idx);
+        static Camera &get_camera()
+        {
+            return instance()._camera;
+        }
     };
 } // namespace System::Render

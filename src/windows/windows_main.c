@@ -31,7 +31,7 @@ static SystemInfo system_info = {
         .window_handler = NULL,
         .display_type = DT_WINDOW,
         .is_running = 0,
-        .precision = 7,
+        .precision = 1,
         .perf_frequency = {0},
         .delta_time = 0,
         .vertex_queue = NULL,
@@ -199,7 +199,7 @@ int real_main()
         //         (int) ((render - convert) * 1000.0L),
         //         (int) ((system_info.delta_time - render) * 1000));
 
-        sleep(max(system_info.precision - (LONGLONG)system_info.delta_time, 0));
+        sleep(max(system_info.precision - (LONGLONG) system_info.delta_time, 0));
         system_info.delta_time = max(system_info.delta_time, system_info.precision);
     }
 

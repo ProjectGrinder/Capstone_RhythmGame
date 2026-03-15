@@ -7,35 +7,33 @@ Scene::DemoRender Scene::DemoRender::instance()
     return (instance);
 }
 
-Scene::DemoRender::TaskManager Scene::DemoRender::init()
+std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 {
-    std::vector<InputAttributeDescription> rainbow_vs_input_attributes = {
-            InputAttributeDescription{const_cast<char *>("Pos"), InputType::R32G32B32_FLOAT, 0},
-            InputAttributeDescription{const_cast<char *>("Color"), InputType::R32G32B32A32_FLOAT, 12},
+    InputAttributeDescription rainbow_vs_input_attributes[] = {
+            InputAttributeDescription{"Pos", InputType::R32G32B32_FLOAT, 0},
+            InputAttributeDescription{"Color", InputType::R32G32B32A32_FLOAT, 12},
     };
 
-    std::vector<InputAttributeDescription> rainbow_ps_input_attributes = {
-            InputAttributeDescription{const_cast<char *>("SV_POSITION"), InputType::R32G32B32A32_FLOAT, 0},
-            InputAttributeDescription{const_cast<char *>("Color"), InputType::R32G32B32A32_FLOAT, 16}};
+    InputAttributeDescription rainbow_ps_input_attributes[] = {
+            InputAttributeDescription{"SV_POSITION", InputType::R32G32B32A32_FLOAT, 0},
+            InputAttributeDescription{"Color", InputType::R32G32B32A32_FLOAT, 16}};
 
-    auto tm = TaskManager{};
-    tm.create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 16, .scaleY = 9, .rotation = 0});
-    for (float i = 0; i < 100; ++i)
+    auto vs = load_vertex_shader("shaders/vs/rainbow.cso", "rainbow_vs", rainbow_vs_input_attributes, 2);
+
+    auto ps = load_pixel_shader("shaders/ps/rainbow.cso", "rainbow_ps", rainbow_ps_input_attributes, 2);
+
+    auto tm = std::make_shared<TaskManager>();
+    tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 16, .scaleY = 9, .rotation = 0});
+    for (float i = 0; i < 10000; ++i)
     {
-        tm.create_entity(
+        tm->create_entity(
                 Game::Render::Triangle{
                         {{{-0.5, 0, 0}, {1, 0, 0, 1}}, {{0, 0.5, 0}, {0, 1, 0, 1}}, {{0.5, 0, 0}, {0, 0, 1, 1}}}, 0, 0},
-                Game::Render::Material(
-                        const_cast<char *>("shaders/vs/rainbow.cso"),
-                        rainbow_vs_input_attributes,
-                        2,
-                        const_cast<char *>("shaders/ps/rainbow.cso"),
-                        rainbow_ps_input_attributes,
-                        2),
+                Game::Render::Material(vs, ps),
                 Game::Render::Transform{Math::Point{{i * 0.1f, i * 0.1f, 0}, {0, 0, 0, 0}}, 0, 0, 0},
                 Game::Render::IntentHandle{});
     }
-    tm.run_all();
+    tm->run_all();
     return (tm);
 }
 
