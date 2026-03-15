@@ -173,15 +173,15 @@ namespace System::Render
             instance()._items.push_back(render_object);
         }
 
-        const auto compositor_items_count = items.size();
-        const auto render_objects_count = instance()._items.size();
+        //const auto compositor_items_count = items.size();
+        //const auto render_objects_count = instance()._items.size();
 
-        LOG_INFO("Converted %d composed items into %d render objects", compositor_items_count, render_objects_count);
+        //LOG_INFO("Converted %d composed items into %d render objects", compositor_items_count, render_objects_count);
     }
 
     void Dx11Adapter::render_all_items(Windows::DeviceResources &device)
     {
-        LOG_INFO("Rendering all items");
+        //LOG_INFO("Rendering all items");
         const auto &items = instance()._items;
         auto rtv = device.get_rtv();
         auto &env = instance()._environment;
