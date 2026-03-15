@@ -2,6 +2,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <array>
 
 namespace Game::Battle
 {
@@ -147,7 +148,7 @@ namespace Game::Battle
 
     struct ChartData
     {
-        LaneInfo lanes[4];
+        std::array<LaneInfo, 4> lanes;
     };
 
     // TODO: Suchas's struct BulletPatternData
