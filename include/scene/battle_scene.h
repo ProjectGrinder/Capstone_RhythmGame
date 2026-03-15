@@ -1,7 +1,7 @@
 #pragma once
 
-#include "system.h"
 #include "game.h"
+#include "system.h"
 
 namespace Scene
 {
@@ -79,10 +79,10 @@ namespace Scene
             >;
 
         // declare functions
-        static TaskManager init();
+        static std::shared_ptr<TaskManager> init();
         static std::vector<ComponentTuple> exit();
     };
-} // namespace Scene
+}
 
 /*
  * Explanation of System Dependency Graph (for future me)

@@ -18,6 +18,6 @@ namespace Game::Battle
 
         auto time = battle_query.front().get<BattleState>().clock_time / 1000;
         if (time % 1000 < 10)
-            LOG_INFO("Time: %d s", time / 1000);
+        LOG_INFO("Time: %d s", time / 1000);
     }
 }

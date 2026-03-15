@@ -14,39 +14,24 @@ namespace Math
         const float c = std::cos(radians);
         const float s = std::sin(radians);
         return (
-                Point{p.pos[0] * c - p.pos[1] * s,
-                      p.pos[0] * s + p.pos[1] * c,
-                      p.pos[2],
-                      p.color[0],
-                      p.color[1],
-                      p.color[2],
-                      p.color[3]});
+                Point{{p.pos[0] * c - p.pos[1] * s, p.pos[0] * s + p.pos[1] * c, p.pos[2]},
+                      {p.color[0], p.color[1], p.color[2], p.color[3]}});
     }
 
     // transfers a local coordinate to world coordinates using a center-of-object coordinate
     static inline Point local_to_world(const Point &p, const Point &center)
     {
         return (
-                Point{p.pos[0] + center.pos[0],
-                      p.pos[1] + center.pos[1],
-                      p.pos[2],
-                      p.color[0],
-                      p.color[1],
-                      p.color[2],
-                      p.color[3]});
+                Point{{p.pos[0] + center.pos[0], p.pos[1] + center.pos[1], p.pos[2]},
+                      {p.color[0], p.color[1], p.color[2], p.color[3]}});
     }
 
     // transfer coordinates from world space to camera view space
     static inline Point world_to_view(const Point &world, const System::Render::Camera &cam)
     {
         // Move world relative to camera position
-        Point p{world.pos[0] - cam.offset.pos[0],
-                world.pos[1] - cam.offset.pos[1],
-                world.pos[2],
-                world.color[0],
-                world.color[1],
-                world.color[2],
-                world.color[3]};
+        Point p{{world.pos[0] - cam.offset.pos[0], world.pos[1] - cam.offset.pos[1], world.pos[2]},
+                {world.color[0], world.color[1], world.color[2], world.color[3]}};
 
         // Apply inverse camera rotation (i.e., rotate the world opposite the camera)
         p = rotate(p, -cam.rotation);
@@ -67,13 +52,8 @@ namespace Math
         const float invHalfH = (halfH != 0.0f) ? (1.0f / halfH) : 0.0f;
 
         return (
-                Point{view.pos[0] * invHalfW,
-                      view.pos[1] * invHalfH,
-                      view.pos[2],
-                      view.color[0],
-                      view.color[1],
-                      view.color[2],
-                      view.color[3]});
+                Point{{view.pos[0] * invHalfW, view.pos[1] * invHalfH, view.pos[2]},
+                      {view.color[0], view.color[1], view.color[2], view.color[3]}});
     }
 
     // Takes a local coordinate TriangleDrawDesc, add rotation in Z clockwise direction, then transform to NDC.
@@ -84,10 +64,9 @@ namespace Math
             const System::Render::Camera &cam)
     {
         return System::Render::TriangleDrawDesc{
-            view_to_ndc(world_to_view(local_to_world(rotate(desc.points[0], rotation_z), pivot), cam), cam),
-            view_to_ndc(world_to_view(local_to_world(rotate(desc.points[1], rotation_z), pivot), cam), cam),
-            view_to_ndc(world_to_view(local_to_world(rotate(desc.points[2], rotation_z), pivot), cam), cam)
-        };
+                view_to_ndc(world_to_view(local_to_world(rotate(desc.points[0], rotation_z), pivot), cam), cam),
+                view_to_ndc(world_to_view(local_to_world(rotate(desc.points[1], rotation_z), pivot), cam), cam),
+                view_to_ndc(world_to_view(local_to_world(rotate(desc.points[2], rotation_z), pivot), cam), cam)};
     }
 
 } // namespace Math

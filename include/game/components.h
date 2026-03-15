@@ -39,5 +39,6 @@
 #include "components/rhythm/notespeed.h"
 #include "components/rhythm/timing.h"
 #include "components/rhythm/timingend.h"
+#include "components/rhythm/notetype.h"
 
 #include "system/ecs.h"

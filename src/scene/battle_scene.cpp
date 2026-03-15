@@ -7,14 +7,14 @@ Scene::BattleScene Scene::BattleScene::instance()
     return instance;
 }
 
-Scene::BattleScene::TaskManager Scene::BattleScene::init()
+std::shared_ptr<Scene::BattleScene::TaskManager> Scene::BattleScene::init()
 {
     LOG_INFO("Initialization called");
-    auto tm = TaskManager{};
-    tm.create_entity(Game::Battle::BattleState());
-    tm.create_entity(Game::BulletHell::Input());
-    tm.create_entity(Game::Rhythm::KeyInput());
-    tm.run_all();
+    auto tm = std::make_shared<TaskManager>();
+    tm->create_entity(Game::Battle::BattleState());
+    tm->create_entity(Game::BulletHell::Input());
+    tm->create_entity(Game::Rhythm::KeyInput());
+    tm->run_all();
     return (tm);
 }
 

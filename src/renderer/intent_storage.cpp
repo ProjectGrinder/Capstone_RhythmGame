@@ -45,4 +45,4 @@ namespace System::Render
         return (instance()._intent_storage);
     }
 
-} // namespace System
+} // namespace System::Render

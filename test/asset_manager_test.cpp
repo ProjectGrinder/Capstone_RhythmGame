@@ -2,6 +2,9 @@
 #include "system.h"
 #include <string>
 
+//Warning!! : This bit is from temp/asset_manager_test that haven't been pull requested yet.
+
+/*
 extern "C"
 {
     typedef uint32_t assets_id;
@@ -95,3 +98,4 @@ TEST(AssetManager, assets_cleanup)
     EXPECT_EQ(get_assets_id("testPS"), -1);
     EXPECT_EQ(get_assets_id("testImg2"), -1);
 }
+*/
