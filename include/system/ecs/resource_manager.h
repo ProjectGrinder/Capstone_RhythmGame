@@ -13,7 +13,9 @@ namespace System::ECS
     {
     private:
         pid _id = 0;
+        uint64_t _world_version = 1;
         std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
+
         std::array<std::size_t, MaxResource> _component_count{};
         std::bitset<MaxResource> _dirty{};
         std::bitset<MaxResource> _occupied{};
@@ -35,58 +37,49 @@ namespace System::ECS
         }
 
         template<typename Resource>
-        void _import_from_pool(SyscallResource<MaxResource, Resources...> &other)
+        bool _import_from_pool(SyscallResource<MaxResource, Resources...> &other)
         {
             auto &source_pool = other.template query<Resource>();
+            if (source_pool.begin() == source_pool.end())
+                return false;
             auto &target_pool = this->query<Resource>();
+            bool structural_change = false;
 
-            for (auto [id, component] : source_pool)
+            for (auto [id, component]: source_pool)
             {
-                if (id >= MaxResource)
-                {
-                    throw std::runtime_error("ResourceManager::import received id out of range");
-                }
-
                 if (target_pool.has(id))
                 {
-                    target_pool.set(id, Resource(component));
+                    target_pool.set(id, std::move(Resource(component)));
                 }
                 else
                 {
-                    target_pool.add(id, Resource(component));
+                    target_pool.add(id, std::move(Resource(component)));
                     ++_component_count[id];
                     _occupied.set(id);
+                    structural_change = true;
                 }
             }
+            return structural_change;
         }
 
         template<size_t... I>
-        void _import_impl(SyscallResource<MaxResource, Resources...> &other, std::index_sequence<I...>)
+        bool _import_impl(SyscallResource<MaxResource, Resources...> &other, std::index_sequence<I...>)
         {
-            (_import_from_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other), ...);
+            bool changed = false;
+            ((changed |= _import_from_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other)), ...);
+            return (changed);
         }
 
 
         using _remove_tuple_t = std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...>;
 
-        template<typename Resource>
-        void _remove_marked_in_pool(const std::bitset<MaxResource> &bitset)
-        {
-            auto &pool = this->query<Resource>();
-            for (size_t id = 0; id < MaxResource; ++id)
-            {
-                if (bitset.test(id) && pool.has(id))
-                {
-                    pool.remove(id);
-                    --_component_count[id];
-                }
-            }
-        }
-
         template<std::size_t... I>
-        void _remove_marked_impl(const _remove_tuple_t &to_remove, std::index_sequence<I...>)
+        void _remove_components_by_id(pid id, const _remove_tuple_t &component_bits, std::index_sequence<I...>)
         {
-            (_remove_marked_in_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(std::get<I>(to_remove)), ...);
+            ((std::get<I>(component_bits).test(id)
+                      ? remove_resource<std::tuple_element_t<I, std::tuple<Resources...>>>(id)
+                      : (void) 0),
+             ...);
         }
 
         // UNUSED: compaction is not used in the current algorithm
@@ -95,6 +88,7 @@ namespace System::ECS
             std::apply([&](auto &...pool) { (pool.rebind(old_id, new_id), ...); }, _pools);
             std::swap(_component_count[old_id], _component_count[new_id]);
         }
+
 
         // UNUSED: compaction is not used in the current algorithm
         pid _compact()
@@ -107,20 +101,15 @@ namespace System::ECS
                 // Find the next empty slot from the front
                 while (empty_id < full_id && _component_count[empty_id] != 0)
                     ++empty_id;
-
                 // Find the next full slot from the back
                 while (empty_id < full_id && _component_count[full_id] == 0)
                     --full_id;
-
                 if (empty_id >= full_id)
                     break;
-
                 _rebind(full_id, empty_id);
-
                 ++empty_id;
                 --full_id;
             }
-
             // Scan for the first empty slot, starting from empty_pid
             while (empty_id < MaxResource && _component_count[empty_id] != 0)
                 ++empty_id;
@@ -129,6 +118,9 @@ namespace System::ECS
         }
 
     public:
+        constexpr static size_t max_resource_v = MaxResource;
+        using components_t = std::tuple<Resources...>;
+
         explicit ResourceManager() : _pools(_create_pools(std::index_sequence_for<Resources...>{}))
         {}
 
@@ -150,6 +142,7 @@ namespace System::ECS
             auto &pool = query<Resource>();
             pool.add(id, std::forward<Resource>(component));
             ++_component_count[id];
+            mark_dirty();
         }
 
         template<typename Resource>
@@ -161,10 +154,12 @@ namespace System::ECS
                 --_component_count[id];
                 if (_component_count[id] == 0)
                 {
-                    _occupied.reset(id); // Only called in sequence by Syscall, so there's nothing left.
+                    _occupied.reset(id);
                 }
+                mark_dirty();
             }
         }
+
 
         void delete_entity(pid id)
         {
@@ -188,7 +183,6 @@ namespace System::ECS
                     return (_id++);
                 }
             }
-
             // did not find available slot forward, mark as overfilled and retry from the start
             overfilled = true;
             _id = 0;
@@ -210,22 +204,53 @@ namespace System::ECS
             throw std::runtime_error("No free pid slot available");
         }
 
-        void import(SyscallResource<MaxResource, Resources...> &other)
+
+        bool import(SyscallResource<MaxResource, Resources...> &other)
         {
-            _import_impl(other, std::make_index_sequence<sizeof...(Resources)>{});
+            if (_import_impl(other, std::make_index_sequence<sizeof...(Resources)>{}))
+            {
+                mark_dirty();
+                return (true);
+            }
+            return (false);
         }
 
-        void remove_marked(const _remove_tuple_t &to_remove, const std::bitset<MaxResource> &to_remove_entities)
-        {
-            _remove_marked_impl(to_remove, std::make_index_sequence<sizeof...(Resources)>{});
 
-            for (size_t id = 0; id < MaxResource; ++id)
+        void remove_marked(
+                const _remove_tuple_t &component_bits,
+                const std::bitset<MaxResource> &entity_bits,
+                const std::vector<pid> &dirty_ids)
+        {
+            if (dirty_ids.empty()) [[likely]]
+                return;
+
+            bool is_change = false;
+
+            for (pid id: dirty_ids)
             {
-                if (to_remove_entities.test(id))
+                is_change = true;
+                if (entity_bits.test(id))
                 {
                     delete_entity(id);
+                    continue;
                 }
+
+                _remove_components_by_id(id, component_bits, std::make_index_sequence<sizeof...(Resources)>{});
             }
+
+            if (is_change)
+                mark_dirty();
+        }
+
+
+        uint64_t get_version() const
+        {
+            return _world_version;
+        }
+
+        void mark_dirty()
+        {
+            _world_version++;
         }
 
         void clear()
@@ -240,5 +265,12 @@ namespace System::ECS
         {
             return (contains_type_v<T, Resources...>);
         }
+
+
+        const std::bitset<MaxResource> &get_bitset() const
+        {
+            return _occupied;
+        }
     };
+
 } // namespace System::ECS

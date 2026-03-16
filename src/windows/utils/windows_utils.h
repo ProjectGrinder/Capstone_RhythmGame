@@ -8,7 +8,7 @@
 #define STR(name) #name
 #define TO_STR(name) STR(name)
 
-#define LOG_MAX 512
+#define LOG_MAX 1024
 
 #define LOG_INFO(format, ...) log_message(LL_INFO, __FUNCTION__, format, ##__VA_ARGS__);
 #define LOG_WARNING(format, ...) log_message(LL_WARNING, __FUNCTION__, format, ##__VA_ARGS__);
