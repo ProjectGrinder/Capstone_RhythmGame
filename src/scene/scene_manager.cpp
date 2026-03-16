@@ -25,27 +25,36 @@ namespace Scene
     void SceneManager::update()
     {
         System::Render::IntentStorage::next_frame();
+
         std::visit(
-                []<typename S>([[maybe_unused]] S &&scene)
+                []<typename ManagerPtr>(ManagerPtr &manager)
                 {
-                    if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
-                    {
-                        using SceneType = std::decay_t<S>;
-                        auto &ptr = std::any_cast<std::shared_ptr<typename SceneType::TaskManager>&>(instance()._current_manager);
-                        ptr->run_all();
-                    }
-                    else
+                    using ManagerPtrType = std::decay_t<ManagerPtr>;
+
+                    if constexpr (std::is_same_v<ManagerPtrType, std::monostate>)
                     {
                         LOG_WARNING("No scene loaded during update");
                     }
+                    else
+                    {
+                        if (manager)
+                        {
+                            manager->run_all();
+                        }
+                        else
+                        {
+                            LOG_WARNING("Current scene manager is null during update");
+                        }
+                    }
                 },
-                instance()._current_scene_template);
+                instance()._current_manager);
     }
 
     SceneManager::~SceneManager()
     {
         LOG_INFO("Cleaning up SceneManager...");
-        _current_manager.reset();
+        // _current_manager.reset();
+        _current_scene_template = std::monostate{};
         std::visit(
                 []<typename S>(S &&scene)
                 {
