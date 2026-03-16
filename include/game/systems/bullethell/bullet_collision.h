@@ -5,6 +5,9 @@
 
 #include "game/components.h"
 
+// Help. Bullet has 2 Collider types. So, I use 2 query each with different narrow check. Everything else is the same.
+// Therefore, this code's suck.
+
 namespace Game::BulletHell
 {
     // No layer/mask implemented yet
@@ -51,7 +54,6 @@ namespace Game::BulletHell
 			if (!bullet.is_active)
                 continue;
 
-			// TODO: improve collision detection
             //Wide check
 		    const float dx = bullet_pos.x - player_pos.x;
 		    const float dy = bullet_pos.y - player_pos.y;
@@ -59,7 +61,22 @@ namespace Game::BulletHell
 		    const float collision_distance = player_hitbox_size + ((bullet_hitbox_size_x > bullet_hitbox_size_y)
 	                                                            ? bullet_hitbox_size_x
                                                                 : bullet_hitbox_size_y) * 0.5f;
-            if (distance_squared > collision_distance * collision_distance || !bullet.is_damageable) continue;
+		    if (!bullet.is_damageable)
+		        continue;
+
+		    if (distance_squared - collision_distance*collision_distance <= 2)
+		    {
+		        if (!bullet.is_grazed)
+		        {
+		            bullet.is_grazed = true;
+		            state.graze ++;
+		        }
+		    }
+
+		    if (distance_squared > collision_distance*collision_distance)
+		    {
+		        continue;
+		    }
 		    //Narrow check : SAT
             const auto player_hitbox_pos =
                     Physics::Position(player_pos.x + player_hitbox.offset_x, player_pos.y + player_hitbox.offset_y);
@@ -87,11 +104,11 @@ namespace Game::BulletHell
 
 		    // TODO : Make this const
 		    // Activate Player iFrame
-		    state.iframe_time = 30;
+		    state.iframe_time = 3000;
 
 		    // Deactivate the bullet
 		    bullet.pierce --;
-
+            bullet.is_grazed = false;
         }
 
 	    for (auto &[id, comps] : bullet_query2)
@@ -117,8 +134,21 @@ namespace Game::BulletHell
 	        const float collision_distance = player_hitbox_size + ((bullet_hitbox_size_x > bullet_hitbox_size_y)
 	                                                            ? bullet_hitbox_size_x
                                                                 : bullet_hitbox_size_y);
-	        if (distance_squared > collision_distance*collision_distance || !bullet.is_damageable)
+	        if (!bullet.is_damageable)
 	            continue;
+
+	        if (distance_squared > collision_distance * collision_distance)
+	        {
+	            if (distance_squared <= 1.5 * collision_distance * collision_distance)
+	            {
+	                if (!bullet.is_grazed)
+	                {
+	                    bullet.is_grazed = true;
+	                    state.graze ++;
+	                }
+	            }
+                continue;
+	        }
 
 	        // Ellipse vs circle collision
 	        const auto player_hitbox_pos =
@@ -146,10 +176,11 @@ namespace Game::BulletHell
 
 	        // TODO : Make this const
 	        // Activate Player iFrame
-	        state.iframe_time = 30;
+	        state.iframe_time = 3000;
 
 	        // Deactivate the bullet
 	        bullet.pierce--;
+	        state.graze--;
 	    }
 	}
 } // namespace Game::BulletHell

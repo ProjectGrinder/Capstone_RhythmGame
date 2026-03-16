@@ -8,6 +8,7 @@ namespace Game::BulletHell
         bool is_damageable;
         int damage;
         int pierce;
+        bool is_grazed = false;
         Bullet() : is_active(true), is_damageable(false), damage(0), pierce(1)
         {}
 

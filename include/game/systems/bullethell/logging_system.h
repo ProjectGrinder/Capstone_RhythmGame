@@ -26,7 +26,7 @@ namespace Game::BulletHell
         // const auto &bullet_loader = query.front().get<Battle::BulletLoader>();
         LOG_INFO("Time : %d.%d%d", battle_state.clock_time/1000000, battle_state.clock_time/10000 - (battle_state.clock_time/1000000)*100);
 
-        LOG_INFO("Hp : %d, iFrame : %d, Bullet Pointer : %d", battle_state.hp, query.front().get<Battle::BulletHellState>().iframe_time, 0);//bullet_loader.pointer);
+        LOG_INFO("Hp : %d, iFrame : %d, Graze : %d, Bullet Pointer : %d", battle_state.hp, query.front().get<Battle::BulletHellState>().iframe_time, query.front().get<Battle::BulletHellState>().graze, query.front().get<Battle::BulletLoader>().pointer);//bullet_loader.pointer);
         const auto player_pos = query2.front().get<Position>();
         LOG_INFO("Player Pos : (%d,%d)", static_cast<int>(player_pos.x), static_cast<int>(player_pos.y));
 
