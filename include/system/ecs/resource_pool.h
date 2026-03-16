@@ -52,18 +52,6 @@ namespace System::ECS
             size_t _idx = 0;
         };
 
-        void _validate_basic_invariants() const
-        {
-            if (_id_to_index.size() != MaxResource)
-            {
-                throw std::runtime_error("ResourcePool invariant failed: _id_to_index.size() != MaxResource");
-            }
-            if (_data.size() != _index_to_id.size())
-            {
-                throw std::runtime_error("ResourcePool invariant failed: _data.size() != _index_to_id.size()");
-            }
-        }
-
     public:
         ResourcePool()
         {
@@ -72,7 +60,6 @@ namespace System::ECS
 
         Resource &get(pid id)
         {
-            _validate_basic_invariants();
             if (id >= MaxResource)
             {
                 throw std::runtime_error("ResourcePool::get id out of range");
@@ -104,10 +91,9 @@ namespace System::ECS
         }
 
         template<typename T>
-            requires std::constructible_from<Resource, T&&>
+            requires std::constructible_from<Resource, T &&>
         void add(pid id, T &&value)
         {
-            _validate_basic_invariants();
             if (id >= MaxResource)
             {
                 throw std::runtime_error("ResourcePool::add id out of range");
@@ -122,8 +108,6 @@ namespace System::ECS
             _id_to_index[id] = idx;
             _index_to_id.push_back(id);
             _has_component.set(id);
-
-            _validate_basic_invariants();
         }
 
         void rebind(pid old_pid, pid new_pid)
@@ -161,7 +145,6 @@ namespace System::ECS
 
         void remove(pid id)
         {
-            _validate_basic_invariants();
             if (id >= MaxResource)
             {
                 throw std::runtime_error("ResourcePool::remove id out of range");
@@ -191,8 +174,6 @@ namespace System::ECS
             _index_to_id.pop_back();
             _id_to_index[id] = SIZE_MAX;
             _has_component.reset(id);
-
-            _validate_basic_invariants();
         }
 
         void clear()
@@ -202,6 +183,12 @@ namespace System::ECS
             _id_to_index.assign(MaxResource, SIZE_MAX);
             _has_component.reset();
         }
+
+        const std::bitset<MaxResource> &get_bitset()
+        {
+            return (_has_component);
+        }
+
 
         // type hints bless thee
         using resource_type = Resource;

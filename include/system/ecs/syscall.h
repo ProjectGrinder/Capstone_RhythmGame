@@ -25,6 +25,8 @@ namespace System::ECS
         }
 
     public:
+        constexpr static size_t max_resource_v = MaxResource;
+
         explicit SyscallResource() : _pools(_create_pools(std::index_sequence_for<Resources...>{}))
         {}
 
@@ -96,6 +98,7 @@ namespace System::ECS
         {
             using Stored = std::remove_cvref_t<Component>;
             static_assert(contains_type_v<Stored, Resources...>, "Component type is not registered in this ECS");
+            _get_bitset_for<Component>().reset(id);
             _to_add_components.template add_resource<Stored>(id, std::forward<Component>(component));
         }
 
@@ -103,6 +106,7 @@ namespace System::ECS
         void remove_component(pid id)
         {
             _remove_component_impl<Component>(id, std::make_index_sequence<sizeof...(Resources)>{});
+            _get_bitset_for<Component>().set(id);
         }
 
         template<typename... Components>
