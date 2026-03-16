@@ -55,6 +55,8 @@ namespace System::ECS
     public:
         ResourcePool()
         {
+            _data.reserve(MaxResource);
+            _index_to_id.reserve(MaxResource);
             _id_to_index.resize(MaxResource, SIZE_MAX);
         }
 

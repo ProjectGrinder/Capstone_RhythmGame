@@ -49,11 +49,11 @@ namespace System::ECS
             {
                 if (target_pool.has(id))
                 {
-                    target_pool.set(id, Resource(component));
+                    target_pool.set(id, std::move(Resource(component)));
                 }
                 else
                 {
-                    target_pool.add(id, Resource(component));
+                    target_pool.add(id, std::move(Resource(component)));
                     ++_component_count[id];
                     _occupied.set(id);
                     structural_change = true;
@@ -73,26 +73,14 @@ namespace System::ECS
 
         using _remove_tuple_t = std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...>;
 
-        template<typename Resource>
-        void _remove_marked_in_pool(const std::bitset<MaxResource> &bitset)
-        {
-            auto &pool = this->query<Resource>();
-            for (size_t id = 0; id < MaxResource; ++id)
-            {
-                if (bitset.test(id) && pool.has(id))
-                {
-                    pool.remove(id);
-                    --_component_count[id];
-                }
-            }
-        }
-
         template<std::size_t... I>
-        void _remove_marked_impl(const _remove_tuple_t &to_remove, std::index_sequence<I...>)
+        void _remove_components_by_id(pid id, const _remove_tuple_t &component_bits, std::index_sequence<I...>)
         {
-            (_remove_marked_in_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(std::get<I>(to_remove)), ...);
+            ((std::get<I>(component_bits).test(id)
+                      ? remove_resource<std::tuple_element_t<I, std::tuple<Resources...>>>(id)
+                      : (void) 0),
+             ...);
         }
-
 
         // UNUSED: compaction is not used in the current algorithm
         void _rebind(pid old_id, pid new_id)
@@ -228,21 +216,26 @@ namespace System::ECS
         }
 
 
-        void remove_marked(const _remove_tuple_t &to_remove, const std::bitset<MaxResource> &to_remove_entities)
+        void remove_marked(
+                const _remove_tuple_t &component_bits,
+                const std::bitset<MaxResource> &entity_bits,
+                const std::vector<pid> &dirty_ids)
         {
-            if (to_remove_entities.none()) [[likely]]
+            if (dirty_ids.empty()) [[likely]]
                 return;
 
-            _remove_marked_impl(to_remove, std::make_index_sequence<sizeof...(Resources)>{});
-
             bool is_change = false;
-            for (size_t id = 0; id < MaxResource; ++id)
+
+            for (pid id: dirty_ids)
             {
-                if (to_remove_entities.test(id))
+                is_change = true;
+                if (entity_bits.test(id))
                 {
                     delete_entity(id);
-                    is_change = true;
+                    continue;
                 }
+
+                _remove_components_by_id(id, component_bits, std::make_index_sequence<sizeof...(Resources)>{});
             }
 
             if (is_change)
