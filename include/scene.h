@@ -12,7 +12,7 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = DemoRender;
+    using StartingScene = DemoRhythm;
 
 } // namespace Scene::Config
 

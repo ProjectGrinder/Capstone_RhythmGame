@@ -39,6 +39,8 @@ namespace Game::Rhythm
                     LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comps.get<Lane>().lane);
                     LOG_INFO("Miss Count = %d", battle_query.front().get<Battle::BattleState>().judgement_count.miss_count);
                 }
+                else continue; // for hold notes that are still active
+
                 syscall.remove_entity(id);
             }
             // Handle miss for an entire hold note, which counts as two misses (start and end)

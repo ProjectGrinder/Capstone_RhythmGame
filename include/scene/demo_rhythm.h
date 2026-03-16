@@ -33,17 +33,17 @@ namespace Scene
         chart.lanes[2].notes.emplace_back(false, 15000, 0, Game::Battle::RhythmType::NORMAL);
         chart.lanes[3].notes.emplace_back(false, 15000, 0, Game::Battle::RhythmType::NORMAL);
         chart.lanes[0].notes.emplace_back(true, 17000, 19000, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[1].notes.emplace_back(true, 17000, 19000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[1].notes.emplace_back(true, 18000, 19000, Game::Battle::RhythmType::NORMAL);
 
         // Pattern 4: Repeated taps
-        for (int i = 0; i < 3; ++i)
-        {
-            chart.lanes[0].notes.emplace_back(false, 20000 + i * 100, 0, Game::Battle::RhythmType::NORMAL);
-        }
-        for (int j = 0; j < 3; ++j)
-        {
-            chart.lanes[3].notes.emplace_back(false, 21000 + j * 100, 0, Game::Battle::RhythmType::NORMAL);
-        }
+        // for (int i = 0; i < 3; ++i)
+        // {
+        //     chart.lanes[0].notes.emplace_back(false, 20000 + i * 100, 0, Game::Battle::RhythmType::NORMAL);
+        // }
+        // for (int j = 0; j < 3; ++j)
+        // {
+        //     chart.lanes[3].notes.emplace_back(false, 21000 + j * 100, 0, Game::Battle::RhythmType::NORMAL);
+        // }
 
         // Pattern 5: Accent notes
         chart.lanes[0].notes.emplace_back(false, 22000, 0, Game::Battle::RhythmType::ACCENT);
@@ -113,7 +113,6 @@ namespace Scene
             Game::Rhythm::handle_rhythm<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::handle_bpm<Syscall>,
-            Game::Rhythm::test_rhythm<Syscall>,
             Game::Battle::update_global_clock<Syscall>
             >;
         
