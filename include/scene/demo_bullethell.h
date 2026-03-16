@@ -8,11 +8,11 @@ namespace Scene
         using namespace Game::Battle;
         using namespace Game::Physics;
         std::vector<BulletGraphicMap> maps = {
-            BulletGraphicMap(ColliderData(CIRCLE, 4,4)),
-            BulletGraphicMap(ColliderData(CIRCLE, 8,8)),
-            BulletGraphicMap(ColliderData(CIRCLE, 8,8), {}, {}, 1, 999, 3000),
-            BulletGraphicMap(ColliderData(CIRCLE, 8,8), {} , SpecialBulletData(Booming, 8, 3), 1, 999, 1000),
-            BulletGraphicMap(ColliderData(RECTANGLE, 8,8), {} , SpecialBulletData(Laser, 8, 3), 1, 999, 1000),
+            BulletGraphicMap(ColliderData(CIRCLE, 1,1)),
+            BulletGraphicMap(ColliderData(CIRCLE, 1,1)),
+            BulletGraphicMap(ColliderData(CIRCLE, 1,1), {}, {}, 20, 1, 100000),
+            BulletGraphicMap(ColliderData(CIRCLE, 1,1), {} , SpecialBulletData(Booming, 8, 3), 1, 999, 1000),
+            BulletGraphicMap(ColliderData(RECTANGLE, 1,1), {} , SpecialBulletData(Laser, 8, 3), 1, 999, 1000),
         };
         return {BulletRegistry(maps)};
     }
@@ -75,6 +75,16 @@ namespace Scene
         loader.CreateBullet(7000, BulletData(150, 25, 150, 4));
         loader.CreateBullet(7250, BulletData(125, 50, 150, 4));
         loader.CreateBullet(7500, BulletData(100, 75, 150, 4));
+        return loader;
+    }
+
+    inline Game::Battle::BulletLoader create_bullet_data2()
+    {
+        using namespace Game::Battle;
+        using namespace Game::Physics;
+
+        BulletLoader loader;
+        loader.CreateBullet(5000, BulletData(0, 5, 1,270, 100, 2));
         return loader;
     }
 
@@ -157,7 +167,7 @@ namespace Scene
                 Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
                 Game::Battle::BulletHellState(),
                 init_bullet_graphic(),
-                create_bullet_data(),
+                create_bullet_data2(),
                 create_pattern_container(),
                 Game::Rhythm::KeyInput(),
                 Game::BulletHell::Input()
