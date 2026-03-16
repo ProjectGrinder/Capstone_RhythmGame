@@ -15,12 +15,6 @@ namespace Game::BulletHell
         if (battle_state.current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
-        if (battle_state.clock_time-battle_state.last_clocktime <= 250000)
-        {
-            return;
-        }
-
-        battle_state.last_clocktime = battle_state.clock_time;
         LOG_INFO("----------------------------------");
 
         // const auto &bullet_loader = query.front().get<Battle::BulletLoader>();

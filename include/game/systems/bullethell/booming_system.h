@@ -30,8 +30,8 @@ namespace Game::BulletHell
                 }
                 else if (delay_comp.delay <= 0)
                 {
-                    scl.scaleX += static_cast<float>(Battle::get_delta_time()/1000 * boomer.max_size / boomer.boom_frame);
-                    scl.scaleY += static_cast<float>(Battle::get_delta_time()/1000 * boomer.max_size/ boomer.boom_frame);
+                    scl.scaleX += static_cast<float>(get_delta_time()/1000 * boomer.max_size / boomer.boom_frame);
+                    scl.scaleY += static_cast<float>(get_delta_time()/1000 * boomer.max_size/ boomer.boom_frame);
                     if (scl.scaleX >= boomer.max_size)
                     {
                         scl.scaleX = boomer.max_size;
@@ -52,8 +52,8 @@ namespace Game::BulletHell
             {
                 if (delay_comp.delay <= 0)
                 {
-                    scl.scaleX -= static_cast<float>(Battle::get_delta_time()/1000 * boomer.max_size / boomer.boom_frame);
-                    scl.scaleY -= static_cast<float>(Battle::get_delta_time()/1000 * boomer.max_size/ boomer.boom_frame);
+                    scl.scaleX -= static_cast<float>(get_delta_time()/1000 * boomer.max_size / boomer.boom_frame);
+                    scl.scaleY -= static_cast<float>(get_delta_time()/1000 * boomer.max_size/ boomer.boom_frame);
                 }
             }
         }

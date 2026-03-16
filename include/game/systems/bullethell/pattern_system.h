@@ -51,7 +51,7 @@ namespace Game::BulletHell
 
             if (patt_c.delay > 0)
             {
-                patt_c.delay -= static_cast<int>(Battle::get_delta_time());
+                patt_c.delay -= static_cast<int>(get_delta_time());
             }
 
             else
