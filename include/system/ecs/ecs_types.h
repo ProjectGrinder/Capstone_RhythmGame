@@ -1,7 +1,7 @@
 #pragma once
+#include <bitset>
 #include <cstdint>
 #include <vector>
-#include <bitset>
 
 namespace System::ECS
 {

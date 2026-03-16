@@ -4,67 +4,46 @@
 
 namespace System::ECS
 {
+    template<typename T, typename... Ts>
+    struct get_index;
+
+    template<typename T, typename... Ts>
+    struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0>
+    {};
+
+    template<typename T, typename U, typename... Ts>
+    struct get_index<T, U, Ts...> : std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value>
+    {};
+
+    template<typename T, typename... Ts>
+    static constexpr std::size_t type_index_v = get_index<T, Ts...>::value;
+
     template<size_t MaxResource, typename... Resources>
     class SyscallResource
     {
         std::tuple<ResourcePool<MaxResource, Resources>...> _pools;
 
-        template<std::size_t... Index>
-        auto _create_pools(std::index_sequence<Index...>)
-        {
-            return (std::make_tuple(ResourcePool<MaxResource, Resources>()...));
-        }
-
-        template<typename ResourcePool>
-        static void _remove_if_exists(ResourcePool &pool, pid id)
-        {
-            if (pool.has(id))
-            {
-                pool.remove(id);
-            }
-        }
-
     public:
-        explicit SyscallResource() : _pools(_create_pools(std::index_sequence_for<Resources...>{}))
-        {}
-
-        template<typename Resource>
-        ResourcePool<MaxResource, Resource> &query()
+        template<typename T>
+        auto &query()
         {
-            return (std::get<ResourcePool<MaxResource, Resource>>(_pools));
+            return std::get<ResourcePool<MaxResource, T>>(_pools);
         }
 
-        template<typename Resource>
-        const ResourcePool<MaxResource, Resource> &query() const
+        template<typename T>
+        void add(pid id, T &&component)
         {
-            return (std::get<ResourcePool<MaxResource, Resource>>(_pools));
-        }
-
-        template<typename Resource>
-        void add_resource(pid id, Resource &&component)
-        {
-            auto &pool = query<Resource>();
-            pool.add(id, std::forward<Resource>(component));
-        }
-
-        template<typename Resource>
-        void remove_resource(pid id)
-        {
-            auto &pool = query<Resource>();
-            if (pool.has(id))
-            {
-                pool.remove(id);
-            }
-        }
-
-        void delete_entity(pid id)
-        {
-            std::apply([&](auto &...pool) { (_remove_if_exists(pool, id), ...); }, _pools);
+            query<T>().add(id, std::forward<T>(component));
         }
 
         void clear()
         {
             std::apply([](auto &...pools) { (pools.clear(), ...); }, _pools);
+        }
+
+        auto &get_pools()
+        {
+            return _pools;
         }
     };
 
@@ -72,31 +51,46 @@ namespace System::ECS
     class Syscall
     {
     private:
-        SyscallResource<MaxResource, Resources...> _to_add_components{};
-        std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...> _to_remove_components{};
-        std::bitset<MaxResource> _to_remove_entities{};
+        SyscallResource<MaxResource, Resources...> _to_add_components;
+        template<typename T>
+        using BitsetAlias = std::bitset<MaxResource>;
+        std::tuple<BitsetAlias<Resources>...> _to_remove_components;
+        std::bitset<MaxResource> _to_remove_entities;
+        std::vector<pid> _dirty_ids;
 
-        ResourceManager<MaxResource, Resources...> &_resource_manager_ref;
+        ResourceManager<MaxResource, Resources...> &_rm;
 
-        template<typename Component, std::size_t... I>
-        void _remove_component_impl(pid id, std::index_sequence<I...>)
+        template<typename T>
+        static constexpr size_t type_idx()
         {
-            (...,
-             (std::is_same_v<Component, std::tuple_element_t<I, std::tuple<Resources...>>>
-                      ? (std::get<I>(_to_remove_components).set(id), void())
-                      : void()));
+            return type_index_v<std::remove_cvref_t<T>, Resources...>;
+        }
+
+        void _mark_dirty(pid id)
+        {
+            bool already_tracked = _to_remove_entities.test(id);
+
+            if (!already_tracked)
+            {
+                std::apply([&](auto &...bits) { ((already_tracked |= bits.test(id)), ...); }, _to_remove_components);
+            }
+
+            if (!already_tracked)
+            {
+                _dirty_ids.push_back(id);
+            }
         }
 
     public:
-        explicit Syscall(ResourceManager<MaxResource, Resources...> &rm) : _resource_manager_ref(rm)
+        explicit Syscall(ResourceManager<MaxResource, Resources...> &rm) : _rm(rm)
         {}
 
         template<typename Component>
         void add_component(pid id, Component &&component)
         {
-            using Stored = std::remove_cvref_t<Component>;
-            static_assert(contains_type_v<Stored, Resources...>, "Component type is not registered in this ECS");
-            _to_add_components.template add_resource<Stored>(id, std::forward<Component>(component));
+            using T = std::remove_cvref_t<Component>;
+            std::get<type_idx<T>()>(_to_remove_components).reset(id);
+            _to_add_components.template add<T>(id, std::forward<Component>(component));
         }
 
         template<typename ...Components>
@@ -108,30 +102,34 @@ namespace System::ECS
         template<typename Component>
         void remove_component(pid id)
         {
-            _remove_component_impl<Component>(id, std::make_index_sequence<sizeof...(Resources)>{});
+            std::get<type_idx<Component>()>(_to_remove_components).set(id);
         }
 
         template<typename... Components>
         pid create_entity(Components &&...components)
         {
-            pid id = _resource_manager_ref.reserve_process();
-            (add_component(id, std::forward<Components>(components)), ...);
-            return (id);
+            pid reserved_id = _rm.reserve_process();
+            (add_component(reserved_id, std::forward<Components>(components)), ...);
+            return reserved_id;
         }
 
-        void remove_entity(const pid id)
+        void remove_entity(pid id)
         {
-            _to_remove_entities.set(id);
+            if (!_to_remove_entities.test(id))
+            {
+                _mark_dirty(id);
+                _to_remove_entities.set(id);
+            }
         }
 
         void exec()
         {
-            _resource_manager_ref.import(_to_add_components);
-            _resource_manager_ref.remove_marked(_to_remove_components, _to_remove_entities);
+            _rm.import(_to_add_components);
+            _rm.remove_marked(_to_remove_components, _to_remove_entities, _dirty_ids);
 
             _to_add_components.clear();
             _to_remove_entities.reset();
-            std::apply([](auto &...bitsets) { (bitsets.reset(), ...); }, _to_remove_components);
+            std::apply([](auto &...bits) { (bits.reset(), ...); }, _to_remove_components);
         }
     };
 } // namespace System::ECS

@@ -224,9 +224,9 @@ namespace System::Render
                 v_ptr[v_idx++] = points[1];
                 v_ptr[v_idx++] = points[2];
 
-                i_ptr[i_idx++] = static_cast<UINT>(base + 0);
-                i_ptr[i_idx++] = static_cast<UINT>(base + 1);
-                i_ptr[i_idx++] = static_cast<UINT>(base + 2);
+                i_ptr[i_idx++] = (UINT) base + 0;
+                i_ptr[i_idx++] = (UINT) base + 1;
+                i_ptr[i_idx++] = (UINT) base + 2;
             }
             default:
                 break;

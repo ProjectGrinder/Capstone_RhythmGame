@@ -31,22 +31,22 @@ struct RenderObject
     // 16 bits for sprite id (0xFFFF is none)
     // 8 bits for padding
 
-    union render_id
+    union RenderID
     {
-        struct graphic_id
+        struct
         {
             USHORT sp_id;
             USHORT ps_id;
             USHORT vs_id;
             UCHAR padding;
             UCHAR layer;
-        };
+        } as_data;
         ULONGLONG sort_key;
     } render_id = {};
 
     UINT offset = 0;
 
-    union count
+    union
     {
         UINT index_count;
         UINT vertex_count;
