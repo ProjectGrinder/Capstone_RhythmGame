@@ -108,7 +108,6 @@ namespace Game::BulletHell
 
 		    // Deactivate the bullet
 		    bullet.pierce --;
-            bullet.is_grazed = false;
         }
 
 	    for (auto &[id, comps] : bullet_query2)
@@ -180,7 +179,6 @@ namespace Game::BulletHell
 
 	        // Deactivate the bullet
 	        bullet.pierce--;
-	        state.graze--;
 	    }
 	}
 } // namespace Game::BulletHell

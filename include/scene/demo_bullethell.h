@@ -11,8 +11,8 @@ namespace Scene
             BulletGraphicMap(ColliderData(CIRCLE, 1,1)),
             BulletGraphicMap(ColliderData(CIRCLE, 1,1)),
             BulletGraphicMap(ColliderData(CIRCLE, 1,1), {}, {}, 20, 1, 100000),
-            BulletGraphicMap(ColliderData(CIRCLE, 1,1), {} , SpecialBulletData(Booming, 8, 3), 1, 999, 1000),
-            BulletGraphicMap(ColliderData(RECTANGLE, 1,1), {} , SpecialBulletData(Laser, 8, 3), 1, 999, 1000),
+            BulletGraphicMap(ColliderData(CIRCLE, 2,2), {} , SpecialBulletData(Booming, 5, 100), 5, 999, 3000),
+            BulletGraphicMap(ColliderData(RECTANGLE, 2,2), {} , SpecialBulletData(Laser, 5, 100), 5, 999, 3000),
         };
         return {BulletRegistry(maps)};
     }
@@ -84,7 +84,7 @@ namespace Scene
         using namespace Game::Physics;
 
         BulletLoader loader;
-        loader.CreateBullet(5000, BulletData(0, 5, 1,270, 100, 2));
+        loader.CreateBullet(5000, BulletData(0, 0, 0,0, 1000, 3));
         return loader;
     }
 
