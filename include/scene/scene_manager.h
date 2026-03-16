@@ -1,15 +1,14 @@
 #pragma once
 #include <any>
 #include <variant>
-#include "demo.h"
 
 namespace Scene
 {
     /* Optimizable */
     class SceneManager
     {
-        std::variant<std::monostate, Demo, BattleScene, DemoRender> _current_scene_template;
-        std::any _current_manager;
+        Config::SceneVariant _current_scene_template = std::monostate{};
+        Config::TaskManagerVariant _current_manager = std::monostate{};
 
     public:
         template<typename T>
@@ -28,7 +27,7 @@ namespace Scene
 
             LOG_INFO("Info: Changing scene to %s", T::name);
             scene_template = T::instance();
-            instance()._current_manager.reset();
+            // instance()._current_manager.reset();
             instance()._current_manager = T::init();
         }
 
