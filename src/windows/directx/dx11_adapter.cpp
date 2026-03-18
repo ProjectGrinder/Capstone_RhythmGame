@@ -82,10 +82,8 @@ namespace System::Render
         if (is_block_compressed(texture_format))
         {
             const UINT blockSize =
-                    (texture_format == DXGI_FORMAT_BC1_UNORM ||
-                     texture_format == DXGI_FORMAT_BC1_UNORM_SRGB ||
-                     texture_format == DXGI_FORMAT_BC4_UNORM ||
-                     texture_format == DXGI_FORMAT_BC4_SNORM)
+                    (texture_format == DXGI_FORMAT_BC1_UNORM || texture_format == DXGI_FORMAT_BC1_UNORM_SRGB ||
+                     texture_format == DXGI_FORMAT_BC4_UNORM || texture_format == DXGI_FORMAT_BC4_SNORM)
                             ? 8u
                             : 16u;
             return max(1u, (width + 3u) / 4u) * blockSize;
@@ -95,7 +93,11 @@ namespace System::Render
         return max(1u, (width * bitsPerPixel + 7u) / 8u);
     }
 
-    bool create_sprite_texture(ID3D11Device *device, dds::Image &image, DXGI_FORMAT texture_format, SpriteRenderObject &sprite_render_object)
+    bool create_sprite_texture(
+            ID3D11Device *device,
+            dds::Image &image,
+            DXGI_FORMAT texture_format,
+            SpriteRenderObject &sprite_render_object)
     {
         if (image.mipmaps.empty())
             return false;
@@ -117,7 +119,7 @@ namespace System::Render
         subresource.reserve(image.mipmaps.size());
 
         UINT mipWidth = image.width;
-        for (const auto &mip : image.mipmaps)
+        for (const auto &mip: image.mipmaps)
         {
             D3D11_SUBRESOURCE_DATA init{};
             init.pSysMem = mip.data();
@@ -365,9 +367,7 @@ namespace System::Render
                 sprite_render_object.render_id.sort_key = common.key;
                 sprite_render_object.vertex_shader = render_object.vertex_shader;
                 sprite_render_object.pixel_shader = render_object.pixel_shader;
-                sprite_render_object.input_layout = nullptr;
-                sprite_render_object.vertex_buffer = nullptr;
-                sprite_render_object.index_buffer = nullptr;
+                sprite_render_object.input_layout = render_object.input_layout;
                 sprite_render_object.count.index_count = 6;
                 sprite_render_object.offset = 0;
                 sprite_render_object.vertex_base = 0;
@@ -376,7 +376,6 @@ namespace System::Render
 
                 constexpr Rect src_rect = {0, 0, 1, 1};
 
-                // Build UV quad vertices
                 const float u0 = flipX ? src_rect.u1 : src_rect.u0;
                 const float u1 = flipX ? src_rect.u0 : src_rect.u1;
                 const float v0 = flipY ? src_rect.v1 : src_rect.v0;
@@ -388,10 +387,53 @@ namespace System::Render
                 quad[2] = {points[2].pos[0], points[2].pos[1], points[2].pos[2], u1, v1};
                 quad[3] = {points[3].pos[0], points[3].pos[1], points[3].pos[2], u0, v1};
 
+                D3D11_BUFFER_DESC vb_desc{};
+                vb_desc.Usage = D3D11_USAGE_DEFAULT;
+                vb_desc.ByteWidth = sizeof(quad);
+                vb_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+                vb_desc.CPUAccessFlags = 0;
+                vb_desc.MiscFlags = 0;
+                vb_desc.StructureByteStride = 0;
+
+                D3D11_SUBRESOURCE_DATA vb_data{};
+                vb_data.pSysMem = quad;
+                vb_data.SysMemPitch = 0;
+                vb_data.SysMemSlicePitch = 0;
+
+                HRESULT hr_vb = device->CreateBuffer(&vb_desc, &vb_data, &sprite_render_object.vertex_buffer);
+                if (FAILED(hr_vb))
+                {
+                    LOG_ERROR("Failed to create sprite vertex buffer, Code 0x%08lx", hr_vb);
+                    continue;
+                }
+
+                const UINT indices[6] = {0, 1, 2, 0, 2, 3};
+
+                D3D11_BUFFER_DESC ib_desc{};
+                ib_desc.Usage = D3D11_USAGE_DEFAULT;
+                ib_desc.ByteWidth = sizeof(indices);
+                ib_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+                ib_desc.CPUAccessFlags = 0;
+                ib_desc.MiscFlags = 0;
+                ib_desc.StructureByteStride = 0;
+
+                D3D11_SUBRESOURCE_DATA ib_data{};
+                ib_data.pSysMem = indices;
+                ib_data.SysMemPitch = 0;
+                ib_data.SysMemSlicePitch = 0;
+
+                HRESULT hr_ib = device->CreateBuffer(&ib_desc, &ib_data, &sprite_render_object.index_buffer);
+                if (FAILED(hr_ib))
+                {
+                    LOG_ERROR("Failed to create sprite index buffer, Code 0x%08lx", hr_ib);
+                    sprite_render_object.vertex_buffer.Reset();
+                    continue;
+                }
+
                 // DDS-backed texture upload.
                 // 1) get raw bytes from AssetsRecord
                 // 2) dds::readImage(...)
-                // 3) CreateTexture2D + CreateShaderResourceView (whenever that happens)
+                // 3) CreateTexture2D + CreateShaderResourceView
                 if (sp_rec != nullptr && sp_rec->data != nullptr)
                 {
                     dds::Image image{};
@@ -404,22 +446,19 @@ namespace System::Render
                     {
                         switch (image.format)
                         {
-                        case DXGI_FORMAT_R8G8B8A8_UNORM: {
-                            success = create_sprite_texture(device, image, DXGI_FORMAT_R8G8B8A8_UNORM, sprite_render_object);
+                        case DXGI_FORMAT_R8G8B8A8_UNORM:
+                            success = create_sprite_texture(
+                                    device, image, DXGI_FORMAT_R8G8B8A8_UNORM, sprite_render_object);
                             break;
-                        }
-                        case DXGI_FORMAT_BC1_UNORM: {
+                        case DXGI_FORMAT_BC1_UNORM:
                             success = create_sprite_texture(device, image, DXGI_FORMAT_BC1_UNORM, sprite_render_object);
                             break;
-                        }
-                        case DXGI_FORMAT_BC3_UNORM: {
+                        case DXGI_FORMAT_BC3_UNORM:
                             success = create_sprite_texture(device, image, DXGI_FORMAT_BC3_UNORM, sprite_render_object);
                             break;
-                        }
-                        default: {
+                        default:
                             LOG_ERROR("Unsupported SPRITE format %d", image.format);
                             break;
-                        }
                         }
                     }
 
@@ -431,7 +470,6 @@ namespace System::Render
                 }
 
                 _sprites.push_back(std::move(sprite_render_object));
-                // go back to prevent duplicating render_object and messing with pipeline
                 continue;
             }
             default:
