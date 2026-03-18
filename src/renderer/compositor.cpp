@@ -51,7 +51,7 @@ namespace System::Render
             const float obj_cos = std::cos(rot_z);
             const float obj_sin = std::sin(rot_z);
 
-            std::variant<ComposedSpriteDesc, ComposedTextDesc, TriangleDrawDesc> special;
+            std::variant<SpriteDrawDesc, ComposedTextDesc, TriangleDrawDesc> special;
 
             switch (intent.kind)
             {
@@ -78,16 +78,18 @@ namespace System::Render
 
             case DrawKind::KIND_SPRITE: {
                 const auto &spr = std::get<SpriteDrawDesc>(intent.special);
-                ComposedSpriteDesc composed_spr;
-                composed_spr.src_rect = spr.src_rect;
 
-                auto quad = Math::project_rect_local_to_ndc(spr.dst_rect, rot_z, pivot, camera);
-                for (int i = 0; i < 4; ++i)
-                    composed_spr.dst_rect[i] = quad[i];
-
-                composed_spr.flipX = spr.flipX;
-                composed_spr.flipY = spr.flipY;
-                special = composed_spr;
+                special = SpriteDrawDesc{
+                    .src_rect = spr.src_rect,
+                    .points = {
+                        Math::transform_pipe_fast(spr.points[0], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
+                        Math::transform_pipe_fast(spr.points[1], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
+                        Math::transform_pipe_fast(spr.points[2], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
+                        Math::transform_pipe_fast(spr.points[3], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
+                        },
+                    .flipX = spr.flipX,
+                    .flipY = spr.flipY
+                };
                 break;
             }
 
