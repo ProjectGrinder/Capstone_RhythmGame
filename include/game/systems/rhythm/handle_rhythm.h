@@ -112,7 +112,7 @@ namespace Game::Rhythm
         else
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
-            LOG_INFO("Miss");
+            LOG_INFO("Miss Count = %d", battle_query.front().get<Battle::BattleState>().judgement_count.miss_count);
         }
         syscall.remove_entity(id);
     }
