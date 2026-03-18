@@ -18,8 +18,7 @@ namespace Game::Render
     struct Sprite
     {
         const AssetsRecord *sp = nullptr;
-        Rect src_rect{};      // UV from sprite to sample from.
-        Math::Point dst_pos[4]{};
+        Math::Point pos[4]{};
         uint32_t layer = 0;     // Layer to render
         uint32_t order = 0;     // Order of render in layer
         bool flipX = false; // Flip Image in X-axis

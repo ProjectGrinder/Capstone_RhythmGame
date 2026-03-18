@@ -24,13 +24,7 @@ namespace Game::Render
             intent.common.sp = sprite.sp;
 
             intent.special = System::Render::SpriteDrawDesc{
-                .src_rect = {
-                    .u0 = sprite.src_rect.u0,
-                    .v0 = sprite.src_rect.v0,
-                    .u1 = sprite.src_rect.u1,
-                    .v1 = sprite.src_rect.v1,
-                },
-                .points = {sprite.dst_pos[0], sprite.dst_pos[1], sprite.dst_pos[2], sprite.dst_pos[3]},
+                .points = {sprite.pos[0], sprite.pos[1], sprite.pos[2], sprite.pos[3]},
                 .flipX = sprite.flipX,
                 .flipY = sprite.flipY
             };

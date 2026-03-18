@@ -81,7 +81,6 @@ namespace System::Render
                 const auto &spr = std::get<SpriteDrawDesc>(intent.special);
 
                 item.special = SpriteDrawDesc{
-                    .src_rect = spr.src_rect,
                     .points = {
                         Math::transform_pipe_fast(spr.points[0], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
                         Math::transform_pipe_fast(spr.points[1], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),

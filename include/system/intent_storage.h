@@ -67,7 +67,6 @@ namespace System::Render
 
     struct SpriteDrawDesc
     {
-        Rect src_rect{};
         Math::Point points[4]{};
         bool flipX = false;
         bool flipY = false;

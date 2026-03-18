@@ -6,6 +6,7 @@
 #include "system/asset_manager.h"
 #include "utils/input_attribute_description.h"
 #include "utils/print_debug.h"
+#include "library/dds.hpp"
 
 namespace System::Render
 {
