@@ -22,6 +22,7 @@ namespace Game::Render
 
             Helpers::fill_common(intent, material, tra, (uint8_t) sprite.layer);
             intent.common.sp = sprite.sp;
+            intent.common.info.sp_id = ASSET_INDEX(sprite.sp->id);
 
             intent.special = System::Render::SpriteDrawDesc{
                 .points = {sprite.pos[0], sprite.pos[1], sprite.pos[2], sprite.pos[3]},
