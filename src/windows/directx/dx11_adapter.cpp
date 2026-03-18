@@ -25,6 +25,8 @@ namespace System::Render
             return DXGI_FORMAT_R32G32B32A32_FLOAT;
         case R32G32B32_FLOAT:
             return DXGI_FORMAT_R32G32B32_FLOAT;
+        case R32G32_FLOAT:
+            return DXGI_FORMAT_R32G32_FLOAT;
         case FLOAT32BITS:
             return DXGI_FORMAT_R32_FLOAT;
         case FLOAT16BITS:
@@ -574,6 +576,12 @@ namespace System::Render
         for (const auto &item: _items)
         {
             render(&_environment, &item);
+        }
+
+        // Sprite rendering part
+        for (const auto &sprite: _sprites)
+        {
+            render_sprite(&_environment, &sprite);
         }
     }
 
