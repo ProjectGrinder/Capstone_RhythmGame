@@ -93,6 +93,12 @@ namespace System::ECS
             _to_add_components.template add<T>(id, std::forward<Component>(component));
         }
 
+        template<typename ...Components>
+        void add_components(pid id, Components &&...components)
+        {
+            (add_component(id, std::forward<Components>(components)), ...);
+        }
+
         template<typename Component>
         void remove_component(pid id)
         {

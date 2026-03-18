@@ -1,11 +1,10 @@
 #pragma once
 
 #include "utils/print_debug.h"
-
 extern "C" long double get_delta_time();
-
 namespace Game::Battle
 {
+
     template<typename T>
     void update_global_clock(
         [[maybe_unused]] T &syscall,

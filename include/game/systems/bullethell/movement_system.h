@@ -1,22 +1,19 @@
 #pragma once
 #include <cmath>
 #include "game/components.h"
-#include "game/components/physics/acceleration.h"
+
+#include "game/utils/physics_util.h"
 
 // FIXME: Part of physics, consider separation into its own thread
+using Position = Game::Physics::Position;
+using Velocity = Game::Physics::Velocity;
+using Rotation = Game::Physics::Rotation;
+using Acceleration = Game::Physics::Acceleration;
+using AngularVelocity = Game::Physics::AngularVelocity;
 namespace Game::BulletHell
 {
-    using Position = Physics::Position;
-    using Velocity = Physics::Velocity;
-    using Rotation = Physics::Rotation;
-    using Acceleration = Physics::Acceleration;
-    using AngularVelocity = Physics::AngularVelocity;
-
-    template<typename T>
-    void movement_system(
-            [[maybe_unused]] T &syscall,
-            System::ECS::Query<Position, Rotation, Velocity, Acceleration> &query,
-            System::ECS::Query<Battle::BattleState> &query2)
+    template <typename T>
+    void movement_system([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
@@ -24,41 +21,48 @@ namespace Game::BulletHell
         if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
-        constexpr auto frame_time = 1;
-
         for (auto &[id, comps]: query)
         {
-            const float angle = comps.get<Rotation>().angleZ * std::acos(0.0f) / 90.0f;
-            comps.get<Position>().x +=
-                    (comps.get<Velocity>().vx * cos(angle) - comps.get<Velocity>().vy * sin(angle)) * frame_time;
-            comps.get<Position>().y +=
-                    (comps.get<Velocity>().vx * sin(angle) + comps.get<Velocity>().vy * cos(angle)) * frame_time;
+            auto &pos = comps.get<Position>();
+            auto &vel = comps.get<Velocity>();
+            const auto &rot = comps.get<Rotation>();
 
-            if (comps.get<Acceleration>().ax != 0)
-            {
-                comps.get<Velocity>().vx += comps.get<Acceleration>().ax * frame_time;
-                comps.get<Velocity>().vx = comps.get<Velocity>().vx > comps.get<Acceleration>().max_speed
-                                                   ? comps.get<Acceleration>().max_speed
-                                                   : comps.get<Velocity>().vx;
-            }
-            if (comps.get<Acceleration>().ay != 0)
-            {
-                comps.get<Velocity>().vy += comps.get<Acceleration>().ay * frame_time;
-                comps.get<Velocity>().vy = comps.get<Velocity>().vy > comps.get<Acceleration>().max_speed
-                                                   ? comps.get<Acceleration>().max_speed
-                                                   : comps.get<Velocity>().vy;
-            }
+            const float angle = rot.angleZ * acos(0.0f)/90.0f  ;
+
+            pos.x += static_cast<float>((vel.vx * cos(angle) - vel.vy * sin(angle)) * get_delta_time()/1000);
+            pos.y += static_cast<float>((vel.vx * sin(angle) + vel.vy * cos(angle)) * get_delta_time()/1000);
+        }
+    }
+
+    template <typename T>
+    void acceleration_system([[maybe_unused]] T &syscall, System::ECS::Query<Velocity,Acceleration>& query, System::ECS::Query<Battle::BattleState> &query2)
+    {
+        if (query2.begin() == query2.end())
+            return;
+
+        if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
+            return;
+
+        for (auto &[id, comps] : query)
+        {
+            auto &vel = comps.get<Velocity>();
+            const auto &acc = comps.get<Acceleration>();
+
+            vel.vx += acc.ax * static_cast<float>(get_delta_time()/1000);
+            vel.vx = Physics::clamp(vel.vx, acc.min_speed_x, acc.max_speed_x);
+
+            vel.vy += acc.ay * static_cast<float>(get_delta_time()/1000);
+            vel.vy = Physics::clamp(vel.vy, acc.min_speed_y, acc.max_speed_y);
+
         }
     }
 
     template<typename T>
     void rotation_system([[maybe_unused]] T &task_manager, System::ECS::Query<Rotation, AngularVelocity> &query2)
     {
-        constexpr auto frame_time = 1;
-
         for (auto &[id, comps]: query2)
         {
-            comps.get<Rotation>().angleZ += comps.get<AngularVelocity>().v * frame_time;
+            comps.get<Rotation>().angleZ += comps.get<AngularVelocity>().v * static_cast<float>(get_delta_time()/1000);
             if (comps.get<Rotation>().angleZ >= 360)
             {
                 comps.get<Rotation>().angleZ -= 360;

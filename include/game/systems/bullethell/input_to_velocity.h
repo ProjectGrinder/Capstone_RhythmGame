@@ -1,4 +1,5 @@
 #pragma once
+#include "game/systems/global_clock.h"
 
 namespace Game::BulletHell
 {
@@ -18,13 +19,21 @@ namespace Game::BulletHell
         if (query3.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
-        for (auto &[id, comps]: query2)
+        for (auto &[id, comps] : query2)
         {
             const auto &input = query1.front().get<Input>();
-            const float velocity_factor = input.shift ? 4.0f : 1.0f;
+            const float velocity_factor = (input.shift ? 1.0f : 4.0f);
 
-            comps.get<Physics::Velocity>().vx = input.axis_x * velocity_factor;
-            comps.get<Physics::Velocity>().vy = input.axis_y * velocity_factor;
+            float x = input.axis_x;
+            float y = input.axis_y;
+            if (const float length = sqrtf(x * x + y * y); length < 0.0f)
+            {
+                x/=length;
+                y/=length;
+            }
+
+            comps.get<Physics::Velocity>().vx = x * velocity_factor;
+            comps.get<Physics::Velocity>().vy = y * velocity_factor;
         }
     }
 } // namespace Game::BulletHell

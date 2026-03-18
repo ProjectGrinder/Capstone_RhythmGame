@@ -6,13 +6,14 @@
 #include "scene/battle_scene.h"
 #include "scene/demo.h"
 #include "scene/demo_render.h"
+#include "scene/demo_bullethell.h"
 #include "scene/demo_rhythm.h"
 
 // define configuration items
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = DemoRender;
+    using StartingScene = DemoBulletHell;
 
     using SceneTuple = std::tuple<Demo, DemoRender, DemoRhythm, BattleScene>;
     using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;

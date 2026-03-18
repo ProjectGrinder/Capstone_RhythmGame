@@ -8,6 +8,8 @@ namespace Game::Physics
         float vx, vy;
         Velocity() : vx(0), vy(0)
         {}
+        explicit Velocity(const float v) : vx(v), vy(0)
+        {}
         explicit Velocity(const float vx, const float vy) : vx(vx), vy(vy)
         {}
     };

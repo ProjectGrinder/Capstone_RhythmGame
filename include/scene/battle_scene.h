@@ -1,7 +1,7 @@
 #pragma once
 
-#include "system.h"
 #include "game.h"
+#include "system.h"
 
 namespace Scene
 {
@@ -18,18 +18,19 @@ namespace Scene
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
             Game::Battle::LevelData,
+            Game::Battle::BulletLoader,
+            Game::Battle::BulletRegistry,
+            Game::Battle::PatternContainer,
             Game::BulletHell::Bullet,
             Game::BulletHell::Input,
             Game::BulletHell::Player,
-            Game::BulletHell::Patterns,
-            Game::BulletHell::BoomEmitter,
-            Game::BulletHell::LaserEmitter,
-            Game::BulletHell::RingEmitter,
-            Game::BulletHell::RandomEmitter,
-            Game::BulletHell::SpreadEmitter,
+            Game::BulletHell::Pattern,
             Game::BulletHell::Bounce,
             Game::BulletHell::Homing,
             Game::BulletHell::Particle,
+            Game::BulletHell::Delay,
+            Game::BulletHell::Booming,
+            Game::BulletHell::Laser,
             Game::Physics::Acceleration,
             Game::Physics::CircularCollider,
             Game::Physics::RectangularCollider,
@@ -57,18 +58,24 @@ namespace Scene
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             Game::Battle::input_system<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
+            Game::BulletHell::load_bullets<Syscall>,
+            Game::BulletHell::pattern_system<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
+            Game::BulletHell::acceleration_system<Syscall>,
             Game::BulletHell::rotation_system<Syscall>,
             Game::BulletHell::bullet_collision<Syscall>,
             Game::BulletHell::player_system<Syscall>,
             Game::BulletHell::bullet_system<Syscall>,
-            Game::BulletHell::pattern_system<Syscall>,
+            Game::BulletHell::particle_system<Syscall>,
+            Game::BulletHell::delay_system<Syscall>,
+            Game::BulletHell::boomer_system<Syscall>,
+            Game::BulletHell::laser_system<Syscall>,
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
+            Game::BulletHell::logging_system<Syscall>,
             Game::Rhythm::handle_rhythm<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
-            Game::Rhythm::handle_bpm<Syscall>,
-            Game::Rhythm::load_notes<Syscall>
+            Game::Rhythm::handle_bpm<Syscall>
             //Game::Render::AnimationSystem<Syscall>
             >;
 

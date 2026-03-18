@@ -2,11 +2,17 @@
 #include <cmath>
 #include <random>
 
-#include "game/components.h"
+#include "game/components/physics/position.h"
+
+
+// TODO : Please find a better place for this
+constexpr float UNASSIGNED = -(1 << 24); // 2^24
 
 // Warning : cmath, random
 namespace Game::Physics
 {
+
+
     template<typename T>
     T clamp(T num, T minN, T maxN)
     {

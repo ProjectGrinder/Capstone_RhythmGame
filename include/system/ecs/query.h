@@ -117,6 +117,10 @@ namespace System::ECS
         {
             _entries.reserve(n);
         }
+        size_t size() const
+        {
+            return (_entries.size());
+        }
     };
 
 } // namespace System::ECS
