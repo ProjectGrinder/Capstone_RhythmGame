@@ -16,7 +16,7 @@ namespace Game::Battle
         auto &phase_info = level_data.phase_info;
 
         while (phase_info.idx < phase_info.phase_list.size() &&
-               phase_info.phase_list.at(phase_info.idx).timing <= battle_state.clock_time)
+               phase_info.phase_list.at(phase_info.idx).timing_start + phase_info.phase_list.at(phase_info.idx).duration <= battle_state.clock_time)
         {
             battle_state.current_phase = phase_info.phase_list.at(phase_info.idx).phase;
             phase_info.idx++;

@@ -13,13 +13,16 @@ namespace Game::BulletHell
         if (query2.begin() == query2.end())
             return;
 
-        if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
-        {
-            return;
-        }
+
 
         for (auto &[id, comps] : query)
         {
+            if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
+            {
+                syscall.remove_entity(id);
+                return;
+            }
+
             auto &bullet = comps.get<Bullet>();
             const auto &delay = comps.get<Delay>();
 

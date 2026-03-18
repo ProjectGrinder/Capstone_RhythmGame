@@ -91,7 +91,8 @@ namespace Game::Battle
     {
         struct InfoPair
         {
-            int timing;
+            int timing_start;
+            int duration;
             CurrentPhase phase;
         };
         std::vector<InfoPair> phase_list;

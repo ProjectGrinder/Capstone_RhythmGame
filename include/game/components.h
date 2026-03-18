@@ -3,9 +3,11 @@
 #include "components/battle/battlestate.h"
 #include "components/battle/bullet_data.h"
 #include "components/battle/pattern_container.h"
+#include "components/battle/transition_data.h"
 
 #include "components/bullethell/booming.h"
 #include "components/bullethell/bullet.h"
+#include "components/bullethell/bullet_clearer.h"
 #include "components/bullethell/delay.h"
 #include "components/bullethell/input.h"
 #include "components/bullethell/laser.h"
