@@ -30,8 +30,7 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
                 Game::Render::Triangle{
                         {{{-0.5, 0, 0}, {1, 0, 0, 1}}, {{0, 0.5, 0}, {0, 1, 0, 1}}, {{0.5, 0, 0}, {0, 0, 1, 1}}}, 0, 0},
                 Game::Render::Material(vs, ps),
-                Game::Render::Transform{Math::Point{{i * 0.1f, i * 0.1f, 0}, {0, 0, 0, 0}}, 0, 0, 0},
-                Game::Render::IntentHandle{});
+                Game::Render::Transform{Math::Point{{i * 0.1f, i * 0.1f, 0}, {0, 0, 0, 0}}, 0, 0, 0});
     }
     tm->run_all();
     return (tm);

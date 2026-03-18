@@ -16,7 +16,6 @@ namespace Scene
                 Game::Render::Sprite,
                 Game::Render::Material,
                 Game::Render::Text,
-                Game::Render::IntentHandle,
                 Game::Render::Transform,
                 Game::Render::Triangle>;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;

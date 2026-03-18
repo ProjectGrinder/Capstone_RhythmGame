@@ -32,9 +32,9 @@
 #include "game/systems/animation_system.h"
 #include "systems/bullethell/shaking_system.h"
 // Render Intent
+#include "systems/render/draw_sprite.h"
 #include "systems/render/draw_triangle.h"
 #include "systems/render/set_camera.h"
-#include "systems/render/sprite_intent.h"
 #include "systems/render/text_intent.h"
 // Test
 #include "systems/test/spin_camera.h"
