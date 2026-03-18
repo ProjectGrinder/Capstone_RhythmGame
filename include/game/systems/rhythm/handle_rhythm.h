@@ -19,14 +19,17 @@ namespace Game::Rhythm
         // const auto timing = battle_query.front().get<Battle::BattleState>().clock_time;
         if (time_diff > -1 * perfect_judge && time_diff < perfect_judge)
         {
+            LOG_INFO("Perfect");
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
         }
         else if (time_diff > -1 * great_judge && time_diff < great_judge)
         {
+            LOG_INFO("Great");
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
         }
         else if (time_diff > -1 * fine_judge && time_diff < fine_judge)
         {
+            LOG_INFO("Fine");
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
         }
         else return;
@@ -38,6 +41,7 @@ namespace Game::Rhythm
         else
         {
             comp->get<HoldActive>().hold_active = true; // start holding
+            LOG_INFO("Start Holding");
         }
     }
 
@@ -52,6 +56,7 @@ namespace Game::Rhythm
         if (time_diff > -100 && time_diff < 100)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+            LOG_INFO("Perfect");
         }
         else return;
 
@@ -62,6 +67,7 @@ namespace Game::Rhythm
         else
         {
             comp->get<HoldActive>().hold_active = true; // start holding
+            LOG_INFO("Start Holding");
         }
     }
 
@@ -75,6 +81,7 @@ namespace Game::Rhythm
         if (time_diff > -100 && time_diff < 50)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+            LOG_INFO("Perfect");
             syscall.remove_entity(id);
         }
     }
@@ -90,18 +97,22 @@ namespace Game::Rhythm
         if (time_diff_end > -50)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+            LOG_INFO("Perfect");
         }
         else if (time_diff_end > -75)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
+            LOG_INFO("Great");
         }
         else if (time_diff_end > -100)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
+            LOG_INFO("Fine");
         }
         else
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
+            LOG_INFO("Miss Count = %d", battle_query.front().get<Battle::BattleState>().judgement_count.miss_count);
         }
         syscall.remove_entity(id);
     }
@@ -159,25 +170,12 @@ namespace Game::Rhythm
             const auto &end_time = comp->get<TimingEnd>().timing_end;
             const auto time_diff_end = current_time - end_time;
 
-            // handle holding
-            for (auto &[id4, comp4] : input_query) // check when stop holding
+            if (time_diff_end >= 0) // check for perfect end timing
             {
-                if ((lane_num == 0 && comp4.get<KeyInput>().key1_hold == false) ||
-                (lane_num == 1 && comp4.get<KeyInput>().key2_hold == false) ||
-                (lane_num == 2 && comp4.get<KeyInput>().key3_hold == false) ||
-                (lane_num == 3 && comp4.get<KeyInput>().key4_hold == false))
-                {
-                    handle_hold_note_release(syscall, time_diff_end, id, battle_query);
-                    break;
-                }
+                battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
 
-                if (time_diff_end <= 0) // check for perfect end timing
-                {
-                    battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-
-                    syscall.remove_entity(id);
-                    break;
-                    }
+                syscall.remove_entity(id);
+                LOG_INFO("Perfect");
             }
         }
     }
@@ -205,11 +203,7 @@ namespace Game::Rhythm
         // Midfield
 
         const auto key_input = input_query.front().get<KeyInput>();
-        if (key_input.key1_hold == false && key_input.key2_hold == false
-            && key_input.key3_hold == false && key_input.key4_hold == false)
-        {
-            return;
-        }
+
         // Create variable
         int first_timing1 = 999999;
         int first_timing2 = 999999;
@@ -231,29 +225,41 @@ namespace Game::Rhythm
         {
             const int first_timing = comp.get<Timing>().timing;
 
-            if (key_input.key1_hold == true && comp.get<Lane>().lane == 0 && first_timing < first_timing1)
+            if (comp.get<Lane>().lane == 0 && first_timing < first_timing1)
             {
-                first_timing1 = first_timing;
-                note_id1 = id;
-                note_comp1 = &comp;
+                if (comp.get<HoldActive>().hold_active == true || key_input.key1_hold == true)
+                {
+                    first_timing1 = first_timing;
+                    note_id1 = id;
+                    note_comp1 = &comp;
+                }
             }
-            if (key_input.key2_hold == true && comp.get<Lane>().lane == 1 && first_timing < first_timing2)
+            if (comp.get<Lane>().lane == 1 && first_timing < first_timing2)
             {
-                first_timing2 = first_timing;
-                note_id2 = id;
-                note_comp2 = &comp;
+                if (comp.get<HoldActive>().hold_active == true || key_input.key2_hold == true)
+                {
+                    first_timing2 = first_timing;
+                    note_id2 = id;
+                    note_comp2 = &comp;
+                }
             }
-            if (key_input.key3_hold == true && comp.get<Lane>().lane == 2 && first_timing < first_timing3)
+            if (comp.get<Lane>().lane == 2 && first_timing < first_timing3)
             {
-                first_timing3 = first_timing;
-                note_id3 = id;
-                note_comp3 = &comp;
+                if (comp.get<HoldActive>().hold_active == true || key_input.key3_hold == true)
+                {
+                    first_timing3 = first_timing;
+                    note_id3 = id;
+                    note_comp3 = &comp;
+                }
             }
-            if (key_input.key4_hold == true && comp.get<Lane>().lane == 3 && first_timing < first_timing4)
+            if (comp.get<Lane>().lane == 3 && first_timing < first_timing4)
             {
-                first_timing4 = first_timing;
-                note_id4 = id;
-                note_comp4 = &comp;
+                if (comp.get<HoldActive>().hold_active == true || key_input.key4_hold == true)
+                {
+                    first_timing4 = first_timing;
+                    note_id4 = id;
+                    note_comp4 = &comp;
+                }
             }
         }
 
@@ -273,6 +279,41 @@ namespace Game::Rhythm
         if (key_input.key4_hold == true && first_timing4 < 999999)
         {
             handle_note_from_lane(3, syscall, note_id4, note_comp4, battle_query, input_query);
+        }
+        // handle hold note release
+        const auto &current_time = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
+
+        if (key_input.key1_hold == false && note_comp1 != nullptr)
+        {
+            if (note_comp1->get<HoldActive>().hold_active == true)
+            {
+                auto time_diff_end = current_time - note_comp1->get<TimingEnd>().timing_end;
+                handle_hold_note_release(syscall, time_diff_end, note_id1, battle_query);
+            }
+        }
+        if (key_input.key2_hold == false && note_comp2 != nullptr)
+        {
+            if (note_comp2->get<HoldActive>().hold_active == true)
+            {
+                auto time_diff_end = current_time - note_comp2->get<TimingEnd>().timing_end;
+                handle_hold_note_release(syscall, time_diff_end, note_id2, battle_query);
+            }
+        }
+        if (key_input.key3_hold == false && note_comp3 != nullptr)
+        {
+            if (note_comp3->get<HoldActive>().hold_active == true)
+            {
+                auto time_diff_end = current_time - note_comp3->get<TimingEnd>().timing_end;
+                handle_hold_note_release(syscall, time_diff_end, note_id3, battle_query);
+            }
+        }
+        if (key_input.key4_hold == false && note_comp4 != nullptr)
+        {
+            if (note_comp4->get<HoldActive>().hold_active == true)
+            {
+                auto time_diff_end = current_time - note_comp4->get<TimingEnd>().timing_end;
+                handle_hold_note_release(syscall, time_diff_end, note_id4, battle_query);
+            }
         }
     }
 } // namespace Game::Rhythm

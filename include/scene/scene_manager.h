@@ -7,8 +7,8 @@ namespace Scene
     /* Optimizable */
     class SceneManager
     {
-        Config::SceneVariant _current_scene_template = std::monostate{};
-        Config::TaskManagerVariant _current_manager = std::monostate{};
+        std::variant<std::monostate, Demo, BattleScene, DemoRender> _current_scene_template;
+        std::any _current_manager;
 
     public:
         template<typename T>

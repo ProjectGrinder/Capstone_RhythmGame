@@ -40,7 +40,7 @@ namespace Game::Rhythm
     {
         if (chart_query.begin() == chart_query.end())
         {
-            LOG_ERROR("No ChartData found!");
+            // LOG_ERROR("No ChartData found!");
             return;
         }
         if (battle_query.begin() == battle_query.end())

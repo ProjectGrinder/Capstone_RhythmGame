@@ -25,7 +25,6 @@
 #include "game/systems/rhythm/handle_miss_note.h"
 #include "game/systems/rhythm/handle_bpm.h"
 #include "game/systems/rhythm/load_notes.h"
-#include "game/systems/rhythm/test_rhythm.h"
 // General Battle Part
 #include "game/systems/phase_change.h"
 #include "game/systems/global_clock.h"
