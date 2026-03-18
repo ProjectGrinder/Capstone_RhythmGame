@@ -42,8 +42,11 @@ namespace System::Render
             if (!intent.common.visible)
                 continue;
 
-            ComposedDrawCommon common{
-                    intent.common.vs, intent.common.ps, intent.common.sp, intent.common.color, intent.common.key};
+            CompositorItem item = {
+                .kind = intent.kind,
+                .common = {
+                    intent.common.vs, intent.common.ps, intent.common.sp, intent.common.color, intent.common.key},
+            };
 
             const auto pivot = intent.common.pivot;
             const auto rot_z = intent.common.rotation_z;
@@ -51,14 +54,12 @@ namespace System::Render
             const float obj_cos = std::cos(rot_z);
             const float obj_sin = std::sin(rot_z);
 
-            std::variant<SpriteDrawDesc, ComposedTextDesc, TriangleDrawDesc> special;
-
             switch (intent.kind)
             {
             case DrawKind::KIND_TRIANGLE: {
                 const auto &tri = std::get<TriangleDrawDesc>(intent.special);
 
-                special = TriangleDrawDesc{
+                item.special = TriangleDrawDesc{
                         {Math::transform_pipe_fast(
                                  tri.points[0], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
                          Math::transform_pipe_fast(
@@ -79,7 +80,7 @@ namespace System::Render
             case DrawKind::KIND_SPRITE: {
                 const auto &spr = std::get<SpriteDrawDesc>(intent.special);
 
-                special = SpriteDrawDesc{
+                item.special = SpriteDrawDesc{
                     .src_rect = spr.src_rect,
                     .points = {
                         Math::transform_pipe_fast(spr.points[0], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
@@ -95,7 +96,7 @@ namespace System::Render
 
             case DrawKind::KIND_TEXT: {
                 const auto &txt = std::get<TextDrawDesc>(intent.special);
-                special = ComposedTextDesc{txt.text, common.sp};
+                item.special = ComposedTextDesc{txt.text, item.common.sp};
                 break;
             }
 
@@ -103,7 +104,7 @@ namespace System::Render
                 continue;
             }
 
-            comp._items.push_back({intent.kind, common, std::move(special)});
+            comp._items.push_back(item);
         }
     }
 } // namespace System::Render
