@@ -16,24 +16,24 @@ namespace Scene
         }
 
         // Pattern 1: Simple taps
-        chart.lanes[0].notes.emplace_back(false, 1000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[1].notes.emplace_back(false, 2000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[2].notes.emplace_back(false, 3000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[3].notes.emplace_back(false, 4000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[0].notes.emplace_back(false, 5000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[1].notes.emplace_back(false, 6000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[2].notes.emplace_back(false, 7000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[3].notes.emplace_back(false, 8000, 0, Game::Battle::RhythmType::NORMAL);
 
         // Pattern 2: Holds
-        chart.lanes[0].notes.emplace_back(true, 5000, 6000, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[1].notes.emplace_back(true, 7000, 8000, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[2].notes.emplace_back(true, 9000, 10500, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[3].notes.emplace_back(true, 10500, 12000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[0].notes.emplace_back(true, 9000, 10000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[1].notes.emplace_back(true, 11000, 12000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[2].notes.emplace_back(true, 13000, 15000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[3].notes.emplace_back(true, 14000, 15000, Game::Battle::RhythmType::NORMAL);
 
         // Pattern 3: Simultaneous notes
-        chart.lanes[0].notes.emplace_back(false, 13000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[1].notes.emplace_back(false, 13000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[2].notes.emplace_back(false, 15000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[3].notes.emplace_back(false, 15000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[0].notes.emplace_back(true, 17000, 19000, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[1].notes.emplace_back(true, 18000, 19000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[0].notes.emplace_back(false, 17000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[1].notes.emplace_back(false, 17000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[2].notes.emplace_back(false, 19000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[3].notes.emplace_back(false, 19000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[0].notes.emplace_back(true, 21000, 22000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[1].notes.emplace_back(true, 21000, 23000, Game::Battle::RhythmType::NORMAL);
 
         // Pattern 4: Repeated taps
         // for (int i = 0; i < 3; ++i)
@@ -46,23 +46,23 @@ namespace Scene
         // }
 
         // Pattern 5: Accent notes
-        chart.lanes[0].notes.emplace_back(false, 22000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[1].notes.emplace_back(false, 23000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[2].notes.emplace_back(false, 24000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[3].notes.emplace_back(false, 25000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[1].notes.emplace_back(false, 26000, 0, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[0].notes.emplace_back(false, 24000, 0, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[1].notes.emplace_back(false, 25000, 0, Game::Battle::RhythmType::ACCENT);
         chart.lanes[2].notes.emplace_back(false, 26000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[0].notes.emplace_back(true, 27000, 28000, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[3].notes.emplace_back(true, 27000, 28000, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[3].notes.emplace_back(false, 27000, 0, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[1].notes.emplace_back(false, 28000, 0, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[2].notes.emplace_back(false, 28000, 0, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[0].notes.emplace_back(true, 29000, 30000, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[3].notes.emplace_back(true, 29000, 30000, Game::Battle::RhythmType::ACCENT);
 
         // Pattern 6: Rain notes (only taps)
         for (int m = 0; m < 10; ++m)
         {
-            chart.lanes[0].notes.emplace_back(false, 28000 + m * 100, 0, Game::Battle::RhythmType::RAIN);
+            chart.lanes[0].notes.emplace_back(false, 32000 + m * 100, 0, Game::Battle::RhythmType::RAIN);
         }
-        for (int n = 0; n < 10; ++n)
+        for (int n = 0; n < 20; ++n)
         {
-            chart.lanes[0].notes.emplace_back(false, 30000 + n * 100, 0, Game::Battle::RhythmType::RAIN);
+            chart.lanes[3].notes.emplace_back(false, 34000 + n * 50, 0, Game::Battle::RhythmType::RAIN);
         }
 
         /*
@@ -130,18 +130,15 @@ namespace Scene
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
             Game::Rhythm::KeyInput,
-            Game::BulletHell::Input,
-            Game::Rhythm::NoteSpeed>
+            Game::BulletHell::Input>
             (
                 config_battle_state(),
-                Game::Battle::RhythmState(1, 1, 20, 1.0f),
+                Game::Battle::RhythmState(1, 1, 60, 1.0f),
                 create_demo_chart(),
                 Game::Rhythm::KeyInput(),
-                Game::BulletHell::Input(),
-                Game::Rhythm::NoteSpeed(1.0f));
+                Game::BulletHell::Input());
 
-
-            // Create Lane and NoteSpeed components
+            // Create Lane
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
