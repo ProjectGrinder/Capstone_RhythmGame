@@ -228,6 +228,61 @@ namespace System::Render
                 i_ptr[i_idx++] = (UINT) base + 0;
                 i_ptr[i_idx++] = (UINT) base + 1;
                 i_ptr[i_idx++] = (UINT) base + 2;
+
+                break;
+            }
+            case DrawKind::KIND_SPRITE: {
+                const AssetsRecord* sp_rec = common.sp;
+                auto const &[points, flipX, flipY] = std::get<SpriteDrawDesc>(special);
+
+                SpriteRenderObject sprite_render_object{};
+                sprite_render_object.render_id.sort_key = common.key;
+                sprite_render_object.vertex_shader = render_object.vertex_shader;
+                sprite_render_object.pixel_shader = render_object.pixel_shader;
+                sprite_render_object.input_layout = nullptr;
+                sprite_render_object.vertex_buffer = nullptr;
+                sprite_render_object.index_buffer = nullptr;
+                sprite_render_object.count.index_count = 6;
+                sprite_render_object.offset = 0;
+                sprite_render_object.vertex_base = 0;
+                sprite_render_object.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+                sprite_render_object.index_format = DXGI_FORMAT_R32_UINT;
+
+                constexpr Rect src_rect = {
+                    0, 0, 1, 1
+                };
+
+                // Build UV quad vertices
+                const float u0 = flipX ? src_rect.u1 : src_rect.u0;
+                const float u1 = flipX ? src_rect.u0 : src_rect.u1;
+                const float v0 = flipY ? src_rect.v1 : src_rect.v0;
+                const float v1 = flipY ? src_rect.v0 : src_rect.v1;
+
+                Math::PointUv quad[4]{};
+                quad[0] = {points[0].pos[0], points[0].pos[1], points[0].pos[2], u0, v0};
+                quad[1] = {points[1].pos[0], points[1].pos[1], points[1].pos[2], u1, v0};
+                quad[2] = {points[2].pos[0], points[2].pos[1], points[2].pos[2], u1, v1};
+                quad[3] = {points[3].pos[0], points[3].pos[1], points[3].pos[2], u0, v1};
+
+                // DDS-backed texture upload.
+                // 1) get raw bytes from AssetsRecord
+                // 2) dds::readImage(...)
+                // 3) CreateTexture2D + CreateShaderResourceView (whenever that happens)
+                if (sp_rec != nullptr && sp_rec->data != nullptr)
+                {
+                    dds::Image image{};
+                    const auto* raw_bytes = reinterpret_cast<const std::uint8_t*>(sp_rec->data->data);
+                    const std::size_t raw_size = sp_rec->data->size;
+
+                    if (dds::readImage(raw_bytes, raw_size, &image) == dds::ReadResult::Success)
+                    {
+                        // Fill texture state here when you wire the DDS format -> DXGI mapping.
+                        // For now we keep the safe ownership fields in the sprite object.
+                    }
+                }
+
+                _sprites.push_back(std::move(sprite_render_object));
+                continue;
             }
             default:
                 break;
