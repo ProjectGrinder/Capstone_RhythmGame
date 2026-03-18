@@ -2,11 +2,11 @@
 #include <algorithm>
 #include <d3d11.h>
 #include "device_resources.hpp"
+#include "library/dds.hpp"
 #include "renderer_types.h"
 #include "system/asset_manager.h"
 #include "utils/input_attribute_description.h"
 #include "utils/print_debug.h"
-#include "library/dds.hpp"
 
 namespace System::Render
 {
@@ -53,6 +53,84 @@ namespace System::Render
         return (desc_out);
     }
 
+    bool create_sprite_texture(ID3D11Device *device, dds::Image &image, DXGI_FORMAT texture_format, SpriteRenderObject &sprite_render_object)
+    {
+        if (image.mipmaps.empty())
+            return false;
+
+        D3D11_TEXTURE2D_DESC tex_desc{};
+        tex_desc.Width = image.width;
+        tex_desc.Height = image.height;
+        tex_desc.MipLevels = image.numMips;
+        tex_desc.ArraySize = image.arraySize;
+        tex_desc.Format = texture_format;
+        tex_desc.SampleDesc.Count = 1;
+        tex_desc.SampleDesc.Quality = 0;
+        tex_desc.Usage = D3D11_USAGE_DEFAULT;
+        tex_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        tex_desc.CPUAccessFlags = 0;
+        tex_desc.MiscFlags = 0;
+
+        std::vector<D3D11_SUBRESOURCE_DATA> subresource;
+        subresource.reserve(image.mipmaps.size());
+        for (const auto &mip: image.mipmaps)
+        {
+            D3D11_SUBRESOURCE_DATA init{};
+            init.pSysMem = mip.data();
+            init.SysMemPitch = 0;
+            init.SysMemSlicePitch = 0;
+            subresource.push_back(init);
+        }
+
+        HRESULT tex_hr = device->CreateTexture2D(&tex_desc, subresource.data(), &sprite_render_object.texture);
+        if (FAILED(tex_hr))
+        {
+            LOG_ERROR("Failed to create sprite texture, Code 0x%08lx", tex_hr);
+            return false;
+        }
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc{};
+        srv_desc.Format = texture_format;
+        srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        srv_desc.Texture2D.MostDetailedMip = 0;
+        srv_desc.Texture2D.MipLevels = image.numMips;
+
+        tex_hr = device->CreateShaderResourceView(
+                sprite_render_object.texture.Get(), &srv_desc, &sprite_render_object.texture_view);
+        if (FAILED(tex_hr))
+        {
+            LOG_ERROR("Failed to create sprite SRV, Code 0x%08lx", tex_hr);
+            sprite_render_object.texture.Reset();
+            return false;
+        }
+
+        D3D11_SAMPLER_DESC sampler_desc{};
+        sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampler_desc.MipLODBias = 0.0f;
+        sampler_desc.MaxAnisotropy = 1;
+        sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+        sampler_desc.BorderColor[0] = 0.0f;
+        sampler_desc.BorderColor[1] = 0.0f;
+        sampler_desc.BorderColor[2] = 0.0f;
+        sampler_desc.BorderColor[3] = 0.0f;
+        sampler_desc.MinLOD = 0.0f;
+        sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+        tex_hr = device->CreateSamplerState(&sampler_desc, &sprite_render_object.sampler_state);
+        if (FAILED(tex_hr))
+        {
+            LOG_ERROR("Failed to create sprite sampler, Code 0x%08lx", tex_hr);
+            sprite_render_object.texture_view.Reset();
+            sprite_render_object.texture.Reset();
+            return false;
+        }
+
+        return true;
+    };
+
     Dx11Adapter::Dx11Adapter(Windows::DeviceResources &resources)
     {
         _environment.context = resources.get_context();
@@ -83,6 +161,8 @@ namespace System::Render
 
     void Dx11Adapter::convert(Windows::DeviceResources &resources, const std::vector<CompositorItem> &items)
     {
+        _sprites.clear();
+
         _items.clear();
         _items.reserve(items.size());
         _batched.clear();
@@ -232,7 +312,7 @@ namespace System::Render
                 break;
             }
             case DrawKind::KIND_SPRITE: {
-                const AssetsRecord* sp_rec = common.sp;
+                const AssetsRecord *sp_rec = common.sp;
                 auto const &[points, flipX, flipY] = std::get<SpriteDrawDesc>(special);
 
                 SpriteRenderObject sprite_render_object{};
@@ -248,9 +328,7 @@ namespace System::Render
                 sprite_render_object.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
                 sprite_render_object.index_format = DXGI_FORMAT_R32_UINT;
 
-                constexpr Rect src_rect = {
-                    0, 0, 1, 1
-                };
+                constexpr Rect src_rect = {0, 0, 1, 1};
 
                 // Build UV quad vertices
                 const float u0 = flipX ? src_rect.u1 : src_rect.u0;
@@ -271,17 +349,43 @@ namespace System::Render
                 if (sp_rec != nullptr && sp_rec->data != nullptr)
                 {
                     dds::Image image{};
-                    const auto* raw_bytes = reinterpret_cast<const std::uint8_t*>(sp_rec->data->data);
+                    const auto *raw_bytes = reinterpret_cast<const std::uint8_t *>(sp_rec->data->data);
                     const std::size_t raw_size = sp_rec->data->size;
+
+                    bool success = false;
 
                     if (dds::readImage(raw_bytes, raw_size, &image) == dds::ReadResult::Success)
                     {
-                        // Fill texture state here when you wire the DDS format -> DXGI mapping.
-                        // For now we keep the safe ownership fields in the sprite object.
+                        switch (image.format)
+                        {
+                        case DXGI_FORMAT_R8G8B8A8_UNORM: {
+                            success = create_sprite_texture(device, image, DXGI_FORMAT_R8G8B8A8_UNORM, sprite_render_object);
+                            break;
+                        }
+                        case DXGI_FORMAT_BC1_UNORM: {
+                            success = create_sprite_texture(device, image, DXGI_FORMAT_BC1_UNORM, sprite_render_object);
+                            break;
+                        }
+                        case DXGI_FORMAT_BC3_UNORM: {
+                            success = create_sprite_texture(device, image, DXGI_FORMAT_BC3_UNORM, sprite_render_object);
+                            break;
+                        }
+                        default: {
+                            LOG_ERROR("Unsupported SPRITE format %d", image.format);
+                            break;
+                        }
+                        }
+                    }
+
+                    if (!success)
+                    {
+                        LOG_ERROR("Failed to create sprite texture");
+                        continue;
                     }
                 }
 
                 _sprites.push_back(std::move(sprite_render_object));
+                // go back to prevent duplicating render_object and messing with pipeline
                 continue;
             }
             default:

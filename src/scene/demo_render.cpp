@@ -22,8 +22,11 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 
     auto ps = load_pixel_shader("shaders/ps/rainbow.cso", "rainbow_ps", rainbow_ps_input_attributes, 2);
 
+    auto sp = load_sprite("img/test.dds", "test_sprite", 500, 500);
+
     auto tm = std::make_shared<TaskManager>();
-    tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 16, .scaleY = 9, .rotation = 0});
+    tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1280, .scaleY = 720, .rotation = 0});
+    /*
     for (float i = 0; i < 10000; ++i)
     {
         tm->create_entity(
@@ -32,6 +35,12 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
                 Game::Render::Material(vs, ps),
                 Game::Render::Transform{Math::Point{{i * 0.1f, i * 0.1f, 0}, {0, 0, 0, 0}}, 0, 0, 0});
     }
+    */
+
+    tm->create_entity(
+            Game::Render::Sprite{.sp = sp, .pos = {{0, 0, 0}, {500, 0, 0}, {500, 500, 0}, {0, 500, 0}}},
+            Game::Render::Material(vs, ps),
+            Game::Render::Transform{Math::Point{{0, 0, 0}, {0, 0, 0, 0}}, 0, 0, 0});
     tm->run_all();
     return (tm);
 }

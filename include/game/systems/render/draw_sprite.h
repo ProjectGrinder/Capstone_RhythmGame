@@ -6,8 +6,9 @@
 namespace Game::Render
 {
     template<typename T>
-    void sprite_intent([[maybe_unused]] T &syscall, System::ECS::Query<Sprite, Material, Transform> &query)
+    void draw_sprite([[maybe_unused]] T &syscall, System::ECS::Query<Sprite, Material, Transform> &query)
     {
+        LOG_INFO("Put into INTENT");
         for (auto &[id, comp]: query)
         {
             const auto &material = comp.get<Material>();

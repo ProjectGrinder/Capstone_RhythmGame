@@ -26,7 +26,8 @@ namespace Scene
                 Game::Render::spin_camera<Syscall>,
                 Game::Render::spin_triangle<Syscall>,
                 Game::Render::set_camera<Syscall>,
-                Game::Render::draw_triangle<Syscall>>;
+                Game::Render::draw_triangle<Syscall>,
+                Game::Render::draw_sprite<Syscall>>;
 
         // declare functions
         static std::shared_ptr<TaskManager> init();
