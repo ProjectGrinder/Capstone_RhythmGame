@@ -191,21 +191,21 @@ namespace Game::Battle
         {
             LOG_INFO("BulletHell X");
         }
-        // if (rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed)
-        // {
-        //     LOG_INFO("Rhythm KEY1");
-        // }
-        // if (rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed)
-        // {
-        //     LOG_INFO("Rhythm KEY2");
-        // }
-        // if (rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed)
-        // {
-        //     LOG_INFO("Rhythm KEY3");
-        // }
-        // if (rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed)
-        // {
-        //     LOG_INFO("Rhythm KEY4");
-        // }
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed)
+        {
+            LOG_INFO("Rhythm KEY1");
+        }
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed)
+        {
+            LOG_INFO("Rhythm KEY2");
+        }
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed)
+        {
+            LOG_INFO("Rhythm KEY3");
+        }
+        if (rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed)
+        {
+            LOG_INFO("Rhythm KEY4");
+        }
     }
 } // namespace Game::Battle
