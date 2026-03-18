@@ -53,6 +53,48 @@ namespace System::Render
         return (desc_out);
     }
 
+    inline constexpr bool is_block_compressed(DXGI_FORMAT format)
+    {
+        switch (format)
+        {
+        case DXGI_FORMAT_BC1_UNORM:
+        case DXGI_FORMAT_BC1_UNORM_SRGB:
+        case DXGI_FORMAT_BC2_UNORM:
+        case DXGI_FORMAT_BC2_UNORM_SRGB:
+        case DXGI_FORMAT_BC3_UNORM:
+        case DXGI_FORMAT_BC3_UNORM_SRGB:
+        case DXGI_FORMAT_BC4_UNORM:
+        case DXGI_FORMAT_BC4_SNORM:
+        case DXGI_FORMAT_BC5_UNORM:
+        case DXGI_FORMAT_BC5_SNORM:
+        case DXGI_FORMAT_BC6H_UF16:
+        case DXGI_FORMAT_BC6H_SF16:
+        case DXGI_FORMAT_BC7_UNORM:
+        case DXGI_FORMAT_BC7_UNORM_SRGB:
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    static inline UINT get_mip_pitch(const UINT &width, const DXGI_FORMAT &texture_format)
+    {
+        if (is_block_compressed(texture_format))
+        {
+            const UINT blockSize =
+                    (texture_format == DXGI_FORMAT_BC1_UNORM ||
+                     texture_format == DXGI_FORMAT_BC1_UNORM_SRGB ||
+                     texture_format == DXGI_FORMAT_BC4_UNORM ||
+                     texture_format == DXGI_FORMAT_BC4_SNORM)
+                            ? 8u
+                            : 16u;
+            return max(1u, (width + 3u) / 4u) * blockSize;
+        }
+
+        const UINT bitsPerPixel = dds::getBitsPerPixel(texture_format);
+        return max(1u, (width * bitsPerPixel + 7u) / 8u);
+    }
+
     bool create_sprite_texture(ID3D11Device *device, dds::Image &image, DXGI_FORMAT texture_format, SpriteRenderObject &sprite_render_object)
     {
         if (image.mipmaps.empty())
@@ -73,13 +115,17 @@ namespace System::Render
 
         std::vector<D3D11_SUBRESOURCE_DATA> subresource;
         subresource.reserve(image.mipmaps.size());
-        for (const auto &mip: image.mipmaps)
+
+        UINT mipWidth = image.width;
+        for (const auto &mip : image.mipmaps)
         {
             D3D11_SUBRESOURCE_DATA init{};
             init.pSysMem = mip.data();
-            init.SysMemPitch = 0;
+            init.SysMemPitch = get_mip_pitch(mipWidth, texture_format);
             init.SysMemSlicePitch = 0;
             subresource.push_back(init);
+
+            mipWidth = max(1u, mipWidth >> 1);
         }
 
         HRESULT tex_hr = device->CreateTexture2D(&tex_desc, subresource.data(), &sprite_render_object.texture);
