@@ -25,7 +25,7 @@ namespace Game::BulletHell
 
             // Growing
             scale.scaleX = scale.scaleY = Physics::clamp(static_cast<float>(scale.scaleX + bullet_clearer.speed * get_delta_time()),0.f,bullet_clearer.max_size);
-            material.color.a = comps.get<Particle>().lifetime/bullet_clearer.lifetime;
+            material.color.a = static_cast<float>(comps.get<Particle>().lifetime/bullet_clearer.lifetime);
 
             //Check Bullet in Range
             for (auto &[id2, comps2] : bullet_query)

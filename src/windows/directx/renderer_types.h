@@ -33,7 +33,7 @@ struct RenderObject
 
     union RenderID
     {
-        struct RenderID
+        struct
         {
             USHORT sp_id;
             USHORT ps_id;
