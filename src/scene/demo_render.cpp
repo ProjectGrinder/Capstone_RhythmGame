@@ -23,14 +23,12 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
     // auto rainbow_ps = load_pixel_shader("shaders/ps/rainbow.cso", "rainbow_ps", rainbow_ps_input_attributes, 2);
 
     InputAttributeDescription sprite_vs_input_attributes[] = {
-        InputAttributeDescription{"POSITION", InputType::R32G32B32_FLOAT, 0},
-        InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12}
-    };
+            InputAttributeDescription{"POSITION", InputType::R32G32B32_FLOAT, 0},
+            InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12}};
 
     InputAttributeDescription sprite_ps_input_attributes[] = {
-        InputAttributeDescription{"SV_POSITION", InputType::R32G32B32A32_FLOAT, 0},
-        InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 16}
-    };
+            InputAttributeDescription{"SV_POSITION", InputType::R32G32B32A32_FLOAT, 0},
+            InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 16}};
 
     auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite_vs_input_attributes, 2);
 

@@ -43,9 +43,13 @@ namespace System::Render
                 continue;
 
             CompositorItem item = {
-                .kind = intent.kind,
-                .common = {
-                    intent.common.vs, intent.common.ps, intent.common.sp, intent.common.color, intent.common.key},
+                    .kind = intent.kind,
+                    .common =
+                            {intent.common.vs,
+                             intent.common.ps,
+                             intent.common.sp,
+                             intent.common.color,
+                             intent.common.key},
             };
 
             const auto pivot = intent.common.pivot;
@@ -81,15 +85,51 @@ namespace System::Render
                 const auto &spr = std::get<SpriteDrawDesc>(intent.special);
 
                 item.special = SpriteDrawDesc{
-                    .points = {
-                        Math::transform_pipe_fast(spr.points[0], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
-                        Math::transform_pipe_fast(spr.points[1], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
-                        Math::transform_pipe_fast(spr.points[2], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
-                        Math::transform_pipe_fast(spr.points[3], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
-                        },
-                    .flipX = spr.flipX,
-                    .flipY = spr.flipY
-                };
+                        .points =
+                                {
+                                        Math::transform_pipe_fast(
+                                                spr.points[0],
+                                                obj_cos,
+                                                obj_sin,
+                                                pivot,
+                                                camera,
+                                                cam_cos,
+                                                cam_sin,
+                                                invHalfW,
+                                                invHalfH),
+                                        Math::transform_pipe_fast(
+                                                spr.points[1],
+                                                obj_cos,
+                                                obj_sin,
+                                                pivot,
+                                                camera,
+                                                cam_cos,
+                                                cam_sin,
+                                                invHalfW,
+                                                invHalfH),
+                                        Math::transform_pipe_fast(
+                                                spr.points[2],
+                                                obj_cos,
+                                                obj_sin,
+                                                pivot,
+                                                camera,
+                                                cam_cos,
+                                                cam_sin,
+                                                invHalfW,
+                                                invHalfH),
+                                        Math::transform_pipe_fast(
+                                                spr.points[3],
+                                                obj_cos,
+                                                obj_sin,
+                                                pivot,
+                                                camera,
+                                                cam_cos,
+                                                cam_sin,
+                                                invHalfW,
+                                                invHalfH),
+                                },
+                        .flipX = spr.flipX,
+                        .flipY = spr.flipY};
                 break;
             }
 

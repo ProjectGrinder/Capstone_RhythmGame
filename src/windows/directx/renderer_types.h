@@ -3,8 +3,6 @@
 #include <maths.h>
 #include <wrl/client.h>
 
-#include "system/intent_storage.h"
-
 using Microsoft::WRL::ComPtr;
 
 struct VertexShaderCache

@@ -73,9 +73,9 @@ namespace System::Render
         case DXGI_FORMAT_BC6H_SF16:
         case DXGI_FORMAT_BC7_UNORM:
         case DXGI_FORMAT_BC7_UNORM_SRGB:
-            return true;
+            return (true);
         default:
-            return false;
+            return (false);
         }
     }
 
@@ -88,11 +88,11 @@ namespace System::Render
                      texture_format == DXGI_FORMAT_BC4_UNORM || texture_format == DXGI_FORMAT_BC4_SNORM)
                             ? 8u
                             : 16u;
-            return max(1u, (width + 3u) / 4u) * blockSize;
+            return (max(1u, (width + 3u) / 4u) * blockSize);
         }
 
         const UINT bitsPerPixel = dds::getBitsPerPixel(texture_format);
-        return max(1u, (width * bitsPerPixel + 7u) / 8u);
+        return (max(1u, (width * bitsPerPixel + 7u) / 8u));
     }
 
     bool create_sprite_texture(
@@ -102,7 +102,7 @@ namespace System::Render
             SpriteRenderObject &sprite_render_object)
     {
         if (image.mipmaps.empty())
-            return false;
+            return (false);
 
         D3D11_TEXTURE2D_DESC tex_desc{};
         tex_desc.Width = image.width;
@@ -136,7 +136,7 @@ namespace System::Render
         if (FAILED(tex_hr))
         {
             LOG_ERROR("Failed to create sprite texture, Code 0x%08lx", tex_hr);
-            return false;
+            return (false);
         }
 
         D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc{};
@@ -151,7 +151,7 @@ namespace System::Render
         {
             LOG_ERROR("Failed to create sprite SRV, Code 0x%08lx", tex_hr);
             sprite_render_object.texture.Reset();
-            return false;
+            return (false);
         }
 
         D3D11_SAMPLER_DESC sampler_desc{};
@@ -175,10 +175,10 @@ namespace System::Render
             LOG_ERROR("Failed to create sprite sampler, Code 0x%08lx", tex_hr);
             sprite_render_object.texture_view.Reset();
             sprite_render_object.texture.Reset();
-            return false;
+            return (false);
         }
 
-        return true;
+        return (true);
     };
 
     Dx11Adapter::Dx11Adapter(Windows::DeviceResources &resources)
