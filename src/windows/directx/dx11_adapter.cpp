@@ -285,7 +285,7 @@ namespace System::Render
                         _input_layout_desc_scratch.push_back(
                                 create_input_element_desc(vs_rec->info.info.as_shader.data[i]));
 
-                    device->CreateInputLayout(
+                    hr = device->CreateInputLayout(
                             _input_layout_desc_scratch.data(),
                             (UINT) _input_layout_desc_scratch.size(),
                             vs_rec->data->data,
