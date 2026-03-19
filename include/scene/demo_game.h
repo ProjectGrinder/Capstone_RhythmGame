@@ -58,8 +58,10 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
-            Game::BulletHell::load_bullets<Syscall>,
             Game::Battle::input_system<Syscall>,
+            Game::Battle::phase_change<Syscall>,
+            Game::Battle::update_global_clock<Syscall>,
+            Game::BulletHell::load_bullets<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::particle_system<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
@@ -76,11 +78,9 @@ namespace Scene
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
             Game::BulletHell::logging_system<Syscall>,
-            Game::Battle::update_global_clock<Syscall>,
-            Game::Render::spin_camera<Syscall>,
-            Game::Render::spin_triangle<Syscall>,
-            Game::Render::set_camera<Syscall>,
-            Game::Render::draw_triangle<Syscall>
+            Game::Rhythm::load_notes<Syscall>,
+            Game::Rhythm::handle_rhythm<Syscall>,
+            Game::Rhythm::handle_miss_note<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init()
@@ -121,12 +121,15 @@ namespace Scene
             Velocity,
             Acceleration,
             AngularVelocity, Game::Physics::CircularCollider>(
-                {}, {}, {}, {}, {}, {}, {}, {}
+                {}, Position(50,50), {}, {}, {}, {}, {}, {}
             );
+
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
+
+            tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(35000,5000,Game::Battle::BULLET_HELL));
             tm->run_all();
             return (tm);
         }

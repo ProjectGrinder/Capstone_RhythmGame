@@ -41,6 +41,7 @@ namespace Game::Battle
                 else if (transition_data.phase == RHYTHM)
                     LOG_INFO("Scene has changed to RESPONSE")
                 battle_state.current_phase = transition_data.phase;
+                syscall.remove_entity(id);
             }
         }
 
