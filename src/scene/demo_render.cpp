@@ -9,6 +9,7 @@ Scene::DemoRender Scene::DemoRender::instance()
 
 std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 {
+    /*
     InputAttributeDescription rainbow_vs_input_attributes[] = {
             InputAttributeDescription{"Pos", InputType::R32G32B32_FLOAT, 0},
             InputAttributeDescription{"Color", InputType::R32G32B32A32_FLOAT, 12},
@@ -18,10 +19,10 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
             InputAttributeDescription{"SV_POSITION", InputType::R32G32B32A32_FLOAT, 0},
             InputAttributeDescription{"Color", InputType::R32G32B32A32_FLOAT, 16}};
 
-    // auto rainbow_vs = load_vertex_shader("shaders/vs/rainbow.cso", "rainbow_vs", rainbow_vs_input_attributes, 2);
+    auto rainbow_vs = load_vertex_shader("shaders/vs/rainbow.cso", "rainbow_vs", rainbow_vs_input_attributes, 2);
 
-    // auto rainbow_ps = load_pixel_shader("shaders/ps/rainbow.cso", "rainbow_ps", rainbow_ps_input_attributes, 2);
-
+    auto rainbow_ps = load_pixel_shader("shaders/ps/rainbow.cso", "rainbow_ps", rainbow_ps_input_attributes, 2);
+    */
     InputAttributeDescription sprite_vs_input_attributes[] = {
             InputAttributeDescription{"POSITION", InputType::R32G32B32_FLOAT, 0},
             InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12}};
@@ -34,7 +35,7 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 
     auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 2);
 
-    auto sp = load_sprite("img/test.dds", "test_sprite", 500, 500);
+    auto sp = load_sprite("img/somebodyIusedToKnow.dds", "somebody", 512, 512);
 
     auto tm = std::make_shared<TaskManager>();
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1280, .scaleY = 720, .rotation = 0});
@@ -50,9 +51,17 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
     */
 
     tm->create_entity(
-            Game::Render::Sprite{.sp = sp, .pos = {{-250, 250, 0}, {250, 250, 0}, {250, -250, 0}, {-250, -250, 0}}},
+            Game::Render::Sprite{.sp = sp, .pos = {{-256, 256, 0}, {256, 256, 0}, {256, -256, 0}, {-256, -256, 0}}},
             Game::Render::Material(sprite_vs, sprite_ps),
-            Game::Render::Transform{Math::Point{{0, 0, 0}, {0, 0, 0, 0}}, 0, 0, 0});
+            Game::Render::Transform{Math::Point{{-300, 0, 0}, {0, 0, 0, 0}}, 0, 0, 0});
+
+    auto sp2 = load_sprite("img/test.dds", "test", 500, 500);
+
+    tm->create_entity(
+            Game::Render::Sprite{.sp = sp2, .pos = {{-256, 256, 0}, {256, 256, 0}, {256, -256, 0}, {-256, -256, 0}}},
+            Game::Render::Material(sprite_vs, sprite_ps),
+            Game::Render::Transform{Math::Point{{300, 0, 0}, {0, 0, 0, 0}}, 0, 0, 0});
+
     tm->run_all();
     return (tm);
 }
