@@ -38,5 +38,5 @@
 #include "systems/render/text_intent.h"
 // Test
 #include "systems/test/spin_camera.h"
-#include "systems/test/spin_triangle.h"
+#include "systems/test/spin_sprite.h"
 

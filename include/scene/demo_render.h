@@ -12,6 +12,7 @@ namespace Scene
         // declare scene parameters
         constexpr static size_t MaxResource = 12000;
         using ComponentTuple = std::tuple<
+                Game::Physics::Rotation,
                 Game::Render::Camera2D,
                 Game::Render::Sprite,
                 Game::Render::Material,
@@ -23,7 +24,7 @@ namespace Scene
         using TaskManager = System::ECS::TaskManager<
                 ResourceManager,
                 Syscall,
-                Game::Render::spin_triangle<Syscall>,
+                Game::Render::spin_sprite<Syscall>,
                 Game::Render::set_camera<Syscall>,
                 Game::Render::draw_triangle<Syscall>,
                 Game::Render::draw_sprite<Syscall>>;
