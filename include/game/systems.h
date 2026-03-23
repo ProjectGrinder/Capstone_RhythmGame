@@ -36,6 +36,13 @@
 #include "systems/render/set_camera.h"
 #include "systems/render/sprite_intent.h"
 #include "systems/render/text_intent.h"
+
+// Overview Part
+#include "systems/overview/detect_overlap.h"
+#include "systems/overview/interaction_system.h"
+#include "systems/overview/player_move.h"
+#include "systems/overview/dialogue_system.h"
+
 // Test
 #include "systems/test/spin_camera.h"
 #include "systems/test/spin_triangle.h"

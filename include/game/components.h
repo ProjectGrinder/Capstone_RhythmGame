@@ -42,5 +42,12 @@
 #include "components/rhythm/timing.h"
 #include "components/rhythm/timingend.h"
 #include "components/rhythm/notetype.h"
+#include "components/overview/player.h"
+#include "components/overview/player_stat.h"
+#include "components/overview/block.h"
+#include "components/overview/interactable.h"
+#include "components/overview/dialog_box.h"
+#include "components/overview/dialogue_register.h"
+#include "components/overview/input.h"
 
 #include "system/ecs.h"

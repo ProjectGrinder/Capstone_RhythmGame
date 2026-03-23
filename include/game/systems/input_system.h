@@ -33,6 +33,8 @@ namespace Game::Battle
         constexpr auto J = 0x4A;
         constexpr auto K = 0x4B;
 
+        constexpr auto TAB = 0x09;
+
         switch (query1.front().get<BattleState>().current_phase)
         {
         case BULLET_HELL:
