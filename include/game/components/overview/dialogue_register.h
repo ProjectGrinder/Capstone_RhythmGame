@@ -4,9 +4,10 @@ namespace Game::Overview
 {
     struct DialogueRegister
     {
-        std::vector<std::string> text_register;
+        // Could leads to error
+        std::vector<std::vector<std::string>> text_register;
         DialogueRegister()
         {}
-        explicit DialogueRegister(const std::vector<std::string> &text_register) : text_register(text_register) {}
+        explicit DialogueRegister(std::vector<std::vector<std::string>> &text_register) : text_register(text_register) {}
     };
 } // namespace Game::BulletHell
