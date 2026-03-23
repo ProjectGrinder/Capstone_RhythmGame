@@ -9,34 +9,38 @@ namespace Game::Rhythm
     void handle_normal_note(
         [[maybe_unused]] T &syscall,
         const int &time_diff,
-        System::ECS::pid &id,
-        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType>::StoredTuple *comp,
-        System::ECS::Query<Battle::BattleState> &battle_query)
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>::StoredTuple *comp,
+        System::ECS::Query<Battle::BattleState> &battle_query,
+        System::ECS::Query<Battle::RhythmState> &rhythm_query)
     {
         constexpr auto perfect_judge = 50;
         constexpr auto great_judge = 75;
         constexpr auto fine_judge = 100;
+        auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
         // const auto timing = battle_query.front().get<Battle::BattleState>().clock_time;
         if (time_diff > -1 * perfect_judge && time_diff < perfect_judge)
         {
             LOG_INFO("Perfect");
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+            battle_query.front().get<Battle::BattleState>().score += base_score;
         }
         else if (time_diff > -1 * great_judge && time_diff < great_judge)
         {
             LOG_INFO("Great");
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
+            battle_query.front().get<Battle::BattleState>().score += base_score / 2;
         }
         else if (time_diff > -1 * fine_judge && time_diff < fine_judge)
         {
             LOG_INFO("Fine");
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
+            battle_query.front().get<Battle::BattleState>().score += base_score / 4;
         }
         else return;
 
         if (comp->get<TimingEnd>().timing_end == 0)
         {
-            syscall.remove_entity(id); // remove tap notes
+            comp->get<NoteStatus>().state = 0; // remove tap notes
         }
         else
         {
@@ -49,20 +53,23 @@ namespace Game::Rhythm
     void handle_accent_note(
         [[maybe_unused]] T &syscall,
         const int &time_diff,
-        System::ECS::pid &id,
-        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType>::StoredTuple *comp,
-        System::ECS::Query<Battle::BattleState> &battle_query)
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>::StoredTuple *comp,
+        System::ECS::Query<Battle::BattleState> &battle_query,
+        System::ECS::Query<Battle::RhythmState> &rhythm_query)
     {
+        auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
+
         if (time_diff > -100 && time_diff < 100)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+            battle_query.front().get<Battle::BattleState>().score += base_score;
             LOG_INFO("Perfect");
         }
         else return;
 
         if (comp->get<TimingEnd>().timing_end == 0)
         {
-            syscall.remove_entity(id); // remove tap notes
+            comp->get<NoteStatus>().state = 0; // remove tap notes
         }
         else
         {
@@ -75,56 +82,66 @@ namespace Game::Rhythm
     void handle_rain_note(
         [[maybe_unused]] T &syscall,
         const int &time_diff,
-        System::ECS::pid &id,
-        System::ECS::Query<Battle::BattleState> &battle_query)
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>::StoredTuple *comp,
+        System::ECS::Query<Battle::BattleState> &battle_query,
+        System::ECS::Query<Battle::RhythmState> &rhythm_query)
     {
+        auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
+
         if (time_diff > -100 && time_diff < 50)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+            battle_query.front().get<Battle::BattleState>().score += base_score / 2;
             LOG_INFO("Perfect");
-            syscall.remove_entity(id);
+            comp->get<NoteStatus>().state = 0;
         }
     }
 
     template<typename T>
     void handle_hold_note_release(
-        T &syscall,
+        [[maybe_unused]] T &syscall,
         const int &time_diff_end,
-        System::ECS::pid &id,
-        System::ECS::Query<Battle::BattleState> &battle_query)
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>::StoredTuple *comp,
+        System::ECS::Query<Battle::BattleState> &battle_query,
+        System::ECS::Query<Battle::RhythmState> &rhythm_query)
     {
+        auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
         // const auto timing = battle_query.front().get<Battle::BattleState>().clock_time;
         if (time_diff_end > -50)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
+            battle_query.front().get<Battle::BattleState>().score += base_score / 2;
             LOG_INFO("Perfect");
         }
         else if (time_diff_end > -75)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
+            battle_query.front().get<Battle::BattleState>().score += base_score / 4;
             LOG_INFO("Great");
         }
         else if (time_diff_end > -100)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
+            battle_query.front().get<Battle::BattleState>().score += base_score / 4;
             LOG_INFO("Fine");
         }
         else
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
+            battle_query.front().get<Battle::BattleState>().current_accept -= rhythm_query.front().get<Battle::RhythmState>().accept_loss.hold_end;
             LOG_INFO("Miss Count = %d", battle_query.front().get<Battle::BattleState>().judgement_count.miss_count);
         }
-        syscall.remove_entity(id);
+        comp->get<NoteStatus>().state = 0;
     }
 
     template<typename T>
     void handle_note_from_lane(
         const int lane_num, // assume that first lane is 0
         [[maybe_unused]] T &syscall,
-        System::ECS::pid &id,
-        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType>::StoredTuple *comp,
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>::StoredTuple *comp,
         [[maybe_unused]] System::ECS::Query<Battle::BattleState> &battle_query,
-        [[maybe_unused]] System::ECS::Query<KeyInput> &input_query)
+        [[maybe_unused]] System::ECS::Query<KeyInput> &input_query,
+        [[maybe_unused]] System::ECS::Query<Battle::RhythmState> &rhythm_query)
     {
         if (comp == nullptr) return;
 
@@ -152,16 +169,16 @@ namespace Game::Rhythm
                 {
                     if (note_type == 1)
                     {
-                        handle_accent_note(syscall, time_diff, id, comp, battle_query);
+                        handle_accent_note(syscall, time_diff, comp, battle_query, rhythm_query);
                     }
                     else if (note_type == 0)
                     {
-                        handle_normal_note(syscall, time_diff, id, comp, battle_query);
+                        handle_normal_note(syscall, time_diff, comp, battle_query, rhythm_query);
                     }
                 }
                 if (note_type == 2)
                 {
-                    handle_rain_note(syscall, time_diff, id, battle_query);
+                    handle_rain_note(syscall, time_diff, comp, battle_query, rhythm_query);
                 }
             }
         }
@@ -174,7 +191,7 @@ namespace Game::Rhythm
             {
                 battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
 
-                syscall.remove_entity(id);
+                comp->get<NoteStatus>().state = 0;
                 LOG_INFO("Perfect");
             }
         }
@@ -184,8 +201,9 @@ namespace Game::Rhythm
     void handle_rhythm(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BattleState> &battle_query,
+            System::ECS::Query<Battle::RhythmState> &rhythm_query,
             System::ECS::Query<KeyInput> &input_query,
-            [[maybe_unused]] System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType> &note_query)
+            [[maybe_unused]] System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus> &note_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -209,14 +227,14 @@ namespace Game::Rhythm
         int first_timing2 = 999999;
         int first_timing3 = 999999;
         int first_timing4 = 999999;
-        System::ECS::pid note_id1 = 0;
-        System::ECS::pid note_id2 = 0;
-        System::ECS::pid note_id3 = 0;
-        System::ECS::pid note_id4 = 0;
-        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType>::StoredTuple *note_comp1 = nullptr;
-        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType>::StoredTuple *note_comp2 = nullptr;
-        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType>::StoredTuple *note_comp3 = nullptr;
-        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType>::StoredTuple *note_comp4 = nullptr;
+        // System::ECS::pid note_id1 = 0;
+        // System::ECS::pid note_id2 = 0;
+        // System::ECS::pid note_id3 = 0;
+        // System::ECS::pid note_id4 = 0;
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>::StoredTuple *note_comp1 = nullptr;
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>::StoredTuple *note_comp2 = nullptr;
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>::StoredTuple *note_comp3 = nullptr;
+        System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>::StoredTuple *note_comp4 = nullptr;
 
 
 
@@ -230,7 +248,6 @@ namespace Game::Rhythm
                 if (comp.get<HoldActive>().hold_active == true || key_input.key1_hold == true)
                 {
                     first_timing1 = first_timing;
-                    note_id1 = id;
                     note_comp1 = &comp;
                 }
             }
@@ -239,7 +256,6 @@ namespace Game::Rhythm
                 if (comp.get<HoldActive>().hold_active == true || key_input.key2_hold == true)
                 {
                     first_timing2 = first_timing;
-                    note_id2 = id;
                     note_comp2 = &comp;
                 }
             }
@@ -248,7 +264,6 @@ namespace Game::Rhythm
                 if (comp.get<HoldActive>().hold_active == true || key_input.key3_hold == true)
                 {
                     first_timing3 = first_timing;
-                    note_id3 = id;
                     note_comp3 = &comp;
                 }
             }
@@ -257,7 +272,6 @@ namespace Game::Rhythm
                 if (comp.get<HoldActive>().hold_active == true || key_input.key4_hold == true)
                 {
                     first_timing4 = first_timing;
-                    note_id4 = id;
                     note_comp4 = &comp;
                 }
             }
@@ -266,19 +280,19 @@ namespace Game::Rhythm
         // Check if note is in hit range
         if (key_input.key1_hold == true && first_timing1 < 999999)
         {
-            handle_note_from_lane(0, syscall, note_id1, note_comp1, battle_query, input_query);
+            handle_note_from_lane(0, syscall, note_comp1, battle_query, input_query, rhythm_query);
         }
         if (key_input.key2_hold == true && first_timing2 < 999999)
         {
-            handle_note_from_lane(1, syscall, note_id2, note_comp2, battle_query, input_query);
+            handle_note_from_lane(1, syscall, note_comp2, battle_query, input_query, rhythm_query);
         }
         if (key_input.key3_hold == true && first_timing3 < 999999)
         {
-            handle_note_from_lane(2, syscall, note_id3, note_comp3, battle_query, input_query);
+            handle_note_from_lane(2, syscall, note_comp3, battle_query, input_query, rhythm_query);
         }
         if (key_input.key4_hold == true && first_timing4 < 999999)
         {
-            handle_note_from_lane(3, syscall, note_id4, note_comp4, battle_query, input_query);
+            handle_note_from_lane(3, syscall, note_comp4, battle_query, input_query, rhythm_query);
         }
         // handle hold note release
         const auto &current_time = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
@@ -288,7 +302,7 @@ namespace Game::Rhythm
             if (note_comp1->get<HoldActive>().hold_active == true)
             {
                 auto time_diff_end = current_time - note_comp1->get<TimingEnd>().timing_end;
-                handle_hold_note_release(syscall, time_diff_end, note_id1, battle_query);
+                handle_hold_note_release(syscall, time_diff_end, note_comp1, battle_query, rhythm_query);
             }
         }
         if (key_input.key2_hold == false && note_comp2 != nullptr)
@@ -296,7 +310,7 @@ namespace Game::Rhythm
             if (note_comp2->get<HoldActive>().hold_active == true)
             {
                 auto time_diff_end = current_time - note_comp2->get<TimingEnd>().timing_end;
-                handle_hold_note_release(syscall, time_diff_end, note_id2, battle_query);
+                handle_hold_note_release(syscall, time_diff_end, note_comp2, battle_query, rhythm_query);
             }
         }
         if (key_input.key3_hold == false && note_comp3 != nullptr)
@@ -304,7 +318,7 @@ namespace Game::Rhythm
             if (note_comp3->get<HoldActive>().hold_active == true)
             {
                 auto time_diff_end = current_time - note_comp3->get<TimingEnd>().timing_end;
-                handle_hold_note_release(syscall, time_diff_end, note_id3, battle_query);
+                handle_hold_note_release(syscall, time_diff_end, note_comp3, battle_query, rhythm_query);
             }
         }
         if (key_input.key4_hold == false && note_comp4 != nullptr)
@@ -312,7 +326,7 @@ namespace Game::Rhythm
             if (note_comp4->get<HoldActive>().hold_active == true)
             {
                 auto time_diff_end = current_time - note_comp4->get<TimingEnd>().timing_end;
-                handle_hold_note_release(syscall, time_diff_end, note_id4, battle_query);
+                handle_hold_note_release(syscall, time_diff_end, note_comp4, battle_query, rhythm_query);
             }
         }
     }

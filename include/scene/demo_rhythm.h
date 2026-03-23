@@ -103,14 +103,14 @@ namespace Scene
             Game::Rhythm::Timing,
             Game::Rhythm::TimingEnd,
             Game::Rhythm::HoldActive,
-            Game::Rhythm::NoteType
+            Game::Rhythm::NoteType,
+            Game::Rhythm::NoteStatus
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             Game::Battle::input_system<Syscall>,
             // Game::Rhythm::handle_bpm<Syscall>,
-            Game::Rhythm::load_notes<Syscall>,
             Game::Rhythm::handle_rhythm<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Battle::update_global_clock<Syscall>
@@ -126,6 +126,15 @@ namespace Scene
                 state.current_phase = Game::Battle::RHYTHM;
                 return (state);
             };
+            auto config_rhythm_state = []
+            {
+                Game::Battle::RhythmState state(1, 1, 60, 1.0f);
+                state.accept_loss.normal = 5;
+                state.accept_loss.accent = 5;
+                state.accept_loss.rain = 2;
+                state.accept_loss.hold_end = 3;
+                return (state);
+            };
             tm->create_entity<Game::Battle::BattleState,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
@@ -133,7 +142,7 @@ namespace Scene
             Game::BulletHell::Input>
             (
                 config_battle_state(),
-                Game::Battle::RhythmState(1, 1, 60, 1.0f),
+                config_rhythm_state(),
                 create_demo_chart(),
                 Game::Rhythm::KeyInput(),
                 Game::BulletHell::Input());

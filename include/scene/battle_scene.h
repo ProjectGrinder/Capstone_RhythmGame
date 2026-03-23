@@ -45,6 +45,7 @@ namespace Scene
             Game::Rhythm::Timing,
             Game::Rhythm::TimingEnd,
             Game::Rhythm::NoteType,
+            Game::Rhythm::NoteStatus,
             Game::Render::Animator,
             Game::Render::Transform,
             Game::Render::Sprite,
@@ -67,8 +68,7 @@ namespace Scene
             Game::BulletHell::homing_pattern_system<Syscall>,
             Game::Rhythm::handle_rhythm<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
-            Game::Rhythm::handle_bpm<Syscall>,
-            Game::Rhythm::load_notes<Syscall>
+            Game::Rhythm::handle_bpm<Syscall>
             //Game::Render::AnimationSystem<Syscall>
             >;
 

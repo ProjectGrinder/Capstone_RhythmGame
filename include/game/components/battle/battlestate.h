@@ -102,6 +102,19 @@ namespace Game::Battle
         {}
     };
 
+    struct AcceptLoss
+    {
+        int normal;
+        int accent;
+        int rain;
+        int hold_end;
+        AcceptLoss() : normal(0), accent(0), rain(0), hold_end(0)
+        {}
+        explicit AcceptLoss(const int normal, const int accent, const int rain, const int hold_end) :
+            normal(normal), accent(accent), rain(rain), hold_end(hold_end)
+        {}
+    };
+
     // use these structures
 
     struct BattleState
@@ -139,6 +152,7 @@ namespace Game::Battle
         int base_score;
         int total_notes;
         float note_speed;
+        AcceptLoss accept_loss;
         RhythmState() : heal_hp(0), base_score(0), total_notes(0), note_speed(0)
         {}
         RhythmState(const int heal_hp, const int base_score, const int total_notes, const float note_speed) :

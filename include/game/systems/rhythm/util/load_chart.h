@@ -6,34 +6,33 @@ namespace Game::Rhythm
     template<typename T>
     void create_note_entity(
             T &syscall,
-            Battle::RhythmState &rhythm_state,
             Battle::LaneInfo &lane,
             Battle::NoteData &note)
     {
         if (note.is_hold)
         {
-            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive, NoteType>(
+            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>(
                     Lane{lane.lane_number},
-                    NoteSpeed{rhythm_state.note_speed},
                     Timing{note.timing},
                     TimingEnd{note.timing_end},
                     HoldActive{false},
-                    NoteType{note.note_type});
+                    NoteType{note.note_type},
+                    NoteStatus{-1});
         }
         else
         {
-            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive, NoteType>(
+            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>(
                     Lane{lane.lane_number},
-                    NoteSpeed{rhythm_state.note_speed},
                     Timing{note.timing},
                     TimingEnd{0},
                     HoldActive{false},
-                    NoteType{note.note_type});
+                    NoteType{note.note_type},
+                    NoteStatus{-1});
         }
     }
 
     template<typename T>
-    void load_notes(T &syscall,
+    void load_chart(T &syscall,
         System::ECS::Query<Battle::ChartData> &chart_query,
         System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<Battle::RhythmState> &rhythm_query)
@@ -54,21 +53,15 @@ namespace Game::Rhythm
             return;
         }
 
-        constexpr int lookahead = 200;
-
-        auto &battle_state = battle_query.front().get<Battle::BattleState>();
-        auto &chart_data = chart_query.front().get<Battle::ChartData>();
-        auto &rhythm_state = rhythm_query.front().get<Battle::RhythmState>();
-        const auto &clock = battle_state.clock_time / 1000;
+        auto &[lanes] = chart_query.front().get<Battle::ChartData>();
 
         // repeat for each lane
-        for (auto &lane: chart_data.lanes)
+        for (auto &lane: lanes)
         {
-            while (lane.current_note < lane.notes.size() &&
-                   lane.notes.at(lane.current_note).timing < clock + lookahead)
+            while (lane.current_note < lane.notes.size())
             {
                 auto &note = lane.notes.at(lane.current_note);
-                create_note_entity<T>(syscall, rhythm_state, lane, note);
+                create_note_entity<T>(syscall, lane, note);
                 ++lane.current_note;
             }
         }
