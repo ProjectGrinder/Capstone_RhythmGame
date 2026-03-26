@@ -10,9 +10,11 @@
 #include "game/systems/bullethell/player_system.h"
 #include "game/systems/bullethell/bullet_system.h"
 // Rhythm Part
-#include "game/systems/rhythm/handle_rhythm.h" // TODO: Pooh implement this system
-#include "game/systems/rhythm/handle_miss_note.h"
 #include "game/systems/rhythm/handle_bpm.h"
+#include "game/systems/rhythm/handle_holding.h"
+#include "game/systems/rhythm/handle_miss_note.h"
+#include "game/systems/rhythm/handle_tap_note.h" // TODO: Pooh implement this system
+#include "game/systems/rhythm/set_holding_time.h"
 #include "game/systems/rhythm/util/load_chart.h"
 // General Battle Part
 #include "game/systems/phase_change.h"

@@ -111,7 +111,7 @@ namespace Game::Battle
         AcceptLoss() : normal(0), accent(0), rain(0), hold_end(0)
         {}
         explicit AcceptLoss(const int normal, const int accent, const int rain, const int hold_end) :
-            normal(normal), accent(accent), rain(rain), hold_end(hold_end)
+            normal(normal), accent(accent), rain(rain),hold_end(hold_end)
         {}
     };
 

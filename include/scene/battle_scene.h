@@ -38,12 +38,10 @@ namespace Scene
             Game::Physics::Rotation,
             Game::Physics::Velocity,
             Game::Physics::Scale,
-            Game::Rhythm::HoldActive,
             Game::Rhythm::KeyInput,
             Game::Rhythm::Lane,
-            Game::Rhythm::NoteSpeed,
             Game::Rhythm::Timing,
-            Game::Rhythm::TimingEnd,
+            Game::Rhythm::HoldStart,
             Game::Rhythm::NoteType,
             Game::Rhythm::NoteStatus,
             Game::Render::Animator,
@@ -66,9 +64,12 @@ namespace Scene
             Game::BulletHell::pattern_system<Syscall>,
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
-            Game::Rhythm::handle_rhythm<Syscall>,
+            Game::Rhythm::load_chart<Syscall>,
+            Game::Rhythm::handle_tap_note<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
-            Game::Rhythm::handle_bpm<Syscall>
+            Game::Rhythm::handle_bpm<Syscall>,
+            Game::Rhythm::set_holding_time<Syscall>,
+            Game::Rhythm::handle_holding<Syscall>
             //Game::Render::AnimationSystem<Syscall>
             >;
 

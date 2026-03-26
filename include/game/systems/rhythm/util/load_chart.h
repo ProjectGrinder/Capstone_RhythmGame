@@ -11,21 +11,22 @@ namespace Game::Rhythm
     {
         if (note.is_hold)
         {
-            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>(
-                    Lane{lane.lane_number},
-                    Timing{note.timing},
-                    TimingEnd{note.timing_end},
-                    HoldActive{false},
+            syscall.template create_entity<Timing, HoldStart, NoteType, NoteStatus>(
+                    Timing{lane.lane_number, note.timing},
+                    HoldStart{true},
                     NoteType{note.note_type},
+                    NoteStatus{-1});
+            syscall.template create_entity<Timing, HoldStart, NoteType, NoteStatus>(
+                    Timing{lane.lane_number, note.timing_end},
+                    HoldStart{false},
+                    NoteType{-1},
                     NoteStatus{-1});
         }
         else
         {
-            syscall.template create_entity<Lane, NoteSpeed, Timing, TimingEnd, HoldActive, NoteType, NoteStatus>(
-                    Lane{lane.lane_number},
-                    Timing{note.timing},
-                    TimingEnd{0},
-                    HoldActive{false},
+            syscall.template create_entity<Timing, HoldStart, NoteType, NoteStatus>(
+                    Timing{lane.lane_number, note.timing},
+                    HoldStart{false},
                     NoteType{note.note_type},
                     NoteStatus{-1});
         }
@@ -39,17 +40,14 @@ namespace Game::Rhythm
     {
         if (chart_query.begin() == chart_query.end())
         {
-            // LOG_ERROR("No ChartData found!");
             return;
         }
         if (battle_query.begin() == battle_query.end())
         {
-            LOG_ERROR("No BattleState entity found!");
             return;
         }
         if (rhythm_query.begin() == rhythm_query.end())
         {
-            LOG_ERROR("No RhythmState entity found!");
             return;
         }
 

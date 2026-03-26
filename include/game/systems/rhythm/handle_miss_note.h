@@ -7,7 +7,7 @@ namespace Game::Rhythm
     template<typename T>
     void handle_miss_note(
             [[maybe_unused]] T &syscall,
-            System::ECS::Query<Lane, Timing, TimingEnd, HoldActive, NoteType, NoteStatus> &note_query,
+            System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus> &note_query,
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<Battle::RhythmState> &rhythm_query)
     {
@@ -24,11 +24,14 @@ namespace Game::Rhythm
 
         for (auto &[id, comp]: note_query)
         {
+            if (comp.get<NoteStatus>().state != 1)
+                continue;
+
             auto &note_time = comp.get<Timing>().timing;
 
             if (current_timing - note_time >= 100)
             {
-                if (comp.get<TimingEnd>().timing_end == 0) // tap note miss
+                if (comp.get<HoldStart>().is_hold == false) // tap note miss
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
                     auto &type = note_query.front().get<NoteType>().type;
@@ -40,18 +43,31 @@ namespace Game::Rhythm
                     {
                         battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.normal;
                     }
-                    LOG_INFO("Timing %d Lane %d: Tap Miss", note_time, comp.get<Lane>().lane);
+                    LOG_INFO("Timing %d Lane %d: Tap Miss", note_time, comp.get<Timing>().lane);
                     LOG_INFO("Miss Count = %d", battle_query.front().get<Battle::BattleState>().judgement_count.miss_count);
                 }
-                else if (comp.get<HoldActive>().hold_active == false) // hold note miss (not held at all)
+                else // hold note miss (not held at all)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 2;
                     battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.normal;
-                    LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comp.get<Lane>().lane);
+                    LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comp.get<Timing>().lane);
                     LOG_INFO("Miss Count = %d", battle_query.front().get<Battle::BattleState>().judgement_count.miss_count);
+                    int first_timing = 999999;
+                    System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *note = nullptr;
+                    for (auto &[id2, comp2]: note_query) // find ending note for the hold
+                    {
+                        if (comp2.get<NoteType>().type == -1 && comp2.get<NoteStatus>().state != 0
+                            && comp.get<Timing>().lane == comp2.get<Timing>().lane && comp2.get<Timing>().timing < first_timing)
+                        {
+                            first_timing = comp2.get<Timing>().timing;
+                            note = &comp2;
+                        }
+                    }
+                    if (note != nullptr)
+                    {
+                        note->get<NoteStatus>().state = 0;
+                    }
                 }
-                else continue; // for hold notes that are still active
-
                 comp.get<NoteStatus>().state = 0;
             }
             // Handle miss for an entire hold note, which counts as two misses (start and end)

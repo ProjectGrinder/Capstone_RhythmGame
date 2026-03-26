@@ -99,10 +99,8 @@ namespace Scene
             Game::BulletHell::Input, // structure required to satisfy InputSystem
             Game::Rhythm::KeyInput,
             Game::Rhythm::Lane,
-            Game::Rhythm::NoteSpeed,
             Game::Rhythm::Timing,
-            Game::Rhythm::TimingEnd,
-            Game::Rhythm::HoldActive,
+            Game::Rhythm::HoldStart,
             Game::Rhythm::NoteType,
             Game::Rhythm::NoteStatus
             >;
@@ -111,7 +109,7 @@ namespace Scene
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             Game::Battle::input_system<Syscall>,
             // Game::Rhythm::handle_bpm<Syscall>,
-            Game::Rhythm::handle_rhythm<Syscall>,
+            Game::Rhythm::handle_tap_note<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Battle::update_global_clock<Syscall>
             >;
@@ -128,11 +126,11 @@ namespace Scene
             };
             auto config_rhythm_state = []
             {
-                Game::Battle::RhythmState state(1, 1, 60, 1.0f);
+                Game::Battle::RhythmState state(1, 100, 60, 1.0f);
                 state.accept_loss.normal = 5;
                 state.accept_loss.accent = 5;
                 state.accept_loss.rain = 2;
-                state.accept_loss.hold_end = 3;
+                state.accept_loss.hold_end = 2;
                 return (state);
             };
             tm->create_entity<Game::Battle::BattleState,
