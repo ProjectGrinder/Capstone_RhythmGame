@@ -49,5 +49,8 @@
 #include "components/overview/dialog_box.h"
 #include "components/overview/dialogue_register.h"
 #include "components/overview/input.h"
+#include "components/overview/event.h"
+#include "components/overview/event_object.h"
+#include "components/overview/global_state.h"
 
 #include "system/ecs.h"

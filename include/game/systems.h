@@ -39,10 +39,10 @@
 
 // Overview Part
 #include "systems/overview/detect_overlap.h"
-#include "systems/overview/interaction_system.h"
-#include "systems/overview/player_move.h"
 #include "systems/overview/dialogue_system.h"
-#include "systems/overview/gravity_system.h"
+#include "systems/overview/event_system.h"
+#include "systems/overview/player_move.h"
+#include "systems/overview/input_system.h"
 
 // Test
 #include "systems/test/spin_camera.h"

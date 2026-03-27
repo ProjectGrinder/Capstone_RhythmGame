@@ -8,6 +8,6 @@ namespace Game::Overview
         std::vector<std::vector<std::string>> text_register;
         DialogueRegister()
         {}
-        explicit DialogueRegister(std::vector<std::vector<std::string>> &text_register) : text_register(text_register) {}
+        explicit DialogueRegister(const std::vector<std::vector<std::string>> &text_register) : text_register(text_register) {}
     };
-} // namespace Game::BulletHell
+} // namespace Game::Overview
