@@ -14,4 +14,4 @@ namespace Game::Overview
 
         PlayerStat(const float walk_speed, const float run_speed, const float jump_height, const float gravity) : walk_speed(walk_speed), run_speed(run_speed), jump_height(jump_height), gravity(gravity) {}
     };
-} // namespace Game::BulletHell
+} // namespace Game::Overview

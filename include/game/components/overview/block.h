@@ -5,4 +5,4 @@ namespace Game::Overview
     struct Block
     {
     };
-} // namespace Game::BulletHell
+} // namespace Game::Overview
