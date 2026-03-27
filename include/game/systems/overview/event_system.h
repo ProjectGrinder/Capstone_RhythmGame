@@ -36,8 +36,8 @@ namespace Game::Overview
     void lock_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<GlobalState> &query1,
-            System::ECS::Query<EventState, LockInput> &lock_query,
-            System::ECS::Query<EventState, UnlockInput> &unlock_query
+            System::ECS::Query<EventState, LockInputEvent> &lock_query,
+            System::ECS::Query<EventState, UnlockInputEvent> &unlock_query
             )
     {
 
@@ -49,7 +49,7 @@ namespace Game::Overview
         for (auto &[id, comps] : lock_query)
         {
             auto &event_state = comps.get<EventState>();
-            const auto &lock_input = comps.get<LockInput>();
+            const auto &lock_input = comps.get<LockInputEvent>();
 
             if (lock_input.lockBit & 4 > 0)
                 global_state.movementLocked = true;
@@ -66,7 +66,7 @@ namespace Game::Overview
         for (auto &[id, comps] : unlock_query)
         {
             auto &event_state = comps.get<EventState>();
-            const auto &unlock_input = comps.get<UnlockInput>();
+            const auto &unlock_input = comps.get<UnlockInputEvent>();
 
             if (unlock_input.lockBit & 4 > 0)
                 global_state.movementLocked = false;

@@ -2,12 +2,12 @@
 
 namespace Game::Overview
 {
-    struct DialogueRegister
+    struct DialogueRegistry
     {
         // Could leads to error
         std::vector<std::vector<std::string>> text_register;
-        DialogueRegister()
+        DialogueRegistry()
         {}
-        explicit DialogueRegister(const std::vector<std::vector<std::string>> &text_register) : text_register(text_register) {}
+        explicit DialogueRegistry(const std::vector<std::vector<std::string>> &text_register) : text_register(text_register) {}
     };
 } // namespace Game::Overview

@@ -2,35 +2,36 @@
 
 namespace Game::Overview
 {
-    struct SceneChange
+    struct SceneChangeEvent
     {
         std::string scene;
-        SceneChange() = default;
-        explicit SceneChange(const std::string& scene) : scene(scene) {}
+        SceneChangeEvent() = default;
+        explicit SceneChangeEvent(const std::string& scene) : scene(scene) {}
     };
 
-    struct Dialogue
+    struct DialogueEvent
     {
         System::ECS::pid dialogue_box_id = UNASSIGNED;
         std::string dialogue;
-        Dialogue() = default;
-        explicit Dialogue(const System::ECS::pid dialogue_box_id, const std::string &dialogue) : dialogue_box_id(dialogue_box_id), dialogue(dialogue) {}
+        DialogueEvent() = default;
+        explicit DialogueEvent(const System::ECS::pid dialogue_box_id, const std::string &dialogue) : dialogue_box_id(dialogue_box_id), dialogue(dialogue) {}
     };
 
-    struct CutScene{};
+    struct CutSceneEvent{};
 
-    struct LevelNode
+    struct LevelNodeEvent
     {
+        System::ECS::pid level_node_id = UNASSIGNED;
         uint16_t id;
-        LevelNode() = default;
-        explicit LevelNode(const uint16_t id) : id(id) {}
+        LevelNodeEvent() = default;
+        explicit LevelNodeEvent(const uint16_t id) : id(id) {}
     };
 
-    struct LockInput
+    struct LockInputEvent
     {
         uint16_t lockBit = 0;
-        LockInput() = default;
-        explicit LockInput(std::initializer_list<InputType> inputs)
+        LockInputEvent() = default;
+        explicit LockInputEvent(std::initializer_list<InputType> inputs)
         {
             for (auto input : inputs)
             {
@@ -38,14 +39,14 @@ namespace Game::Overview
             }
         }
     };
-    struct UnlockInput
+    struct UnlockInputEvent
     {
         uint16_t lockBit = 0;
-        UnlockInput()
+        UnlockInputEvent()
         {
             lockBit = 7;
         }
-        explicit UnlockInput(std::initializer_list<InputType> inputs)
+        explicit UnlockInputEvent(std::initializer_list<InputType> inputs)
         {
             for (auto input : inputs)
             {
@@ -54,21 +55,21 @@ namespace Game::Overview
         }
     }; // Should unlock autonomously if event ends
 
-    struct PanCamera
+    struct PanCameraEvent
     {
         float x,y;
-        PanCamera() = default;
-        explicit PanCamera(const float x, const float y) : x(x), y(y) {}
+        PanCameraEvent() = default;
+        explicit PanCameraEvent(const float x, const float y) : x(x), y(y) {}
     };
 
     using Event = std::variant<
-            SceneChange,
-            Dialogue,
-            CutScene,
-            LevelNode,
-            LockInput,
-            UnlockInput,
-            PanCamera
+            SceneChangeEvent,
+            DialogueEvent,
+            CutSceneEvent,
+            LevelNodeEvent,
+            LockInputEvent,
+            UnlockInputEvent,
+            PanCameraEvent
         >;
 
     struct EventSequence
