@@ -31,8 +31,9 @@
 #include "components/rhythm/judgetext.h"
 #include "components/rhythm/keyinput.h"
 #include "components/rhythm/lane.h"
-#include "components/rhythm/timing.h"
-#include "components/rhythm/notetype.h"
+#include "components/rhythm/notefield.h"
 #include "components/rhythm/notestatus.h"
+#include "components/rhythm/notetype.h"
+#include "components/rhythm/timing.h"
 
 #include "system/ecs.h"

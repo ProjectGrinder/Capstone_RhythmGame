@@ -102,15 +102,21 @@ namespace Scene
             Game::Rhythm::Timing,
             Game::Rhythm::HoldStart,
             Game::Rhythm::NoteType,
-            Game::Rhythm::NoteStatus
+            Game::Rhythm::NoteStatus,
+            Game::Rhythm::NoteField,
+            Game::Physics::Position,
+            Game::Physics::Velocity
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             Game::Battle::input_system<Syscall>,
-            // Game::Rhythm::handle_bpm<Syscall>,
+            Game::Rhythm::handle_bpm<Syscall>,
             Game::Rhythm::handle_tap_note<Syscall>,
+            Game::Rhythm::set_holding_time<Syscall>,
+            Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
+            Game::Rhythm::update_notes<Syscall>,
             Game::Battle::update_global_clock<Syscall>
             >;
         
@@ -126,10 +132,11 @@ namespace Scene
             };
             auto config_rhythm_state = []
             {
-                Game::Battle::RhythmState state(1, 100, 60, 1.0f);
+                Game::Battle::RhythmState state(1, 100, 60, 1.0f, 1.0f);
                 state.accept_loss.normal = 5;
                 state.accept_loss.accent = 5;
                 state.accept_loss.rain = 2;
+                state.accept_loss.hold = 5;
                 state.accept_loss.hold_end = 2;
                 return (state);
             };

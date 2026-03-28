@@ -107,11 +107,12 @@ namespace Game::Battle
         int normal;
         int accent;
         int rain;
+        int hold;
         int hold_end;
-        AcceptLoss() : normal(0), accent(0), rain(0), hold_end(0)
+        AcceptLoss() : normal(0), accent(0), rain(0), hold(0), hold_end(0)
         {}
-        explicit AcceptLoss(const int normal, const int accent, const int rain, const int hold_end) :
-            normal(normal), accent(accent), rain(rain),hold_end(hold_end)
+        explicit AcceptLoss(const int normal, const int accent, const int rain, const int hold, const int hold_end) :
+            normal(normal), accent(accent), rain(rain), hold(hold), hold_end(hold_end)
         {}
     };
 
@@ -151,12 +152,13 @@ namespace Game::Battle
         int heal_hp;
         int base_score;
         int total_notes;
-        float note_speed;
+        float base_speed;
+        float current_speed;
         AcceptLoss accept_loss;
-        RhythmState() : heal_hp(0), base_score(0), total_notes(0), note_speed(0)
+        RhythmState() : heal_hp(0), base_score(0), total_notes(0), base_speed(1.0f), current_speed(1.0f)
         {}
-        RhythmState(const int heal_hp, const int base_score, const int total_notes, const float note_speed) :
-            heal_hp(heal_hp), base_score(base_score), total_notes(total_notes), note_speed(note_speed)
+        RhythmState(const int heal_hp, const int base_score, const int total_notes, const float base_speed, const float current_speed) :
+            heal_hp(heal_hp), base_score(base_score), total_notes(total_notes), base_speed(base_speed), current_speed(current_speed)
         {}
     };
 

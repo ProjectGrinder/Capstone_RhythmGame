@@ -4,6 +4,7 @@
 #include "game/systems/input_system.h"
 // Bullet Hell Part
 #include "game/systems/bullethell/input_to_velocity.h"
+#include "game/systems/bullethell/emitter_system.h"
 #include "game/systems/bullethell/movement_system.h"
 #include "game/systems/bullethell/bullet_collision.h"
 #include "game/systems/bullethell/pattern_system.h"
@@ -15,6 +16,7 @@
 #include "game/systems/rhythm/handle_miss_note.h"
 #include "game/systems/rhythm/handle_tap_note.h" // TODO: Pooh implement this system
 #include "game/systems/rhythm/set_holding_time.h"
+#include "game/systems/rhythm/update_notes.h"
 #include "game/systems/rhythm/util/load_chart.h"
 // General Battle Part
 #include "game/systems/phase_change.h"

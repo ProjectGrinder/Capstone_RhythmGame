@@ -44,6 +44,7 @@ namespace Scene
             Game::Rhythm::HoldStart,
             Game::Rhythm::NoteType,
             Game::Rhythm::NoteStatus,
+            Game::Rhythm::NoteField,
             Game::Render::Animator,
             Game::Render::Transform,
             Game::Render::Sprite,
@@ -69,7 +70,8 @@ namespace Scene
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::handle_bpm<Syscall>,
             Game::Rhythm::set_holding_time<Syscall>,
-            Game::Rhythm::handle_holding<Syscall>
+            Game::Rhythm::handle_holding<Syscall>,
+            Game::Rhythm::update_notes<Syscall>
             //Game::Render::AnimationSystem<Syscall>
             >;
 

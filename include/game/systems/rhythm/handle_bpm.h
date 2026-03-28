@@ -27,7 +27,11 @@ namespace Game::Rhythm
 
         auto &level_data = level_query.front().get<Battle::LevelData>();
         auto &[bpm_list, idx] = level_data.bpm_info;
-        if (idx + 1 >= bpm_list.size() || bpm_list.empty())
+        // ex. [(180.00, 0), (90.00, 60000), (150.00, 90000), (180.00, 100000)]
+        // Every level must have at least one BPM entry
+        // For songs with constant BPM, it should look like this: [(180.00, 0)]
+        // Timing 0 must have starting chart BPM (not necessarily equal to main BPM)
+        if (bpm_list.empty() || idx + 1 > bpm_list.size())
         {
             return;
         }
@@ -37,10 +41,9 @@ namespace Game::Rhythm
 
         if (clock >= bpm_list.at(idx).timing)
         {
-            auto old_bpm = bpm_list.at(idx).bpm;
+            rhythm_query.front().get<Battle::RhythmState>().current_speed =
+                rhythm_query.front().get<Battle::RhythmState>().base_speed * bpm_list.at(idx).bpm / level_data.main_bpm;
             ++idx;
-            auto new_bpm = bpm_list.at(idx).bpm;
-            rhythm_query.front().get<Battle::RhythmState>().note_speed *= new_bpm / old_bpm;
         }
     }
 } // namespace Game::Rhythm
