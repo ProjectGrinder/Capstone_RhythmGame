@@ -147,13 +147,13 @@ load_pixel_shader(const char *path, const char *name, const InputAttributeDescri
     return (load_assets(path, name, info));
 }
 
-const AssetsRecord *load_font(const char *path, const char *name, size_t size)
+const AssetsRecord *load_font(const char *atlas_path, const char *name, const char *attr_path)
 {
+    // attr_path is filepath for glyph attribute data
     AssetsInfo info = {0};
     info.name = strdup(name);
     info.type = FONT;
-    info.info.as_font.font_size = size;
-    return (load_assets(path, name, info));
+    return (load_assets(atlas_path, name, info));
 }
 
 /* TODO: Change this shit to hash map or my ass will get whip */

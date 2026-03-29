@@ -37,6 +37,20 @@ extern "C"
 
     typedef struct
     {
+        char character;
+        float u0;
+        float v0;
+        float u1;
+        float v1;
+        int width;
+        int height;
+        int bearing_x;
+        int bearing_y;
+        float advance;
+    } GlyphAttributeDescription;
+
+    typedef struct
+    {
         char *name;
         AssetsType type;
         union
@@ -52,7 +66,9 @@ extern "C"
             } as_sprite;
             struct
             {
-                size_t font_size;
+                size_t count;
+                GlyphAttributeDescription *data;
+                size_t atlas_width, atlas_height;
             } as_font;
         } info;
     } AssetsInfo;
@@ -78,7 +94,7 @@ extern "C"
     const AssetsRecord *
     load_pixel_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count);
 
-    const AssetsRecord *load_font(const char *path, const char *name, size_t size);
+    const AssetsRecord *load_font(const char *atlas_path, const char *name, const char *attr_path);
     int has_assets(const char *name);
     AssetsRecord get_assets_record(assets_id id);
     const AssetsRecord *get_assets_record_ptr(const assets_id id);
