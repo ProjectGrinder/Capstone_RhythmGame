@@ -154,11 +154,12 @@ namespace Game::Battle
         int total_notes;
         float base_speed;
         float current_speed;
+        bool speed_change;
         AcceptLoss accept_loss;
-        RhythmState() : heal_hp(0), base_score(0), total_notes(0), base_speed(1.0f), current_speed(1.0f)
+        RhythmState() : heal_hp(0), base_score(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false)
         {}
         RhythmState(const int heal_hp, const int base_score, const int total_notes, const float base_speed, const float current_speed) :
-            heal_hp(heal_hp), base_score(base_score), total_notes(total_notes), base_speed(base_speed), current_speed(current_speed)
+            heal_hp(heal_hp), base_score(base_score), total_notes(total_notes), base_speed(base_speed), current_speed(current_speed), speed_change(false)
         {}
     };
 

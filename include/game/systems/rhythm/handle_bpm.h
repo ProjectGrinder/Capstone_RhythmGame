@@ -44,6 +44,10 @@ namespace Game::Rhythm
             rhythm_query.front().get<Battle::RhythmState>().current_speed =
                 rhythm_query.front().get<Battle::RhythmState>().base_speed * bpm_list.at(idx).bpm / level_data.main_bpm;
             ++idx;
+            if (bpm_list.at(idx).bpm != level_data.main_bpm)
+            {
+                rhythm_query.front().get<Battle::RhythmState>().speed_change = true;
+            }
         }
     }
 } // namespace Game::Rhythm
