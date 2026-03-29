@@ -2,9 +2,9 @@
 #pragma warning(disable : 4245)
 
 #include "system/asset_manager.h"
-
 #include "utils/print_debug.h"
 #include "utils/str_utils.h"
+#include "utils/parse_glyph.h"
 
 typedef unsigned long DWORD;
 
@@ -153,6 +153,7 @@ const AssetsRecord *load_font(const char *atlas_path, const char *name, const ch
     AssetsInfo info = {0};
     info.name = strdup(name);
     info.type = FONT;
+    parse_glyph(attr_path, &info);
     return (load_assets(atlas_path, name, info));
 }
 
@@ -198,6 +199,15 @@ void free_assets(assets_id id)
         heap_free(current->info.info.as_shader.data);
         current->info.info.as_shader.data = NULL;
         current->info.info.as_shader.count = 0;
+    }
+
+    if (current->info.type == FONT)
+    {
+        heap_free(current->info.info.as_font.data);
+        current->info.info.as_font.data = NULL;
+        current->info.info.as_font.count = 0;
+        current->info.info.as_font.atlas_width = 0;
+        current->info.info.as_font.atlas_height = 0;
     }
 
     file_free(&current->data);
