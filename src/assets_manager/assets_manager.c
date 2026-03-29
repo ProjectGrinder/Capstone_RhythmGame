@@ -153,7 +153,10 @@ const AssetsRecord *load_font(const char *atlas_path, const char *name, const ch
     AssetsInfo info = {0};
     info.name = strdup(name);
     info.type = FONT;
-    parse_glyph(attr_path, &info);
+    if (parse_glyph(attr_path, &info) != 0)
+    {
+        return NULL;
+    }
     return (load_assets(atlas_path, name, info));
 }
 

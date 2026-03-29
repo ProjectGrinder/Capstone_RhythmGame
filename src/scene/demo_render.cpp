@@ -71,6 +71,13 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
             Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{{0, 0, 0}, {0, 0, 0, 0}}, 0, 0, 0});
 
+    auto font = load_font("fonts/Klub04TT-Normal.png", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
+
+    if (font != nullptr)
+    {
+        LOG_INFO("Font loaded.");
+    }
+
     return (tm);
 }
 
