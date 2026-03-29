@@ -21,6 +21,10 @@ namespace Game::Render
         Math::Point pos[4]{};
         uint32_t layer = 0;     // Layer to render
         uint32_t order = 0;     // Order of render in layer
+        float u0 = 0.0f;
+        float v0 = 0.0f;
+        float u1 = 1.0f;
+        float v1 = 1.0f;
         bool flipX = false; // Flip Image in X-axis
         bool flipY = false; // Flip Image in Y-axis
     };

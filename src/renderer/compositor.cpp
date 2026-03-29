@@ -128,6 +128,10 @@ namespace System::Render
                                                 invHalfW,
                                                 invHalfH),
                                 },
+                        .u0 = spr.u0,
+                        .v0 = spr.v0,
+                        .u1 = spr.u1,
+                        .v1 = spr.v1,
                         .flipX = spr.flipX,
                         .flipY = spr.flipY};
                 break;

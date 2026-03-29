@@ -26,6 +26,10 @@ namespace Game::Render
 
             intent.special = System::Render::SpriteDrawDesc{
                 .points = {sprite.pos[0], sprite.pos[1], sprite.pos[2], sprite.pos[3]},
+                .u0 = sprite.u0,
+                .v0 = sprite.v0,
+                .u1 = sprite.u1,
+                .v1 = sprite.v1,
                 .flipX = sprite.flipX,
                 .flipY = sprite.flipY
             };

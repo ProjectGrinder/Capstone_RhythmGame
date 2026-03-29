@@ -363,7 +363,7 @@ namespace System::Render
             }
             case DrawKind::KIND_SPRITE: {
                 const AssetsRecord *sp_rec = common.sp;
-                auto const &[points, flipX, flipY] = std::get<SpriteDrawDesc>(special);
+                auto const &[points, desc_u0, desc_v0, desc_u1, desc_v1, flipX, flipY] = std::get<SpriteDrawDesc>(special);
 
                 SpriteRenderObject sprite_render_object{};
                 sprite_render_object.render_id.sort_key = common.key;
@@ -376,12 +376,10 @@ namespace System::Render
                 sprite_render_object.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
                 sprite_render_object.index_format = DXGI_FORMAT_R32_UINT;
 
-                constexpr Rect src_rect = {0, 0, 1, 1};
-
-                const float u0 = flipX ? src_rect.u1 : src_rect.u0;
-                const float u1 = flipX ? src_rect.u0 : src_rect.u1;
-                const float v0 = flipY ? src_rect.v1 : src_rect.v0;
-                const float v1 = flipY ? src_rect.v0 : src_rect.v1;
+                const float u0 = flipX ? desc_u1 : desc_u0;
+                const float u1 = flipX ? desc_u0 : desc_u1;
+                const float v0 = flipY ? desc_v1 : desc_v0;
+                const float v1 = flipY ? desc_v0 : desc_v1;
 
                 Math::PointUv quad[4]{};
                 quad[0] = {points[0].pos[0], points[0].pos[1], points[0].pos[2], u0, v0};
