@@ -1,7 +1,7 @@
+#include <Windows.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <Windows.h>
 
 #include "system/asset_manager.h"
 #include "utils/parse_glyph.h"
@@ -139,9 +139,11 @@ int parse_glyph_capstone_atlas_v1(const char *attr_path, AssetsInfo *info)
 
     skip_to_eol(&cur);
 
+    count = 0;
+
     while (*cur && count < info->info.as_font.count)
     {
-        GlyphAttributeDescription g = info->info.as_font.data[count];
+        GlyphAttributeDescription g;
         count++;
         unsigned long tmp = 0;
 
@@ -201,6 +203,16 @@ int parse_glyph_capstone_atlas_v1(const char *attr_path, AssetsInfo *info)
             LOG_ERROR("Unable to parse glyph advance");
             return (-1);
         }
+
+        info->info.as_font.data[count] = g;
+
+        // LOG_INFO(
+        //         "%c %d %d %d %d",
+        //         info->info.as_font.data[count].character,
+        //         info->info.as_font.data[count].width,
+        //         info->info.as_font.data[count].height,
+        //         info->info.as_font.data[count].bearing_x,
+        //         info->info.as_font.data[count].bearing_y)
 
         skip_to_eol(&cur);
     }
