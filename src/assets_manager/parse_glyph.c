@@ -127,7 +127,13 @@ int parse_glyph_capstone_atlas_v1(const char *attr_path, AssetsInfo *info)
         return (-1);
     }
     info->info.as_font.count = (size_t) count;
-    info->info.as_font.data = (GlyphAttributeDescription *) heap_alloc(sizeof(AssetsInfo) * count);
+    info->info.as_font.data = (GlyphAttributeDescription *) heap_alloc(sizeof(GlyphAttributeDescription) * count);
+
+    if (info->info.as_font.data == NULL)
+    {
+        LOG_ERROR("Failed to allocate glyph attribute array");
+        return (-1);
+    }
 
     skip_to_eol(&cur);
 
@@ -139,12 +145,11 @@ int parse_glyph_capstone_atlas_v1(const char *attr_path, AssetsInfo *info)
 
     skip_to_eol(&cur);
 
-    count = 0;
+    size_t glyph_index = 0;
 
-    while (*cur && count < info->info.as_font.count)
+    while (*cur && glyph_index < info->info.as_font.count)
     {
         GlyphAttributeDescription g;
-        count++;
         unsigned long tmp = 0;
 
         if (!parse_uint(&cur, &tmp))
@@ -204,7 +209,7 @@ int parse_glyph_capstone_atlas_v1(const char *attr_path, AssetsInfo *info)
             return (-1);
         }
 
-        info->info.as_font.data[count] = g;
+        info->info.as_font.data[glyph_index] = g;
 
         // LOG_INFO(
         //         "%c %d %d %d %d",
@@ -213,6 +218,8 @@ int parse_glyph_capstone_atlas_v1(const char *attr_path, AssetsInfo *info)
         //         info->info.as_font.data[count].height,
         //         info->info.as_font.data[count].bearing_x,
         //         info->info.as_font.data[count].bearing_y)
+
+        glyph_index++;
 
         skip_to_eol(&cur);
     }
