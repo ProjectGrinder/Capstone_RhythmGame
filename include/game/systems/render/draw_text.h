@@ -48,7 +48,7 @@ namespace Game::Render
                 const auto advance = glyph->advance;
 
                 const auto glyph_left = pen.x + bearing_x;
-                const auto glyph_bottom = pen.y + bearing_y;
+                const auto glyph_bottom = pen.y - height + bearing_y;
                 const auto glyph_right = glyph_left + width;
                 const auto glyph_top = glyph_bottom + height;
 
