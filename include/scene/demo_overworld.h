@@ -96,6 +96,7 @@ namespace Scene
             Game::Overview::PanCameraEvent,
             Game::Overview::SceneChangeEvent,
             Game::Overview::LevelNodeEvent,
+            Game::Overview::ChangeNextEvent,
             Game::Physics::Acceleration,
             Game::Physics::CircularCollider,
             Game::Physics::RectangularCollider,
@@ -108,11 +109,14 @@ namespace Scene
             Game::Render::Sprite,
             Game::Render::Material,
             Game::Render::Text,
-            Game::Render::Camera2D
+            Game::Render::Camera2D,
+            Game::Battle::BattleState
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
+            Game::Overview::input_system<Syscall>,
+            Game::Overview::player_move<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
             Game::BulletHell::acceleration_system<Syscall>,
             Game::BulletHell::rotation_system<Syscall>,
@@ -123,8 +127,6 @@ namespace Scene
             Game::Overview::dialogue_system<Syscall>,
             Game::Overview::event_system<Syscall>,
             Game::Overview::lock_event_system<Syscall>,
-            Game::Overview::input_system<Syscall>,
-            Game::Overview::player_move<Syscall>,
             Game::Overview::load_scene_objects<Syscall>
             >;
 
@@ -138,7 +140,8 @@ namespace Scene
             Game::Overview::GlobalState,
             Game::Overview::Input,
             Game::Overview::SaveState,
-            Game::Overview::PlayerStat>
+            Game::Overview::PlayerStat,
+            Game::Battle::BattleState>
             (
                 init_dialogue_registry(),
                 init_event_registry(),
@@ -146,7 +149,8 @@ namespace Scene
                 Game::Overview::GlobalState(),
                 Game::Overview::Input(),
                 Game::Overview::SaveState(),
-                Game::Overview::PlayerStat()
+                Game::Overview::PlayerStat(),
+                Game::Battle::BattleState()
                 );
 
             tm->create_entity<Game::Overview::Player,

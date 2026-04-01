@@ -15,7 +15,7 @@ namespace Game::Overview
             syscall.add_components(object, Block(), Physics::RectangularCollider(collider_data.offsetX,collider_data.offsetY, collider_data.colX, collider_data.colY));
         }
 
-        else if (scene_data.status_bit & 1 > 0)
+        else if ((scene_data.status_bit & 1) > 0)
         {
             const auto collider_data = scene_data.circle_collider_data;
             syscall.add_components(object, Interactable(), Physics::CircularCollider(collider_data.offsetX,collider_data.offsetY, collider_data.colX, collider_data.colY));
@@ -33,12 +33,13 @@ namespace Game::Overview
     }
 
     template<typename T>
-    void load_scene_objects([[maybe_unused]] T &syscall, System::ECS::Query<Overview::SceneRegistry> &query)
+    void load_scene_objects([[maybe_unused]] T &syscall, System::ECS::Query<SceneRegistry> &query)
     {
         if (query.begin() == query.end())
             return;
 
-        auto &[initialized, scene_objects] = query.front().get<Overview::SceneRegistry>();
+        auto &[initialized, scene_objects] = query.front().get<SceneRegistry>();
+        if (initialized) return;
         for (auto &scene_object : scene_objects)
         {
             spawn_scene_object(syscall, scene_object);

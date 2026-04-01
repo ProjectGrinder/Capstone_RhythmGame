@@ -13,14 +13,8 @@ using AngularVelocity = Game::Physics::AngularVelocity;
 namespace Game::BulletHell
 {
     template <typename T>
-    void movement_system([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void movement_system([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity>& query)
     {
-        if (query2.begin() == query2.end())
-            return;
-
-        if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
-            return;
-
         for (auto &[id, comps]: query)
         {
             auto &pos = comps.get<Position>();
@@ -35,14 +29,8 @@ namespace Game::BulletHell
     }
 
     template <typename T>
-    void acceleration_system([[maybe_unused]] T &syscall, System::ECS::Query<Velocity,Acceleration>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void acceleration_system([[maybe_unused]] T &syscall, System::ECS::Query<Velocity,Acceleration>& query)
     {
-        if (query2.begin() == query2.end())
-            return;
-
-        if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
-            return;
-
         for (auto &[id, comps] : query)
         {
             auto &vel = comps.get<Velocity>();

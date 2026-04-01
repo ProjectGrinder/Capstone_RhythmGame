@@ -49,5 +49,7 @@ namespace Game::Overview
 
         input_c.escape_pressed = get_key_state(ESC) && !input_c.escape_held;
         input_c.escape_held = get_key_state(ESC);
+
+        if (input_c.up_held) LOG_INFO("Input Run");
     }
 } // namespace Game::Overview

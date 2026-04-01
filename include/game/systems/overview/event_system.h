@@ -27,7 +27,14 @@ namespace Game::Overview
             else
             {
                 event_state.has_event = true;
-                syscall.add_component(id,event_register[event_state.event_id].events[event_state.event_idx]);
+                auto& e = event_register[event_state.event_id].events[event_state.event_idx];
+
+                // Idk what this does. It like... turn variant object into component???
+                std::visit([&](auto&& evt)
+                {
+                    using T = std::decay_t<decltype(evt)>;
+                    syscall.add_component(id, T(evt));   // force clean type
+                }, e);
             }
         }
     }
