@@ -55,14 +55,5 @@ namespace Game::Overview
             }
         }
     }
-
-    template<typename T>
-    void level_page_system(
-            [[maybe_unused]] T &syscall,
-            System::ECS::Query<Input> &input_query,
-            System::ECS::Query<DialogueBox> &query1)
-    {
-        // TODO : Oh no
-    }
 } // namespace Game::Overview
 

@@ -1,11 +1,14 @@
 #pragma once
 #include <string>
+
+#include "dialogue_system.h"
 namespace Game::Overview
 {
     template<typename T>
     void dialogue_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Input> &input_query,
+            System::ECS::Query<DialogueRegistry> &dialogue_query,
             System::ECS::Query<EventState, DialogueEvent> &query1,
             System::ECS::Query<DialogueBox> &query2)
     {
@@ -13,6 +16,7 @@ namespace Game::Overview
             return;
 
         const auto &input = input_query.front().components.get<Input>();
+        const auto &dialogue_registry = dialogue_query.front().components.get<DialogueRegistry>().text_register;
 
         for (auto &[id, comps] : query1)
         {
@@ -22,7 +26,7 @@ namespace Game::Overview
             if (dialogue.dialogue_box_id != UNASSIGNED)
             {
                 // TODO : More Render comps to add
-                dialogue.dialogue_box_id = syscall.create_entity(DialogueBox(dialogue.dialogue));
+                dialogue.dialogue_box_id = syscall.create_entity(DialogueBox(dialogue_registry[dialogue.dialogue_id]));
             }
 
             else

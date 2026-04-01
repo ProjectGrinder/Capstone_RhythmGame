@@ -33,7 +33,7 @@ namespace Game::Overview
     }
 
     template<typename T>
-    void lock_system(
+    void lock_event_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<GlobalState> &query1,
             System::ECS::Query<EventState, LockInputEvent> &lock_query,
@@ -44,21 +44,21 @@ namespace Game::Overview
         if (query1.begin() == query1.end())
             return;
 
-        auto &global_state = query1.front().components.get<GlobalState>();
+        auto &[movementLocked, interactionLocked, menuLocked] = query1.front().components.get<GlobalState>();
 
         for (auto &[id, comps] : lock_query)
         {
             auto &event_state = comps.get<EventState>();
             const auto &lock_input = comps.get<LockInputEvent>();
 
-            if (lock_input.lockBit & 4 > 0)
-                global_state.movementLocked = true;
+            if ((lock_input.lockBit & 4) > 0)
+                movementLocked = true;
 
-            if (lock_input.lockBit & 2 > 0)
-                global_state.interactionLocked = true;
+            if ((lock_input.lockBit & 2) > 0)
+                interactionLocked = true;
 
-            if (lock_input.lockBit & 1 > 0)
-                global_state.menuLocked = true;
+            if ((lock_input.lockBit & 1) > 0)
+                menuLocked = true;
 
             event_state.has_event = false;
         }
@@ -68,17 +68,34 @@ namespace Game::Overview
             auto &event_state = comps.get<EventState>();
             const auto &unlock_input = comps.get<UnlockInputEvent>();
 
-            if (unlock_input.lockBit & 4 > 0)
-                global_state.movementLocked = false;
+            if ((unlock_input.lockBit & 4) > 0)
+                movementLocked = false;
 
-            if (unlock_input.lockBit & 2 > 0)
-                global_state.interactionLocked = false;
+            if ((unlock_input.lockBit & 2) > 0)
+                interactionLocked = false;
 
-            if (unlock_input.lockBit & 1 > 0)
-                global_state.menuLocked = false;
+            if ((unlock_input.lockBit & 1) > 0)
+                menuLocked = false;
 
             event_state.has_event = false;
         }
     }
+
+    template<typename T>
+    void change_event_system(
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<EventState, ChangeNextEvent> &query1
+            )
+    {
+
+        for (auto &[id, comps] : query1)
+        {
+            auto &event_state = comps.get<EventState>();
+
+            event_state.event_id = comps.get<ChangeNextEvent>().event_id;
+            event_state.has_event = false;
+        }
+    }
+
 } // namespace Game::Overview
 

@@ -44,6 +44,8 @@
 #include "systems/overview/player_move.h"
 #include "systems/overview/input_system.h"
 #include "systems/overview/level_page_system.h"
+#include "systems/overview/logging_system.h"
+#include "systems/overview/scene_load_system.h"
 
 // Test
 #include "systems/test/spin_camera.h"

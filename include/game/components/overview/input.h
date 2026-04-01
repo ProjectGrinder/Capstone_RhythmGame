@@ -2,12 +2,6 @@
 
 namespace Game::Overview
 {
-    enum class InputType
-    {
-        Movements = 0,
-        Interact  = 1,
-        Menu      = 2
-    };
     struct Input
     {
         float axis_x;

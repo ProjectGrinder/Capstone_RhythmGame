@@ -4,24 +4,24 @@ namespace Game::Overview
 {
     struct SceneChangeEvent
     {
-        std::string scene;
+        uint16_t scene_id;
         SceneChangeEvent() = default;
-        explicit SceneChangeEvent(const std::string& scene) : scene(scene) {}
+        explicit SceneChangeEvent(const uint16_t& scene_id) : scene_id(scene_id) {}
     };
 
     struct DialogueEvent
     {
-        System::ECS::pid dialogue_box_id = UNASSIGNED;
-        std::string dialogue;
+        System::ECS::pid dialogue_box_id = static_cast<System::ECS::pid>(UNASSIGNED);
+        uint16_t dialogue_id;
         DialogueEvent() = default;
-        explicit DialogueEvent(const System::ECS::pid dialogue_box_id, const std::string &dialogue) : dialogue_box_id(dialogue_box_id), dialogue(dialogue) {}
+        explicit DialogueEvent(const uint16_t &dialogue_id) : dialogue_id(dialogue_id) {}
     };
 
     struct CutSceneEvent{};
 
     struct LevelNodeEvent
     {
-        System::ECS::pid level_node_id = UNASSIGNED;
+        System::ECS::pid level_node_id =  static_cast<System::ECS::pid>(UNASSIGNED);
         uint16_t id;
         LevelNodeEvent() = default;
         explicit LevelNodeEvent(const uint16_t id) : id(id) {}
@@ -31,6 +31,7 @@ namespace Game::Overview
     {
         uint16_t lockBit = 0;
         LockInputEvent() = default;
+        explicit LockInputEvent(const uint16_t lockBit) : lockBit(lockBit) {}
         explicit LockInputEvent(std::initializer_list<InputType> inputs)
         {
             for (auto input : inputs)
@@ -46,6 +47,7 @@ namespace Game::Overview
         {
             lockBit = 7;
         }
+        explicit UnlockInputEvent(const uint16_t lockBit) : lockBit(lockBit) {}
         explicit UnlockInputEvent(std::initializer_list<InputType> inputs)
         {
             for (auto input : inputs)
@@ -62,6 +64,13 @@ namespace Game::Overview
         explicit PanCameraEvent(const float x, const float y) : x(x), y(y) {}
     };
 
+    struct ChangeNextEvent
+    {
+        uint16_t event_id;
+        ChangeNextEvent() = default;
+        explicit ChangeNextEvent(const uint16_t event_id) : event_id(event_id) {}
+    };
+
     using Event = std::variant<
             SceneChangeEvent,
             DialogueEvent,
@@ -69,7 +78,8 @@ namespace Game::Overview
             LevelNodeEvent,
             LockInputEvent,
             UnlockInputEvent,
-            PanCameraEvent
+            PanCameraEvent,
+            ChangeNextEvent
         >;
 
     struct EventSequence
