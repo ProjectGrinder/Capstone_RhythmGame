@@ -65,7 +65,6 @@ namespace Scene
             Game::BulletHell::pattern_system<Syscall>,
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
-            Game::Rhythm::load_chart<Syscall>,
             Game::Rhythm::handle_tap_note<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::handle_bpm<Syscall>,

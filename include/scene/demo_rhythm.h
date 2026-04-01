@@ -84,13 +84,35 @@ namespace Scene
         return (chart);
     }
 
+    inline Game::Battle::BattleState create_battle_state()
+    {
+        Game::Battle::BattleState state(100, 100, Game::Battle::Difficulty());
+        state.current_phase = Game::Battle::RHYTHM;
+        return (state);
+    };
+    inline Game::Battle::RhythmState create_rhythm_state()
+    {
+        Game::Battle::RhythmState state(1, 100, 60, 1.0f, 1.0f);
+        state.accept_loss.normal = 5;
+        state.accept_loss.accent = 5;
+        state.accept_loss.rain = 2;
+        state.accept_loss.hold = 5;
+        state.accept_loss.hold_end = 2;
+        return (state);
+    };
+
+    inline Game::Rhythm::NoteField create_field()
+    {
+        return Game::Rhythm::NoteField(100, 500, 500, 600, 700, 800);;
+    }
+
     struct DemoRhythm
     {
         static DemoRhythm instance();
 
         constexpr static auto name = "DemoRhythm";
         // declare scene parameters
-        constexpr static size_t MaxResource = 500;
+        constexpr static size_t MaxResource = 2000;
         using ComponentTuple = std::tuple<
             Game::Battle::BattleState,
             Game::Battle::RhythmState,
@@ -119,35 +141,24 @@ namespace Scene
             Game::Rhythm::update_notes<Syscall>,
             Game::Battle::update_global_clock<Syscall>
             >;
-        
+
+        static void load_chart(
+            std::shared_ptr<TaskManager> &tm,
+            Game::Battle::ChartData &chart,
+            Game::Rhythm::NoteField &field);
+
         static std::shared_ptr<TaskManager> init()
         {
             auto tm = std::make_shared<TaskManager>();
-            // Create and configure BattleState
-            auto config_battle_state = []
-            {
-                Game::Battle::BattleState state(100, 100, Game::Battle::Difficulty());
-                state.current_phase = Game::Battle::RHYTHM;
-                return (state);
-            };
-            auto config_rhythm_state = []
-            {
-                Game::Battle::RhythmState state(1, 100, 60, 1.0f, 1.0f);
-                state.accept_loss.normal = 5;
-                state.accept_loss.accent = 5;
-                state.accept_loss.rain = 2;
-                state.accept_loss.hold = 5;
-                state.accept_loss.hold_end = 2;
-                return (state);
-            };
+
             tm->create_entity<Game::Battle::BattleState,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
             Game::Rhythm::KeyInput,
             Game::BulletHell::Input>
             (
-                config_battle_state(),
-                config_rhythm_state(),
+                create_battle_state(),
+                create_rhythm_state(),
                 create_demo_chart(),
                 Game::Rhythm::KeyInput(),
                 Game::BulletHell::Input());
@@ -157,6 +168,14 @@ namespace Scene
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
+
+            tm->create_entity<Game::Rhythm::NoteField>(create_field());
+
+            auto chart = create_demo_chart();
+            auto field = create_field();
+
+            load_chart(tm, chart, field);
+
             tm->run_all();
             return (tm);
         }

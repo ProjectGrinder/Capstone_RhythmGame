@@ -17,7 +17,6 @@
 #include "game/systems/rhythm/handle_tap_note.h" // TODO: Pooh implement this system
 #include "game/systems/rhythm/set_holding_time.h"
 #include "game/systems/rhythm/update_notes.h"
-#include "game/systems/rhythm/util/load_chart.h"
 // General Battle Part
 #include "game/systems/phase_change.h"
 #include "game/systems/global_clock.h"
