@@ -21,6 +21,7 @@ namespace Game::Overview
 
             for (auto &[id, comps] : interactable_query)
             {
+                comps.get<Interactable>().in_range = false;
                 const float dx = comps.get<Physics::Position>().x - player_pos.x;
                 const float dy = comps.get<Physics::Position>().y - player_pos.y;
                 const float distance_squared = dx * dx + dy * dy;
@@ -44,7 +45,7 @@ namespace Game::Overview
         for (auto &[pid, player_comps] : player_query)
         {
             auto &player_c = player_comps.get<Player>();
-            const auto &player_pos = player_comps.get<Physics::Position>();
+            auto &player_pos = player_comps.get<Physics::Position>();
             const auto &player_col = player_comps.get<Physics::CircularCollider>();
             auto &player_velos = player_comps.get<Velocity>();
 
@@ -54,24 +55,38 @@ namespace Game::Overview
                 const auto &pos = comps.get<Physics::Position>();
                 const auto &col = comps.get<Physics::RectangularCollider>();
 
-                if (player_pos.x + player_col.radius_x > pos.x - col.size_x)
-                    player_velos.vx = player_velos.vx>0 ? 0 : player_velos.vx;
+                player_c.on_ground  = false;
 
-                if (player_pos.x - player_col.radius_x > pos.x + col.size_x)
-                    player_velos.vx = player_velos.vx<0 ? 0 : player_velos.vx;
-
-                if (player_pos.y + player_col.radius_y > pos.y - col.size_y)
-                    player_velos.vy = player_velos.vy>0 ? 0 : player_velos.vy;
-
-                if (player_pos.y - player_col.radius_y > pos.y + col.size_y)
+                if (player_pos.x + player_col.radius_x > pos.x - col.size_x && player_pos.x - player_col.radius_x < pos.x + col.size_x &&
+                    player_pos.y + player_col.radius_y > pos.y - col.size_y && player_pos.y - player_col.radius_y < pos.y + col.size_y)
                 {
-                    player_velos.vy = player_velos.vy<0 ? 0 : player_velos.vy;
-                    player_c.on_ground  = true;
+                    float dx = player_pos.x - pos.x;
+                    float px = (col.size_x + player_col.radius_x) - abs(dx);
+
+                    float dy = player_pos.y - pos.y;
+                    float py = (col.size_y + player_col.radius_y) - abs(dy);
+
+                    if (px < py)
+                    {
+                        if (dx > 0)
+                            player_pos.x += px;
+                        else
+                            player_pos.x -= px;
+                        player_velos.vx = 0;
+                    }
+                    else
+                    {
+
+                        if (player_velos.vy <= 0)
+                        {
+                            player_pos.y += py;
+                            player_c.on_ground = true;
+                        }
+                        else
+                            player_pos.y -= py;
+                        player_velos.vy = 0;
+                    }
                 }
-
-                else
-                    player_c.on_ground  = false;
-
             }
         }
     }

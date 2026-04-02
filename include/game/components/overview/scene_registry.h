@@ -6,7 +6,7 @@ namespace Game::Overview
     {
         float posX, posY;
         uint16_t status_bit;
-        uint16_t event_id = static_cast<uint16_t>(UNASSIGNED);
+        uint16_t event_id = INVALID_ID;
         Battle::GraphicData graphic_data;
         Battle::ColliderData box_collider_data;
         Battle::ColliderData circle_collider_data;

@@ -14,14 +14,14 @@ namespace Game::Overview
             return;
 
         const auto &input = input_query.front().components.get<Input>();
-        const auto &level_registry = level_reg_query.front().components.get<LevelRegistry>();
+        // const auto &level_registry = level_reg_query.front().components.get<LevelRegistry>();
 
         for (auto &[id, comps] : query1)
         {
-            auto &event_state = comps.get<EventState>();
+            // auto &event_state = comps.get<EventState>();
             auto &level_node_ev = comps.get<LevelNodeEvent>();
 
-            if (level_node_ev.level_node_id != UNASSIGNED)
+            if (level_node_ev.level_node_id != INVALID_ID)
             {
                 // TODO : More Render comps to add
                 level_node_ev.level_node_id = syscall.create_entity(LevelNode(level_node_ev.id));

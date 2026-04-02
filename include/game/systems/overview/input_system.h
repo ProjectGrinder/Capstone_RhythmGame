@@ -25,7 +25,7 @@ namespace Game::Overview
         constexpr auto TAB = 0x09;
         constexpr auto ESC = 0x1B;
 
-        auto input_c = input.front().get<Input>();
+        auto &input_c = input.front().get<Input>();
 
         input_c.axis_x =
             static_cast<float>(get_key_state(RIGHT) - get_key_state(LEFT));
@@ -49,7 +49,5 @@ namespace Game::Overview
 
         input_c.escape_pressed = get_key_state(ESC) && !input_c.escape_held;
         input_c.escape_held = get_key_state(ESC);
-
-        if (input_c.up_held) LOG_INFO("Input Run");
     }
 } // namespace Game::Overview

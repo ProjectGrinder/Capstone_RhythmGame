@@ -21,7 +21,7 @@ namespace Game::Overview
             syscall.add_components(object, Interactable(), Physics::CircularCollider(collider_data.offsetX,collider_data.offsetY, collider_data.colX, collider_data.colY));
         }
 
-        if (scene_data.event_id !=  static_cast<uint16_t>(UNASSIGNED))
+        if (scene_data.event_id !=  INVALID_ID)
         {
             syscall.add_components(object, EventState(scene_data.event_id));
         }

@@ -9,7 +9,7 @@ namespace Game::Overview
         System::ECS::Query<Battle::BattleState> &global_query,
         System::ECS::Query<Player, Position, Velocity> &player_query,
         System::ECS::Query<Interactable, EventState> &interact_query,
-        System::ECS::Query<DialogueBox, EventState> &dialog_query)
+        System::ECS::Query<DialogueBox> &dialog_query)
     {
         if (global_query.begin() == global_query.end())
             return;
@@ -24,7 +24,7 @@ namespace Game::Overview
         const auto player_pos = player_query.front().get<Position>();
         const auto player_vel = player_query.front().get<Velocity>();
         LOG_INFO("Player Pos : (%d,%d), Vel : (%d,%d)", static_cast<int>(player_pos.x), static_cast<int>(player_pos.y), static_cast<int>(player_vel.vx), static_cast<int>(player_vel.vy));
-
+        if (!player_query.front().get<Player>().on_ground) LOG_INFO("Is on Air");
         for (auto &[id, comps] : interact_query)
         {
             if (comps.get<EventState>().event_occupied) continue;
@@ -33,7 +33,7 @@ namespace Game::Overview
 
         for (auto &[id, comps] : dialog_query)
         {
-            if (!comps.get<EventState>().has_event) continue;
+            LOG_INFO("Dialog box ID : %d", id);
             LOG_INFO(comps.get<DialogueBox>().current_text.c_str());
         }
         LOG_INFO("----------------------------------");

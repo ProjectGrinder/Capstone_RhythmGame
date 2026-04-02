@@ -18,7 +18,7 @@ namespace Game::Overview
             auto &event_state = comps.get<EventState>();
             if (!event_state.event_occupied || event_state.has_event) continue;
 
-            event_state.event_idx++;
+            LOG_INFO("Event : %d", event_state.event_idx);
             if (event_register[event_state.event_id].events.size() == event_state.event_idx)
             {
                 event_state.event_occupied = false;
@@ -35,7 +35,10 @@ namespace Game::Overview
                     using T = std::decay_t<decltype(evt)>;
                     syscall.add_component(id, T(evt));   // force clean type
                 }, e);
+
+                event_state.event_idx++;
             }
+
         }
     }
 
@@ -67,7 +70,10 @@ namespace Game::Overview
             if ((lock_input.lockBit & 1) > 0)
                 menuLocked = true;
 
+            LOG_INFO("Entity ID : %d",id);
+
             event_state.has_event = false;
+            syscall.template remove_component<LockInputEvent>(id);
         }
 
         for (auto &[id, comps] : unlock_query)
@@ -85,6 +91,7 @@ namespace Game::Overview
                 menuLocked = false;
 
             event_state.has_event = false;
+            syscall.template remove_component<UnlockInputEvent>(id);
         }
     }
 
@@ -101,6 +108,7 @@ namespace Game::Overview
 
             event_state.event_id = comps.get<ChangeNextEvent>().event_id;
             event_state.has_event = false;
+            syscall.template remove_component<ChangeNextEvent>(id);
         }
     }
 

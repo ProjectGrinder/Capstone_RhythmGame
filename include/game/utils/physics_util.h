@@ -7,6 +7,8 @@
 
 // TODO : Please find a better place for this
 inline float UNASSIGNED = -(1 << 24); // 2^24
+inline uint16_t INVALID_ID = UINT16_MAX;
+inline System::ECS::pid INVALID_PID = UINT64_MAX;
 
 // Warning : cmath, random
 namespace Game::Physics

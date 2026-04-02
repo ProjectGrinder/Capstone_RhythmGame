@@ -36,10 +36,10 @@ namespace Game::BulletHell
             auto &vel = comps.get<Velocity>();
             const auto &acc = comps.get<Acceleration>();
 
-            vel.vx += acc.ax * static_cast<float>(get_delta_time()/1000);
+            vel.vx += acc.ax;
             vel.vx = Physics::clamp(vel.vx, acc.min_speed_x, acc.max_speed_x);
 
-            vel.vy += acc.ay * static_cast<float>(get_delta_time()/1000);
+            vel.vy += acc.ay;
             vel.vy = Physics::clamp(vel.vy, acc.min_speed_y, acc.max_speed_y);
 
         }

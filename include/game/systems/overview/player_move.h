@@ -20,12 +20,10 @@ namespace Game::Overview
         const auto &input = query1.front().get<Input>();
         const auto &global_state = global_query.front().components.get<GlobalState>();
 
-        if (input.up_held) LOG_INFO("Player Run");
-
         for (auto &[id, comps] : query2)
         {
             if (!comps.get<Player>().on_ground)
-                comps.get<Acceleration>().ay = -5.f;
+                comps.get<Acceleration>().ay = -0.5f;
             else
                 comps.get<Acceleration>().ay = 0;
 
@@ -39,6 +37,7 @@ namespace Game::Overview
 
             if (input.z_pressed && comps.get<Player>().on_ground)
             {
+                LOG_INFO("Player Jump");
                 comps.get<Velocity>().vy = player_stat.jump_height;
             }
 

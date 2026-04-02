@@ -23,7 +23,7 @@ namespace Game::Overview
             auto &event_state = comps.get<EventState>();
             auto &dialogue = comps.get<DialogueEvent>();
 
-            if (dialogue.dialogue_box_id != UNASSIGNED)
+            if (dialogue.dialogue_box_id == INVALID_PID)
             {
                 // TODO : More Render comps to add
                 dialogue.dialogue_box_id = syscall.create_entity(DialogueBox(dialogue_registry[dialogue.dialogue_id]));
@@ -34,7 +34,7 @@ namespace Game::Overview
                 // No ID query access so this.
                 for (auto &[id2, comps2] : query2)
                 {
-                    if (input.up_pressed || input.z_pressed && dialogue.dialogue_box_id == id2)
+                    if ((input.up_pressed || input.z_pressed) && dialogue.dialogue_box_id == id2)
                     {
                         auto &dialogue_box = comps2.get<DialogueBox>();
                         if (!dialogue_box.is_typing)
@@ -68,7 +68,7 @@ namespace Game::Overview
                 if (dialogue_box.current_text.size() == dialogue_box.text_to_show.size())
                     dialogue_box.is_typing = false;
                 else
-                    dialogue_box.current_text = dialogue_box.text_to_show.substr(0, dialogue_box.current_text.size());
+                    dialogue_box.current_text = dialogue_box.text_to_show.substr(0, dialogue_box.current_text.size()+1);
             }
 
             if (dialogue_box.is_destroyed)

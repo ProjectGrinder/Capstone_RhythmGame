@@ -11,7 +11,7 @@ namespace Game::Overview
 
     struct DialogueEvent
     {
-        System::ECS::pid dialogue_box_id = static_cast<System::ECS::pid>(UNASSIGNED);
+        System::ECS::pid dialogue_box_id = INVALID_PID;
         uint16_t dialogue_id;
         DialogueEvent() = default;
         explicit DialogueEvent(const uint16_t &dialogue_id) : dialogue_id(dialogue_id) {}
@@ -21,7 +21,7 @@ namespace Game::Overview
 
     struct LevelNodeEvent
     {
-        System::ECS::pid level_node_id =  static_cast<System::ECS::pid>(UNASSIGNED);
+        System::ECS::pid level_node_id =  INVALID_PID;
         uint16_t id;
         LevelNodeEvent() = default;
         explicit LevelNodeEvent(const uint16_t id) : id(id) {}

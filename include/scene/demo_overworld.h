@@ -115,19 +115,19 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
+            Game::Overview::load_scene_objects<Syscall>,
             Game::Overview::input_system<Syscall>,
             Game::Overview::player_move<Syscall>,
-            Game::BulletHell::movement_system<Syscall>,
             Game::BulletHell::acceleration_system<Syscall>,
             Game::BulletHell::rotation_system<Syscall>,
-            Game::Overview::logging_system<Syscall>,
+            Game::BulletHell::movement_system<Syscall>,
+            Game::Overview::event_system<Syscall>,
             Game::Overview::detect_overlap_block<Syscall>,
             Game::Overview::detect_overlap_interactable<Syscall>,
-            Game::Overview::dialogue_box_system<Syscall>,
             Game::Overview::dialogue_system<Syscall>,
-            Game::Overview::event_system<Syscall>,
-            Game::Overview::lock_event_system<Syscall>,
-            Game::Overview::load_scene_objects<Syscall>
+            Game::Overview::dialogue_box_system<Syscall>,
+            Game::Overview::lock_event_system<Syscall>
+            //Game::Overview::logging_system<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init()
