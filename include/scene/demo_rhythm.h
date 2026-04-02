@@ -106,6 +106,26 @@ namespace Scene
         return Game::Rhythm::NoteField(100, 500, 500, 600, 700, 800);;
     }
 
+    inline Game::Battle::BpmInfo create_bpm_info()
+    {
+        Game::Battle::BpmInfo bpm;
+        Game::Battle::BpmInfo::InfoPair info{};
+        info.bpm = 134.00f;
+        info.timing = 0;
+        bpm.bpm_list.emplace_back(info);
+        return bpm;
+    }
+
+    inline Game::Battle::PhaseInfo create_phase_info()
+    {
+        Game::Battle::PhaseInfo phase;
+        Game::Battle::PhaseInfo::InfoPair info{};
+        info.phase = Game::Battle::RHYTHM;
+        info.timing = 0;
+        phase.phase_list.emplace_back(info);
+        return phase;
+    }
+
     struct DemoRhythm
     {
         static DemoRhythm instance();
@@ -162,6 +182,15 @@ namespace Scene
                 create_demo_chart(),
                 Game::Rhythm::KeyInput(),
                 Game::BulletHell::Input());
+
+            tm->create_entity<Game::Battle::LevelData>(Game::Battle::LevelData(
+                "A World Without You",
+                "Nakuya",
+                "Digital Jpop",
+                134.00f,
+                create_bpm_info(),
+                create_phase_info(),
+                std::vector<Game::Battle::Difficulty>()));
 
             // Create Lane
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
