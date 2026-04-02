@@ -37,16 +37,13 @@ namespace Game::Rhythm
         }
         else return;
 
-        if (comp->get<HoldStart>().is_hold == false)
-        {
-            comp->get<NoteStatus>().state = 0; // remove tap notes
-        }
-        else
+        if (comp->get<HoldStart>().is_hold == true)
         {
             comp->get<HoldStart>().is_hold = true; // start holding
             lane->get<Lane>().hold_active = true;
             LOG_INFO("Start Holding");
         }
+            comp->get<NoteStatus>().state = 0; // remove tap notes
     }
 
     inline void handle_accent_note(
@@ -66,16 +63,13 @@ namespace Game::Rhythm
         }
         else return;
 
-        if (comp->get<HoldStart>().is_hold == false)
-        {
-            comp->get<NoteStatus>().state = 0; // remove tap notes
-        }
-        else
+        if (comp->get<HoldStart>().is_hold == true)
         {
             comp->get<HoldStart>().is_hold = true; // start holding
             lane->get<Lane>().hold_active = true;
             LOG_INFO("Start Holding");
         }
+        comp->get<NoteStatus>().state = 0; // remove tap notes
     }
 
     inline void handle_rain_note(
@@ -125,7 +119,7 @@ namespace Game::Rhythm
                     }
 
                     // handle both tap notes and "un-hold" hold notes
-                    for (auto &[id3, comp3] : input_query) // check when stop holding
+                    for (auto &[id3, comp3] : input_query)
                     {
                         if ((lane_num == 0 && comp3.get<KeyInput>().key1_pressed == true) ||
                         (lane_num == 1 && comp3.get<KeyInput>().key2_pressed == true) ||
@@ -155,6 +149,7 @@ namespace Game::Rhythm
                     {
                         battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
                         comp2.get<Lane>().hold_active = false;
+                        comp2.get<Lane>().hold_end_time = 0;
                         LOG_INFO("Perfect");
                     }
                 }

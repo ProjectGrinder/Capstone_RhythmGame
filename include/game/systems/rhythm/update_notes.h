@@ -73,7 +73,7 @@ namespace Game::Rhythm
             {
                 constexpr auto frame_time = 1;
                 // modify to what seems fit
-                comp.get<Position>().y -= current_speed * frame_time;
+                comp.get<Position>().y += current_speed * frame_time;
             }
             else if (comp.get<NoteStatus>().state == -1)
             {

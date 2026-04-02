@@ -24,7 +24,7 @@ namespace Game::Rhythm
 
         for (auto &[id, comp]: note_query)
         {
-            if (comp.get<NoteStatus>().state != 1)
+            if (comp.get<NoteStatus>().state == 0)
                 continue;
 
             auto &note_time = comp.get<Timing>().timing;
@@ -39,7 +39,11 @@ namespace Game::Rhythm
                     {
                         battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.rain;
                     }
-                    else
+                    else if (type == 1)
+                    {
+                        battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.accent;
+                    }
+                    else if (type == 0)
                     {
                         battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.normal;
                     }
@@ -71,7 +75,7 @@ namespace Game::Rhythm
                 comp.get<NoteStatus>().state = 0;
             }
             // Handle miss for an entire hold note, which counts as two misses (start and end)
-            // If the note is held but released too early, it should be handled in handle_rhythm.h to be checked along
+            // If the note is held but released too early, it should be handled in handle_holding.h to be checked along
             // with other judgements
         }
     }
