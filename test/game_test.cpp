@@ -109,7 +109,7 @@ pid CreateBoomerBullet(BulletHell_Resource *resource, Bullet bullet = {}, Boomin
     resource->add_resource<Position>(id, Position(pos));
     resource->add_resource<Rotation>(id,{});
     resource->add_resource<Scale>(id, Scale());
-    resource->add_resource<Game::Render::Material>(id, Game::Render::Material(nullptr,{},0,nullptr,{},0));
+    // resource->add_resource<Game::Render::Material>(id, Game::Render::Material(nullptr,{},0,nullptr,{},0));
     resource->add_resource<CircularCollider>(id, CircularCollider(cc));
     return id;
 }
@@ -127,7 +127,7 @@ pid CreateLaserBullet(BulletHell_Resource *resource, Bullet bullet = {}, Laser l
     resource->add_resource<Rotation>(id,Rotation(rot));
     resource->add_resource<Scale>(id, Scale(scl));
     resource->add_resource<RectangularCollider>(id, RectangularCollider(rc));
-    resource->add_resource<Game::Render::Material>(id, Game::Render::Material(nullptr,{},0,nullptr,{},0));
+    // resource->add_resource<Game::Render::Material>(id, Game::Render::Material(nullptr,{},0,nullptr,{},0));
     return id;
 }
 

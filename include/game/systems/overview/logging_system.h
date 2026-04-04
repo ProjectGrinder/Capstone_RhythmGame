@@ -33,7 +33,7 @@ namespace Game::Overview
 
         for (auto &[id, comps] : dialog_query)
         {
-            LOG_INFO("Dialog box ID : %d", id);
+            // LOG_INFO("Dialog box ID : %d", id);
             LOG_INFO(comps.get<DialogueBox>().current_text.c_str());
         }
         LOG_INFO("----------------------------------");

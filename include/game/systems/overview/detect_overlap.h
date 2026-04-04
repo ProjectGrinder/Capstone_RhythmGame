@@ -49,13 +49,13 @@ namespace Game::Overview
             const auto &player_col = player_comps.get<Physics::CircularCollider>();
             auto &player_velos = player_comps.get<Velocity>();
 
+            player_c.on_ground  = false;
+
             // AABB check
             for (auto &[id, comps] : block_query)
             {
                 const auto &pos = comps.get<Physics::Position>();
                 const auto &col = comps.get<Physics::RectangularCollider>();
-
-                player_c.on_ground  = false;
 
                 if (player_pos.x + player_col.radius_x > pos.x - col.size_x && player_pos.x - player_col.radius_x < pos.x + col.size_x &&
                     player_pos.y + player_col.radius_y > pos.y - col.size_y && player_pos.y - player_col.radius_y < pos.y + col.size_y)
@@ -76,8 +76,7 @@ namespace Game::Overview
                     }
                     else
                     {
-
-                        if (player_velos.vy <= 0)
+                        if (dy > 0)
                         {
                             player_pos.y += py;
                             player_c.on_ground = true;

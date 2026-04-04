@@ -126,8 +126,8 @@ namespace Scene
             Game::Overview::detect_overlap_interactable<Syscall>,
             Game::Overview::dialogue_system<Syscall>,
             Game::Overview::dialogue_box_system<Syscall>,
-            Game::Overview::lock_event_system<Syscall>
-            //Game::Overview::logging_system<Syscall>
+            Game::Overview::lock_event_system<Syscall>,
+            Game::Overview::logging_system<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init()
