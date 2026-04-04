@@ -159,7 +159,7 @@ namespace Scene
             Velocity,
             Acceleration,
             AngularVelocity, Game::Physics::CircularCollider>(
-                {}, {}, {}, {}, {}, {}, {}, {}
+                {}, {}, {}, {}, {}, Acceleration(0,0,10,10), {}, {}
             );
             tm->run_all();
             return (tm);

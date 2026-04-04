@@ -48,6 +48,7 @@ namespace Game::Overview
             auto &player_pos = player_comps.get<Physics::Position>();
             const auto &player_col = player_comps.get<Physics::CircularCollider>();
             auto &player_velos = player_comps.get<Velocity>();
+            constexpr auto ground_offset = 0.1f;
 
             player_c.on_ground  = false;
 
@@ -76,14 +77,23 @@ namespace Game::Overview
                     }
                     else
                     {
+                        if (dy - ground_offset > 0)
+                        {
+                            player_pos.y += py-ground_offset;
+                            player_c.on_ground = true;
+
+                        }
                         if (dy > 0)
                         {
-                            player_pos.y += py;
+                            player_pos.y += py-ground_offset;
                             player_c.on_ground = true;
+                            player_velos.vy = 0;
                         }
-                        else
+                        else if (dy<0)
+                        {
                             player_pos.y -= py;
-                        player_velos.vy = 0;
+                            player_velos.vy = 0;
+                        }
                     }
                 }
             }

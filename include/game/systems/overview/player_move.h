@@ -23,7 +23,7 @@ namespace Game::Overview
         for (auto &[id, comps] : query2)
         {
             if (!comps.get<Player>().on_ground)
-                comps.get<Acceleration>().ay = -0.5f;
+                comps.get<Acceleration>().ay = -0.098f;
             else
                 comps.get<Acceleration>().ay = 0;
 
