@@ -16,6 +16,8 @@ namespace System::Render
         std::vector<RenderObject> _batched;
         RenderingEnvironment _environment;
 
+        std::vector<SpriteRenderObject> _sprites;
+
         struct VS_Entry
         {
             uint32_t full_id = 0;

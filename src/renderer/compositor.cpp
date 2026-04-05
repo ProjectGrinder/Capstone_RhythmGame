@@ -42,8 +42,15 @@ namespace System::Render
             if (!intent.common.visible)
                 continue;
 
-            ComposedDrawCommon common{
-                    intent.common.vs, intent.common.ps, intent.common.sp, intent.common.color, intent.common.key};
+            CompositorItem item = {
+                    .kind = intent.kind,
+                    .common =
+                            {intent.common.vs,
+                             intent.common.ps,
+                             intent.common.sp,
+                             intent.common.color,
+                             intent.common.key},
+            };
 
             const auto pivot = intent.common.pivot;
             const auto rot_z = intent.common.rotation_z;
@@ -51,14 +58,12 @@ namespace System::Render
             const float obj_cos = std::cos(rot_z);
             const float obj_sin = std::sin(rot_z);
 
-            std::variant<ComposedSpriteDesc, ComposedTextDesc, TriangleDrawDesc> special;
-
             switch (intent.kind)
             {
             case DrawKind::KIND_TRIANGLE: {
                 const auto &tri = std::get<TriangleDrawDesc>(intent.special);
 
-                special = TriangleDrawDesc{
+                item.special = TriangleDrawDesc{
                         {Math::transform_pipe_fast(
                                  tri.points[0], obj_cos, obj_sin, pivot, camera, cam_cos, cam_sin, invHalfW, invHalfH),
                          Math::transform_pipe_fast(
@@ -78,22 +83,59 @@ namespace System::Render
 
             case DrawKind::KIND_SPRITE: {
                 const auto &spr = std::get<SpriteDrawDesc>(intent.special);
-                ComposedSpriteDesc composed_spr;
-                composed_spr.src_rect = spr.src_rect;
 
-                auto quad = Math::project_rect_local_to_ndc(spr.dst_rect, rot_z, pivot, camera);
-                for (int i = 0; i < 4; ++i)
-                    composed_spr.dst_rect[i] = quad[i];
-
-                composed_spr.flipX = spr.flipX;
-                composed_spr.flipY = spr.flipY;
-                special = composed_spr;
+                item.special = SpriteDrawDesc{
+                        .points =
+                                {
+                                        Math::transform_pipe_fast(
+                                                spr.points[0],
+                                                obj_cos,
+                                                obj_sin,
+                                                pivot,
+                                                camera,
+                                                cam_cos,
+                                                cam_sin,
+                                                invHalfW,
+                                                invHalfH),
+                                        Math::transform_pipe_fast(
+                                                spr.points[1],
+                                                obj_cos,
+                                                obj_sin,
+                                                pivot,
+                                                camera,
+                                                cam_cos,
+                                                cam_sin,
+                                                invHalfW,
+                                                invHalfH),
+                                        Math::transform_pipe_fast(
+                                                spr.points[2],
+                                                obj_cos,
+                                                obj_sin,
+                                                pivot,
+                                                camera,
+                                                cam_cos,
+                                                cam_sin,
+                                                invHalfW,
+                                                invHalfH),
+                                        Math::transform_pipe_fast(
+                                                spr.points[3],
+                                                obj_cos,
+                                                obj_sin,
+                                                pivot,
+                                                camera,
+                                                cam_cos,
+                                                cam_sin,
+                                                invHalfW,
+                                                invHalfH),
+                                },
+                        .flipX = spr.flipX,
+                        .flipY = spr.flipY};
                 break;
             }
 
             case DrawKind::KIND_TEXT: {
                 const auto &txt = std::get<TextDrawDesc>(intent.special);
-                special = ComposedTextDesc{txt.text, common.sp};
+                item.special = ComposedTextDesc{txt.text, item.common.sp};
                 break;
             }
 
@@ -101,7 +143,7 @@ namespace System::Render
                 continue;
             }
 
-            comp._items.push_back({intent.kind, common, std::move(special)});
+            comp._items.push_back(item);
         }
     }
 } // namespace System::Render

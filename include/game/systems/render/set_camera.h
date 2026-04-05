@@ -16,6 +16,5 @@ namespace Game::Render
         intent_camera.scaleY = scaleY;
         intent_camera.zoom = zoom;
         intent_camera.rotation = rotation;
-        LOG_INFO("Camera set");
     }
 } // namespace Game::Render
