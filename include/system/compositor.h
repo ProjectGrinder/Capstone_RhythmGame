@@ -133,13 +133,6 @@ namespace System::Render
         typedef uint32_t assets_id;
     }
 
-    struct ComposedSpriteDesc
-    {
-        Rect src_rect;
-        Math::Point dst_rect[4];
-        bool flipX, flipY;
-    };
-
     struct ComposedTextDesc
     {
         std::string_view text;
@@ -157,9 +150,9 @@ namespace System::Render
 
     struct CompositorItem
     {
-        DrawKind kind;
+        DrawKind kind = DrawKind::KIND_UNKNOWN;
         ComposedDrawCommon common;
-        std::variant<ComposedSpriteDesc, ComposedTextDesc, TriangleDrawDesc> special;
+        std::variant<SpriteDrawDesc, ComposedTextDesc, TriangleDrawDesc> special;
     };
 
     class Compositor

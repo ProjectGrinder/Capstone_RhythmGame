@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <d3d11.h>
 #include "device_resources.hpp"
+#include "library/dds.hpp"
 #include "renderer_types.h"
 #include "system/asset_manager.h"
 #include "utils/input_attribute_description.h"
@@ -24,6 +25,8 @@ namespace System::Render
             return DXGI_FORMAT_R32G32B32A32_FLOAT;
         case R32G32B32_FLOAT:
             return DXGI_FORMAT_R32G32B32_FLOAT;
+        case R32G32_FLOAT:
+            return DXGI_FORMAT_R32G32_FLOAT;
         case FLOAT32BITS:
             return DXGI_FORMAT_R32_FLOAT;
         case FLOAT16BITS:
@@ -51,6 +54,132 @@ namespace System::Render
         desc_out.InstanceDataStepRate = 0;
         return (desc_out);
     }
+
+    inline constexpr bool is_block_compressed(DXGI_FORMAT format)
+    {
+        switch (format)
+        {
+        case DXGI_FORMAT_BC1_UNORM:
+        case DXGI_FORMAT_BC1_UNORM_SRGB:
+        case DXGI_FORMAT_BC2_UNORM:
+        case DXGI_FORMAT_BC2_UNORM_SRGB:
+        case DXGI_FORMAT_BC3_UNORM:
+        case DXGI_FORMAT_BC3_UNORM_SRGB:
+        case DXGI_FORMAT_BC4_UNORM:
+        case DXGI_FORMAT_BC4_SNORM:
+        case DXGI_FORMAT_BC5_UNORM:
+        case DXGI_FORMAT_BC5_SNORM:
+        case DXGI_FORMAT_BC6H_UF16:
+        case DXGI_FORMAT_BC6H_SF16:
+        case DXGI_FORMAT_BC7_UNORM:
+        case DXGI_FORMAT_BC7_UNORM_SRGB:
+            return (true);
+        default:
+            return (false);
+        }
+    }
+
+    static inline UINT get_mip_pitch(const UINT &width, const DXGI_FORMAT &texture_format)
+    {
+        if (is_block_compressed(texture_format))
+        {
+            const UINT blockSize =
+                    (texture_format == DXGI_FORMAT_BC1_UNORM || texture_format == DXGI_FORMAT_BC1_UNORM_SRGB ||
+                     texture_format == DXGI_FORMAT_BC4_UNORM || texture_format == DXGI_FORMAT_BC4_SNORM)
+                            ? 8u
+                            : 16u;
+            return (max(1u, (width + 3u) / 4u) * blockSize);
+        }
+
+        const UINT bitsPerPixel = dds::getBitsPerPixel(texture_format);
+        return (max(1u, (width * bitsPerPixel + 7u) / 8u));
+    }
+
+    bool create_sprite_texture(
+            ID3D11Device *device,
+            dds::Image &image,
+            DXGI_FORMAT texture_format,
+            SpriteRenderObject &sprite_render_object)
+    {
+        if (image.mipmaps.empty())
+            return (false);
+
+        D3D11_TEXTURE2D_DESC tex_desc{};
+        tex_desc.Width = image.width;
+        tex_desc.Height = image.height;
+        tex_desc.MipLevels = image.numMips;
+        tex_desc.ArraySize = image.arraySize;
+        tex_desc.Format = texture_format;
+        tex_desc.SampleDesc.Count = 1;
+        tex_desc.SampleDesc.Quality = 0;
+        tex_desc.Usage = D3D11_USAGE_DEFAULT;
+        tex_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        tex_desc.CPUAccessFlags = 0;
+        tex_desc.MiscFlags = 0;
+
+        std::vector<D3D11_SUBRESOURCE_DATA> subresource;
+        subresource.reserve(image.mipmaps.size());
+
+        UINT mipWidth = image.width;
+        for (const auto &mip: image.mipmaps)
+        {
+            D3D11_SUBRESOURCE_DATA init{};
+            init.pSysMem = mip.data();
+            init.SysMemPitch = get_mip_pitch(mipWidth, texture_format);
+            init.SysMemSlicePitch = 0;
+            subresource.push_back(init);
+
+            mipWidth = max(1u, mipWidth >> 1);
+        }
+
+        HRESULT tex_hr = device->CreateTexture2D(&tex_desc, subresource.data(), &sprite_render_object.texture);
+        if (FAILED(tex_hr))
+        {
+            LOG_ERROR("Failed to create sprite texture, Code 0x%08lx", tex_hr);
+            return (false);
+        }
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc{};
+        srv_desc.Format = texture_format;
+        srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        srv_desc.Texture2D.MostDetailedMip = 0;
+        srv_desc.Texture2D.MipLevels = image.numMips;
+
+        tex_hr = device->CreateShaderResourceView(
+                sprite_render_object.texture.Get(), &srv_desc, &sprite_render_object.texture_view);
+        if (FAILED(tex_hr))
+        {
+            LOG_ERROR("Failed to create sprite SRV, Code 0x%08lx", tex_hr);
+            sprite_render_object.texture.Reset();
+            return (false);
+        }
+
+        D3D11_SAMPLER_DESC sampler_desc{};
+        sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+        sampler_desc.MipLODBias = 0.0f;
+        sampler_desc.MaxAnisotropy = 1;
+        sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+        sampler_desc.BorderColor[0] = 0.0f;
+        sampler_desc.BorderColor[1] = 0.0f;
+        sampler_desc.BorderColor[2] = 0.0f;
+        sampler_desc.BorderColor[3] = 0.0f;
+        sampler_desc.MinLOD = 0.0f;
+        sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+        tex_hr = device->CreateSamplerState(&sampler_desc, &sprite_render_object.sampler_state);
+        if (FAILED(tex_hr))
+        {
+            LOG_ERROR("Failed to create sprite sampler, Code 0x%08lx", tex_hr);
+            sprite_render_object.texture_view.Reset();
+            sprite_render_object.texture.Reset();
+            return (false);
+        }
+
+        return (true);
+    };
 
     Dx11Adapter::Dx11Adapter(Windows::DeviceResources &resources)
     {
@@ -82,6 +211,8 @@ namespace System::Render
 
     void Dx11Adapter::convert(Windows::DeviceResources &resources, const std::vector<CompositorItem> &items)
     {
+        _sprites.clear();
+
         _items.clear();
         _items.reserve(items.size());
         _batched.clear();
@@ -154,7 +285,7 @@ namespace System::Render
                         _input_layout_desc_scratch.push_back(
                                 create_input_element_desc(vs_rec->info.info.as_shader.data[i]));
 
-                    device->CreateInputLayout(
+                    hr = device->CreateInputLayout(
                             _input_layout_desc_scratch.data(),
                             (UINT) _input_layout_desc_scratch.size(),
                             vs_rec->data->data,
@@ -227,6 +358,121 @@ namespace System::Render
                 i_ptr[i_idx++] = (UINT) base + 0;
                 i_ptr[i_idx++] = (UINT) base + 1;
                 i_ptr[i_idx++] = (UINT) base + 2;
+
+                break;
+            }
+            case DrawKind::KIND_SPRITE: {
+                const AssetsRecord *sp_rec = common.sp;
+                auto const &[points, flipX, flipY] = std::get<SpriteDrawDesc>(special);
+
+                SpriteRenderObject sprite_render_object{};
+                sprite_render_object.render_id.sort_key = common.key;
+                sprite_render_object.vertex_shader = render_object.vertex_shader;
+                sprite_render_object.pixel_shader = render_object.pixel_shader;
+                sprite_render_object.input_layout = render_object.input_layout;
+                sprite_render_object.count.index_count = 6;
+                sprite_render_object.offset = 0;
+                sprite_render_object.vertex_base = 0;
+                sprite_render_object.topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+                sprite_render_object.index_format = DXGI_FORMAT_R32_UINT;
+
+                constexpr Rect src_rect = {0, 0, 1, 1};
+
+                const float u0 = flipX ? src_rect.u1 : src_rect.u0;
+                const float u1 = flipX ? src_rect.u0 : src_rect.u1;
+                const float v0 = flipY ? src_rect.v1 : src_rect.v0;
+                const float v1 = flipY ? src_rect.v0 : src_rect.v1;
+
+                Math::PointUv quad[4]{};
+                quad[0] = {points[0].pos[0], points[0].pos[1], points[0].pos[2], u0, v0};
+                quad[1] = {points[1].pos[0], points[1].pos[1], points[1].pos[2], u1, v0};
+                quad[2] = {points[2].pos[0], points[2].pos[1], points[2].pos[2], u1, v1};
+                quad[3] = {points[3].pos[0], points[3].pos[1], points[3].pos[2], u0, v1};
+
+                D3D11_BUFFER_DESC vb_desc{};
+                vb_desc.Usage = D3D11_USAGE_DEFAULT;
+                vb_desc.ByteWidth = sizeof(quad);
+                vb_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+                vb_desc.CPUAccessFlags = 0;
+                vb_desc.MiscFlags = 0;
+                vb_desc.StructureByteStride = 0;
+
+                D3D11_SUBRESOURCE_DATA vb_data{};
+                vb_data.pSysMem = quad;
+                vb_data.SysMemPitch = 0;
+                vb_data.SysMemSlicePitch = 0;
+
+                HRESULT hr_vb = device->CreateBuffer(&vb_desc, &vb_data, &sprite_render_object.vertex_buffer);
+                if (FAILED(hr_vb))
+                {
+                    LOG_ERROR("Failed to create sprite vertex buffer, Code 0x%08lx", hr_vb);
+                    continue;
+                }
+
+                const UINT indices[6] = {0, 1, 2, 0, 2, 3};
+
+                D3D11_BUFFER_DESC ib_desc{};
+                ib_desc.Usage = D3D11_USAGE_DEFAULT;
+                ib_desc.ByteWidth = sizeof(indices);
+                ib_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+                ib_desc.CPUAccessFlags = 0;
+                ib_desc.MiscFlags = 0;
+                ib_desc.StructureByteStride = 0;
+
+                D3D11_SUBRESOURCE_DATA ib_data{};
+                ib_data.pSysMem = indices;
+                ib_data.SysMemPitch = 0;
+                ib_data.SysMemSlicePitch = 0;
+
+                HRESULT hr_ib = device->CreateBuffer(&ib_desc, &ib_data, &sprite_render_object.index_buffer);
+                if (FAILED(hr_ib))
+                {
+                    LOG_ERROR("Failed to create sprite index buffer, Code 0x%08lx", hr_ib);
+                    sprite_render_object.vertex_buffer.Reset();
+                    continue;
+                }
+
+                // DDS-backed texture upload.
+                // 1) get raw bytes from AssetsRecord
+                // 2) dds::readImage(...)
+                // 3) CreateTexture2D + CreateShaderResourceView
+                if (sp_rec != nullptr && sp_rec->data != nullptr)
+                {
+                    dds::Image image{};
+                    const auto *raw_bytes = reinterpret_cast<const std::uint8_t *>(sp_rec->data->data);
+                    const std::size_t raw_size = sp_rec->data->size;
+
+                    bool success = false;
+
+                    if (dds::readImage(raw_bytes, raw_size, &image) == dds::ReadResult::Success)
+                    {
+                        switch (image.format)
+                        {
+                        case DXGI_FORMAT_R8G8B8A8_UNORM:
+                            success = create_sprite_texture(
+                                    device, image, DXGI_FORMAT_R8G8B8A8_UNORM, sprite_render_object);
+                            break;
+                        case DXGI_FORMAT_BC1_UNORM:
+                            success = create_sprite_texture(device, image, DXGI_FORMAT_BC1_UNORM, sprite_render_object);
+                            break;
+                        case DXGI_FORMAT_BC3_UNORM:
+                            success = create_sprite_texture(device, image, DXGI_FORMAT_BC3_UNORM, sprite_render_object);
+                            break;
+                        default:
+                            LOG_ERROR("Unsupported SPRITE format %d", image.format);
+                            break;
+                        }
+                    }
+
+                    if (!success)
+                    {
+                        LOG_ERROR("Failed to create sprite texture");
+                        continue;
+                    }
+                }
+
+                _sprites.push_back(std::move(sprite_render_object));
+                continue;
             }
             default:
                 break;
@@ -330,6 +576,12 @@ namespace System::Render
         for (const auto &item: _items)
         {
             render(&_environment, &item);
+        }
+
+        // Sprite rendering part
+        for (const auto &sprite: _sprites)
+        {
+            render_sprite(&_environment, &sprite);
         }
     }
 
