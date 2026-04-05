@@ -15,9 +15,12 @@ namespace Game::BulletHell
         if (battle_state.current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
+        if (battle_state.clock_time/1000 % 250 > 2) return;
+
         LOG_INFO("----------------------------------");
 
         // const auto &bullet_loader = query.front().get<Battle::BulletLoader>();
+
         LOG_INFO("Time : %d.%d%d", battle_state.clock_time/1000000, battle_state.clock_time/10000 - (battle_state.clock_time/1000000)*100);
 
         LOG_INFO("Hp : %d, iFrame : %d, Graze : %d, Bullet Pointer : %d", battle_state.hp, query.front().get<Battle::BulletHellState>().iframe_time, query.front().get<Battle::BulletHellState>().graze, query.front().get<Battle::BulletLoader>().pointer);//bullet_loader.pointer);

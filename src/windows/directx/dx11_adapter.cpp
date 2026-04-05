@@ -228,7 +228,8 @@ namespace System::Render
         }
 
         Math::Point *v_ptr = static_cast<Math::Point *>(v_map.pData);
-        UINT *i_ptr = static_cast<UINT *>(i_map.pData);
+        // UINT *i_ptr = static_cast<UINT *>(i_map.pData);
+        size_t *i_ptr = static_cast<size_t *>(i_map.pData);
 
         size_t v_idx = 0;
         size_t i_idx = 0;

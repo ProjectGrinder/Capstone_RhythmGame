@@ -5,6 +5,7 @@
 // Bullet Hell Part
 #include "game/systems/bullethell/bullet_collision.h"
 #include "game/systems/bullethell/bullet_system.h"
+#include "game/systems/bullethell/bullet_clearer_system.h"
 #include "game/systems/bullethell/input_to_velocity.h"
 #include "game/systems/bullethell/movement_system.h"
 #include "game/systems/bullethell/bullet_collision.h"
@@ -24,7 +25,6 @@
 #include "game/systems/rhythm/handle_miss_note.h"
 #include "game/systems/rhythm/handle_bpm.h"
 #include "game/systems/rhythm/load_notes.h"
-#include "game/systems/rhythm/test_rhythm.h"
 // General Battle Part
 #include "game/systems/phase_change.h"
 #include "game/systems/global_clock.h"

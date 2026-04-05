@@ -21,7 +21,7 @@
 extern void assets_cleanup(void);
 
 static SystemInfo system_info = {
-        .window = {.width = 1280, .height = 720},
+        .window = {.width = 800, .height = 600},
         .monitor =
                 {
                         .width = 0,
