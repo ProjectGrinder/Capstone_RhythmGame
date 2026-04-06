@@ -1,6 +1,5 @@
 #include "system/compositor.h"
 #include <cmath>
-#include <variant>
 #include "maths/types.h"
 #include "utils/print_debug.h"
 

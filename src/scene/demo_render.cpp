@@ -27,12 +27,12 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
     auto rainbow_ps = load_pixel_shader("shaders/ps/rainbow.cso", "rainbow_ps", rainbow_ps_input_attributes, 2);
     */
     InputAttributeDescription sprite_vs_input_attributes[] = {
-        InputAttributeDescription{"POSITION", InputType::R32G32B32_FLOAT, 0},
-        InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12}};
+            InputAttributeDescription{"POSITION", InputType::R32G32B32_FLOAT, 0},
+            InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12}};
 
     InputAttributeDescription sprite_ps_input_attributes[] = {
-        InputAttributeDescription{"SV_POSITION", InputType::R32G32B32A32_FLOAT, 0},
-        InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 16}};
+            InputAttributeDescription{"SV_POSITION", InputType::R32G32B32A32_FLOAT, 0},
+            InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 16}};
 
     auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite_vs_input_attributes, 2);
 
@@ -53,8 +53,8 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 
     tm->create_entity(
             Game::Physics::Rotation{0, 0, 0.002f},
-            Game::Render::Sprite{.sp = sp, .pos = {{-256, 256, 0}, {256, 256, 0}, {256, -256, 0}, {-256, -256, 0}}, .u0 = 0.5f, .v0 = 0.5f, .u1 = 1.0f, .v1 = 1.0f},
-            Game::Render::Material(sprite_vs, sprite_ps),
+            Game::Render::Sprite{.sp = sp, .pos = {{-256, 256, 0}, {256, 256, 0}, {256, -256, 0}, {-256, -256, 0}}, .u0
+    = 0.5f, .v0 = 0.5f, .u1 = 1.0f, .v1 = 1.0f}, Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{-300, 0, 0}, 0, 0, 0});
 
     auto sp2 = load_sprite("img/test.dds", "test", 500, 500);
@@ -75,7 +75,11 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 
     auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
-    tm->create_entity(Game::Test::FpsCounter{}, Game::Render::Text{.font = font, .text = "0"}, Game::Render::Material(sprite_vs, sprite_ps), Game::Render::Transform{Math::Point{0 ,0 ,0}, 0, 0, 0});
+    tm->create_entity(
+            Game::Test::FpsCounter{},
+            Game::Render::Text{.font = font, .text = "0"},
+            Game::Render::Material(sprite_vs, sprite_ps),
+            Game::Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0});
 
     return (tm);
 }

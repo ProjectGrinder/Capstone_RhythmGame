@@ -2,9 +2,9 @@
 #pragma warning(disable : 4245)
 
 #include "system/asset_manager.h"
+#include "utils/parse_glyph.h"
 #include "utils/print_debug.h"
 #include "utils/str_utils.h"
-#include "utils/parse_glyph.h"
 
 typedef unsigned long DWORD;
 
@@ -242,7 +242,6 @@ void assets_cleanup(void)
             if (curr->gpu_extension != NULL)
             {
                 vertex_shader_release(&curr->gpu_extension);
-                heap_free(curr->gpu_extension);
             }
             break;
         case PIXEL_SHADER:
@@ -252,14 +251,13 @@ void assets_cleanup(void)
             if (curr->gpu_extension != NULL)
             {
                 pixel_shader_release(&curr->gpu_extension);
-                heap_free(curr->gpu_extension);
             }
             break;
+        case FONT:
         case SPRITE:
             if (curr->gpu_extension != NULL)
             {
                 sprite_resource_release(&curr->gpu_extension);
-                heap_free(curr->gpu_extension);
             }
             break;
         default:
