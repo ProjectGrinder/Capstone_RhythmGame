@@ -25,10 +25,9 @@ namespace Game::Render
             intent.common.info.sp_id = ASSET_INDEX(sprite.sp->id);
 
             intent.special = System::Render::SpriteDrawDesc{
-                .points = {sprite.pos[0], sprite.pos[1], sprite.pos[2], sprite.pos[3]},
-                .flipX = sprite.flipX,
-                .flipY = sprite.flipY
-            };
+                    .points = {sprite.pos[0], sprite.pos[1], sprite.pos[2], sprite.pos[3]},
+                    .flipX = sprite.flipX,
+                    .flipY = sprite.flipY};
         }
     }
 } // namespace Game::Render

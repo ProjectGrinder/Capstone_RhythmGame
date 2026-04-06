@@ -83,7 +83,7 @@ namespace Game::BulletHell
                     }
 
                     patt_c.sequenceIdx = patt_c.sequenceIdx + 1;
-                    if (patt_c.sequenceIdx >= pattern_sequences[sequenceID].steps.size())
+                    if (patt_c.sequenceIdx >= static_cast<int>(pattern_sequences[sequenceID].steps.size()))
                     {
                         if (pattern_sequences[sequenceID].isLoop)
                             patt_c.sequenceIdx = -1;
