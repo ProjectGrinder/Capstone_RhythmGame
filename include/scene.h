@@ -14,9 +14,9 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = DemoGame;
+    using StartingScene = DemoRender;
 
-    using SceneTuple = std::tuple<Demo, DemoRhythm, BattleScene, DemoGame>;
+    using SceneTuple = std::tuple<Demo, DemoRender, DemoRhythm, BattleScene, DemoGame>;
     using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;
     using TaskManagerVariant = Utils::make_task_manager_variant_t<SceneTuple>;
 
