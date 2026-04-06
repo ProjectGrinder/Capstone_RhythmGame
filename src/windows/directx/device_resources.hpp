@@ -23,6 +23,8 @@ namespace Windows
 
         HRESULT create_device_resources();
         HRESULT create_window_resources(HWND hwnd);
+        HRESULT create_stencil_state_write();
+        HRESULT create_stencil_state_read();
 
         HRESULT configure_back_buffer();
         HRESULT release_back_buffer();
@@ -51,6 +53,8 @@ namespace Windows
         /* Direct3D device resources for the depth stencil */
         Microsoft::WRL::ComPtr<ID3D11Texture2D> _depth_stencil;
         Microsoft::WRL::ComPtr<ID3D11DepthStencilView> _depth_stencil_view;
+        Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depth_stencil_state_write;
+        Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depth_stencil_state_read;
 
         /* Direct3D device metadata and device resource metadata */
         D3D_FEATURE_LEVEL _feature_level;
