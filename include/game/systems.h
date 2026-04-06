@@ -39,4 +39,4 @@
 // Test
 #include "systems/test/spin_camera.h"
 #include "systems/test/spin_sprite.h"
-
+#include "systems/test/fps_counter.h"

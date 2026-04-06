@@ -70,12 +70,12 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
     tm->create_entity(
             Game::Render::Sprite{.sp = sp3, .pos = {{-640, 360, 0}, {640, 360, 0}, {640, -360, 0}, {-640, -360, 0}}},
             Game::Render::Material(sprite_vs, sprite_ps),
-            Game::Render::Transform{Math::Point{{0, 0, 0}, 0, 0, 0});
+            Game::Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0});
     */
 
     auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
-    tm->create_entity(Game::Render::Text{.font = font, .text = "CapstoneRhythmGame"}, Game::Render::Material(sprite_vs, sprite_ps), Game::Render::Transform{Math::Point{{0, 0, 0}, {0, 0, 0, 0}}, 0, 0, 0});
+    tm->create_entity(Game::Test::FpsCounter{}, Game::Render::Text{.font = font, .text = "0"}, Game::Render::Material(sprite_vs, sprite_ps), Game::Render::Transform{Math::Point{0 ,0 ,0}, 0, 0, 0});
 
     return (tm);
 }

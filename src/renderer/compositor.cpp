@@ -167,11 +167,10 @@ namespace System::Render
                 current_batch->indices.push_back(current_vertex_offset + 2);
                 current_batch->indices.push_back(current_vertex_offset + 3);
 
-                constexpr Rect src_rect = {0, 0, 1, 1};
-                const float u0 = spr.flipX ? src_rect.u1 : src_rect.u0;
-                const float u1 = spr.flipX ? src_rect.u0 : src_rect.u1;
-                const float v0 = spr.flipY ? src_rect.v1 : src_rect.v0;
-                const float v1 = spr.flipY ? src_rect.v0 : src_rect.v1;
+                const float u0 = spr.flipX ? spr.u1 : spr.u0;
+                const float u1 = spr.flipX ? spr.u0 : spr.u1;
+                const float v0 = spr.flipY ? spr.v1 : spr.v0;
+                const float v1 = spr.flipY ? spr.v0 : spr.v1;
 
                 Math::UV quad_uv[4] = {{u0, v0}, {u1, v0}, {u1, v1}, {u0, v1}};
                 uint8_t *uv_ptr = reinterpret_cast<uint8_t *>(quad_uv);
