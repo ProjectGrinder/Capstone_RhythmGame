@@ -16,6 +16,7 @@ extern void *memcpy(void *dst, const void *src, size_t size);
 extern char *strdup(const char *src);
 extern void vertex_shader_release(void **shader_handler);
 extern void pixel_shader_release(void **shader_handler);
+extern void sprite_resource_release(void **sprite_resource);
 
 // Leave -1 for error indication
 static AssetsRecord assets_records[(SHORT_MAX - 1)] = {0};
@@ -100,6 +101,7 @@ static inline AssetsRecord *load_assets(const char *path, const char *name, Asse
 
     mapping->name = strdup(name);
     mapping->id = id;
+    current->id = id;
     if (use_idx == record_index)
         ++record_index;
 
@@ -237,6 +239,13 @@ void assets_cleanup(void)
             if (curr->gpu_extension != NULL)
             {
                 pixel_shader_release(&curr->gpu_extension);
+                heap_free(curr->gpu_extension);
+            }
+            break;
+        case SPRITE:
+            if (curr->gpu_extension != NULL)
+            {
+                sprite_resource_release(&curr->gpu_extension);
                 heap_free(curr->gpu_extension);
             }
             break;
