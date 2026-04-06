@@ -378,7 +378,6 @@ _exit:
                 i_ptr[i_idx++] = item.indices[i];
             }
 
-
             _items.push_back(std::move(render_object));
         }
 
@@ -437,37 +436,38 @@ _exit:
 
 extern "C"
 {
+    void heap_free(void *ptr);
+
     void vertex_shader_release(void **shader_handler)
     {
         auto *cache = static_cast<VertexShaderCache *>(*shader_handler);
-        if (cache->shader)
-            cache->shader->Release();
-        if (cache->layout)
-            cache->layout->Release();
+        if (!cache)
+            return;
 
+        cache->~VertexShaderCache();
+        heap_free(cache);
         *shader_handler = NULL;
     }
 
     void pixel_shader_release(void **shader_handler)
     {
         auto *cache = static_cast<PixelShaderCache *>(*shader_handler);
-        if (cache->shader)
-            cache->shader->Release();
+        if (!cache)
+            return;
+
+        cache->~PixelShaderCache();
+        heap_free(cache);
         *shader_handler = NULL;
     }
 
     void sprite_resource_release(void **sprite_resource)
     {
         auto *cache = static_cast<SpriteCache *>(*sprite_resource);
-        if (cache->texture)
-            cache->texture->Release();
+        if (!cache)
+            return;
 
-        if (cache->texture_view)
-            cache->texture_view->Release();
-
-        if (cache->sampler_state)
-            cache->sampler_state->Release();
-
+        cache->~SpriteCache();
+        heap_free(cache);
         *sprite_resource = NULL;
     }
 }

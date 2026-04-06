@@ -2,7 +2,7 @@
 #pragma warning(disable : 4245)
 
 #include "system/asset_manager.h"
-
+#include "utils/parse_glyph.h"
 #include "utils/print_debug.h"
 #include "utils/str_utils.h"
 
@@ -149,13 +149,17 @@ load_pixel_shader(const char *path, const char *name, const InputAttributeDescri
     return (load_assets(path, name, info));
 }
 
-const AssetsRecord *load_font(const char *path, const char *name, size_t size)
+const AssetsRecord *load_font(const char *atlas_path, const char *name, const char *attr_path)
 {
+    // attr_path is filepath for glyph attribute data
     AssetsInfo info = {0};
     info.name = strdup(name);
     info.type = FONT;
-    info.info.as_font.font_size = size;
-    return (load_assets(path, name, info));
+    if (parse_glyph(attr_path, &info) != 0)
+    {
+        return NULL;
+    }
+    return (load_assets(atlas_path, name, info));
 }
 
 /* TODO: Change this shit to hash map or my ass will get whip */
@@ -202,6 +206,15 @@ void free_assets(assets_id id)
         current->info.info.as_shader.count = 0;
     }
 
+    if (current->info.type == FONT)
+    {
+        heap_free(current->info.info.as_font.data);
+        current->info.info.as_font.data = NULL;
+        current->info.info.as_font.count = 0;
+        current->info.info.as_font.atlas_width = 0;
+        current->info.info.as_font.atlas_height = 0;
+    }
+
     file_free(&current->data);
     heap_free(current->info.name);
     heap_free(map->name);
@@ -229,7 +242,6 @@ void assets_cleanup(void)
             if (curr->gpu_extension != NULL)
             {
                 vertex_shader_release(&curr->gpu_extension);
-                heap_free(curr->gpu_extension);
             }
             break;
         case PIXEL_SHADER:
@@ -239,14 +251,13 @@ void assets_cleanup(void)
             if (curr->gpu_extension != NULL)
             {
                 pixel_shader_release(&curr->gpu_extension);
-                heap_free(curr->gpu_extension);
             }
             break;
+        case FONT:
         case SPRITE:
             if (curr->gpu_extension != NULL)
             {
                 sprite_resource_release(&curr->gpu_extension);
-                heap_free(curr->gpu_extension);
             }
             break;
         default:
