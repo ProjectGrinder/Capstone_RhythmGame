@@ -27,11 +27,11 @@ namespace Game::Render
             const auto &frame = animator.frame;
             auto &currentKey = animator.currentKey;
             auto &animation = animator.animations[animator.currentAnimation];
-            auto &sprite = comps.get<Sprite>();
+            // auto &sprite = comps.get<Sprite>();
 
             if (!animation.isInitialized)
             {
-                initialize_animation(animation, sprite.texture);
+                //initialize_animation(animation, sprite.texture);
                 animation.isInitialized = true;
             }
 
@@ -48,8 +48,8 @@ namespace Game::Render
                 }
                 currentKey++;
 
-                if (animation.keyframes[currentKey].texture != nullptr)
-                    sprite.texture = animation.keyframes[currentKey].texture;
+                //if (animation.keyframes[currentKey].texture != nullptr)
+                    //sprite.texture = animation.keyframes[currentKey].texture;
             }
 
             const auto &keyFrameFrame1 = animation.keyFrameFrame[currentKey];

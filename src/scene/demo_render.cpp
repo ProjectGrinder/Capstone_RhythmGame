@@ -55,7 +55,7 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
             Game::Physics::Rotation{0, 0, 0.002f},
             Game::Render::Sprite{.sp = sp, .pos = {{-256, 256, 0}, {256, 256, 0}, {256, -256, 0}, {-256, -256, 0}}, .u0 = 0.5f, .v0 = 0.5f, .u1 = 1.0f, .v1 = 1.0f},
             Game::Render::Material(sprite_vs, sprite_ps),
-            Game::Render::Transform{Math::Point{{-300, 0, 0}, {0, 0, 0, 0}}, 0, 0, 0});
+            Game::Render::Transform{Math::Point{-300, 0, 0}, 0, 0, 0});
 
     auto sp2 = load_sprite("img/test.dds", "test", 500, 500);
 
@@ -63,14 +63,14 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
             Game::Physics::Rotation{0, 0, 0.002f},
             Game::Render::Sprite{.sp = sp2, .pos = {{-256, 256, 0}, {256, 256, 0}, {256, -256, 0}, {-256, -256, 0}}},
             Game::Render::Material(sprite_vs, sprite_ps),
-            Game::Render::Transform{Math::Point{{300, 0, 0}, {0, 0, 0, 0}}, 0, 0, 0});
+            Game::Render::Transform{Math::Point{300, 0, 0}, 0, 0, 0});
 
     auto sp3 = load_sprite("img/bg.dds", "bg", 1920, 1080);
 
     tm->create_entity(
             Game::Render::Sprite{.sp = sp3, .pos = {{-640, 360, 0}, {640, 360, 0}, {640, -360, 0}, {-640, -360, 0}}},
             Game::Render::Material(sprite_vs, sprite_ps),
-            Game::Render::Transform{Math::Point{{0, 0, 0}, {0, 0, 0, 0}}, 0, 0, 0});
+            Game::Render::Transform{Math::Point{{0, 0, 0}, 0, 0, 0});
     */
 
     auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");

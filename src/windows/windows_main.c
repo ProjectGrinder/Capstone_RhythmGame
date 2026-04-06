@@ -188,8 +188,7 @@ int real_main()
         QueryPerformanceCounter(&end);
         system_info.delta_time = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
                                  (long double) system_info.perf_frequency.QuadPart;
-        /*
-         *LOG_INFO(
+        LOG_INFO(
                 "Process Time: %d us [ Input Process: %d us, Scene Update: %d us, Compositor: %d us, Converter: %d us, "
                 "Renderer: %d us, GPU Render: %d us]",
                 (int) (system_info.delta_time * 1000.0L),
@@ -200,7 +199,6 @@ int real_main()
                 (int) ((render - convert) * 1000.0L),
                 (int) ((system_info.delta_time - render) * 1000));
 
-        */
 
         sleep(max(system_info.precision - (LONGLONG) system_info.delta_time, 0));
         system_info.delta_time = max(system_info.delta_time, system_info.precision);

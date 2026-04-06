@@ -1,10 +1,8 @@
 #pragma once
 namespace Math
 {
-    struct Point
+    struct Color
     {
-        float x, y, z;
+        float r, g, b, a;
     };
-
 } // namespace Math
-
