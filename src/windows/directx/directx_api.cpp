@@ -29,7 +29,7 @@ exit:
     return (error);
 }
 
-void directx_device_clean_up(DirectXHandler *api)
+void directx_device_cleanup(DirectXHandler *api)
 {
     if (api == nullptr)
         return;

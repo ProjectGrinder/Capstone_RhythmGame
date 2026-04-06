@@ -15,6 +15,8 @@
 #include "scenes/intent_api.h"
 #include "scenes/scenes_api.h"
 
+#include "audio/audio.h"
+
 #include "windows_functions.h"
 #include "windows_types.h"
 
@@ -41,6 +43,7 @@ static SystemInfo system_info = {
         .compositor = NULL,
         .dx11_adapter = NULL,
         .directx = NULL,
+        .audio = NULL,
 };
 
 HWND get_window_handler(void)
@@ -94,9 +97,9 @@ __forceinline void render_present(_In_ DirectXHandler *directx_api)
     directx_device_present(directx_api);
 }
 
-__forceinline void directx_clean_up(_In_ DirectXHandler *directx_api)
+__forceinline void directx_cleanup(_In_ DirectXHandler *directx_api)
 {
-    directx_device_clean_up(directx_api);
+    directx_device_cleanup(directx_api);
 }
 
 int real_main()
@@ -155,6 +158,13 @@ int real_main()
         goto exit;
     }
 
+    error = audio_init(&system_info.audio);
+    if (error != ERROR_SUCCESS)
+    {
+        LOG_ERROR("audio_init failed, Code 0x%08lx", error);
+        goto exit;
+    }
+
     LARGE_INTEGER start, end;
     long double input, scene, compositor, convert, render;
 
@@ -210,7 +220,8 @@ exit:
     intent_storage_cleanup(&system_info.intent_storage);
     compositor_cleanup(&system_info.compositor);
     dx11_adapter_cleanup(&system_info.dx11_adapter);
-    directx_clean_up(&system_info.directx);
+    directx_cleanup(&system_info.directx);
+    audio_handler_cleanup(&system_info.audio);
     assets_cleanup();
     log_cleanup();
 
