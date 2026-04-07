@@ -1,13 +1,10 @@
 #pragma once
-#include <algorithm>
 #include <bit>
 #include <bitset>
-#include <execution>
 #include <tuple>
 #include <type_traits>
 
 #include "ecs_types.h"
-#include "utils/print_debug.h"
 
 
 namespace System::ECS
@@ -78,6 +75,7 @@ namespace System::ECS
                       .get_bitset()),
              ...);
 
+            /*
             for (size_t id = 0; id < MaxResource; ++id)
             {
                 if (mask.test(id))
@@ -85,32 +83,33 @@ namespace System::ECS
                     query.add(id, std::get<I>(cached_pools).get(id)...);
                 }
             }
-            //            std::for_each(
-            //                    main_pool.begin(),
-            //                    main_pool.end(),
-            //                    [&cached_pools, &query](const auto &pair)
-            //                    {
-            //                        if (auto id = pair.first; (... && std::get<I>(cached_pools).has(id)))
-            //                        {
-            //                            query.add(id, std::get<I>(cached_pools).get(id)...);
-            //                        }
-            //                    });
-            //            constexpr size_t bits_per_chunk = 64;
-            //            for (size_t chunk_idx = 0; chunk_idx < MaxResource / bits_per_chunk; ++chunk_idx)
-            //            {
-            //                // Get the raw 64-bit word (this is where the speed is)
-            //                uint64_t chunk = extract_chunk_from_bitset(mask, chunk_idx);
-            //
-            //                while (chunk != 0)
-            //                {
-            //                    int tz = std::countr_zero(chunk);
-            //                    size_t id = (chunk_idx * bits_per_chunk) + tz;
-            //
-            //                    query.add(static_cast<pid>(id), std::get<I>(cached_pools).get(id)...);
-            //
-            //                    chunk &= (chunk - 1);
-            //                }
-            //            }
+            */
+            // std::for_each(
+            //         main_pool.begin(),
+            //         main_pool.end(),
+            //         [&cached_pools, &query](const auto &pair)
+            //         {
+            //             if (auto id = pair.first; (... && std::get<I>(cached_pools).has(id)))
+            //             {
+            //                 query.add(id, std::get<I>(cached_pools).get(id)...);
+            //             }
+            //         });
+            constexpr size_t bits_per_chunk = 64;
+            for (size_t chunk_idx = 0; chunk_idx < MaxResource / bits_per_chunk; ++chunk_idx)
+            {
+                // Get the raw 64-bit word (this is where the speed is)
+                uint64_t chunk = extract_chunk_from_bitset(mask, chunk_idx);
+
+                while (chunk != 0)
+                {
+                    int tz = std::countr_zero(chunk);
+                    size_t id = (chunk_idx * bits_per_chunk) + tz;
+
+                    query.add(static_cast<pid>(id), std::get<I>(cached_pools).get(id)...);
+
+                    chunk &= (chunk - 1);
+                }
+            }
             return (query);
         }
 

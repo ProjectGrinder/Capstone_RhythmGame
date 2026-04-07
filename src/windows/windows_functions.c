@@ -228,7 +228,8 @@ void __vectorcall sleep(_In_ const LONGLONG amount)
     do
     {
         QueryPerformanceCounter(&end);
-        Sleep(0);
+        YieldProcessor();
+        // Sleep(0);
     }
     while ((end.QuadPart - start.QuadPart) * 1000 / perf_frequency.QuadPart < amount);
 }

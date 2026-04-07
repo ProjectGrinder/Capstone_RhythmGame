@@ -15,7 +15,7 @@
 #include "scenes/intent_api.h"
 #include "scenes/scenes_api.h"
 
-#include "audio/audio.h"
+#include "audio.h"
 
 #include "windows_functions.h"
 #include "windows_types.h"
@@ -23,7 +23,7 @@
 extern void assets_cleanup(void);
 
 static SystemInfo system_info = {
-        .window = {.width = 800, .height = 600},
+        .window = {.width = 1920, .height = 1080},
         .monitor =
                 {
                         .width = 0,
@@ -31,7 +31,7 @@ static SystemInfo system_info = {
                 },
         .instance_handler = NULL,
         .window_handler = NULL,
-        .display_type = DT_WINDOW,
+        .display_type = DT_FULLSCREEN,
         .is_running = 0,
         .precision = 1,
         .perf_frequency = {0},
@@ -74,6 +74,11 @@ void *get_compositor(void)
 void *get_dx11_adapter()
 {
     return (system_info.dx11_adapter);
+}
+
+void *get_audio_api(void)
+{
+    return (system_info.audio);
 }
 
 long double get_delta_time(void)
@@ -163,6 +168,23 @@ int real_main()
     {
         LOG_ERROR("audio_init failed, Code 0x%08lx", error);
         goto exit;
+    }
+
+    const AssetsRecord *test_sound = load_audio("audio/test.wav", "test_sound");
+    AudioCache *out = NULL;
+    load_audio_if_not_exist((AssetsRecord *) test_sound, &out);
+
+    if (out != NULL && system_info.audio != NULL)
+    {
+        AudioAPI *api = (AudioAPI *) system_info.audio;
+
+        api->mixer.sounds[0].pcm_data = out->pcm_data;
+        api->mixer.sounds[0].total_frames = out->frame_count;
+        api->mixer.sounds[0].current_frame = 0;
+        api->mixer.sounds[0].volume = 1.0f;
+        api->mixer.sounds[0].active = 1;
+
+        LOG_INFO("Pushed test.wav to Mixer Slot 0!");
     }
 
     LARGE_INTEGER start, end;

@@ -3,16 +3,15 @@
 #include "../utils/windows_utils.h"
 #include "system/asset_manager.h"
 
-
 int load_audio_if_not_exist(AssetsRecord *audio_rec, AudioCache **out)
 {
     if (audio_rec == NULL)
-        return -1;
+        return (-1);
 
     if (audio_rec->gpu_extension != NULL)
     {
         *out = (AudioCache *) audio_rec->gpu_extension;
-        return 0;
+        return (0);
     }
 
     ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 2, 48000);
@@ -21,7 +20,7 @@ int load_audio_if_not_exist(AssetsRecord *audio_rec, AudioCache **out)
     if (ma_decoder_init_memory(audio_rec->data->data, audio_rec->data->size, &config, &decoder) != MA_SUCCESS)
     {
         LOG_ERROR("Failed to initialize audio decoder from memory.");
-        return -1;
+        return (-1);
     }
 
     ma_uint64 total_frames = 0;
@@ -42,7 +41,7 @@ int load_audio_if_not_exist(AssetsRecord *audio_rec, AudioCache **out)
     audio_rec->gpu_extension = (void *) cache;
     *out = cache;
 
-    return 0;
+    return (0);
 }
 
 void data_callback(ma_device *device, void *output, const void *input, ma_uint32 frame_count)
