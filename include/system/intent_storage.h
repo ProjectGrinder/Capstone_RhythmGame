@@ -67,10 +67,11 @@ namespace System::Render
 
     struct SpriteDrawDesc
     {
-        const char *texture = nullptr;
-        Rect src_rect{};
-        Rect dst_rect{};
-
+        Math::Point points[4]{};
+        float u0 = 0.0f;
+        float v0 = 0.0f;
+        float u1 = 1.0f;
+        float v1 = 1.0f;
         bool flipX = false;
         bool flipY = false;
     };

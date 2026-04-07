@@ -21,6 +21,20 @@ HRESULT Windows::DeviceResources::init(const DirectXConfig *config)
     {
         LOG_ERROR("create_window_resources failed, Code 0x%08lx", hr);
     }
+
+    hr = create_stencil_state_write();
+    if (FAILED(hr))
+    {
+        LOG_ERROR("create_stencil_state_write failed, Code 0x%08lx", hr);
+    }
+
+    hr = create_stencil_state_read();
+    if (FAILED(hr))
+    {
+        LOG_ERROR("create_stencil_state_read failed, Code 0x%08lx", hr);
+    }
+
+
 exit:
     return (hr);
 }
@@ -186,6 +200,50 @@ HRESULT Windows::DeviceResources::go_windowed()
     hr = _swap_chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 
     hr = configure_back_buffer();
+    return (hr);
+}
+
+HRESULT Windows::DeviceResources::create_stencil_state_write()
+{
+    HRESULT hr = S_OK;
+
+    D3D11_DEPTH_STENCILOP_DESC stencil_op = {};
+    stencil_op.StencilFailOp = D3D11_STENCIL_OP_REPLACE;
+    stencil_op.StencilDepthFailOp = D3D11_STENCIL_OP_REPLACE;
+    stencil_op.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+    stencil_op.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+    D3D11_DEPTH_STENCIL_DESC desc = {};
+    desc.DepthEnable = false;
+    desc.StencilEnable = true;
+    desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+    desc.FrontFace = stencil_op;
+    desc.BackFace = stencil_op;
+
+    hr = this->_device->CreateDepthStencilState(&desc, this->_depth_stencil_state_write.GetAddressOf());
+
+    return (hr);
+}
+
+HRESULT Windows::DeviceResources::create_stencil_state_read()
+{
+    HRESULT hr = S_OK;
+
+    D3D11_DEPTH_STENCILOP_DESC stencil_op = {};
+    stencil_op.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+    stencil_op.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+    stencil_op.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+    stencil_op.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
+
+    D3D11_DEPTH_STENCIL_DESC desc = {};
+    desc.DepthEnable = false;
+    desc.StencilEnable = true;
+    desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+    desc.FrontFace = stencil_op;
+    desc.BackFace = stencil_op;
+
+    hr = this->_device->CreateDepthStencilState(&desc, this->_depth_stencil_state_read.GetAddressOf());
+
     return (hr);
 }
 

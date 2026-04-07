@@ -16,6 +16,13 @@ struct PixelShaderCache
     ComPtr<ID3D11PixelShader> shader;
 };
 
+struct SpriteCache
+{
+    ComPtr<ID3D11Texture2D> texture;
+    ComPtr<ID3D11ShaderResourceView> texture_view;
+    ComPtr<ID3D11SamplerState> sampler_state;
+};
+
 struct RenderObject
 {
     ComPtr<ID3D11Buffer> vertex_buffer;
@@ -25,11 +32,8 @@ struct RenderObject
     ComPtr<ID3D11InputLayout> input_layout;
     ComPtr<ID3D11PixelShader> pixel_shader;
 
-    // 8 bits for layer
-    // 16 bits for vertex_shader
-    // 16 bits for pixel shader
-    // 16 bits for sprite id (0xFFFF is none)
-    // 8 bits for padding
+    ComPtr<ID3D11ShaderResourceView> texture_view;
+    ComPtr<ID3D11SamplerState> sampler_state;
 
     union RenderID
     {
@@ -45,6 +49,7 @@ struct RenderObject
     } render_id = {};
 
     UINT offset = 0;
+    UINT byte_offset = 0;
 
     union
     {
@@ -54,6 +59,6 @@ struct RenderObject
 
     INT vertex_base = 0;
     UINT stride = sizeof(Math::Point);
-    D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
+    D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     DXGI_FORMAT index_format = DXGI_FORMAT_UNKNOWN;
 };

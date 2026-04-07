@@ -27,10 +27,14 @@ namespace Game::BulletHell
         }
 
         if (player_query.begin() == player_query.end())
+        {
             return;
+        }
 
         if (player_query.front().get<Player>().is_active == false)
+        {
             return;
+        }
 
 	    const auto &player_pos = player_query.front().get<Physics::Position>();
 	    const auto &player_hitbox = player_query.front().get<Physics::CircularCollider>();
