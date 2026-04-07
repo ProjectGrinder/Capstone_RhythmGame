@@ -104,7 +104,7 @@ namespace System::Render
         for (size_t i = 0; i < comp.get_total_count(); ++i)
         {
             const auto &intent = intents[idx_src[i].intent_index];
-            size_t current_params_size = (intent.kind == DrawKind::KIND_SPRITE) ? sizeof(Math::UV) : 0;
+            size_t current_params_size = (intent.kind == DrawKind::KIND_SPRITE) ? sizeof(Math::UV) + sizeof(Math::Color) : 0;
             if (current_batch == nullptr || current_batch->sort_key.as_key != intent.common.key ||
                 current_batch->params_size != current_params_size)
             {
@@ -171,9 +171,21 @@ namespace System::Render
                 const float v0 = spr.flipY ? spr.v1 : spr.v0;
                 const float v1 = spr.flipY ? spr.v0 : spr.v1;
 
-                Math::UV quad_uv[4] = {{u0, v0}, {u1, v0}, {u1, v1}, {u0, v1}};
-                uint8_t *uv_ptr = reinterpret_cast<uint8_t *>(quad_uv);
-                current_batch->param_data.insert(current_batch->param_data.end(), uv_ptr, uv_ptr + sizeof(quad_uv));
+                struct SpriteParam
+                {
+                    Math::UV uv;
+                    Math::Color color;
+                };
+
+                struct SpriteParam sprite_params[4] = {
+                    {{u0, v0}, spr.color},
+                    {{u1, v0}, spr.color},
+                    {{u1, v1}, spr.color},
+                    {{u0, v1}, spr.color}
+                };
+
+                uint8_t *sprite_params_ptr = reinterpret_cast<uint8_t *>(sprite_params);
+                current_batch->param_data.insert(current_batch->param_data.end(), sprite_params_ptr, sprite_params_ptr + sizeof(sprite_params));
                 break;
             }
             default:
