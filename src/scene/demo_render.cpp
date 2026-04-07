@@ -36,9 +36,9 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
             InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 16},
             InputAttributeDescription{"COLOR", InputType::R32G32B32A32_FLOAT, 24}};
 
-    auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite_vs_input_attributes, 2);
+    auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite_vs_input_attributes, 3);
 
-    auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 2);
+    auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 
     auto sp = load_sprite("img/somebodyIusedToKnow.dds", "somebody", 512, 512);
     /*
@@ -87,7 +87,7 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 
     tm->create_entity(
             Game::Test::FpsCounter{},
-            Game::Render::Text{.font = font, .text = "0"},
+            Game::Render::Text{.font = font, .text = "0", .color={1, 1, 0, 1}},
             Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0});
 
