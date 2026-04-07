@@ -217,10 +217,9 @@ TEST(ECS, system_sequence_test)
 TEST(ECS, system_defer_syscall_test)
 {
     TaskManager<TestResource, TestSyscall, test_system_3, test_system_2, test_system> task_manager;
+    const auto id_1 = task_manager.create_entity(test_component{1});
+    task_manager.run_all();
     TestResource *resource = task_manager.get_rm();
-
-    const pid id_1 = resource->reserve_process();
-    resource->add_resource<test_component>(id_1, test_component{1});
     EXPECT_TRUE(resource->query<test_component>().has(id_1));
     task_manager.run_all();
     EXPECT_FALSE(resource->query<test_component>().has(id_1));

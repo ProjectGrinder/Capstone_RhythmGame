@@ -5,6 +5,7 @@
 // Bullet Hell Part
 #include "game/systems/bullethell/bullet_collision.h"
 #include "game/systems/bullethell/bullet_system.h"
+#include "game/systems/bullethell/bullet_clearer_system.h"
 #include "game/systems/bullethell/input_to_velocity.h"
 #include "game/systems/bullethell/emitter_system.h"
 #include "game/systems/bullethell/movement_system.h"
@@ -34,11 +35,11 @@
 #include "game/systems/animation_system.h"
 #include "systems/bullethell/shaking_system.h"
 // Render Intent
+#include "systems/render/draw_sprite.h"
+#include "systems/render/draw_text.h"
 #include "systems/render/draw_triangle.h"
 #include "systems/render/set_camera.h"
-#include "systems/render/sprite_intent.h"
-#include "systems/render/text_intent.h"
 // Test
 #include "systems/test/spin_camera.h"
-#include "systems/test/spin_triangle.h"
-
+#include "systems/test/spin_sprite.h"
+#include "systems/test/fps_counter.h"

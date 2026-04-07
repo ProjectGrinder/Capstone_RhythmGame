@@ -9,6 +9,7 @@ extern "C"
     {
         R32G32B32A32_FLOAT,
         R32G32B32_FLOAT,
+        R32G32_FLOAT,
 
         FLOAT32BITS,
         FLOAT16BITS,

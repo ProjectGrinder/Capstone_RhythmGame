@@ -36,7 +36,7 @@ namespace Game::BulletHell
         auto &pointer = bullet_loader.pointer;
         auto &batches = bullet_loader.batches;
         const auto &current_frame = query3.front().get<Battle::BattleState>().clock_time / 1000;
-        while (pointer < batches.size() && batches[pointer].frame <= current_frame)
+        while ((pointer < static_cast<int>(batches.size())) && (batches[pointer].frame <= current_frame))
         {
             for (auto& b : batches[pointer].bullets)
                 spawn_bullet(syscall, b, query2.front().get<Battle::BulletRegistry>(), query3.front().get<Battle::BulletHellState>());

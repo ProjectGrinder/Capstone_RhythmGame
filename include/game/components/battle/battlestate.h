@@ -176,7 +176,6 @@ namespace Game::Battle
         std::string genre_name;
         float main_bpm;
         BpmInfo bpm_info;
-        PhaseInfo phase_info;
         std::vector<Difficulty> difficulties;
         LevelData() : main_bpm(0)
         {}
@@ -186,10 +185,9 @@ namespace Game::Battle
                 std::string genre_name,
                 const float main_bpm,
                 BpmInfo bpm_info,
-                PhaseInfo phase_info,
                 std::vector<Difficulty> difficulties) :
             title(std::move(title)), artist_name(std::move(artist_name)), genre_name(std::move(genre_name)), main_bpm(main_bpm),
-            bpm_info(std::move(bpm_info)), phase_info(std::move(phase_info)), difficulties(std::move(difficulties))
+            bpm_info(std::move(bpm_info)), difficulties(std::move(difficulties))
         {}
     };
 }

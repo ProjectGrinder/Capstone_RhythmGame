@@ -13,9 +13,12 @@ namespace Math
     static inline Point rotate_fast(const Point &p, float cos_val, float sin_val)
     {
         return Point{
-                {p.pos[0] * cos_val - p.pos[1] * sin_val, p.pos[0] * sin_val + p.pos[1] * cos_val, p.pos[2]},
-                {p.color[0], p.color[1], p.color[2], p.color[3]}};
+                p.x * cos_val - p.y * sin_val,
+                p.x * sin_val + p.y * cos_val,
+                p.z,
+        };
     }
+
     static inline Point transform_pipe_fast(
             const Point &local,
             float obj_cos,
@@ -30,50 +33,50 @@ namespace Math
         // 1. Rotate Local
         Point p = rotate_fast(local, obj_cos, obj_sin);
         // 2. World Space
-        p.pos[0] += pivot.pos[0];
-        p.pos[1] += pivot.pos[1];
+        p.x += pivot.x;
+        p.y += pivot.y;
         // 3. View Space (Relative to Camera)
-        p.pos[0] -= cam.offset.pos[0];
-        p.pos[1] -= cam.offset.pos[1];
+        p.x -= cam.offset.x;
+        p.y -= cam.offset.y;
         // 4. Rotate World by Inverse Camera
         p = rotate_fast(p, cam_cos, cam_sin);
         // 5. Zoom and NDC
-        p.pos[0] *= (cam.zoom * invHalfW);
-        p.pos[1] *= (cam.zoom * invHalfH);
+        p.x *= (cam.zoom * invHalfW);
+        p.y *= (cam.zoom * invHalfH);
 
         return p;
     }
+
     // rotates a point around the origin with angle radians in the Z clockwise direction
     static inline Point rotate(const Point &p, const float radians)
     {
         const float c = std::cos(radians);
         const float s = std::sin(radians);
-        return (
-                Point{{p.pos[0] * c - p.pos[1] * s, p.pos[0] * s + p.pos[1] * c, p.pos[2]},
-                      {p.color[0], p.color[1], p.color[2], p.color[3]}});
+        return (Point{p.x * c - p.y * s, p.x * s + p.y * c, p.z});
     }
 
     // transfers a local coordinate to world coordinates using a center-of-object coordinate
     static inline Point local_to_world(const Point &p, const Point &center)
     {
-        return (
-                Point{{p.pos[0] + center.pos[0], p.pos[1] + center.pos[1], p.pos[2]},
-                      {p.color[0], p.color[1], p.color[2], p.color[3]}});
+        return (Point{p.x + center.x, p.y + center.y, p.z});
     }
 
     // transfer coordinates from world space to camera view space
     static inline Point world_to_view(const Point &world, const System::Render::Camera &cam)
     {
         // Move world relative to camera position
-        Point p{{world.pos[0] - cam.offset.pos[0], world.pos[1] - cam.offset.pos[1], world.pos[2]},
-                {world.color[0], world.color[1], world.color[2], world.color[3]}};
+        Point p{
+                world.x - cam.offset.x,
+                world.y - cam.offset.y,
+                world.z,
+        };
 
         // Apply inverse camera rotation (i.e., rotate the world opposite the camera)
         p = rotate(p, -cam.rotation);
 
         // Zoom in means things appear bigger -> multiply coordinates by zoom in view space
-        p.pos[0] *= cam.zoom;
-        p.pos[1] *= cam.zoom;
+        p.x *= cam.zoom;
+        p.y *= cam.zoom;
 
         return (p);
     }
@@ -86,9 +89,11 @@ namespace Math
         const float invHalfW = (halfW != 0.0f) ? (1.0f / halfW) : 0.0f;
         const float invHalfH = (halfH != 0.0f) ? (1.0f / halfH) : 0.0f;
 
-        return (
-                Point{{view.pos[0] * invHalfW, view.pos[1] * invHalfH, view.pos[2]},
-                      {view.color[0], view.color[1], view.color[2], view.color[3]}});
+        return (Point{
+                view.x * invHalfW,
+                view.y * invHalfH,
+                view.z,
+        });
     }
 
     // Takes a local coordinate TriangleDrawDesc, add rotation in Z clockwise direction, then transform to NDC.
@@ -111,10 +116,10 @@ namespace Math
             const System::Render::Camera &cam)
     {
         const float u0 = rect.u0, u1 = rect.u1, v0 = rect.v0, v1 = rect.v1;
-        const Point p0 = Point{{u0, v0, 0}, {1, 1, 1, 1}};
-        const Point p1 = Point{{u1, v0, 0}, {1, 1, 1, 1}};
-        const Point p2 = Point{{u0, v1, 0}, {1, 1, 1, 1}};
-        const Point p3 = Point{{u1, v1, 0}, {1, 1, 1, 1}};
+        const Point p0 = Point{u0, v0, 0};
+        const Point p1 = Point{u1, v0, 0};
+        const Point p2 = Point{u0, v1, 0};
+        const Point p3 = Point{u1, v1, 0};
 
         return std::array<Math::Point, 4>{
                 view_to_ndc(world_to_view(local_to_world(rotate(p0, rotation_z), pivot), cam), cam),
@@ -128,17 +133,14 @@ namespace Math
 
 namespace System::Render
 {
+
+    const uint32_t PRESIZE = 1000; // Radix 8 passes
+    const uint32_t PASSES = 8;     // Radix 8 passes
+
     extern "C"
     {
         typedef uint32_t assets_id;
     }
-
-    struct ComposedSpriteDesc
-    {
-        Rect src_rect;
-        Math::Point dst_rect[4];
-        bool flipX, flipY;
-    };
 
     struct ComposedTextDesc
     {
@@ -155,24 +157,94 @@ namespace System::Render
         uint64_t key;
     };
 
-    struct CompositorItem
+    struct RenderItem
     {
-        DrawKind kind;
-        ComposedDrawCommon common;
-        std::variant<ComposedSpriteDesc, ComposedTextDesc, TriangleDrawDesc> special;
+        size_t params_size;
+        std::vector<uint8_t> param_data;
+        std::vector<Math::Point> points;
+        std::vector<uint32_t> indices;
+
+        union Key
+        {
+            struct DetailKey
+            {
+                uint16_t sp_id;
+                uint16_t ps_id;
+                uint16_t vs_id;
+                uint8_t padding;
+                uint8_t layer;
+            } as_data;
+
+            uint64_t as_key;
+        } sort_key;
+
+        AssetsRecord *vs;
+        AssetsRecord *ps;
+        AssetsRecord *sp;
+    };
+
+    struct SortEntry
+    {
+        uint64_t key;
+        uint32_t intent_index;
     };
 
     class Compositor
     {
-        std::vector<CompositorItem> _items;
+        std::vector<RenderItem> _items;
+
+        std::vector<SortEntry> _sort_entries;
+        std::vector<SortEntry> _sort_temp;
+
+        std::array<size_t, 256> _counts;
+        std::array<size_t, 256> _offsets;
+
+        size_t _reserve_size = 0;
+        size_t _total_count = 0;
 
     public:
+        Compositor();
+
         static Compositor &instance();
         static void compose(const std::vector<DrawIntent> &intents, const Camera &camera);
 
-        static const std::vector<CompositorItem> &get_items()
+        static std::vector<SortEntry> &get_sort_entries()
+        {
+            return instance()._sort_entries;
+        }
+
+        static const std::vector<RenderItem> &get_items()
         {
             return instance()._items;
+        }
+
+        void radix_sort();
+        void resize(size_t size);
+        size_t get_capacity()
+        {
+            return _reserve_size;
+        }
+
+        void add_sort_entry(SortEntry &&entry)
+        {
+            _sort_entries.push_back(entry);
+        }
+
+        void reset()
+        {
+            _sort_entries.clear();
+            _sort_temp.clear();
+            _items.clear();
+        }
+
+        size_t get_total_count()
+        {
+            return (_total_count);
+        }
+
+        SortEntry *get_sort_data()
+        {
+            return (_sort_entries.data());
         }
     };
 } // namespace System::Render

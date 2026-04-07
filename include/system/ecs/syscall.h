@@ -102,6 +102,7 @@ namespace System::ECS
         template<typename Component>
         void remove_component(pid id)
         {
+            _mark_dirty(id);
             std::get<type_idx<Component>()>(_to_remove_components).set(id);
         }
 

@@ -1,5 +1,4 @@
 #pragma once
-#include <system.h>
 #include "game/components/render/material.h"
 #include "game/components/render/transform.h"
 #include "game/components/render/triangle.h"
