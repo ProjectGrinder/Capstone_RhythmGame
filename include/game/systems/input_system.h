@@ -41,7 +41,7 @@ namespace Game::Battle
                 break;
             }
             bullet_hell_input.front().get<BulletHell::Input>().axis_x =
-                    static_cast<float>(get_key_state(LEFT) - get_key_state(RIGHT));
+                    static_cast<float>(get_key_state(RIGHT) - get_key_state(LEFT));
             bullet_hell_input.front().get<BulletHell::Input>().axis_y =
                     static_cast<float>(get_key_state(UP) - get_key_state(DOWN));
             bullet_hell_input.front().get<BulletHell::Input>().x = get_key_state(X);
@@ -163,6 +163,7 @@ namespace Game::Battle
         }
 
         // Debug key inputs
+        /*
         if (bullet_hell_input.front().get<BulletHell::Input>().axis_x > 0)
         {
             LOG_INFO("BulletHell LEFT MOVEMENT");
@@ -207,5 +208,6 @@ namespace Game::Battle
         {
             LOG_INFO("Rhythm KEY4");
         }
+        */
     }
 } // namespace Game::Battle

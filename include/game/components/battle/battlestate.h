@@ -1,7 +1,7 @@
 #pragma once
+#include <string>
 #include <utility>
 #include <vector>
-#include <string>
 #include <array>
 
 namespace Game::Battle
@@ -135,7 +135,7 @@ namespace Game::Battle
         {}
         explicit BattleState(
                 const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :
-            max_hp(max_hp), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), difficulty(difficulty), current_phase(BULLET_HELL)
+            max_hp(max_hp), hp(max_hp), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), difficulty(difficulty), current_phase(BULLET_HELL)
         {}
     };
 
@@ -143,7 +143,8 @@ namespace Game::Battle
     {
         int graze;
         int iframe_time;
-        BulletHellState(): graze(0), iframe_time(0)
+        int damage;
+        BulletHellState(): graze(0), iframe_time(3000), damage(1)
         {}
     };
 
@@ -167,8 +168,6 @@ namespace Game::Battle
     {
         std::array<LaneInfo, 4> lanes;
     };
-
-    // TODO: Suchas's struct BulletPatternData
 
     struct LevelData
     {

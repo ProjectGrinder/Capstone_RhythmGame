@@ -12,7 +12,6 @@ namespace Game::Physics
         if (query2.begin() == query2.end())
             return;
 
-        constexpr auto frame_time = 1; // 1ms
         for (auto &[id, comps]: query)
         {
             auto &shaker_c = comps.get<Shaker>();
@@ -21,13 +20,13 @@ namespace Game::Physics
 
             if (shaker_c.delay > 0)
             {
-                shaker_c.delay -= frame_time;
+                shaker_c.delay -= static_cast<int>(get_delta_time());
             }
             else
             {
                 if (shaker_c.shakingTime > 0)
                 {
-                    shaker_c.shakingTime -= frame_time;
+                    shaker_c.shakingTime -= static_cast<int>(get_delta_time());
                     if (get_distance(shaker_c.last_position, pos) >
                         (shaker_c.magnitudeX > shaker_c.magnitudeY ? shaker_c.magnitudeX : shaker_c.magnitudeY))
                     {

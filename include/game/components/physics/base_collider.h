@@ -1,20 +1,24 @@
 #pragma once
 
-
-#include "position.h"
-
 // FIXME: May separate thread
 namespace Game::Physics
 {
+    enum ColliderType
+    {
+        RECTANGLE,
+        CIRCLE,
+    };
     struct BaseCollider
     {
-        Position offset;
+        float offset_x;
+        float offset_y;
         unsigned int layer;
         unsigned int mask;
-        BaseCollider() : layer(0), mask(0)
+        BaseCollider() : offset_x(0),offset_y(0), layer(0), mask(0)
         {}
-        explicit BaseCollider(const Position &offset, const unsigned int layer = 0, const unsigned int mask = 0) :
-            offset(offset), layer(layer), mask(mask)
+        explicit BaseCollider(
+                const float &offset_x, const float &offset_y, const unsigned int layer = 0, const unsigned int mask = 0) :
+            offset_x(offset_x), offset_y(offset_y), layer(layer), mask(mask)
         {}
     };
 } // namespace Game::Physics

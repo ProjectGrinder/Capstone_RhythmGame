@@ -1,78 +1,21 @@
 #pragma once
+#include "game/utils/physics_util.h"
 
 namespace Game::BulletHell
 {
-    // A single Pattern - not component
-    struct MoveParam
+    // This is a component
+    struct Pattern
     {
-        float loopDelay;
-        float speed;
-        float angle;
-        float accel;
-        float angular_velocity;
-        float max_speed;
-        MoveParam(
-                const float speed,
-                const float angle,
-                const float acceleration,
-                const float angular_velocity,
-                const float max_speed) :
-            loopDelay(0),
-            speed(speed),
-            angle(angle),
-            accel(acceleration),
-            angular_velocity(angular_velocity),
-            max_speed(max_speed)
-        {}
-        MoveParam(
-                const float speed,
-                const float angle,
-                const float acceleration,
-                const float angular_velocity,
-                const float max_speed,
-                const float loopDelay) :
-            loopDelay(loopDelay),
-            speed(speed),
-            angle(angle),
-            accel(acceleration),
-            angular_velocity(angular_velocity),
-            max_speed(max_speed)
-        {}
-    };
+        uint16_t sequenceID;
+        int sequenceIdx = -1; // Would not be good but require for init
+        int delay = 0;
 
-    // Component for keeping patterns
-    // Warning : STDs
-    struct Patterns
-    {
-        std::vector<std::pair<float, MoveParam>> patterns;
-        void AddPattern(const float delay, const float speed, const float angle)
-        {
-            patterns.emplace_back(delay, MoveParam(speed, angle, 0, 0, 0));
-        }
-        void AddPattern(
-                const float delay,
-                const float speed,
-                const float angle,
-                const float acceleration,
-                const float angular_velocity,
-                const float max_speed)
-        {
-            patterns.emplace_back(delay, MoveParam(speed, angle, acceleration, angular_velocity, max_speed));
-        }
-        void AddPattern(const float delay, const float speed, const float angle, const float loopDelay)
-        {
-            patterns.emplace_back(delay, MoveParam(speed, angle, 0, 0, 0, loopDelay));
-        }
-        void AddPattern(
-                const float delay,
-                const float speed,
-                const float angle,
-                const float acceleration,
-                const float angular_velocity,
-                const float max_speed,
-                const float loopDelay)
-        {
-            patterns.emplace_back(delay, MoveParam(speed, angle, acceleration, angular_velocity, max_speed, loopDelay));
-        }
+        Pattern() : sequenceID(0)
+        {}
+
+        explicit Pattern(
+                const uint16_t sequenceID) :
+            sequenceID(sequenceID)
+        {}
     };
 } // namespace Game::BulletHell
