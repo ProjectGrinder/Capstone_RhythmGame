@@ -15,13 +15,15 @@
 #include "scenes/intent_api.h"
 #include "scenes/scenes_api.h"
 
+#include "audio.h"
+
 #include "windows_functions.h"
 #include "windows_types.h"
 
 extern void assets_cleanup(void);
 
 static SystemInfo system_info = {
-        .window = {.width = 800, .height = 600},
+        .window = {.width = 1920, .height = 1080},
         .monitor =
                 {
                         .width = 0,
@@ -29,7 +31,7 @@ static SystemInfo system_info = {
                 },
         .instance_handler = NULL,
         .window_handler = NULL,
-        .display_type = DT_WINDOW,
+        .display_type = DT_FULLSCREEN,
         .is_running = 0,
         .precision = 1,
         .perf_frequency = {0},
@@ -41,6 +43,7 @@ static SystemInfo system_info = {
         .compositor = NULL,
         .dx11_adapter = NULL,
         .directx = NULL,
+        .audio = NULL,
 };
 
 HWND get_window_handler(void)
@@ -73,6 +76,11 @@ void *get_dx11_adapter()
     return (system_info.dx11_adapter);
 }
 
+void *get_audio_api(void)
+{
+    return (system_info.audio);
+}
+
 long double get_delta_time(void)
 {
     return (system_info.delta_time);
@@ -94,9 +102,9 @@ __forceinline void render_present(_In_ DirectXHandler *directx_api)
     directx_device_present(directx_api);
 }
 
-__forceinline void directx_clean_up(_In_ DirectXHandler *directx_api)
+__forceinline void directx_cleanup(_In_ DirectXHandler *directx_api)
 {
-    directx_device_clean_up(directx_api);
+    directx_device_cleanup(directx_api);
 }
 
 int real_main()
@@ -155,6 +163,30 @@ int real_main()
         goto exit;
     }
 
+    error = audio_init(&system_info.audio);
+    if (error != ERROR_SUCCESS)
+    {
+        LOG_ERROR("audio_init failed, Code 0x%08lx", error);
+        goto exit;
+    }
+
+    const AssetsRecord *test_sound = load_audio("audio/test.wav", "test_sound");
+    AudioCache *out = NULL;
+    load_audio_if_not_exist((AssetsRecord *) test_sound, &out);
+
+    if (out != NULL && system_info.audio != NULL)
+    {
+        AudioAPI *api = (AudioAPI *) system_info.audio;
+
+        api->mixer.sounds[0].pcm_data = out->pcm_data;
+        api->mixer.sounds[0].total_frames = out->frame_count;
+        api->mixer.sounds[0].current_frame = 0;
+        api->mixer.sounds[0].volume = 1.0f;
+        api->mixer.sounds[0].active = 1;
+
+        LOG_INFO("Pushed test.wav to Mixer Slot 0!");
+    }
+
     LARGE_INTEGER start, end;
     long double input, scene, compositor, convert, render;
 
@@ -210,7 +242,8 @@ exit:
     intent_storage_cleanup(&system_info.intent_storage);
     compositor_cleanup(&system_info.compositor);
     dx11_adapter_cleanup(&system_info.dx11_adapter);
-    directx_clean_up(&system_info.directx);
+    directx_cleanup(&system_info.directx);
+    audio_handler_cleanup(&system_info.audio);
     assets_cleanup();
     log_cleanup();
 

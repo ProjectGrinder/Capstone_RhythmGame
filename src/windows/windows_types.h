@@ -8,6 +8,7 @@ typedef void *IntentStorageHandler;
 typedef void *CompositorHandler;
 typedef void *DirectXHandler;
 typedef void *Dx11AdapterHandler;
+typedef void *AudioHandler;
 
 typedef enum
 {
@@ -65,4 +66,5 @@ typedef struct
     CompositorHandler compositor;
     Dx11AdapterHandler dx11_adapter;
     DirectXHandler directx;
+    AudioHandler audio;
 } SystemInfo;
