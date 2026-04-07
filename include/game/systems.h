@@ -7,7 +7,6 @@
 #include "game/systems/bullethell/bullet_system.h"
 #include "game/systems/bullethell/bullet_clearer_system.h"
 #include "game/systems/bullethell/input_to_velocity.h"
-#include "game/systems/bullethell/emitter_system.h"
 #include "game/systems/bullethell/movement_system.h"
 #include "game/systems/bullethell/bullet_collision.h"
 #include "game/systems/bullethell/pattern_system.h"

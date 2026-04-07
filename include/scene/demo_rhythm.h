@@ -189,7 +189,6 @@ namespace Scene
                 "Digital Jpop",
                 134.00f,
                 create_bpm_info(),
-                create_phase_info(),
                 std::vector<Game::Battle::Difficulty>()));
 
             // Create Lane

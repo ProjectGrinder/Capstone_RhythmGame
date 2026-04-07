@@ -75,7 +75,7 @@ namespace Scene
             Game::BulletHell::laser_system<Syscall>,
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
-            Game::BulletHell::logging_system<Syscall>ม
+            Game::BulletHell::logging_system<Syscall>,
             Game::Rhythm::handle_tap_note<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::handle_bpm<Syscall>,

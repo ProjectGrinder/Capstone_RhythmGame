@@ -203,6 +203,7 @@ int real_main()
 
         sleep(max(system_info.precision - (LONGLONG) system_info.delta_time, 0));
         system_info.delta_time = max(system_info.delta_time, system_info.precision);
+        */
     }
 
 exit:

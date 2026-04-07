@@ -25,7 +25,6 @@ namespace Scene
             Game::BulletHell::Bullet,
             Game::BulletHell::BulletClearer,
             Game::BulletHell::Input,
-            Game::Rhythm::KeyInput,
             Game::BulletHell::Player,
             Game::BulletHell::Pattern,
             Game::BulletHell::Bounce,
@@ -50,10 +49,12 @@ namespace Scene
             Game::Render::Camera2D,
             Game::Rhythm::NoteType,
             Game::Rhythm::Lane,
-            Game::Rhythm::NoteSpeed,
             Game::Rhythm::Timing,
-            Game::Rhythm::TimingEnd,
-            Game::Rhythm::HoldActive
+            Game::Rhythm::HoldStart,
+            Game::Rhythm::JudgeText,
+            Game::Rhythm::NoteField,
+            Game::Rhythm::KeyInput,
+            Game::Rhythm::NoteStatus
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -78,9 +79,12 @@ namespace Scene
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
             Game::BulletHell::logging_system<Syscall>,
-            Game::Rhythm::load_notes<Syscall>,
-            Game::Rhythm::handle_rhythm<Syscall>,
-            Game::Rhythm::handle_miss_note<Syscall>
+            Game::Rhythm::handle_bpm<Syscall>,
+            Game::Rhythm::handle_tap_note<Syscall>,
+            Game::Rhythm::set_holding_time<Syscall>,
+            Game::Rhythm::handle_holding<Syscall>,
+            Game::Rhythm::handle_miss_note<Syscall>,
+            Game::Rhythm::update_notes<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init()
@@ -109,7 +113,7 @@ namespace Scene
                 init_bullet_graphic(),
                 create_bullet_data(),
                 create_pattern_container(),
-                Game::Battle::RhythmState(1, 1, 60, 1.0f),
+                Game::Battle::RhythmState(1, 1, 60, 1.0f, 1.0f),
                 create_demo_chart(),
                 Game::Rhythm::KeyInput(),
                 Game::BulletHell::Input()
