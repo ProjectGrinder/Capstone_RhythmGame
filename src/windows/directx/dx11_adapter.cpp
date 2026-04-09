@@ -111,6 +111,29 @@ namespace System::Render
         ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
         device->CreateBuffer(&ibd, nullptr, &_global_ib);
 
+        D3D11_BLEND_DESC blend_desc{};
+        blend_desc.AlphaToCoverageEnable = FALSE;
+        blend_desc.IndependentBlendEnable = FALSE;
+        blend_desc.RenderTarget[0].BlendEnable = TRUE;
+        blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+        // blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+        blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+        blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+        blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+        blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+        blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+        blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+        device->CreateBlendState(&blend_desc, &_alpha_blend_state);
+
+        D3D11_DEPTH_STENCIL_DESC depth_desc{};
+        depth_desc.DepthEnable = FALSE;
+        depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+        depth_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+        depth_desc.StencilEnable = FALSE;
+
+        device->CreateDepthStencilState(&depth_desc, &_depth_stencil_state);
+
         _items.reserve(1000);
         _input_layout_desc_scratch.reserve(16);
     }
@@ -402,6 +425,10 @@ _exit:
             _environment.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
         }
 
+        float blend_factor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+        ctx->OMSetBlendState(_alpha_blend_state.Get(), blend_factor, 0xffffffff);
+        ctx->OMSetDepthStencilState(_depth_stencil_state.Get(), 0);
+
         ctx->IASetIndexBuffer(_global_ib.Get(), DXGI_FORMAT_R32_UINT, 0);
 
         auto &env = _environment;
@@ -418,6 +445,9 @@ _exit:
             }
             render(&_environment, &item);
         }
+
+        ctx->OMSetBlendState(nullptr, blend_factor, 0xffffffff);
+        ctx->OMSetDepthStencilState(nullptr, 0);
     }
 
     Dx11Adapter::~Dx11Adapter()

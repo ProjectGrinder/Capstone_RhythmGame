@@ -58,11 +58,9 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
             Game::Render::Sprite{
                     .sp = sp,
                     .pos = {{-256, 256, 0}, {256, 256, 0}, {256, -256, 0}, {-256, -256, 0}},
-                    .layer = 1,
-                    .u0 = 0.5f,
-                    .v0 = 0.5f,
-                    .u1 = 1.0f,
-                    .v1 = 1.0f},
+                    .color = {1, 1, 1, 0.2f},
+                    .layer = 1
+                    },
             Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{-300, 0, 0}, 0, 0, 0});
 
@@ -79,7 +77,7 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 
     tm->create_entity(
             Game::Render::Sprite{
-                    .sp = sp3, .pos = {{-640, 360, 0}, {640, 360, 0}, {640, -360, 0}, {-640, -360, 0}}, .layer = 1},
+                    .sp = sp3, .pos = {{-640, 360, 0}, {640, 360, 0}, {640, -360, 0}, {-640, -360, 0}}, .layer = 0},
             Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0});
 
@@ -87,7 +85,7 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 
     tm->create_entity(
             Game::Test::FpsCounter{},
-            Game::Render::Text{.font = font, .text = "0", .color={1, 1, 0, 1}},
+            Game::Render::Text{.font = font, .text = "0", .color={1, 1, 0, 1}, .layer = 2},
             Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0});
 
