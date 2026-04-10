@@ -177,7 +177,7 @@ namespace System::Render
                     Math::Color color;
                 };
 
-                struct SpriteParam sprite_params[4] = {
+                SpriteParam sprite_params[4] = {
                     {{u0, v0}, spr.color},
                     {{u1, v0}, spr.color},
                     {{u1, v1}, spr.color},

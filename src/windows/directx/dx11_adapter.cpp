@@ -127,10 +127,9 @@ namespace System::Render
         device->CreateBlendState(&blend_desc, &_alpha_blend_state);
 
         D3D11_DEPTH_STENCIL_DESC depth_desc{};
-        depth_desc.DepthEnable = FALSE;
+        depth_desc.DepthEnable = TRUE;
         depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-        depth_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
-        depth_desc.StencilEnable = FALSE;
+        depth_desc.DepthFunc = D3D11_COMPARISON_LESS;
 
         device->CreateDepthStencilState(&depth_desc, &_depth_stencil_state);
 
