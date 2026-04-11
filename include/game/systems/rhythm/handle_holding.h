@@ -13,19 +13,23 @@ namespace Game::Rhythm
         System::ECS::Query<Battle::RhythmState> &rhythm_query)
     {
         const auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
-        if (time_diff > -50)
+        constexpr auto perfect_judge = -50;
+        constexpr auto great_judge = -75;
+        constexpr auto fine_judge = -100;
+
+        if (time_diff > perfect_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             battle_query.front().get<Battle::BattleState>().score += base_score / 2;
             LOG_INFO("Perfect");
         }
-        else if (time_diff > -75)
+        else if (time_diff > great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
             battle_query.front().get<Battle::BattleState>().score += base_score / 4;
             LOG_INFO("Great");
         }
-        else if (time_diff > -100)
+        else if (time_diff > fine_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
             battle_query.front().get<Battle::BattleState>().score += base_score / 4;
@@ -43,7 +47,7 @@ namespace Game::Rhythm
             if (comp.get<NoteType>().type != -1)
                 continue;
 
-            if (comp.get<Timing>().timing == lane->get<Lane>().hold_end_time && comp.get<Timing>().lane == lane->get<Lane>().lane_number)
+            if (comp.get<Timing>().timing == lane->get<Lane>().hold_end_time && comp.get<Timing>().lane == lane->get<Lane>().lane_number && time_diff <= fine_judge)
             {
                 auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
                 comp.get<Render::Sprite>().sp = sp;

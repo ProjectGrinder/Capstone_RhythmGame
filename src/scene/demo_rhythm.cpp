@@ -10,6 +10,9 @@ using NoteStatus = Game::Rhythm::NoteStatus;
 
 extern "C" Window get_window_size();
 
+const float half_height = static_cast<float>(get_window_size().height) / 2;
+const float half_width = static_cast<float>(get_window_size().width) / 2;
+
 inline Game::Battle::ChartData create_demo_chart()
 {
     Game::Battle::ChartData chart;
@@ -99,8 +102,6 @@ inline Game::Battle::RhythmState create_rhythm_state()
 inline Game::Rhythm::NoteField create_field()
 {
     // position based on window size
-    const float half_height = static_cast<float>(get_window_size().height) / 2;
-    const float half_width = static_cast<float>(get_window_size().width) / 2;
     const float spawn_level = half_height;
     const float judge_level = half_height * -4 / 5;
     const float lane1_spawn = half_width * -3 / 10;
@@ -148,7 +149,7 @@ InputAttributeDescription sprite_ps_input_attributes[] = {
     InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 16}};
 auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite_vs_input_attributes, 2);
 auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 2);
-auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
+auto fn = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
 inline Math::Point field_to_point(const int lane, const Game::Rhythm::NoteField &field)
 {
@@ -218,7 +219,7 @@ void Scene::DemoRhythm::load_chart(
                         HoldStart{false},
                         NoteType{-1},
                         NoteStatus{0},
-                        assign_sprite(note.note_type),
+                        assign_sprite(-1),
                         Game::Render::Material(sprite_vs, sprite_ps),
                         Game::Render::Transform{pos, 0, 0, 0});
             }
@@ -283,10 +284,24 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
 
     tm->create_entity<Game::Rhythm::NoteField>(create_field());
 
+    tm->create_entity<Game::Rhythm::NoteSprite>(Game::Rhythm::NoteSprite());
+
     tm->create_entity(
-        Game::Render::Text{.font = font, .text = ""},
+        Game::Render::Text{.font = fn, .text = "PERFECT=0", .name = "Perfect"},
         Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{300, 0, 0}, 0, 0, 0});
+        Game::Render::Transform{Math::Point{-600, 300, 0}, 0, 0, 0});
+    tm->create_entity(
+        Game::Render::Text{.font = fn, .text = "GREAT=0", .name = "Great"},
+        Game::Render::Material(sprite_vs, sprite_ps),
+        Game::Render::Transform{Math::Point{-600, 250, 0}, 0, 0, 0});
+    tm->create_entity(
+        Game::Render::Text{.font = fn, .text = "FINE=0", .name = "Fine"},
+        Game::Render::Material(sprite_vs, sprite_ps),
+        Game::Render::Transform{Math::Point{-600, 200, 0}, 0, 0, 0});
+    tm->create_entity(
+        Game::Render::Text{.font = fn, .text = "MISS=0", .name = "Miss"},
+        Game::Render::Material(sprite_vs, sprite_ps),
+        Game::Render::Transform{Math::Point{-600, 150, 0}, 0, 0, 0});
 
     auto chart = create_demo_chart();
     auto field = create_field();
