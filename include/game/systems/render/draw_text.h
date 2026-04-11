@@ -13,7 +13,7 @@ namespace Game::Render
     {
         for (auto &[id, comps] : query)
         {
-            const auto &[font, text, layer, order] = comps.get<Text>();
+            const auto &[font, text, name, layer, order] = comps.get<Text>();
             const auto &material = comps.get<Material>();
             const auto &tra = comps.get<Transform>();
 

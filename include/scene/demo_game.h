@@ -8,6 +8,73 @@ namespace Scene
     {
         static DemoGame instance();
 
+        static Game::Battle::ChartData create_demo_chart()
+        {
+            Game::Battle::ChartData chart;
+
+            for (int lane = 0; lane < 4; ++lane)
+            {
+                chart.lanes[lane].lane_number = lane;
+                chart.lanes[lane].notes.clear();
+                chart.lanes[lane].current_note = 0;
+            }
+
+            // Pattern 1: Simple taps
+            chart.lanes[0].notes.emplace_back(false, 5000, 0, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[1].notes.emplace_back(false, 6000, 0, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[2].notes.emplace_back(false, 7000, 0, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[3].notes.emplace_back(false, 8000, 0, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[0].notes.emplace_back(false, 9000, 0, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[1].notes.emplace_back(false, 9000, 0, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[2].notes.emplace_back(false, 11000, 0, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[3].notes.emplace_back(false, 11000, 0, Game::Battle::RhythmType::NORMAL);
+
+            // Pattern 2: Accent notes
+            chart.lanes[0].notes.emplace_back(false, 13000, 0, Game::Battle::RhythmType::ACCENT);
+            chart.lanes[1].notes.emplace_back(false, 14000, 0, Game::Battle::RhythmType::ACCENT);
+            chart.lanes[2].notes.emplace_back(false, 15000, 0, Game::Battle::RhythmType::ACCENT);
+            chart.lanes[3].notes.emplace_back(false, 16000, 0, Game::Battle::RhythmType::ACCENT);
+            chart.lanes[1].notes.emplace_back(false, 17000, 0, Game::Battle::RhythmType::ACCENT);
+            chart.lanes[2].notes.emplace_back(false, 17000, 0, Game::Battle::RhythmType::ACCENT);
+
+            // Pattern 3: Rain notes (only taps)
+            for (int m = 0; m < 10; ++m)
+            {
+                chart.lanes[0].notes.emplace_back(false, 19000 + m * 100, 0, Game::Battle::RhythmType::RAIN);
+            }
+            for (int n = 0; n < 20; ++n)
+            {
+                chart.lanes[3].notes.emplace_back(false, 21000 + n * 50, 0, Game::Battle::RhythmType::RAIN);
+            }
+
+            // Pattern 4: Holds
+            chart.lanes[0].notes.emplace_back(true, 24000, 25000, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[1].notes.emplace_back(true, 26000, 27000, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[2].notes.emplace_back(true, 28000, 30000, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[3].notes.emplace_back(true, 29000, 30000, Game::Battle::RhythmType::NORMAL);
+            chart.lanes[0].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
+            chart.lanes[1].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
+            chart.lanes[2].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
+            chart.lanes[3].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
+
+            /*
+            Pattern 5: Mixed notes
+            chart.lanes[0].notes.emplace_back(false, 24000, 0);
+            chart.lanes[0].notes.emplace_back(true, 25000, 26000);
+            chart.lanes[1].notes.emplace_back(false, 26000, 0);
+            chart.lanes[1].notes.emplace_back(true, 27000, 28000);
+            chart.lanes[2].notes.emplace_back(true, 28000, 29000);
+            chart.lanes[2].notes.emplace_back(false, 29500, 0);
+            chart.lanes[3].notes.emplace_back(true, 30000, 31000);
+            chart.lanes[3].notes.emplace_back(false, 31500, 0);
+            chart.lanes[0].notes.emplace_back(false, 33000, 0);
+            chart.lanes[2].notes.emplace_back(true, 33000, 34000);
+            chart.lanes[0].notes.emplace_back(false, 35000, 0);
+            chart.lanes[2].notes.emplace_back(true, 35000, 36000);
+            */
+
+            return (chart);
+        }
         constexpr static auto name = "DemoGame";
         constexpr static size_t MaxResource = 1000;
 
