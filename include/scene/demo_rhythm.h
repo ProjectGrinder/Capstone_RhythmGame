@@ -1,6 +1,9 @@
 #pragma once
-#include "system.h"
+#include "../../src/windows/windows_types.h"
 #include "game.h"
+#include "system.h"
+
+extern "C" Window get_window_size();
 
 namespace Scene
 {
@@ -20,53 +23,41 @@ namespace Scene
         chart.lanes[1].notes.emplace_back(false, 6000, 0, Game::Battle::RhythmType::NORMAL);
         chart.lanes[2].notes.emplace_back(false, 7000, 0, Game::Battle::RhythmType::NORMAL);
         chart.lanes[3].notes.emplace_back(false, 8000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[0].notes.emplace_back(false, 9000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[1].notes.emplace_back(false, 9000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[2].notes.emplace_back(false, 11000, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[3].notes.emplace_back(false, 11000, 0, Game::Battle::RhythmType::NORMAL);
 
-        // Pattern 2: Holds
-        chart.lanes[0].notes.emplace_back(true, 9000, 10000, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[1].notes.emplace_back(true, 11000, 12000, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[2].notes.emplace_back(true, 13000, 15000, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[3].notes.emplace_back(true, 14000, 15000, Game::Battle::RhythmType::NORMAL);
+        // Pattern 2: Accent notes
+        chart.lanes[0].notes.emplace_back(false, 13000, 0, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[1].notes.emplace_back(false, 14000, 0, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[2].notes.emplace_back(false, 15000, 0, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[3].notes.emplace_back(false, 16000, 0, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[1].notes.emplace_back(false, 17000, 0, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[2].notes.emplace_back(false, 17000, 0, Game::Battle::RhythmType::ACCENT);
 
-        // Pattern 3: Simultaneous notes
-        chart.lanes[0].notes.emplace_back(false, 17000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[1].notes.emplace_back(false, 17000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[2].notes.emplace_back(false, 19000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[3].notes.emplace_back(false, 19000, 0, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[0].notes.emplace_back(true, 21000, 22000, Game::Battle::RhythmType::NORMAL);
-        chart.lanes[1].notes.emplace_back(true, 21000, 23000, Game::Battle::RhythmType::NORMAL);
-
-        // Pattern 4: Repeated taps
-        // for (int i = 0; i < 3; ++i)
-        // {
-        //     chart.lanes[0].notes.emplace_back(false, 20000 + i * 100, 0, Game::Battle::RhythmType::NORMAL);
-        // }
-        // for (int j = 0; j < 3; ++j)
-        // {
-        //     chart.lanes[3].notes.emplace_back(false, 21000 + j * 100, 0, Game::Battle::RhythmType::NORMAL);
-        // }
-
-        // Pattern 5: Accent notes
-        chart.lanes[0].notes.emplace_back(false, 24000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[1].notes.emplace_back(false, 25000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[2].notes.emplace_back(false, 26000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[3].notes.emplace_back(false, 27000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[1].notes.emplace_back(false, 28000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[2].notes.emplace_back(false, 28000, 0, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[0].notes.emplace_back(true, 29000, 30000, Game::Battle::RhythmType::ACCENT);
-        chart.lanes[3].notes.emplace_back(true, 29000, 30000, Game::Battle::RhythmType::ACCENT);
-
-        // Pattern 6: Rain notes (only taps)
+        // Pattern 3: Rain notes (only taps)
         for (int m = 0; m < 10; ++m)
         {
-            chart.lanes[0].notes.emplace_back(false, 32000 + m * 100, 0, Game::Battle::RhythmType::RAIN);
+            chart.lanes[0].notes.emplace_back(false, 19000 + m * 100, 0, Game::Battle::RhythmType::RAIN);
         }
         for (int n = 0; n < 20; ++n)
         {
-            chart.lanes[3].notes.emplace_back(false, 34000 + n * 50, 0, Game::Battle::RhythmType::RAIN);
+            chart.lanes[3].notes.emplace_back(false, 21000 + n * 50, 0, Game::Battle::RhythmType::RAIN);
         }
 
+        // Pattern 4: Holds
+        chart.lanes[0].notes.emplace_back(true, 24000, 25000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[1].notes.emplace_back(true, 26000, 27000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[2].notes.emplace_back(true, 28000, 30000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[3].notes.emplace_back(true, 29000, 30000, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[0].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[1].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[2].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
+        chart.lanes[3].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
+
         /*
-        // Pattern 7: Mixed notes
+        // Pattern 5: Mixed notes
         chart.lanes[0].notes.emplace_back(false, 24000, 0);
         chart.lanes[0].notes.emplace_back(true, 25000, 26000);
         chart.lanes[1].notes.emplace_back(false, 26000, 0);
@@ -92,7 +83,7 @@ namespace Scene
     };
     inline Game::Battle::RhythmState create_rhythm_state()
     {
-        Game::Battle::RhythmState state(1, 100, 60, 1.0f, 1.0f);
+        Game::Battle::RhythmState state(1, 100, 60, 2.0f, 2.0f);
         state.accept_loss.normal = 5;
         state.accept_loss.accent = 5;
         state.accept_loss.rain = 2;
@@ -103,7 +94,22 @@ namespace Scene
 
     inline Game::Rhythm::NoteField create_field()
     {
-        return Game::Rhythm::NoteField(100, 500, 500, 600, 700, 800);;
+        // position based on window size
+        const float half_height = static_cast<float>(get_window_size().height) / 2;
+        const float half_width = static_cast<float>(get_window_size().width) / 2;
+        const float spawn_level = half_height;
+        const float judge_level = half_height * -4 / 5;
+        const float lane1_spawn = half_width * -3 / 10;
+        const float lane2_spawn = half_width * -1 / 10;
+        const float lane3_spawn = half_width * 1 / 10;
+        const float lane4_spawn = half_width * 3 / 10;
+        return Game::Rhythm::NoteField(
+            spawn_level,
+            judge_level,
+            lane1_spawn,
+            lane2_spawn,
+            lane3_spawn,
+            lane4_spawn);
     }
 
     inline Game::Battle::BpmInfo create_bpm_info()
@@ -113,7 +119,7 @@ namespace Scene
         info.bpm = 134.00f;
         info.timing = 0;
         bpm.bpm_list.emplace_back(info);
-        return bpm;
+        return (bpm);
     }
 
     inline Game::Battle::PhaseInfo create_phase_info()
@@ -123,7 +129,7 @@ namespace Scene
         info.phase = Game::Battle::RHYTHM;
         info.timing = 0;
         phase.phase_list.emplace_back(info);
-        return phase;
+        return (phase);
     }
 
     struct DemoRhythm
@@ -146,8 +152,11 @@ namespace Scene
             Game::Rhythm::NoteType,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::NoteField,
-            Game::Physics::Position,
-            Game::Physics::Velocity
+            Game::Render::Camera2D,
+            Game::Render::Sprite,
+            Game::Render::Material,
+            Game::Render::Text,
+            Game::Render::Transform
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -159,6 +168,9 @@ namespace Scene
             Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::update_notes<Syscall>,
+            Game::Render::set_camera<Syscall>,
+            Game::Rhythm::draw_notes<Syscall>,
+            Game::Render::draw_text<Syscall>,
             Game::Battle::update_global_clock<Syscall>
             >;
 
@@ -170,6 +182,7 @@ namespace Scene
         static std::shared_ptr<TaskManager> init()
         {
             auto tm = std::make_shared<TaskManager>();
+            tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1280, .scaleY = 720, .rotation = 0});
 
             tm->create_entity<Game::Battle::BattleState,
             Game::Battle::RhythmState,

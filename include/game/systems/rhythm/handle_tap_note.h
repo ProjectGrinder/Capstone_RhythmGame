@@ -43,7 +43,7 @@ namespace Game::Rhythm
             lane->get<Lane>().hold_active = true;
             LOG_INFO("Start Holding");
         }
-            comp->get<NoteStatus>().state = 0; // remove tap notes
+            comp->get<NoteStatus>().state = -1; // remove tap notes
     }
 
     inline void handle_accent_note(
@@ -69,7 +69,7 @@ namespace Game::Rhythm
             lane->get<Lane>().hold_active = true;
             LOG_INFO("Start Holding");
         }
-        comp->get<NoteStatus>().state = 0; // remove tap notes
+        comp->get<NoteStatus>().state = -1; // remove tap notes
     }
 
     inline void handle_rain_note(
@@ -85,7 +85,7 @@ namespace Game::Rhythm
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             battle_query.front().get<Battle::BattleState>().score += base_score / 2;
             LOG_INFO("Perfect");
-            comp->get<NoteStatus>().state = 0;
+            comp->get<NoteStatus>().state = -1;
         }
     }
 
@@ -141,18 +141,6 @@ namespace Game::Rhythm
                         }
                     }
                 }
-                else
-                {
-                    const auto time_diff_end = current_time - comp2.get<Lane>().hold_end_time;
-
-                    if (time_diff_end >= 0) // check for perfect end timing
-                    {
-                        battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-                        comp2.get<Lane>().hold_active = false;
-                        comp2.get<Lane>().hold_end_time = 0;
-                        LOG_INFO("Perfect");
-                    }
-                }
                 break;
             }
         }
@@ -205,7 +193,7 @@ namespace Game::Rhythm
         // Check first note of each lane where input is true
         for (auto &[id, comp] : note_query)
         {
-            if (comp.get<NoteStatus>().state == 0)
+            if (comp.get<NoteStatus>().state == -1)
                 continue;
 
             const int first_timing = comp.get<Timing>().timing;

@@ -9,7 +9,7 @@ namespace Game::Rhythm
         const int &time_diff,
         System::ECS::Query<Lane>::StoredTuple *lane,
         System::ECS::Query<Battle::BattleState> &battle_query,
-        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus> &note_query,
+        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
         System::ECS::Query<Battle::RhythmState> &rhythm_query)
     {
         const auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
@@ -45,8 +45,9 @@ namespace Game::Rhythm
 
             if (comp.get<Timing>().timing == lane->get<Lane>().hold_end_time && comp.get<Timing>().lane == lane->get<Lane>().lane_number)
             {
-                comp.get<NoteStatus>().state = 0;
-                break;
+                auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
+                comp.get<Render::Sprite>().sp = sp;
+                LOG_INFO("Change sprite");
             }
         }
         lane->get<Lane>().hold_active = false;
@@ -60,7 +61,7 @@ namespace Game::Rhythm
         System::ECS::Query<Battle::RhythmState> &rhythm_query,
         System::ECS::Query<KeyInput> &input_query,
         System::ECS::Query<Lane> &lane_query,
-        [[maybe_unused]] System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus> &note_query)
+        [[maybe_unused]] System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;

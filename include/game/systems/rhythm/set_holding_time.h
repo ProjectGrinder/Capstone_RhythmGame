@@ -41,7 +41,7 @@ namespace Game::Rhythm
 
         for (auto &[id, comp] : note_query)
         {
-            if (comp.get<NoteStatus>().state == 0 || comp.get<NoteType>().type != -1)
+            if (comp.get<NoteStatus>().state == -1 || comp.get<NoteType>().type != -1)
                 continue;
 
             const int first_timing = comp.get<Timing>().timing;

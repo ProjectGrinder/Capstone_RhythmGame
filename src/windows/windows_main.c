@@ -21,7 +21,7 @@
 extern void assets_cleanup(void);
 
 static SystemInfo system_info = {
-        .window = {.width = 800, .height = 600},
+        .window = {.width = 1280, .height = 720},
         .monitor =
                 {
                         .width = 0,
@@ -42,6 +42,11 @@ static SystemInfo system_info = {
         .dx11_adapter = NULL,
         .directx = NULL,
 };
+
+Window get_window_size(void)
+{
+    return (system_info.window);
+}
 
 HWND get_window_handler(void)
 {

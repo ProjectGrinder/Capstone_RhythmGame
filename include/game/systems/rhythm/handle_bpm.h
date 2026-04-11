@@ -47,7 +47,7 @@ namespace Game::Rhythm
             LOG_INFO("BPM: %d", static_cast<int>(bpm_list.at(idx).bpm));
             rhythm_query.front().get<Battle::RhythmState>().current_speed =
                 rhythm_query.front().get<Battle::RhythmState>().base_speed * (bpm_list.at(idx).bpm / level_data.main_bpm);
-            if (bpm_list.at(idx).bpm != level_data.main_bpm)
+            if (bpm_list.at(idx).bpm != level_data.main_bpm || idx == 0)
             {
                 rhythm_query.front().get<Battle::RhythmState>().speed_change = true;
             }

@@ -1,34 +1,34 @@
 #pragma once
 
 #include "game/components.h"
+extern "C" long double get_delta_time();
 
 namespace Game::Rhythm
 {
-    using Position = Physics::Position;
-    using Velocity = Physics::Velocity;
+    using Transform = Render::Transform;
 
     inline void handle_speed_change(
         const float render_offset,
         const int clock_time,
-        System::ECS::Query<Position, Timing, HoldStart, NoteType, NoteStatus> &note_query,
+        System::ECS::Query<Transform, Timing, HoldStart, NoteType, NoteStatus> &note_query,
         const NoteField &field)
     {
-        const auto height = field.judge_level - field.spawn_level;
+        const auto height = field.spawn_level - field.judge_level;
 
         for (auto &[id, comp]: note_query)
         {
-            if (comp.get<NoteStatus>().state != 0)
+            if (comp.get<NoteStatus>().state != -1)
             {
-                const auto note_diff = static_cast<float>(clock_time - comp.get<Timing>().timing);
+                const auto note_diff = static_cast<float>(comp.get<Timing>().timing - clock_time);
                 if (note_diff < render_offset)
                 {
-                    comp.get<Position>().y = field.judge_level - height * (static_cast<float>(note_diff) / render_offset);
+                    comp.get<Transform>().position.y = field.judge_level + height * (static_cast<float>(note_diff) / render_offset);
                     comp.get<NoteStatus>().state = 1;
                 }
                 else
                 {
-                    comp.get<Position>().y = field.spawn_level;
-                    comp.get<NoteStatus>().state = -1;
+                    comp.get<Transform>().position.y = field.spawn_level;
+                    comp.get<NoteStatus>().state = 0;
                 }
             }
         }
@@ -37,7 +37,7 @@ namespace Game::Rhythm
     template<typename T>
     void update_notes(
         [[maybe_unused]] T &syscall,
-        System::ECS::Query<Position, Timing, HoldStart, NoteType, NoteStatus> &note_query,
+        System::ECS::Query<Transform, Timing, HoldStart, NoteType, NoteStatus> &note_query,
         System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<Battle::RhythmState> &rhythm_query,
         System::ECS::Query<NoteField> &field_query)
@@ -54,9 +54,15 @@ namespace Game::Rhythm
         if (rhythm_query.begin() == rhythm_query.end())
             return;
 
+        // const auto frame_time = get_delta_time();
+        // if (frame_time == 0)
+        //     return;
+
+        const auto frame_time = get_delta_time();
         const auto field = field_query.front().get<NoteField>();
         const auto current_speed = rhythm_query.front().get<Battle::RhythmState>().current_speed;
-        const float render_offset = (field.spawn_level - field.judge_level) / current_speed; //make sure to test and adjust
+        const auto height = field.spawn_level - field.judge_level;
+        const float render_offset = 5000.00f / current_speed; // speed 1 -> 5000 ms
         const auto clock_time = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
 
         // If speed change is detected, change note positions
@@ -64,6 +70,7 @@ namespace Game::Rhythm
         {
             handle_speed_change(render_offset, clock_time, note_query, field);
             rhythm_query.front().get<Battle::RhythmState>().speed_change = false;
+            LOG_INFO("Offset: %d", static_cast<int>(render_offset));
             return;
         }
         // Notes always move in constant speed
@@ -71,11 +78,10 @@ namespace Game::Rhythm
         {
             if (comp.get<NoteStatus>().state == 1)
             {
-                constexpr auto frame_time = 1;
                 // modify to what seems fit
-                comp.get<Position>().y += current_speed * frame_time;
+                comp.get<Transform>().position.y -= (height / render_offset) * static_cast<float>(frame_time);
             }
-            else if (comp.get<NoteStatus>().state == -1)
+            else if (comp.get<NoteStatus>().state == 0)
             {
                 //check if note is in render timing
                 if (static_cast<float>(comp.get<Timing>().timing - clock_time) <= render_offset)
