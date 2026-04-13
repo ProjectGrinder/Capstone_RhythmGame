@@ -6,7 +6,7 @@ Scene::DemoBulletHell Scene::DemoBulletHell::instance()
     return (instance);
 }
 
-std::vector<Scene::DemoBulletHell::ComponentTuple> Scene::DemoBulletHell::exit()
+std::vector<Scene::DemoBulletHell::ComponentTuple> Scene::DemoBulletHell::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
     LOG_INFO("Exiting DemoBulletHell Scene.");
     return {};

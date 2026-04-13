@@ -50,6 +50,6 @@ namespace Scene
         // declare functions
         static void test();
         static std::shared_ptr<TaskManager> init();
-        static std::vector<ComponentTuple> exit();
+        static std::vector<ComponentTuple> exit(std::shared_ptr<TaskManager> &manager);
     };
 } // namespace Scene

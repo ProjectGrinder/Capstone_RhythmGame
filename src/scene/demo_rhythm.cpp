@@ -8,7 +8,7 @@ Scene::DemoRhythm Scene::DemoRhythm::instance()
     return (instance);
 }
 
-std::vector<Scene::DemoRhythm::ComponentTuple> Scene::DemoRhythm::exit()
+std::vector<Scene::DemoRhythm::ComponentTuple> Scene::DemoRhythm::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
     LOG_INFO("Exiting DemoRhythm Scene.");
     return {};

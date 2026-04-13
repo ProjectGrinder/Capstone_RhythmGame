@@ -24,7 +24,7 @@ std::shared_ptr<Scene::Demo::TaskManager> Scene::Demo::init()
     return (tm);
 }
 
-std::vector<Scene::Demo::ComponentTuple> Scene::Demo::exit()
+std::vector<Scene::Demo::ComponentTuple> Scene::Demo::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
     LOG_INFO("Exiting Demo Scene.");
     return {};

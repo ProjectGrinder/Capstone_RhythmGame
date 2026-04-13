@@ -147,6 +147,6 @@ namespace Scene
             return (tm);
         }
 
-        static std::vector<ComponentTuple> exit();
+        static std::vector<ComponentTuple> exit(std::shared_ptr<TaskManager> &manager);
     };
 }

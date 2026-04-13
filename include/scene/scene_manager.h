@@ -42,10 +42,10 @@ namespace Scene
                     {
                         if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
                         {
-                            // using TaskManager = typename std::decay_t<S>::TaskManager;
+                            using TaskManager = std::decay_t<S>::TaskManager;
                             using ComponentTuple = std::decay_t<S>::ComponentTuple;
-                            // const std::shared_ptr<TaskManager> &manager = std::get<std::shared_ptr<TaskManager>>(instance()._current_manager);
-                            std::vector<ComponentTuple> data = scene.exit();
+                            std::shared_ptr<TaskManager> &manager = std::get<std::shared_ptr<TaskManager>>(instance()._current_manager);
+                            std::vector<ComponentTuple> data = scene.exit(manager);
                             instance()._current_scene_template = T::instance();
                             instance()._current_manager = T::init();
                         }
