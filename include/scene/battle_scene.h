@@ -84,6 +84,10 @@ namespace Scene
 
         // declare functions
         static std::shared_ptr<TaskManager> init();
+        static std::shared_ptr<TaskManager> init([[maybe_unused]] std::vector<ComponentTuple> &data)
+        {
+            return (init());
+        }
         static std::vector<ComponentTuple> exit(std::shared_ptr<TaskManager> &manager);
     };
 }

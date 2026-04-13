@@ -45,9 +45,15 @@ namespace Scene
                             using TaskManager = std::decay_t<S>::TaskManager;
                             using ComponentTuple = std::decay_t<S>::ComponentTuple;
                             std::shared_ptr<TaskManager> &manager = std::get<std::shared_ptr<TaskManager>>(instance()._current_manager);
-                            std::vector<ComponentTuple> data = scene.exit(manager);
+                            std::vector<ComponentTuple> out_data = scene.exit(manager);
+                            std::vector<typename T::ComponentTuple> in_data;
+                            in_data.reserve(out_data.size());
+                            for (auto &component_tuple: out_data)
+                            {
+                                in_data.emplace_back(Utils::map<std::decay_t<S>, T>(component_tuple));
+                            }
                             instance()._current_scene_template = T::instance();
-                            instance()._current_manager = T::init();
+                            instance()._current_manager = T::init(in_data);
                         }
                         else
                         {
