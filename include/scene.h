@@ -3,7 +3,7 @@
 #include "utils.h"
 #include "system/ecs.h"
 
-// declare scene types
+// declare "change scene function"
 #include "scene/scene_decl.h"
 
 // define scene templates

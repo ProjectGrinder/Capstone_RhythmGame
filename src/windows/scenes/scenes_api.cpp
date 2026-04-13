@@ -10,7 +10,7 @@ HRESULT scene_manager_init(SceneManagerHandler *handler)
 
     *handler = manager;
 
-    manager->change_scene<Scene::Config::StartingScene>();
+    Scene::SceneManager::change_scene<Scene::Config::StartingScene>();
     return (error);
 }
 

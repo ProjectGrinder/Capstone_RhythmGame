@@ -48,21 +48,21 @@ namespace Scene
                     }
                 },
                 instance()._current_manager);
+
+        // if _next_scene_template is not monostate, it is to be changed to.
+        std::visit([]<typename S>([[maybe_unused]] S &&scene){
+            if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
+            {
+                change_scene<std::decay_t<S>>();
+                instance()._next_scene_template = std::monostate{};
+            }
+        }, instance()._next_scene_template);
     }
 
     SceneManager::~SceneManager()
     {
         LOG_INFO("Cleaning up SceneManager...");
-        // _current_manager.reset();
         _current_scene_template = std::monostate{};
-        std::visit(
-                []<typename S>(S &&scene)
-                {
-                    if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
-                    {
-                        scene.exit();
-                    }
-                },
-                _current_scene_template);
+        _current_manager = std::monostate{};
     }
 } // namespace Scene
