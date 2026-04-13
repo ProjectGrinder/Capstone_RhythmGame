@@ -28,8 +28,7 @@ namespace Scene
             Game::Render::Sprite,
             Game::Render::Material,
             Game::Render::Text,
-            Game::Render::Transform,
-            Game::Rhythm::NoteSprite
+            Game::Render::Transform
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -37,6 +36,7 @@ namespace Scene
             Game::Battle::input_system<Syscall>,
             Game::Rhythm::handle_bpm<Syscall>,
             Game::Rhythm::handle_tap_note<Syscall>,
+            Game::Rhythm::handle_rain_note<Syscall>,
             Game::Rhythm::set_holding_time<Syscall>,
             Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,

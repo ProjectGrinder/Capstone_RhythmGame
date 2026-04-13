@@ -121,8 +121,7 @@ namespace Scene
             Game::Rhythm::JudgeText,
             Game::Rhythm::NoteField,
             Game::Rhythm::KeyInput,
-            Game::Rhythm::NoteStatus,
-            Game::Rhythm::NoteSprite
+            Game::Rhythm::NoteStatus
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;

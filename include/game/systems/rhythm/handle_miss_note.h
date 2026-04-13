@@ -10,8 +10,7 @@ namespace Game::Rhythm
             System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<Battle::RhythmState> &rhythm_query,
-            System::ECS::Query<Render::Text> &text_query,
-            System::ECS::Query<NoteSprite> &sprite_query)
+            System::ECS::Query<Render::Text> &text_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -69,8 +68,7 @@ namespace Game::Rhythm
                     }
                     if (note != nullptr)
                     {
-                        // auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
-                        const auto sp = sprite_query.front().get<NoteSprite>().disabled;
+                        auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
                         note->get<Render::Sprite>().sp = sp;
                     }
                 }

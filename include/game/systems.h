@@ -24,6 +24,7 @@
 #include "game/systems/rhythm/handle_bpm.h"
 #include "game/systems/rhythm/handle_holding.h"
 #include "game/systems/rhythm/handle_miss_note.h"
+#include "game/systems/rhythm/handle_rain_note.h"
 #include "game/systems/rhythm/handle_tap_note.h"
 #include "game/systems/rhythm/set_holding_time.h"
 #include "game/systems/rhythm/update_notes.h"

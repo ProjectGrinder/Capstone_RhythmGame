@@ -62,8 +62,7 @@ namespace Game::Rhythm
 
         if (comp->get<HoldStart>().is_hold == true)
         {
-            comp->get<HoldStart>().is_hold = true; // start holding
-            lane->get<Lane>().hold_active = true;
+            lane->get<Lane>().hold_active = true; // start holding
             LOG_INFO("Start Holding");
         }
             comp->get<NoteStatus>().state = -1; // remove tap notes
@@ -98,39 +97,10 @@ namespace Game::Rhythm
 
         if (comp->get<HoldStart>().is_hold == true)
         {
-            comp->get<HoldStart>().is_hold = true; // start holding
-            lane->get<Lane>().hold_active = true;
+            lane->get<Lane>().hold_active = true; // start holding
             LOG_INFO("Start Holding");
         }
         comp->get<NoteStatus>().state = -1; // remove tap notes
-    }
-
-    inline void handle_rain_note(
-        const int &time_diff,
-        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
-        System::ECS::Query<Battle::BattleState> &battle_query,
-        System::ECS::Query<Battle::RhythmState> &rhythm_query,
-        System::ECS::Query<Render::Text> &text_query)
-    {
-        auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
-
-        constexpr auto early_judge = 50;
-        constexpr auto late_judge = -100;
-
-        if (time_diff > late_judge && time_diff < early_judge)
-        {
-            battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-            battle_query.front().get<Battle::BattleState>().score += base_score / 2;
-            for (auto &[id2, comp2] : text_query)
-            {
-                if (comp2.get<Render::Text>().name == "Perfect")
-                {
-                    comp2.get<Render::Text>().text = "PERFECT=" + std::to_string(battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count);
-                    break;
-                }
-            }
-            comp->get<NoteStatus>().state = -1;
-        }
     }
 
     inline void handle_note_from_lane(
@@ -154,37 +124,19 @@ namespace Game::Rhythm
             if (comp2.get<Lane>().lane_number == lane_num)
             {
                 lane = &comp2;
-                if (comp2.get<Lane>().hold_active == false)
+                const auto time_diff = current_time - note_time;
+
+                if (time_diff <= -100 || time_diff >= 100)
                 {
-                    const auto time_diff = current_time - note_time;
-
-                    if (time_diff <= -100 || time_diff >= 100)
-                    {
-                        return;
-                    }
-
-                    // handle both tap notes and "un-hold" hold notes
-                    for (auto &[id3, comp3] : input_query)
-                    {
-                        if ((lane_num == 0 && comp3.get<KeyInput>().key1_pressed == true) ||
-                        (lane_num == 1 && comp3.get<KeyInput>().key2_pressed == true) ||
-                        (lane_num == 2 && comp3.get<KeyInput>().key3_pressed == true) ||
-                        (lane_num == 3 && comp3.get<KeyInput>().key4_pressed == true))
-                        {
-                            if (note_type == 1)
-                            {
-                                handle_accent_note(time_diff, comp, lane, battle_query, rhythm_query, text_query);
-                            }
-                            else if (note_type == 0)
-                            {
-                                handle_normal_note(time_diff, comp, lane, battle_query, rhythm_query, text_query);
-                            }
-                        }
-                        else if (note_type == 2)
-                        {
-                            handle_rain_note(time_diff, comp, battle_query, rhythm_query, text_query);
-                        }
-                    }
+                    return;
+                }
+                if (note_type == 1)
+                {
+                    handle_accent_note(time_diff, comp, lane, battle_query, rhythm_query, text_query);
+                }
+                else if (note_type == 0)
+                {
+                    handle_normal_note(time_diff, comp, lane, battle_query, rhythm_query, text_query);
                 }
                 break;
             }
@@ -205,9 +157,7 @@ namespace Game::Rhythm
             return;
 
         if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
-        {
             return;
-        }
 
         if (input_query.begin() == input_query.end())
             return;
@@ -242,6 +192,9 @@ namespace Game::Rhythm
             if (comp.get<NoteStatus>().state == -1)
                 continue;
 
+            if (comp.get<NoteType>().type == -1 || comp.get<NoteType>().type == 2)
+                continue;
+
             const int first_timing = comp.get<Timing>().timing;
 
             if (comp.get<Timing>().lane == 0 && first_timing < first_timing1)
@@ -267,19 +220,19 @@ namespace Game::Rhythm
         }
 
         // Check if note is in hit range
-        if (key_input.key1_hold == true && note_comp1 != nullptr)
+        if (key_input.key1_pressed == true && note_comp1 != nullptr)
         {
             handle_note_from_lane(0, note_comp1, battle_query, input_query, lane_query, text_query, rhythm_query);
         }
-        if (key_input.key2_hold == true && note_comp2 != nullptr)
+        if (key_input.key2_pressed == true && note_comp2 != nullptr)
         {
             handle_note_from_lane(1, note_comp2, battle_query, input_query, lane_query, text_query, rhythm_query);
         }
-        if (key_input.key3_hold == true && note_comp3 != nullptr)
+        if (key_input.key3_pressed == true && note_comp3 != nullptr)
         {
             handle_note_from_lane(2, note_comp3, battle_query, input_query, lane_query, text_query, rhythm_query);
         }
-        if (key_input.key4_hold == true && note_comp4 != nullptr)
+        if (key_input.key4_pressed == true && note_comp4 != nullptr)
         {
             handle_note_from_lane(3, note_comp4, battle_query, input_query, lane_query, text_query, rhythm_query);
         }
