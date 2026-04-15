@@ -1,15 +1,21 @@
 #pragma once
 #include "game/components.h"
 #include "game/systems/global_clock.h"
+#include "game/utils/audio_util.h"
 
 namespace Game::BulletHell
 {
         // Default FadeIn/Out
     template <typename T>
-    void boomer_system([[maybe_unused]] T &syscall, System::ECS::Query<Booming , Particle,Delay, Physics::Scale, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void boomer_system([[maybe_unused]] T &syscall, System::ECS::Query<Booming , Particle,Delay, Physics::Scale, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2, System::ECS::Query<Audio::SoundRegistry> &sound_query)
     {
         if (query2.begin() == query2.end())
             return;
+
+        if (sound_query.begin() == sound_query.end())
+            return;
+
+        auto sound_registry = sound_query.front().components.get<Audio::SoundRegistry>().sounds;
 
         for (auto &[id, comps] : query)
         {
@@ -27,6 +33,7 @@ namespace Game::BulletHell
                     scl.scaleX = boomer.max_size;
                     scl.scaleY = boomer.max_size;
                     render.color.a = 0.25;
+                    Audio::sound_play(sound_registry["sound_bullet_boomer"]);
                 }
                 else if (delay_comp.delay <= 0)
                 {

@@ -3,7 +3,9 @@
 #include <cmath>
 
 
+#include "audio.h"
 #include "game/components.h"
+#include "game/utils/audio_util.h"
 
 // Help. Bullet has 2 Collider types. So, I use 2 query each with different narrow check. Everything else is the same.
 // Therefore, this code's suck.
@@ -16,7 +18,8 @@ namespace Game::BulletHell
 	                     System::ECS::Query<Battle::BulletHellState> &state_query,
 						 System::ECS::Query<Bullet,Physics::Position, Physics::Rotation, Physics::Scale, Physics::RectangularCollider> &bullet_query1,
 						 System::ECS::Query<Bullet,Physics::Position, Physics::Rotation, Physics::Scale, Physics::CircularCollider> &bullet_query2,
-						 System::ECS::Query<Player,Physics::Position, Physics::Scale, Physics::CircularCollider> &player_query)
+						 System::ECS::Query<Player,Physics::Position, Physics::Scale, Physics::CircularCollider> &player_query,
+                         System::ECS::Query<Audio::SoundRegistry> &sound_query)
 	{
 		if (battle_query.begin() == battle_query.end())
 			return;
@@ -35,6 +38,11 @@ namespace Game::BulletHell
         {
             return;
         }
+
+	    if (sound_query.begin() == sound_query.end())
+	        return;
+
+	    auto sound_registry = sound_query.front().components.get<Audio::SoundRegistry>().sounds;
 
 	    const auto &player_pos = player_query.front().get<Physics::Position>();
 	    const auto &player_hitbox = player_query.front().get<Physics::CircularCollider>();
@@ -74,6 +82,7 @@ namespace Game::BulletHell
 		        {
 		            bullet.is_grazed = true;
 		            state.graze ++;
+		            Audio::sound_play(sound_registry["sound_graze"]);
 		        }
 		    }
 
@@ -112,6 +121,8 @@ namespace Game::BulletHell
 
 		    // Deactivate the bullet
 		    bullet.pierce --;
+
+		    Audio::sound_play(sound_registry["sound_hit"]);
         }
 
 	    for (auto &[id, comps] : bullet_query2)
@@ -148,6 +159,7 @@ namespace Game::BulletHell
 	                {
 	                    bullet.is_grazed = true;
 	                    state.graze ++;
+	                    Audio::sound_play(sound_registry["sound_graze"]);
 	                }
 	            }
                 continue;
@@ -183,6 +195,10 @@ namespace Game::BulletHell
 
 	        // Deactivate the bullet
 	        bullet.pierce--;
+
+	        // Activate Sound
+	        Audio::sound_play(sound_registry["sound_hit"]);
+
 	    }
 	}
 } // namespace Game::BulletHell

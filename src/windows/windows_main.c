@@ -23,7 +23,7 @@
 extern void assets_cleanup(void);
 
 static SystemInfo system_info = {
-        .window = {.width = 1920, .height = 1080},
+        .window = {.width = 640, .height = 480},
         .monitor =
                 {
                         .width = 0,
@@ -31,7 +31,7 @@ static SystemInfo system_info = {
                 },
         .instance_handler = NULL,
         .window_handler = NULL,
-        .display_type = DT_FULLSCREEN,
+        .display_type = DT_WINDOW,
         .is_running = 0,
         .precision = 1,
         .perf_frequency = {0},
@@ -170,22 +170,22 @@ int real_main()
         goto exit;
     }
 
-    const AssetsRecord *test_sound = load_audio("audio/test.wav", "test_sound");
-    AudioCache *out = NULL;
-    load_audio_if_not_exist((AssetsRecord *) test_sound, &out);
-
-    if (out != NULL && system_info.audio != NULL)
-    {
-        AudioAPI *api = (AudioAPI *) system_info.audio;
-
-        api->mixer.sounds[0].pcm_data = out->pcm_data;
-        api->mixer.sounds[0].total_frames = out->frame_count;
-        api->mixer.sounds[0].current_frame = 0;
-        api->mixer.sounds[0].volume = 1.0f;
-        api->mixer.sounds[0].active = 1;
-
-        LOG_INFO("Pushed test.wav to Mixer Slot 0!");
-    }
+    // const AssetsRecord *test_sound = load_audio("audio/test.wav", "test_sound");
+    // AudioCache *out = NULL;
+    // load_audio_if_not_exist((AssetsRecord *) test_sound, &out);
+    //
+    // if (out != NULL && system_info.audio != NULL)
+    // {
+    //     AudioAPI *api = (AudioAPI *) system_info.audio;
+    //
+    //     api->mixer.sounds[0].pcm_data = out->pcm_data;
+    //     api->mixer.sounds[0].total_frames = out->frame_count;
+    //     api->mixer.sounds[0].current_frame = 0;
+    //     api->mixer.sounds[0].volume = 1.0f;
+    //     api->mixer.sounds[0].active = 1;
+    //
+    //     LOG_INFO("Pushed test.wav to Mixer Slot 0!");
+    // }
 
     LARGE_INTEGER start, end;
     long double input, scene, compositor, convert, render;
@@ -220,16 +220,16 @@ int real_main()
         QueryPerformanceCounter(&end);
         system_info.delta_time = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
                                  (long double) system_info.perf_frequency.QuadPart;
-        LOG_INFO(
-                "Process Time: %d us [ Input Process: %d us, Scene Update: %d us, Compositor: %d us, Converter: %d us, "
-                "Renderer: %d us, GPU Render: %d us]",
-                (int) (system_info.delta_time * 1000.0L),
-                (int) (input * 1000.0L),
-                (int) ((scene - input) * 1000.0L),
-                (int) ((compositor - scene) * 1000.0L),
-                (int) ((convert - compositor) * 1000.0L),
-                (int) ((render - convert) * 1000.0L),
-                (int) ((system_info.delta_time - render) * 1000));
+        // LOG_INFO(
+        //         "Process Time: %d us [ Input Process: %d us, Scene Update: %d us, Compositor: %d us, Converter: %d us, "
+        //         "Renderer: %d us, GPU Render: %d us]",
+        //         (int) (system_info.delta_time * 1000.0L),
+        //         (int) (input * 1000.0L),
+        //         (int) ((scene - input) * 1000.0L),
+        //         (int) ((compositor - scene) * 1000.0L),
+        //         (int) ((convert - compositor) * 1000.0L),
+        //         (int) ((render - convert) * 1000.0L),
+        //         (int) ((system_info.delta_time - render) * 1000));
 
 
         sleep(max(system_info.precision - (LONGLONG) system_info.delta_time, 0));

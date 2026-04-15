@@ -1,11 +1,12 @@
 #pragma once
 #include "game/components.h"
+#include "components/sound.h"
 
 // TODO : Render stuffs
 namespace Game::BulletHell
 {
     template<typename T>
-    void spawn_bullet(T &syscall, const Battle::BulletData& bullet_data, const Battle::BulletRegistry& bullet_registry, const Battle::BulletHellState bhs)
+    void spawn_bullet(T &syscall, const Battle::BulletData& bullet_data, const Battle::BulletRegistry& bullet_registry, const Battle::BulletHellState bhs, const Audio::SoundRegistry sound_registry)
     {
         const System::ECS::pid bullet = syscall.create_entity(Position(bullet_data.posX,bullet_data.posY), Delay(bullet_data.delay_frame));
 
@@ -24,12 +25,29 @@ namespace Game::BulletHell
             bullet_collider.type == Physics::RECTANGLE) syscall.add_components(bullet, Physics::RectangularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
         else if (bullet_collider.type == Physics::CIRCLE) syscall.add_components(bullet, Physics::CircularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
 
+        auto sounds = sound_registry.sounds;
+        switch (bullet_info.graphic_data.bullet_spawn_sound)
+        {
+            case 1 :
+                Audio::sound_play(sounds["sound_bullet_spawn_0"]);
+                break;
+            case 2 :
+                Audio::sound_play(sounds["sound_bullet_spawn_1"]);
+                break;
+            case 3 :
+                Audio::sound_play(sounds["sound_bullet_spawn_2"]);
+                break;
+            default:;
+        }
     }
 
     template<typename T>
-    void load_bullets([[maybe_unused]] T &syscall,[[maybe_unused]]  System::ECS::Query<Battle::BulletLoader> &query,[[maybe_unused]]  System::ECS::Query<Battle::BulletRegistry> &query2,[[maybe_unused]]  System::ECS::Query<Battle::BattleState,Battle::BulletHellState> &query3)
+    void load_bullets([[maybe_unused]] T &syscall,[[maybe_unused]]  System::ECS::Query<Battle::BulletLoader> &query,[[maybe_unused]]  System::ECS::Query<Battle::BulletRegistry> &query2,[[maybe_unused]]  System::ECS::Query<Battle::BattleState,Battle::BulletHellState> &query3, System::ECS::Query<Audio::SoundRegistry> &sound_query)
     {
         if (query3.begin() == query3.end())
+            return;
+
+        if (sound_query.begin() == sound_query.end())
             return;
 
         auto &bullet_loader = query.front().get<Battle::BulletLoader>();
@@ -39,7 +57,7 @@ namespace Game::BulletHell
         while ((pointer < static_cast<int>(batches.size())) && (batches[pointer].frame <= current_frame))
         {
             for (auto& b : batches[pointer].bullets)
-                spawn_bullet(syscall, b, query2.front().get<Battle::BulletRegistry>(), query3.front().get<Battle::BulletHellState>());
+                spawn_bullet(syscall, b, query2.front().get<Battle::BulletRegistry>(), query3.front().get<Battle::BulletHellState>(), sound_query.front().components.get<Audio::SoundRegistry>());
 
             pointer++;
         }

@@ -3,6 +3,7 @@
 
 #include "game/components/physics/base_collider.h"
 #include "game/components/render/sprite.h"
+#include "game/components/sound.h"
 
 namespace Game::Battle
 {
@@ -46,9 +47,17 @@ namespace Game::Battle
     {
         Render::Sprite sprite;
         float r,g,b,a;
-        GraphicData() : sprite({}), r(1), g(1), b(1), a(1) {}
-        explicit GraphicData(const Render::Sprite &sprite, const float r = 1, const float g = 1, const float b = 1, const float a = 1) :
-            sprite(sprite), r(r), g(g), b(b), a(a) {}
+        int bullet_spawn_sound;
+        GraphicData() : sprite({}), r(1), g(1), b(1), a(1), bullet_spawn_sound(-1)
+        {}
+        explicit GraphicData(
+                const Render::Sprite &sprite,
+                const float r = 1,
+                const float g = 1,
+                const float b = 1,
+                const float a = 1) :
+            sprite(sprite), r(r), g(g), b(b), a(a), bullet_spawn_sound(-1)
+        {}
     };
 
     struct BulletGraphicMap

@@ -53,7 +53,8 @@ namespace Scene
             Game::Rhythm::NoteSpeed,
             Game::Rhythm::Timing,
             Game::Rhythm::TimingEnd,
-            Game::Rhythm::HoldActive
+            Game::Rhythm::HoldActive,
+            Game::Audio::SoundRegistry
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;

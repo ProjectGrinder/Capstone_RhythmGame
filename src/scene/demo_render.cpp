@@ -69,7 +69,7 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
     tm->create_entity(
             Game::Physics::Rotation{0, 0, 0.002f},
             Game::Render::Sprite{
-                    .sp = sp2, .pos = {{-256, 256, 0}, {256, 256, 0}, {256, -256, 0}, {-256, -256, 0}}, .layer = 1},
+                    .sp = sp2, .pos = {{-128, 256, 0}, {128, 256, 0}, {128, -256, 0}, {-128, -256, 0}}, .layer = 1},
             Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{300, 0, 0}, 0, 0, 0});
 

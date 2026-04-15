@@ -7,6 +7,8 @@ namespace Scene
     {
         using namespace Game::Battle;
         using namespace Game::Physics;
+
+
         std::vector<BulletGraphicMap> maps = {
             BulletGraphicMap(ColliderData(CIRCLE, 1,1)),
             BulletGraphicMap(ColliderData(CIRCLE, 1,1)),
@@ -41,7 +43,7 @@ namespace Scene
         using namespace Game::Battle;
         using namespace Game::Physics;
 
-        int left_padding = 42000;
+        int left_padding = 5000;
 
         BulletLoader loader;
         loader.CreateBullet(left_padding + 1000, BulletData(5, 5, 1,135, 100, 0));
@@ -132,7 +134,8 @@ namespace Scene
             Game::Render::Material,
             Game::Render::Text,
             Game::Render::Camera2D,
-            Game::Rhythm::NoteType
+            Game::Rhythm::NoteType,
+            Game::Audio::SoundRegistry
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -158,37 +161,7 @@ namespace Scene
             Game::Battle::update_global_clock<Syscall>
             >;
 
-        static std::shared_ptr<TaskManager> init()
-        {
-            auto tm = std::make_shared<TaskManager>();
-            // Create and configure BattleState
-            tm->create_entity<Game::Battle::BattleState,
-            Game::Battle::BulletHellState,
-            Game::Battle::BulletRegistry,
-            Game::Battle::BulletLoader,
-            Game::Battle::PatternContainer,
-            Game::Rhythm::KeyInput, Game::BulletHell::Input>
-            (
-                Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
-                Game::Battle::BulletHellState(),
-                init_bullet_graphic(),
-                create_bullet_data2(),
-                create_pattern_container(),
-                Game::Rhythm::KeyInput(),
-                Game::BulletHell::Input()
-                );
-
-            tm->create_entity<Game::BulletHell::Player,
-            Position, Rotation,
-            Game::Physics::Scale,
-            Velocity,
-            Acceleration,
-            AngularVelocity, Game::Physics::CircularCollider>(
-                {}, {}, {}, {}, {}, {}, {}, {}
-            );
-            tm->run_all();
-            return (tm);
-        }
+        static std::shared_ptr<TaskManager> init();
 
         static std::vector<ComponentTuple> exit();
     };
