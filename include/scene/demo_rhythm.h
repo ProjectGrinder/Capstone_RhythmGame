@@ -147,10 +147,10 @@ namespace Scene
             return (tm);
         }
 
-        static std::shared_ptr<TaskManager> init([[maybe_unused]] std::vector<ComponentTuple> &data)
+        static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data)
         {
             return (init());
         }
-        static std::vector<ComponentTuple> exit(std::shared_ptr<TaskManager> &manager);
+        static ResourceManager exit(std::shared_ptr<TaskManager> &manager);
     };
 }

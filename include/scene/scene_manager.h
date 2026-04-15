@@ -43,15 +43,11 @@ namespace Scene
                         if constexpr (!std::is_same_v<std::decay_t<S>, std::monostate>)
                         {
                             using TaskManager = std::decay_t<S>::TaskManager;
-                            using ComponentTuple = std::decay_t<S>::ComponentTuple;
+                            using ResourceManager = std::decay_t<S>::ResourceManager;
                             std::shared_ptr<TaskManager> &manager = std::get<std::shared_ptr<TaskManager>>(instance()._current_manager);
-                            std::vector<ComponentTuple> out_data = scene.exit(manager);
-                            std::vector<typename T::ComponentTuple> in_data;
-                            in_data.reserve(out_data.size());
-                            for (auto &component_tuple: out_data)
-                            {
-                                in_data.emplace_back(Utils::map<std::decay_t<S>, T>(component_tuple));
-                            }
+                            ResourceManager out_data = scene.exit(manager);
+
+                            typename T::ResourceManager in_data = Utils::convert<std::decay_t<S>, T>(out_data);
                             instance()._current_scene_template = T::instance();
                             instance()._current_manager = T::init(in_data);
                         }

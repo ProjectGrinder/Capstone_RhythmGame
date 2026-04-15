@@ -18,8 +18,8 @@ std::shared_ptr<Scene::BattleScene::TaskManager> Scene::BattleScene::init()
     return (tm);
 }
 
-std::vector<Scene::BattleScene::ComponentTuple> Scene::BattleScene::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
+Scene::BattleScene::ResourceManager Scene::BattleScene::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
     LOG_INFO("Exiting Battle Scene.");
-    return {};
+    return ResourceManager();
 }

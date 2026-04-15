@@ -92,8 +92,8 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
     return (tm);
 }
 
-std::vector<Scene::DemoRender::ComponentTuple> Scene::DemoRender::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
+Scene::DemoRender::ResourceManager Scene::DemoRender::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
     LOG_INFO("Exiting Demo Render Scene.");
-    return {};
+    return ResourceManager();
 }
