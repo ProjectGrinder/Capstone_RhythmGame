@@ -62,9 +62,16 @@ namespace Utils
     void convert_import_resource(typename From::ResourceManager &rm, typename To::ResourceManager &rm_converted)
     {
         auto source_pool = rm.template query_if_exists<Resource>();
-        auto target_pool = rm_converted.template query<Resource>();
-        (void) source_pool;
-        (void) target_pool;
+        if (!source_pool) return;
+        auto& source_pool_ref = source_pool->get();
+
+        for (auto [id, component]: source_pool_ref)
+        {
+            if (id < To::ResourceManager::max_resource_v)
+            {
+                rm_converted.add_resource(id, std::move(component));
+            }
+        }
     }
 
     template<typename From, typename To, size_t... I>
