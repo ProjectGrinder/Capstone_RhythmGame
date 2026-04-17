@@ -19,7 +19,16 @@ namespace Game::BulletHell
         else if (bullet_info.special_bullet_data.type == Battle::Laser) syscall.add_components(bullet, Laser(bullet_data.posX, bullet_data.posY, bullet_info.special_bullet_data.size, bullet_info.special_bullet_data.frame));
 
         const Battle::GraphicData bullet_graphic = bullet_info.graphic_data;
-        syscall.add_components(bullet, Render::Sprite(bullet_graphic.sprite), Render::Material(nullptr,nullptr, 0));
+        syscall.add_components(bullet, Render::Sprite{
+                    .sp = get_assets_record_ptr(get_assets_id("bullet_sprite")),
+                    .pos = {{bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[1], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[1], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[3], 0}},
+                    .layer = 1,
+                    .u0 = bullet_graphic.src_rect[0]/512,
+                    .v0 = bullet_graphic.src_rect[1]/512,
+                    .u1 = bullet_graphic.src_rect[2]/512,
+                    .v1 = bullet_graphic.src_rect[3]/512}
+                    , Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")),get_assets_record_ptr(get_assets_id("sprite_ps")), {bullet_graphic.r, bullet_graphic.g, bullet_graphic.b, bullet_graphic.a}),
+                    Render::Transform());
 
         if (const Battle::ColliderData bullet_collider = bullet_info.collider_data;
             bullet_collider.type == Physics::RECTANGLE) syscall.add_components(bullet, Physics::RectangularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));

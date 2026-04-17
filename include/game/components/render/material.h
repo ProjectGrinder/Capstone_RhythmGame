@@ -24,8 +24,8 @@ namespace Game::Render
         uint32_t render_prior = 0;
         Color color{};
 
-        Material(const AssetsRecord *vs, const AssetsRecord *ps, uint32_t prior = 0) :
-            vs(vs), ps(ps), render_prior(prior)
+        Material(const AssetsRecord *vs, const AssetsRecord *ps, const Color color = Color(), const uint32_t prior = 0) :
+            vs(vs), ps(ps), render_prior(prior), color(color)
         {}
     };
 } // namespace Game::Render
