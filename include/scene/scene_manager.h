@@ -4,6 +4,7 @@
 
 #include "scene/scene_decl.h"
 #include "scene/demo.h"
+#include "scene/demo_scene_change.h"
 #include "scene/battle_scene.h"
 #include "scene/demo_game.h"
 #include "scene/demo_render.h"
@@ -15,9 +16,9 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = DemoRender;
+    using StartingScene = Demo;
 
-    using SceneTuple = std::tuple<Demo, DemoRender, DemoRhythm, BattleScene, DemoGame>;
+    using SceneTuple = std::tuple<Demo, DemoSceneChange>;
     using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;
     using TaskManagerVariant = Utils::make_task_manager_variant_t<SceneTuple>;
 
