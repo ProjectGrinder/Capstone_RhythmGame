@@ -28,15 +28,17 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
     */
     InputAttributeDescription sprite_vs_input_attributes[] = {
             InputAttributeDescription{"POSITION", InputType::R32G32B32_FLOAT, 0},
-            InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12}};
+            InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12},
+            InputAttributeDescription{"COLOR", InputType::R32G32B32A32_FLOAT, 20}};
 
     InputAttributeDescription sprite_ps_input_attributes[] = {
             InputAttributeDescription{"SV_POSITION", InputType::R32G32B32A32_FLOAT, 0},
-            InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 16}};
+            InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 16},
+            InputAttributeDescription{"COLOR", InputType::R32G32B32A32_FLOAT, 24}};
 
-    auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite_vs_input_attributes, 2);
+    auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite_vs_input_attributes, 3);
 
-    auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 2);
+    auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 
     auto sp = load_sprite("img/somebodyIusedToKnow.dds", "somebody", 512, 512);
     /*
@@ -56,11 +58,9 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
             Game::Render::Sprite{
                     .sp = sp,
                     .pos = {{-256, 256, 0}, {256, 256, 0}, {256, -256, 0}, {-256, -256, 0}},
-                    .layer = 1,
-                    .u0 = 0.5f,
-                    .v0 = 0.5f,
-                    .u1 = 1.0f,
-                    .v1 = 1.0f},
+                    .color = {1, 1, 1, 0.2f},
+                    .layer = 1
+                    },
             Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{-300, 0, 0}, 0, 0, 0});
 
@@ -77,7 +77,7 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 
     tm->create_entity(
             Game::Render::Sprite{
-                    .sp = sp3, .pos = {{-640, 360, 0}, {640, 360, 0}, {640, -360, 0}, {-640, -360, 0}}, .layer = 1},
+                    .sp = sp3, .pos = {{-640, 360, 0}, {640, 360, 0}, {640, -360, 0}, {-640, -360, 0}}, .layer = 0},
             Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0});
 
@@ -85,15 +85,15 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
 
     tm->create_entity(
             Game::Test::FpsCounter{},
-            Game::Render::Text{.font = font, .text = "0"},
+            Game::Render::Text{.font = font, .text = "0", .color={1, 1, 0, 1}, .layer = 2},
             Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0});
 
     return (tm);
 }
 
-std::vector<Scene::DemoRender::ComponentTuple> Scene::DemoRender::exit()
+Scene::DemoRender::ResourceManager Scene::DemoRender::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
     LOG_INFO("Exiting Demo Render Scene.");
-    return {};
+    return ResourceManager();
 }

@@ -1,25 +1,17 @@
 #pragma once
 
 #include "utils.h"
+#include "system/ecs.h"
 
-// declare scene templates here
+// declare "change scene function"
+#include "scene/scene_decl.h"
+
+// define scene templates
 #include "scene/battle_scene.h"
 #include "scene/demo.h"
 #include "scene/demo_bullethell.h"
 #include "scene/demo_game.h"
 #include "scene/demo_render.h"
 #include "scene/demo_rhythm.h"
-
-// define configuration items
-namespace Scene::Config
-{
-    // starting scene
-    using StartingScene = DemoRender;
-
-    using SceneTuple = std::tuple<Demo, DemoRender, DemoRhythm, BattleScene, DemoGame>;
-    using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;
-    using TaskManagerVariant = Utils::make_task_manager_variant_t<SceneTuple>;
-
-} // namespace Scene::Config
 
 #include "scene/scene_manager.h"

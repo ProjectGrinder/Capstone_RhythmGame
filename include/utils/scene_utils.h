@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <optional>
 #include <variant>
 #include "system/ecs/ecs_types.h"
 
@@ -14,8 +15,9 @@ namespace Utils
         using type = System::ECS::ResourceManager<N, Components...>;
     };
 
+    // helper to make resource manager
     template<size_t MaxResource, typename ComponentTuple>
-    using make_resource_manager_t = typename make_resource_manager<MaxResource, ComponentTuple>::type;
+    using make_resource_manager_t = make_resource_manager<MaxResource, ComponentTuple>::type;
 
     template<size_t N, typename T>
     struct make_syscall;
@@ -26,8 +28,9 @@ namespace Utils
         using type = System::ECS::Syscall<N, Components...>;
     };
 
+    // helper to make syscall
     template<size_t MaxResource, typename ComponentTuple>
-    using make_syscall_t = typename make_syscall<MaxResource, ComponentTuple>::type;
+    using make_syscall_t = make_syscall<MaxResource, ComponentTuple>::type;
 
     template<typename T>
     struct make_scene_variant;
@@ -38,8 +41,9 @@ namespace Utils
         using type = std::variant<std::monostate, Ts...>;
     };
 
+    // helper to make scene variant
     template<typename T>
-    using make_scene_variant_t = typename make_scene_variant<T>::type;
+    using make_scene_variant_t = make_scene_variant<T>::type;
 
     template<typename T>
     struct make_task_manager_variant;
@@ -50,7 +54,42 @@ namespace Utils
         using type = std::variant<std::monostate, std::shared_ptr<typename Scenes::TaskManager>...>;
     };
 
+    // helper to make task manager variant
     template<typename T>
-    using make_task_manager_variant_t = typename make_task_manager_variant<T>::type;
+    using make_task_manager_variant_t = make_task_manager_variant<T>::type;
+
+    template<typename From, typename To, typename Resource>
+    void convert_import_resource(typename From::ResourceManager &rm, typename To::ResourceManager &rm_converted)
+    {
+        auto source_pool = rm.template query_if_exists<Resource>();
+        if (!source_pool) return;
+        auto& source_pool_ref = source_pool->get();
+
+        for (auto [id, component]: source_pool_ref)
+        {
+            if (id < To::ResourceManager::max_resource_v)
+            {
+                rm_converted.add_resource(id, std::move(component));
+            }
+        }
+    }
+
+    template<typename From, typename To, size_t... I>
+    void convert_impl(typename From::ResourceManager &rm, typename To::ResourceManager &rm_converted, std::index_sequence<I...>)
+    {
+        using InComponentTuple = To::ComponentTuple;
+        (convert_import_resource<From, To, std::tuple_element_t<I, InComponentTuple>>(rm, rm_converted), ...);
+    }
+
+    template<typename From, typename To>
+    To::ResourceManager convert(typename From::ResourceManager &rm)
+    {
+        typename To::ResourceManager rm_converted;
+        using InComponentTuple = To::ComponentTuple;
+
+        convert_impl<From, To>(rm, rm_converted, std::make_index_sequence<std::tuple_size_v<InComponentTuple>>());
+
+        return rm_converted;
+    }
 
 } // namespace Utils
