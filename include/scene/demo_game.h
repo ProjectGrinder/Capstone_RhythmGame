@@ -38,10 +38,8 @@ namespace Scene
             Game::Physics::CircularCollider,
             Game::Physics::RectangularCollider,
             Game::Physics::AngularVelocity,
-            Game::Physics::Position,
             Game::Physics::Rotation,
             Game::Physics::Velocity,
-            Game::Physics::Scale,
             Game::Render::Transform,
             Game::Render::Triangle,
             Game::Render::Sprite,
@@ -117,12 +115,12 @@ namespace Scene
                 );
 
             tm->create_entity<Game::BulletHell::Player,
-            Position, Rotation,
-            Game::Physics::Scale,
+            Game::Render::Transform,
+            Rotation,
             Velocity,
             Acceleration,
             AngularVelocity, Game::Physics::CircularCollider>(
-                {}, Position(50,50), {}, {}, {}, {}, {}, {}
+                {}, Game::Render::Transform(50,50), {}, {}, {}, {}, {}
             );
 
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));

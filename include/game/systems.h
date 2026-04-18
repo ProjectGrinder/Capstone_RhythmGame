@@ -36,7 +36,6 @@
 #include "systems/render/draw_text.h"
 #include "systems/render/draw_triangle.h"
 #include "systems/render/set_camera.h"
-#include "systems/render/render_preprocessing.h"
 // Test
 #include "systems/test/spin_camera.h"
 #include "systems/test/spin_sprite.h"

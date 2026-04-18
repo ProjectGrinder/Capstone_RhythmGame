@@ -16,9 +16,9 @@ namespace Game::BulletHell
 	template<typename T>
 	void bullet_collision([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState> &battle_query,
 	                     System::ECS::Query<Battle::BulletHellState> &state_query,
-						 System::ECS::Query<Bullet,Physics::Position, Physics::Rotation, Physics::Scale, Physics::RectangularCollider> &bullet_query1,
-						 System::ECS::Query<Bullet,Physics::Position, Physics::Rotation, Physics::Scale, Physics::CircularCollider> &bullet_query2,
-						 System::ECS::Query<Player,Physics::Position, Physics::Scale, Physics::CircularCollider> &player_query,
+						 System::ECS::Query<Bullet, Render::Transform, Physics::Rotation, Physics::RectangularCollider> &bullet_query1,
+						 System::ECS::Query<Bullet, Render::Transform, Physics::Rotation, Physics::CircularCollider> &bullet_query2,
+						 System::ECS::Query<Player, Render::Transform, Physics::Rotation, Physics::CircularCollider> &player_query,
                          System::ECS::Query<Audio::SoundRegistry> &sound_query)
 	{
 		if (battle_query.begin() == battle_query.end())
@@ -44,10 +44,9 @@ namespace Game::BulletHell
 
 	    auto sound_registry = sound_query.front().components.get<Audio::SoundRegistry>().sounds;
 
-	    const auto &player_pos = player_query.front().get<Physics::Position>();
+	    const auto &player_tra = player_query.front().get<Render::Transform>();
 	    const auto &player_hitbox = player_query.front().get<Physics::CircularCollider>();
-	    const auto &player_scl = player_query.front().get<Physics::Scale>();
-	    const float player_hitbox_size = player_hitbox.radius_x * (player_scl.scaleX < player_scl.scaleY ? player_scl.scaleX : player_scl.scaleY);
+	    const float player_hitbox_size = player_hitbox.radius_x * (player_tra.scaleX < player_tra.scaleY ? player_tra.scaleX : player_tra.scaleY);
 	    auto &state = state_query.front().get<Battle::BattleState>();
 		for (auto &[id, comps] : bullet_query1)
 		{
@@ -55,20 +54,19 @@ namespace Game::BulletHell
                 break;
 
 			auto &bullet = comps.get<Bullet>();
-		    const auto &bullet_pos = comps.get<Physics::Position>();
+		    const auto &bullet_tra = comps.get<Render::Transform>();
             const auto &bullet_hitbox = comps.get<Physics::RectangularCollider>();
-		    const auto &bullet_scl = comps.get<Physics::Scale>();
 
 		    const float bullet_angle = comps.get<Physics::Rotation>().angleZ * std::acos(0.0f)/90.0f;
-		    const float bullet_hitbox_size_x = bullet_hitbox.size_x * bullet_scl.scaleX;
-		    const float bullet_hitbox_size_y = bullet_hitbox.size_y * bullet_scl.scaleY;
+		    const float bullet_hitbox_size_x = bullet_hitbox.size_x * bullet_tra.scaleX;
+		    const float bullet_hitbox_size_y = bullet_hitbox.size_y * bullet_tra.scaleY;
 
 			if (!bullet.is_active)
                 continue;
 
             //Wide check
-		    const float dx = bullet_pos.x - player_pos.x;
-		    const float dy = bullet_pos.y - player_pos.y;
+		    const float dx = bullet_tra.position.x - player_tra.position.x;
+		    const float dy = bullet_tra.position.y - player_tra.position.y;
 			const float distance_squared = dx * dx + dy * dy;
 		    const float collision_distance = player_hitbox_size + ((bullet_hitbox_size_x > bullet_hitbox_size_y)
 	                                                            ? bullet_hitbox_size_x
@@ -92,11 +90,11 @@ namespace Game::BulletHell
 		    }
 		    //Narrow check : SAT
             const auto player_hitbox_pos =
-                    Physics::Position(player_pos.x + player_hitbox.offset_x, player_pos.y + player_hitbox.offset_y);
+                    Math::Point(player_tra.position.x + player_hitbox.offset_x, player_tra.position.y + player_hitbox.offset_y);
 		    const auto bullet_hitbox_pos =
-                    Physics::Position(bullet_pos.x + bullet_hitbox.offset_x, bullet_pos.y + bullet_hitbox.offset_y);
+                    Math::Point(bullet_tra.position.x + bullet_hitbox.offset_x, bullet_tra.position.y + bullet_hitbox.offset_y);
 
-		    const auto distVec = Physics::Position(player_hitbox_pos.x - bullet_hitbox_pos.x, player_hitbox_pos.y - bullet_hitbox_pos.y);
+		    const auto distVec = Math::Point(player_hitbox_pos.x - bullet_hitbox_pos.x, player_hitbox_pos.y - bullet_hitbox_pos.y);
 
 		    const float dot_x = distVec.x * cos(bullet_angle) + distVec.y * sin(bullet_angle);
 		    const float dot_y = distVec.x * -sin(bullet_angle) + distVec.y * cos(bullet_angle);
@@ -131,19 +129,18 @@ namespace Game::BulletHell
 	            break;
 
 	        auto &bullet = comps.get<Bullet>();
-	        const auto &bullet_pos = comps.get<Physics::Position>();
+	        const auto &bullet_tra = comps.get<Render::Transform>();
 	        const auto &bullet_hitbox = comps.get<Physics::CircularCollider>();
-	        const auto &bullet_scl = comps.get<Physics::Scale>();
 
 	        const float bullet_angle = comps.get<Physics::Rotation>().angleZ * std::acos(0.0f)/90.0f;
-	        const float bullet_hitbox_size_x = bullet_hitbox.radius_x * bullet_scl.scaleX;
-	        const float bullet_hitbox_size_y = bullet_hitbox.radius_y * bullet_scl.scaleY;
+	        const float bullet_hitbox_size_x = bullet_hitbox.radius_x * bullet_tra.scaleX;
+	        const float bullet_hitbox_size_y = bullet_hitbox.radius_y * bullet_tra.scaleY;
 	        if (!bullet.is_active)
 	            continue;
 
 	        //Wide check
-	        const float dx = bullet_pos.x - player_pos.x;
-	        const float dy = bullet_pos.y - player_pos.y;
+	        const float dx = bullet_tra.position.x - player_tra.position.x;
+	        const float dy = bullet_tra.position.y - player_tra.position.y;
 	        const float distance_squared = dx * dx + dy * dy;
 	        const float collision_distance = player_hitbox_size + ((bullet_hitbox_size_x > bullet_hitbox_size_y)
 	                                                            ? bullet_hitbox_size_x
@@ -167,9 +164,9 @@ namespace Game::BulletHell
 
 	        // Ellipse vs circle collision
 	        const auto player_hitbox_pos =
-                    Physics::Position(player_pos.x + player_hitbox.offset_x, player_pos.y + player_hitbox.offset_y);
+                    Math::Point(player_tra.position.x + player_hitbox.offset_x, player_tra.position.y + player_hitbox.offset_y);
 	        const auto bullet_hitbox_pos =
-                    Physics::Position(bullet_pos.x + bullet_hitbox.offset_x, bullet_pos.y + bullet_hitbox.offset_y);
+                    Math::Point(bullet_tra.position.x + bullet_hitbox.offset_x, bullet_tra.position.y + bullet_hitbox.offset_y);
             const float dist_x = player_hitbox_pos.x - bullet_hitbox_pos.x;
             const float dist_y = player_hitbox_pos.y - bullet_hitbox_pos.y;
 

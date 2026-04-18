@@ -7,7 +7,7 @@ namespace Game::BulletHell
 {
         // Default FadeIn/Out
     template <typename T>
-    void boomer_system([[maybe_unused]] T &syscall, System::ECS::Query<Booming , Particle,Delay, Physics::Scale, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2, System::ECS::Query<Audio::SoundRegistry> &sound_query)
+    void boomer_system([[maybe_unused]] T &syscall, System::ECS::Query<Booming , Particle,Delay, Render::Transform, Render::Material>& query, System::ECS::Query<Battle::BattleState> &query2, System::ECS::Query<Audio::SoundRegistry> &sound_query)
     {
         if (query2.begin() == query2.end())
             return;
@@ -22,7 +22,7 @@ namespace Game::BulletHell
             auto &boomer = comps.get<Booming>();
             const auto &particle = comps.get<Particle>();
             auto &delay_comp = comps.get<Delay>();
-            auto &scl = comps.get<Physics::Scale>();
+            auto &scl = comps.get<Render::Transform>();
             auto &render = comps.get<Render::Material>();
 
             if (!boomer.is_activated)

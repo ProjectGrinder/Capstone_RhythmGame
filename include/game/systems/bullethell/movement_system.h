@@ -5,7 +5,6 @@
 #include "game/utils/physics_util.h"
 
 // FIXME: Part of physics, consider separation into its own thread
-using Position = Game::Physics::Position;
 using Velocity = Game::Physics::Velocity;
 using Rotation = Game::Physics::Rotation;
 using Acceleration = Game::Physics::Acceleration;
@@ -13,7 +12,7 @@ using AngularVelocity = Game::Physics::AngularVelocity;
 namespace Game::BulletHell
 {
     template <typename T>
-    void movement_system([[maybe_unused]] T &syscall, System::ECS::Query<Position, Rotation, Velocity>& query, System::ECS::Query<Battle::BattleState> &query2)
+    void movement_system([[maybe_unused]] T &syscall, System::ECS::Query<Render::Transform, Rotation, Velocity>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
             return;
@@ -23,7 +22,7 @@ namespace Game::BulletHell
 
         for (auto &[id, comps]: query)
         {
-            auto &pos = comps.get<Position>();
+            auto &pos = comps.get<Render::Transform>().position;
             auto &vel = comps.get<Velocity>();
             const auto &rot = comps.get<Rotation>();
 
@@ -58,14 +57,23 @@ namespace Game::BulletHell
     }
 
     template<typename T>
-    void rotation_system([[maybe_unused]] T &task_manager, System::ECS::Query<Rotation, AngularVelocity> &query2)
+    void rotation_system([[maybe_unused]] T &task_manager, System::ECS::Query<Rotation, Render::Transform, AngularVelocity> &query2)
     {
         for (auto &[id, comps]: query2)
         {
-            comps.get<Rotation>().angleZ += comps.get<AngularVelocity>().v * static_cast<float>(get_delta_time()/1000);
-            if (comps.get<Rotation>().angleZ >= 360)
+            auto &rot = comps.get<Rotation>();
+            auto &tra = comps.get<Render::Transform>();
+            rot.angleZ += comps.get<AngularVelocity>().v * static_cast<float>(get_delta_time()/1000);
+            if (rot.angleZ >= 360)
             {
-                comps.get<Rotation>().angleZ -= 360;
+                rot.angleZ -= 360;
+            }
+
+            if (rot.attach_render)
+            {
+                tra.angleX = rot.angleX;
+                tra.angleY = rot.angleY;
+                tra.angleZ = rot.angleZ;
             }
         }
     }

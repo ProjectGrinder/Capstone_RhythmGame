@@ -8,9 +8,9 @@ namespace Game::BulletHell
     template<typename T>
     void spawn_bullet(T &syscall, const Battle::BulletData& bullet_data, const Battle::BulletRegistry& bullet_registry, const Battle::BulletHellState bhs, const Audio::SoundRegistry sound_registry)
     {
-        const System::ECS::pid bullet = syscall.create_entity(Position(bullet_data.posX,bullet_data.posY), Delay(bullet_data.delay_frame));
+        const System::ECS::pid bullet = syscall.create_entity(Render::Transform(bullet_data.posX,bullet_data.posY), Delay(bullet_data.delay_frame));
 
-        syscall.add_components(bullet, Rotation(bullet_data.rot), Physics::Scale(), Velocity(bullet_data.vel), Acceleration(bullet_data.acc), AngularVelocity(bullet_data.wvel), Pattern(bullet_data.patternID));
+        syscall.add_components(bullet, Rotation(bullet_data.rot), Velocity(bullet_data.vel), Acceleration(bullet_data.acc), AngularVelocity(bullet_data.wvel), Pattern(bullet_data.patternID));
 
         const Battle::BulletGraphicMap bullet_info = bullet_registry.bulletGraphicMaps[bullet_data.graphicID];
         syscall.add_components(bullet, Bullet(static_cast<int>(bullet_info.damage_mul * static_cast<float>(bhs.damage)), bullet_info.pierce), Particle(bullet_info.lifetime));
