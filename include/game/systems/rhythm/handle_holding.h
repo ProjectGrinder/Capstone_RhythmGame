@@ -14,9 +14,9 @@ namespace Game::Rhythm
         System::ECS::Query<Render::Text> &text_query)
     {
         const auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
-        constexpr auto perfect_judge = -50;
-        constexpr auto great_judge = -75;
-        constexpr auto fine_judge = -100;
+        constexpr auto perfect_judge = -100;
+        constexpr auto great_judge = -250;
+        // constexpr auto fine_judge = -100;
 
         if (time_diff > perfect_judge)
         {
@@ -44,19 +44,19 @@ namespace Game::Rhythm
                 }
             }
         }
-        else if (time_diff > fine_judge)
-        {
-            battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
-            battle_query.front().get<Battle::BattleState>().score += base_score / 4;
-            for (auto &[id2, comp2] : text_query)
-            {
-                if (comp2.get<Render::Text>().name == "Fine")
-                {
-                    comp2.get<Render::Text>().text = "FINE=" + std::to_string(battle_query.front().get<Battle::BattleState>().judgement_count.fine_count);
-                    break;
-                }
-            }
-        }
+        // else if (time_diff > fine_judge)
+        // {
+        //     battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
+        //     battle_query.front().get<Battle::BattleState>().score += base_score / 4;
+        //     for (auto &[id2, comp2] : text_query)
+        //     {
+        //         if (comp2.get<Render::Text>().name == "Fine")
+        //         {
+        //             comp2.get<Render::Text>().text = "FINE=" + std::to_string(battle_query.front().get<Battle::BattleState>().judgement_count.fine_count);
+        //             break;
+        //         }
+        //     }
+        // }
         else
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
