@@ -31,7 +31,7 @@ static SystemInfo system_info = {
                 },
         .instance_handler = NULL,
         .window_handler = NULL,
-        .display_type = DT_FULLSCREEN,
+        .display_type = DT_WINDOW,
         .is_running = 0,
         .precision = 1,
         .perf_frequency = {0},

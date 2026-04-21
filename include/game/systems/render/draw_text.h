@@ -13,7 +13,7 @@ namespace Game::Render
     {
         for (auto &[id, comps] : query)
         {
-            const auto &[font, text, layer, order] = comps.get<Text>();
+            const auto &[font, text, color, layer, order] = comps.get<Text>();
             const auto &material = comps.get<Material>();
             const auto &tra = comps.get<Transform>();
 
@@ -67,6 +67,7 @@ namespace Game::Render
 
                 intent.special = System::Render::SpriteDrawDesc{
                 .points = {glyph_top_left, glyph_top_right, glyph_bottom_right, glyph_bottom_left},
+                .color = color,
                 .u0 = u0,
                 .v0 = v0,
                 .u1 = u1,

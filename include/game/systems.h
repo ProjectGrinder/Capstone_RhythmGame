@@ -1,5 +1,7 @@
 #pragma once
 
+#include "game/components.h"
+#include "scene/scene_decl.h"
 // Input Part
 #include "game/systems/input_system.h"
 // Bullet Hell Part

@@ -68,6 +68,7 @@ namespace System::Render
     struct SpriteDrawDesc
     {
         Math::Point points[4]{};
+        Math::Color color{};
         float u0 = 0.0f;
         float v0 = 0.0f;
         float u1 = 1.0f;
