@@ -26,7 +26,7 @@ namespace Game::Render
             for (char c : text)
             {
                 int i = 0;
-                while (i < glyphs_count)
+                while (i < (int)glyphs_count)
                 {
                     if (glyphs_data[i].character == c)
                     {
@@ -35,7 +35,7 @@ namespace Game::Render
                     i++;
                 }
 
-                if (i == glyphs_count) {continue;} // cannot render, no glyph data
+                if (i == (int)glyphs_count) {continue;} // cannot render, no glyph data
                 const auto glyph = &glyphs_data[i];
                 const auto u0 = glyph->u0;
                 const auto v0 = glyph->v0;

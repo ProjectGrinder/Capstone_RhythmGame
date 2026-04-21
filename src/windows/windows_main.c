@@ -11,11 +11,11 @@
 
 #include "directx/directx_api.h"
 #include "scenes/compositor_api.h"
-#include "scenes/dx11_adapter_api.h"
+#include "directx/dx11_adapter_api.h"
 #include "scenes/intent_api.h"
 #include "scenes/scenes_api.h"
 
-#include "audio.h"
+#include "audio/os_audio.h"
 
 #include "windows_functions.h"
 #include "windows_types.h"
@@ -177,14 +177,15 @@ int real_main()
     if (out != NULL && system_info.audio != NULL)
     {
         AudioAPI *api = (AudioAPI *) system_info.audio;
-
+        /*
         api->mixer.sounds[0].pcm_data = out->pcm_data;
         api->mixer.sounds[0].total_frames = out->frame_count;
         api->mixer.sounds[0].current_frame = 0;
         api->mixer.sounds[0].volume = 1.0f;
         api->mixer.sounds[0].active = 1;
-
-        LOG_INFO("Pushed test.wav to Mixer Slot 0!");
+        */
+        audio_queue_push(&api->queue, out->pcm_data, out->frame_count, 1.0f);
+        LOG_INFO("Pushed test.wav to Queue");
     }
 
     LARGE_INTEGER start, end;

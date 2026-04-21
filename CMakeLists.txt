@@ -25,7 +25,6 @@ include(cmake/FetchNASM.cmake)
 list(APPEND
     LIBS
         scene
-        engine
         assets_manager
 )
 

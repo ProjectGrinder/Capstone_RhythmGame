@@ -1,5 +1,5 @@
 #define MINIAUDIO_IMPLEMENTATION
-#include "audio.h"
+#include "./os_audio.h"
 #include "../utils/windows_utils.h"
 #include "system/asset_manager.h"
 
@@ -49,7 +49,23 @@ void data_callback(ma_device *device, void *output, const void *input, ma_uint32
     (void) input;
     float *fout = (float *) output;
 
-    AudioMixerState *mixer = (AudioMixerState *) device->pUserData;
+    AudioAPI *api = (AudioAPI *) device->pUserData;
+    AudioCommand cmd;
+
+    AudioMixerState *mixer = &api->mixer;
+
+    while (audio_queue_pop(&api->queue, &cmd))
+    {
+        size_t slot = api->mixer.next_slot;
+
+        api->mixer.sounds[slot].pcm_data = cmd.pcm_data;
+        api->mixer.sounds[slot].total_frames = cmd.total_frames;
+        api->mixer.sounds[slot].current_frame = 0;
+        api->mixer.sounds[slot].volume = cmd.volume;
+        api->mixer.sounds[slot].active = 1;
+
+        api->mixer.next_slot = (slot + 1) % 32;
+    }
 
     for (ma_uint32 i = 0; i < frame_count * device->playback.channels; ++i)
     {
@@ -99,7 +115,7 @@ HRESULT audio_init(AudioHandler *out_handler)
     config.sampleRate = 48000;
     config.dataCallback = data_callback;
 
-    config.pUserData = &api->mixer;
+    config.pUserData = api;
 
     if (ma_device_init(NULL, &config, &api->device) != MA_SUCCESS)
     {
