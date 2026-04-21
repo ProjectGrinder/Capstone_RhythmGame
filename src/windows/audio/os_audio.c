@@ -3,6 +3,8 @@
 #include "../utils/windows_utils.h"
 #include "system/asset_manager.h"
 
+int audio_system_pull_command(AudioCommand *out_cmd);
+
 int load_audio_if_not_exist(AssetsRecord *audio_rec, AudioCache **out)
 {
     if (audio_rec == NULL)
@@ -54,7 +56,7 @@ void data_callback(ma_device *device, void *output, const void *input, ma_uint32
 
     AudioMixerState *mixer = &api->mixer;
 
-    while (audio_queue_pop(&api->queue, &cmd))
+    while (audio_system_pull_command(&cmd) == 0)
     {
         size_t slot = api->mixer.next_slot;
 
@@ -63,8 +65,8 @@ void data_callback(ma_device *device, void *output, const void *input, ma_uint32
         api->mixer.sounds[slot].current_frame = 0;
         api->mixer.sounds[slot].volume = cmd.volume;
         api->mixer.sounds[slot].active = 1;
-
-        api->mixer.next_slot = (slot + 1) % 32;
+        api->mixer.sounds[slot].is_loop = cmd.is_loop;
+        api->mixer.next_slot = (slot + 1) % MAX_ACTIVE_SOUNDS;
     }
 
     for (ma_uint32 i = 0; i < frame_count * device->playback.channels; ++i)
@@ -83,13 +85,17 @@ void data_callback(ma_device *device, void *output, const void *input, ma_uint32
         {
             if (sound->current_frame >= sound->total_frames)
             {
-                sound->active = 0;
-                break;
+                if (!sound->is_loop)
+                {
+                    sound->active = 0;
+                    break;
+                }
+                sound->current_frame = 0;
             }
 
             unsigned long long idx = sound->current_frame * 2;
-            fout[i * 2] += sound->pcm_data[idx] * sound->volume;         // L
-            fout[i * 2 + 1] += sound->pcm_data[idx + 1] * sound->volume; // R
+            fout[i * 2] += sound->pcm_data[idx] * sound->volume;
+            fout[i * 2 + 1] += sound->pcm_data[idx + 1] * sound->volume;
 
             sound->current_frame++;
         }

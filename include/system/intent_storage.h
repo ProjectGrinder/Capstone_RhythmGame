@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "maths.h"
+#include "maths/color.h"
 #include "system/asset_manager.h"
 #include "utils/input_attribute_description.h"
 

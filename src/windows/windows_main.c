@@ -10,8 +10,8 @@
 #include "utils/windows_utils.h"
 
 #include "directx/directx_api.h"
-#include "scenes/compositor_api.h"
 #include "directx/dx11_adapter_api.h"
+#include "scenes/compositor_api.h"
 #include "scenes/intent_api.h"
 #include "scenes/scenes_api.h"
 
@@ -168,24 +168,6 @@ int real_main()
     {
         LOG_ERROR("audio_init failed, Code 0x%08lx", error);
         goto exit;
-    }
-
-    const AssetsRecord *test_sound = load_audio("audio/test.wav", "test_sound");
-    AudioCache *out = NULL;
-    load_audio_if_not_exist((AssetsRecord *) test_sound, &out);
-
-    if (out != NULL && system_info.audio != NULL)
-    {
-        AudioAPI *api = (AudioAPI *) system_info.audio;
-        /*
-        api->mixer.sounds[0].pcm_data = out->pcm_data;
-        api->mixer.sounds[0].total_frames = out->frame_count;
-        api->mixer.sounds[0].current_frame = 0;
-        api->mixer.sounds[0].volume = 1.0f;
-        api->mixer.sounds[0].active = 1;
-        */
-        audio_queue_push(&api->queue, out->pcm_data, out->frame_count, 1.0f);
-        LOG_INFO("Pushed test.wav to Queue");
     }
 
     LARGE_INTEGER start, end;
