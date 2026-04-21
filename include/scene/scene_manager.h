@@ -16,9 +16,9 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = Demo;
+    using StartingScene = DemoRender;
 
-    using SceneTuple = std::tuple<Demo, DemoSceneChange>;
+    using SceneTuple = std::tuple<DemoRender>;
     using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;
     using TaskManagerVariant = Utils::make_task_manager_variant_t<SceneTuple>;
 
@@ -65,7 +65,10 @@ namespace Scene
         template<typename T>
         static void queue_change_scene()
         {
-            instance()._next_scene_template = T::instance();
+            if (Utils::is_type_in_tuple_v<T, Scene::Config::SceneTuple>)
+            {
+                instance()._next_scene_template = T::instance();
+            }
         }
 
         static void update();
@@ -78,6 +81,13 @@ namespace Scene
     template<typename T>
     void queue_change_scene()
     {
-        SceneManager::queue_change_scene<T>();
+        if constexpr (Utils::is_type_in_tuple_v<T, Config::SceneTuple>)
+        {
+            SceneManager::queue_change_scene<T>();
+        }
+        else
+        {
+            LOG_ERROR("Error: Scene %s is not in the scene tuple, cannot change to this scene", T::name);
+        }
     }
 } // namespace Scene

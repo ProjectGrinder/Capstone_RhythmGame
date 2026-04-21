@@ -92,4 +92,14 @@ namespace Utils
         return rm_converted;
     }
 
+    template<typename T, typename Tuple>
+    constexpr bool is_type_in_tuple_v = []()
+    {
+        constexpr auto helper = []<std::size_t... I>(std::index_sequence<I...>)
+        {
+            return ((std::is_same_v<T, std::tuple_element_t<I, Tuple>> ? true : false) || ...);
+        };
+        return (helper(std::make_index_sequence<std::tuple_size_v<Tuple>>{}));
+    }();
+
 } // namespace Utils
