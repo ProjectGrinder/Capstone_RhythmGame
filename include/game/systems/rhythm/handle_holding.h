@@ -76,7 +76,7 @@ namespace Game::Rhythm
             if (comp.get<NoteType>().type != -1)
                 continue;
 
-            if (comp.get<Timing>().timing == lane->get<Lane>().hold_end_time && comp.get<Timing>().lane == lane->get<Lane>().lane_number && time_diff <= fine_judge)
+            if (comp.get<Timing>().timing == lane->get<Lane>().hold_end_time && comp.get<Timing>().lane == lane->get<Lane>().lane_number && time_diff <= great_judge)
             {
                 auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
                 comp.get<Render::Sprite>().sp = sp;
