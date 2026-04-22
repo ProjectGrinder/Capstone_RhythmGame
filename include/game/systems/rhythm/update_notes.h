@@ -6,11 +6,12 @@ extern "C" long double get_delta_time();
 namespace Game::Rhythm
 {
     using Transform = Render::Transform;
+    using Material = Render::Material;
 
     inline void handle_speed_change(
         const float render_offset,
         const int clock_time,
-        System::ECS::Query<Transform, Timing, HoldStart, NoteType, NoteStatus> &note_query,
+        System::ECS::Query<Transform, Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
         const NoteField &field)
     {
         const auto height = field.spawn_level - field.judge_level;
@@ -24,11 +25,13 @@ namespace Game::Rhythm
                 {
                     comp.get<Transform>().position.y = field.judge_level + height * (static_cast<float>(note_diff) / render_offset);
                     comp.get<NoteStatus>().state = 1;
+                    comp.get<Material>().visible = true;
                 }
                 else
                 {
                     comp.get<Transform>().position.y = field.spawn_level;
                     comp.get<NoteStatus>().state = 0;
+                    comp.get<Material>().visible = false;
                 }
             }
         }
@@ -37,7 +40,7 @@ namespace Game::Rhythm
     template<typename T>
     void update_notes(
         [[maybe_unused]] T &syscall,
-        System::ECS::Query<Transform, Timing, HoldStart, NoteType, NoteStatus> &note_query,
+        System::ECS::Query<Transform, Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
         System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<Battle::RhythmState> &rhythm_query,
         System::ECS::Query<NoteField> &field_query)
@@ -87,6 +90,7 @@ namespace Game::Rhythm
                 if (static_cast<float>(comp.get<Timing>().timing - clock_time) <= render_offset)
                 {
                     comp.get<NoteStatus>().state = 1;
+                    comp.get<Material>().visible = true;
                 }
             }
         }

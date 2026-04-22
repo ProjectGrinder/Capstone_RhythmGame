@@ -5,9 +5,11 @@
 
 namespace Game::Rhythm
 {
+    using Material = Render::Material;
+
     inline void handle_normal_note(
         const int &time_diff,
-        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
+        System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
         System::ECS::Query<Lane>::StoredTuple *lane,
         System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<Battle::RhythmState> &rhythm_query,
@@ -66,11 +68,12 @@ namespace Game::Rhythm
             LOG_INFO("Start Holding");
         }
             comp->get<NoteStatus>().state = -1; // remove tap notes
+            comp->get<Material>().visible = false;
     }
 
     inline void handle_accent_note(
         const int &time_diff,
-        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
+        System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
         System::ECS::Query<Lane>::StoredTuple *lane,
         System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<Battle::RhythmState> &rhythm_query,
@@ -101,11 +104,12 @@ namespace Game::Rhythm
             LOG_INFO("Start Holding");
         }
         comp->get<NoteStatus>().state = -1; // remove tap notes
+        comp->get<Material>().visible = false;
     }
 
     inline void handle_note_from_lane(
         const int lane_num, // assume that first lane is 0
-        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
+        System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
         [[maybe_unused]] System::ECS::Query<Battle::BattleState> &battle_query,
         [[maybe_unused]] System::ECS::Query<KeyInput> &input_query,
         System::ECS::Query<Lane> &lane_query,
@@ -151,7 +155,7 @@ namespace Game::Rhythm
             System::ECS::Query<KeyInput> &input_query,
             System::ECS::Query<Render::Text> &text_query,
             [[maybe_unused]] System::ECS::Query<Lane> &lane_query,
-            [[maybe_unused]] System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus> &note_query)
+            [[maybe_unused]] System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -181,10 +185,10 @@ namespace Game::Rhythm
         // System::ECS::pid note_id2 = 0;
         // System::ECS::pid note_id3 = 0;
         // System::ECS::pid note_id4 = 0;
-        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *note_comp1 = nullptr;
-        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *note_comp2 = nullptr;
-        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *note_comp3 = nullptr;
-        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *note_comp4 = nullptr;
+        System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *note_comp1 = nullptr;
+        System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *note_comp2 = nullptr;
+        System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *note_comp3 = nullptr;
+        System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *note_comp4 = nullptr;
 
         // Check first note of each lane where input is true
         for (auto &[id, comp] : note_query)

@@ -28,7 +28,6 @@
 #include "game/systems/rhythm/handle_tap_note.h"
 #include "game/systems/rhythm/set_holding_time.h"
 #include "game/systems/rhythm/update_notes.h"
-#include "game/systems/rhythm/draw_notes.h"
 // General Battle Part
 #include "game/systems/phase_change.h"
 #include "game/systems/global_clock.h"

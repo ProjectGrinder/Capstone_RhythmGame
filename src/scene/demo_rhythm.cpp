@@ -104,7 +104,7 @@ inline Game::Rhythm::NoteField create_field()
     constexpr float note_width = 100.0f;
     // position based on window size
     const float spawn_level = half_height;
-    const float judge_level = half_height * -4 / 5;
+    const float judge_level = half_height * -2 / 3;
     constexpr float lane1_spawn = -1 * (note_width * 1.5);
     constexpr float lane2_spawn = -1 * (note_width * 0.5);
     constexpr float lane3_spawn = note_width * 0.5;

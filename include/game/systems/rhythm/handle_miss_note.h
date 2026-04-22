@@ -4,10 +4,13 @@
 
 namespace Game::Rhythm
 {
+    using Material = Render::Material;
+    using Sprite = Render::Sprite;
+
     template<typename T>
     void handle_miss_note(
             [[maybe_unused]] T &syscall,
-            System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
+            System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Material, Sprite> &note_query,
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<Battle::RhythmState> &rhythm_query,
             System::ECS::Query<Render::Text> &text_query)
@@ -56,7 +59,7 @@ namespace Game::Rhythm
                     battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.hold;
                     // LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comp.get<Timing>().lane);
                     int first_timing = 999999;
-                    System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite>::StoredTuple *note = nullptr;
+                    System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Material, Sprite>::StoredTuple *note = nullptr;
                     for (auto &[id2, comp2]: note_query) // find ending note for the hold
                     {
                         if (comp2.get<NoteType>().type == -1 && comp2.get<NoteStatus>().state != -1
@@ -73,6 +76,7 @@ namespace Game::Rhythm
                     }
                 }
                 comp.get<NoteStatus>().state = -1;
+                comp.get<Material>().visible = false;
                 for (auto &[id2, comp2] : text_query)
                 {
                     if (comp2.get<Render::Text>().name == "Miss")
@@ -85,6 +89,7 @@ namespace Game::Rhythm
             else if (comp.get<NoteType>().type == -1 && current_timing - note_time >= 0) // for hold end notes (stop rendering when time diff is 0)
             {
                 comp.get<NoteStatus>().state = -1;
+                comp.get<Material>().visible = false;
             }
             // Handle miss for an entire hold note, which counts as two misses (start and end)
             // If the note is held but released too early, it should be handled in handle_holding.h to be checked along

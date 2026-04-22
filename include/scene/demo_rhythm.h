@@ -42,7 +42,7 @@ namespace Scene
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::update_notes<Syscall>,
             Game::Render::set_camera<Syscall>,
-            Game::Rhythm::draw_notes<Syscall>,
+            Game::Render::draw_sprite<Syscall>,
             Game::Render::draw_text<Syscall>,
             Game::Battle::update_global_clock<Syscall>
             >;

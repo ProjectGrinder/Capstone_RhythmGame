@@ -4,6 +4,8 @@
 
 namespace Game::Rhythm
 {
+    using Material = Render::Material;
+
     template <typename T>
     void handle_rain_note(
             [[maybe_unused]] T &syscall,
@@ -11,7 +13,7 @@ namespace Game::Rhythm
             System::ECS::Query<Battle::RhythmState> &rhythm_query,
             System::ECS::Query<KeyInput> &input_query,
             System::ECS::Query<Render::Text> &text_query,
-            System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus> &note_query)
+            System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -51,6 +53,7 @@ namespace Game::Rhythm
                         }
                     }
                     comp.get<NoteStatus>().state = -1;
+                    comp.get<Material>().visible = false;
                 }
             }
         }
