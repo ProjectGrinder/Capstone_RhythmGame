@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "maths.h"
+#include "maths/color.h"
 #include "system/asset_manager.h"
 #include "utils/input_attribute_description.h"
 
@@ -94,11 +95,19 @@ namespace System::Render
         Math::Point points[3];
     };
 
+
     struct DrawIntent
     {
         DrawKind kind{DrawKind::KIND_UNKNOWN};
         DrawCommon common{};
-        std::variant<SpriteDrawDesc, TextDrawDesc, TriangleDrawDesc> special{};
+
+        union Intent
+        {
+            SpriteDrawDesc sprite;
+            TextDrawDesc text;
+            TriangleDrawDesc triangle;
+        } special;
+
         uint32_t version = 0;
     };
 
@@ -143,12 +152,14 @@ namespace System::Render
         static size_t alloc_slot();
         static void free_slot(size_t slot);
         static DrawIntent &get_intent(size_t slot);
-        static const std::vector<DrawIntent> &get_intents();
+        static const std::vector<DrawIntent> &get_intents(size_t &out_count);
 
         static void next_frame();
         static DrawIntent &allocate_packed();
 
-        static const std::vector<DrawIntent> &get_packed_for_render(uint32_t render_frame_idx);
+        static uint32_t get_current_frame();
+
+        static const std::vector<DrawIntent> &get_packed_for_render(uint32_t render_frame_idx, size_t &out_count);
         static Camera &get_camera()
         {
             return instance()._camera;

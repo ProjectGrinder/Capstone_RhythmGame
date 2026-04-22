@@ -24,6 +24,7 @@ include(cmake/FetchNASM.cmake)
 
 list(APPEND
     LIBS
+        audio
         scene
         engine
         assets_manager

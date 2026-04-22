@@ -1,3 +1,4 @@
+#include "system/intent_storage.h"
 #include "system.h"
 
 #include "utils/print_debug.h"
@@ -66,24 +67,36 @@ namespace System::Render
         return ref;
     }
 
-    const std::vector<DrawIntent> &IntentStorage::get_packed_for_render(uint32_t render_frame_idx)
+    const std::vector<DrawIntent> &IntentStorage::get_packed_for_render(uint32_t render_frame_idx, size_t &out_count)
     {
         auto &self = instance();
-        auto &buf = self._packed_buffers[render_frame_idx];
-        size_t count = self._buffer_counts[render_frame_idx];
-
-        if (buf.size() > count)
-        {
-            buf.resize(count);
-        }
-        return buf;
+        out_count = self._buffer_counts[render_frame_idx];
+        return self._packed_buffers[render_frame_idx];
     }
 
-    const std::vector<DrawIntent> &IntentStorage::get_intents()
+    const std::vector<DrawIntent> &IntentStorage::get_intents(size_t &out_count)
     {
         auto &self = instance();
-        auto &data = get_packed_for_render(self._current_frame_idx);
-        return (data);
+        return get_packed_for_render(self._current_frame_idx, out_count);
+    }
+
+    uint32_t IntentStorage::get_current_frame()
+    {
+        auto &self = instance();
+        return (self._current_frame_idx);
     }
 
 } // namespace System::Render
+
+extern "C"
+{
+    uint32_t intent_storage_get_current_frame()
+    {
+        return (System::Render::IntentStorage::get_current_frame());
+    }
+
+    void intent_storage_next_frame()
+    {
+        return (System::Render::IntentStorage::next_frame());
+    };
+}

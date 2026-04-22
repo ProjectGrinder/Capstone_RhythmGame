@@ -1,3 +1,4 @@
+#include "system/thread.h"
 #define WIN32_LEAN_AND_MEAN
 
 #if _DEBUG
@@ -10,17 +11,19 @@
 #include "utils/windows_utils.h"
 
 #include "directx/directx_api.h"
+#include "directx/dx11_adapter_api.h"
 #include "scenes/compositor_api.h"
-#include "scenes/dx11_adapter_api.h"
 #include "scenes/intent_api.h"
 #include "scenes/scenes_api.h"
 
-#include "audio.h"
+#include "audio/os_audio.h"
 
 #include "windows_functions.h"
 #include "windows_types.h"
 
 extern void assets_cleanup(void);
+extern unsigned int intent_storage_get_current_frame();
+extern void intent_storage_next_frame();
 
 static SystemInfo system_info = {
         .window = {.width = 1920, .height = 1080},
@@ -45,6 +48,10 @@ static SystemInfo system_info = {
         .directx = NULL,
         .audio = NULL,
 };
+
+static ThreadHandle g_render_thread = NULL;
+static EventHandle g_render_event = NULL;
+static atomic_size_t g_ready_frame_idx = (size_t) -1;
 
 HWND get_window_handler(void)
 {
@@ -105,6 +112,41 @@ __forceinline void render_present(_In_ DirectXHandler *directx_api)
 __forceinline void directx_cleanup(_In_ DirectXHandler *directx_api)
 {
     directx_device_cleanup(directx_api);
+}
+
+unsigned long render_thread_loop(void *args)
+{
+    UNREFERENCED_PARAMETER(args);
+    LOG_INFO("Render Thread Started.");
+
+    LARGE_INTEGER start, end;
+
+    while (system_info.is_running)
+    {
+        event_wait(g_render_event);
+
+        if (!system_info.is_running)
+            break;
+
+        int frame_to_draw = (int) ATOMIC_LOAD(&g_ready_frame_idx);
+        ATOMIC_STORE(&g_ready_frame_idx, (size_t) -1);
+
+        if (frame_to_draw != -1)
+        {
+            QueryPerformanceCounter(&start);
+
+            compositor_compose(&system_info.intent_storage, &system_info.compositor, frame_to_draw);
+            dx11_adapter_convert(&system_info.dx11_adapter, &system_info.directx, &system_info.compositor);
+            dx11_adapter_render(&system_info.dx11_adapter, &system_info.directx);
+
+            render_present(&system_info.directx);
+
+            QueryPerformanceCounter(&end);
+        }
+    }
+
+    LOG_INFO("Render Thread Exiting.");
+    return 0;
 }
 
 int real_main()
@@ -170,25 +212,11 @@ int real_main()
         goto exit;
     }
 
-    const AssetsRecord *test_sound = load_audio("audio/test.wav", "test_sound");
-    AudioCache *out = NULL;
-    load_audio_if_not_exist((AssetsRecord *) test_sound, &out);
-
-    if (out != NULL && system_info.audio != NULL)
-    {
-        AudioAPI *api = (AudioAPI *) system_info.audio;
-
-        api->mixer.sounds[0].pcm_data = out->pcm_data;
-        api->mixer.sounds[0].total_frames = out->frame_count;
-        api->mixer.sounds[0].current_frame = 0;
-        api->mixer.sounds[0].volume = 1.0f;
-        api->mixer.sounds[0].active = 1;
-
-        LOG_INFO("Pushed test.wav to Mixer Slot 0!");
-    }
-
     LARGE_INTEGER start, end;
-    long double input, scene, compositor, convert, render;
+    long double input, scene;
+
+    g_render_event = event_create();
+    g_render_thread = thread_create(render_thread_loop, NULL);
 
     while (system_info.is_running)
     {
@@ -197,39 +225,27 @@ int real_main()
         QueryPerformanceCounter(&end);
         input = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
                 (long double) system_info.perf_frequency.QuadPart;
+
         scene_manager_update(&system_info.scene_manager);
         QueryPerformanceCounter(&end);
         scene = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
                 (long double) system_info.perf_frequency.QuadPart;
 
-        compositor_compose(&system_info.intent_storage, &system_info.compositor);
-        QueryPerformanceCounter(&end);
-        compositor = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
-                     (long double) system_info.perf_frequency.QuadPart;
+        unsigned int finished_frame = intent_storage_get_current_frame();
+        ATOMIC_STORE(&g_ready_frame_idx, (size_t) finished_frame);
 
-        dx11_adapter_convert(&system_info.dx11_adapter, &system_info.directx, &system_info.compositor);
-        QueryPerformanceCounter(&end);
-        convert = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
-                  (long double) system_info.perf_frequency.QuadPart;
-        dx11_adapter_render(&system_info.dx11_adapter, &system_info.directx);
-        QueryPerformanceCounter(&end);
-        render = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
-                 (long double) system_info.perf_frequency.QuadPart;
-        render_present(&system_info.directx);
+        event_signal(g_render_event);
+        intent_storage_next_frame();
 
         QueryPerformanceCounter(&end);
         system_info.delta_time = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
                                  (long double) system_info.perf_frequency.QuadPart;
+
         LOG_INFO(
-                "Process Time: %d us [ Input Process: %d us, Scene Update: %d us, Compositor: %d us, Converter: %d us, "
-                "Renderer: %d us, GPU Render: %d us]",
+                "Game Thread: %d us [ Input: %d us, Scene: %d us ]",
                 (int) (system_info.delta_time * 1000.0L),
                 (int) (input * 1000.0L),
-                (int) ((scene - input) * 1000.0L),
-                (int) ((compositor - scene) * 1000.0L),
-                (int) ((convert - compositor) * 1000.0L),
-                (int) ((render - convert) * 1000.0L),
-                (int) ((system_info.delta_time - render) * 1000));
+                (int) ((scene - input) * 1000.0L));
 
 
         sleep(max(system_info.precision - (LONGLONG) system_info.delta_time, 0));
@@ -238,6 +254,20 @@ int real_main()
 
 exit:
     LOG_INFO("Cleaning up");
+
+    if (g_render_event != NULL)
+    {
+        event_signal(g_render_event);
+    }
+    if (g_render_thread != NULL)
+    {
+        thread_join(g_render_thread);
+    }
+    if (g_render_event != NULL)
+    {
+        event_destroy(g_render_event);
+    }
+
     scene_manager_cleanup(&system_info.scene_manager);
     intent_storage_cleanup(&system_info.intent_storage);
     compositor_cleanup(&system_info.compositor);

@@ -5,19 +5,7 @@ file(GLOB
         "./*.h"
 )
 
-add_library(audio
+add_library(os_audio
         STATIC
         ${AUDIO_FILES}
-)
-
-target_link_libraries(audio
-        PRIVATE
-        os_utils
-        user32
-        gdi32
-        kernel32
-        d3d11
-        dxgi
-        dinput8
-        winmm
 )

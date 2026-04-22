@@ -26,7 +26,7 @@ namespace Game::Render
             for (char c : text)
             {
                 int i = 0;
-                while (i < glyphs_count)
+                while (i < (int)glyphs_count)
                 {
                     if (glyphs_data[i].character == c)
                     {
@@ -35,7 +35,7 @@ namespace Game::Render
                     i++;
                 }
 
-                if (i == glyphs_count) {continue;} // cannot render, no glyph data
+                if (i == (int)glyphs_count) {continue;} // cannot render, no glyph data
                 const auto glyph = &glyphs_data[i];
                 const auto u0 = glyph->u0;
                 const auto v0 = glyph->v0;
@@ -65,7 +65,7 @@ namespace Game::Render
                 intent.common.sp = font;
                 intent.common.info.sp_id = ASSET_INDEX(font->id);
 
-                intent.special = System::Render::SpriteDrawDesc{
+                intent.special.sprite = System::Render::SpriteDrawDesc{
                 .points = {glyph_top_left, glyph_top_right, glyph_bottom_right, glyph_bottom_left},
                 .color = color,
                 .u0 = u0,
