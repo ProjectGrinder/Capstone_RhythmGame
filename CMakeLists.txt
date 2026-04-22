@@ -26,6 +26,7 @@ list(APPEND
     LIBS
         audio
         scene
+        engine
         assets_manager
 )
 

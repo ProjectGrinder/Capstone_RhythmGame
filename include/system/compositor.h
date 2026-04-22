@@ -191,7 +191,7 @@ namespace System::Render
         Compositor();
 
         static Compositor &instance();
-        static void compose(const std::vector<DrawIntent> &intents, const Camera &camera);
+        static void compose(const std::vector<DrawIntent> &intents, size_t active_count, const Camera &camera);
 
         static std::vector<SortEntry> &get_sort_entries()
         {

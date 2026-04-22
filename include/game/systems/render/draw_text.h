@@ -65,7 +65,7 @@ namespace Game::Render
                 intent.common.sp = font;
                 intent.common.info.sp_id = ASSET_INDEX(font->id);
 
-                intent.special = System::Render::SpriteDrawDesc{
+                intent.special.sprite = System::Render::SpriteDrawDesc{
                 .points = {glyph_top_left, glyph_top_right, glyph_bottom_right, glyph_bottom_left},
                 .color = color,
                 .u0 = u0,

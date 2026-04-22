@@ -34,6 +34,7 @@ int audio_queue_pop(AudioQueue *q, AudioCommand *out_cmd)
     out_cmd->pcm_data = q->buffer[current_tail].pcm_data;
     out_cmd->total_frames = q->buffer[current_tail].total_frames;
     out_cmd->volume = q->buffer[current_tail].volume;
+    out_cmd->is_loop = q->buffer[current_tail].is_loop;
 
     size_t next_tail = (current_tail + 1) % AUDIO_QUEUE_SIZE;
     ATOMIC_STORE(&q->tail, next_tail);
