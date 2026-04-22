@@ -10,6 +10,10 @@ namespace Game::Render
 
         Transform() = default;
 
+        Transform(const Math::Point position, const float angleX = 0, const float angleY = 0, const float angleZ = 0) :
+            position(position), angleX(angleX), angleY(angleY), angleZ(angleZ), scaleX(0), scaleY(0), scaleZ(0)
+        {}
+
         Transform(const float posX, const float posY, const float angleZ = 0) : angleX(0), angleY(0), scaleX(0), scaleY(0), scaleZ(0)
         {
             position.x = posX;

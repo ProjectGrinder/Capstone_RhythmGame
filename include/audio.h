@@ -41,6 +41,12 @@ typedef struct AudioCache
     int sample_rate;
 } AudioCache;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 HRESULT audio_init(AudioHandler *out_handler);
 void audio_handler_cleanup(_In_ AudioHandler *handler);
 int load_audio_if_not_exist(AssetsRecord *rec, AudioCache **out);
+#ifdef __cplusplus
+}
+#endif

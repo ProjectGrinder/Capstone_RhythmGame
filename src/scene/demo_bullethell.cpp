@@ -21,7 +21,7 @@ void init_graphics(const std::shared_ptr<Scene::DemoBulletHell::TaskManager>& tm
     load_sprite("img/Default_Shot.dds", "bullet_sprite", 512, 512);
 }
 
-Game::Battle::BulletRegistry init_bullet_graphic()
+Game::Battle::BulletRegistry Scene::init_bullet_graphic()
 {
     using namespace Game::Battle;
     using namespace Game::Physics;
@@ -36,7 +36,7 @@ Game::Battle::BulletRegistry init_bullet_graphic()
     return {BulletRegistry(maps)};
 }
 
-Game::Battle::PatternContainer create_pattern_container()
+Game::Battle::PatternContainer Scene::create_pattern_container()
 {
     using namespace Game::Battle;
     const std::vector<PatternStep> demo_step = {
@@ -55,7 +55,7 @@ Game::Battle::PatternContainer create_pattern_container()
     return { PatternContainer(demo_pattern_container) };
 }
 
-Game::Battle::BulletLoader create_bullet_data()
+Game::Battle::BulletLoader Scene::create_bullet_data()
     {
         using namespace Game::Battle;
         using namespace Game::Physics;
@@ -99,7 +99,7 @@ Game::Battle::BulletLoader create_bullet_data()
         return loader;
     }
 
-Game::Battle::BulletLoader create_bullet_data2()
+Game::Battle::BulletLoader Scene::create_bullet_data2()
 {
     using namespace Game::Battle;
     using namespace Game::Physics;
@@ -145,12 +145,12 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
     AudioCache *out = nullptr;
     load_audio_if_not_exist((AssetsRecord *) hit_sound, &out);
     tm->create_entity<Game::BulletHell::Player,
-    Position, Rotation,
-    Game::Physics::Scale,
+    Game::Render::Transform,
+    Rotation,
     Velocity,
     Acceleration,
     AngularVelocity, Game::Physics::CircularCollider>(
-        {}, {}, {}, {}, {}, {}, {}, {}
+        {}, Game::Render::Transform(), {}, {}, {}, {}, {}
     );
     tm->run_all();
     return (tm);

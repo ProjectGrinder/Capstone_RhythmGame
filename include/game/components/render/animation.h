@@ -4,9 +4,9 @@
 
 namespace Game::Render
 {
-    struct Animator
+    struct Animation
     {
-        Math::Point offset;
-        int anim_id;
+        int current_frame;
+        bool isLoop;
     };
 } // namespace Game::Render
