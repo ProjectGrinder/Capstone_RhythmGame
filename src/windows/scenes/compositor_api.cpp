@@ -14,20 +14,17 @@ HRESULT compositor_init(CompositorHandler *handler)
     return (error);
 }
 
-void compositor_compose(IntentStorageHandler *intent_storage, CompositorHandler *compositor)
+void compositor_compose(IntentStorageHandler *intent_storage, CompositorHandler *compositor, int frame_to_draw)
 {
-    if (intent_storage == nullptr)
+    if (intent_storage == nullptr || compositor == nullptr)
     {
         return;
     }
 
-    if (compositor == nullptr)
-    {
-        return;
-    }
+    size_t active_count = 0;
+    const auto &intents = System::Render::IntentStorage::get_packed_for_render(frame_to_draw, active_count);
 
-    System::Render::Compositor::compose(
-            System::Render::IntentStorage::get_intents(), System::Render::IntentStorage::get_camera());
+    System::Render::Compositor::compose(intents, active_count, System::Render::IntentStorage::get_camera());
 }
 
 void compositor_cleanup(CompositorHandler *api)

@@ -10,6 +10,7 @@ struct PS_INPUT
 
 float4 main(PS_INPUT input) : SV_Target
 {
-    float4 texColor = tex.Sample(samp, input.uv);
-    return texColor * input.color;
+    float mask = tex.Sample(samp, input.uv).r;
+    input.color.a *= mask;
+    return input.color;
 }

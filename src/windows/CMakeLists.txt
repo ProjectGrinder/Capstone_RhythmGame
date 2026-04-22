@@ -18,7 +18,7 @@ add_executable(windows_main
 target_link_libraries(windows_main
         PRIVATE
             ${LIBS}
-            audio
+            os_audio
             directx
             os_scene
             user32

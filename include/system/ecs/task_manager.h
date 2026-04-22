@@ -128,9 +128,8 @@ namespace System::ECS
         template<size_t TaskIdx>
         void _run_at_index()
         {
-            constexpr auto Task = std::get<TaskIdx>(std::forward_as_tuple(Tasks...));
+            constexpr auto Task = std::get<TaskIdx>(std::make_tuple(Tasks...));
             auto &query_bundle = std::get<TaskIdx>(_query_cache);
-
             std::apply([this](auto &...queries) { (this->_prepare_query(queries), ...); }, query_bundle);
             std::apply([this, Task](auto &...queries) { Task(_syscall, queries...); }, query_bundle);
         }

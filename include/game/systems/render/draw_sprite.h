@@ -5,7 +5,6 @@
 
 namespace Game::Render
 {
-    // Now require Physics component because HAHA
     template<typename T>
     void draw_sprite([[maybe_unused]] T &syscall, System::ECS::Query<Sprite, Material, Transform> &query)
     {
@@ -29,8 +28,9 @@ namespace Game::Render
             const bool flipY = sprite.flipY ^ (tra.scaleY<0);
             const Math::Point scale_point(Math::Point(tra.scaleX/2, tra.scaleY/2,1));
 
-            intent.special = System::Render::SpriteDrawDesc{
+            intent.special.sprite = System::Render::SpriteDrawDesc{
                     .points = {sprite.pos[0] * scale_point, sprite.pos[1] * scale_point, sprite.pos[2] * scale_point, sprite.pos[3] * scale_point},
+                    .color = sprite.color,
                     .u0 = sprite.u0,
                     .v0 = sprite.v0,
                     .u1 = sprite.u1,

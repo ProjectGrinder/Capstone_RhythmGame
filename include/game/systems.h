@@ -1,5 +1,7 @@
 #pragma once
 
+#include "game/components.h"
+#include "scene/scene_decl.h"
 // Input Part
 #include "game/systems/input_system.h"
 // Bullet Hell Part
@@ -40,3 +42,5 @@
 #include "systems/test/spin_camera.h"
 #include "systems/test/spin_sprite.h"
 #include "systems/test/fps_counter.h"
+
+#include "systems/audio/play_audio.h"
