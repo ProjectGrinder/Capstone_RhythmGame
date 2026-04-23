@@ -42,7 +42,7 @@ namespace Game::BulletHell
 	    if (sound_query.begin() == sound_query.end())
 	        return;
 
-	    auto sound_registry = sound_query.front().components.get<Audio::SoundRegistry>().sounds;
+	    auto sound_registry = sound_query.front().components.get<Audio::SoundRegistry>().audios;
 
 	    const auto &player_tra = player_query.front().get<Render::Transform>();
 	    const auto &player_hitbox = player_query.front().get<Physics::CircularCollider>();
@@ -80,7 +80,7 @@ namespace Game::BulletHell
 		        {
 		            bullet.is_grazed = true;
 		            state.graze ++;
-		            Audio::sound_play(sound_registry["sound_graze"]);
+		            Audio::audio_play(sound_registry["sound_graze"]);
 		        }
 		    }
 
@@ -120,7 +120,7 @@ namespace Game::BulletHell
 		    // Deactivate the bullet
 		    bullet.pierce --;
 
-		    Audio::sound_play(sound_registry["sound_hit"]);
+		    Audio::audio_play(sound_registry["sound_hit"]);
         }
 
 	    for (auto &[id, comps] : bullet_query2)
@@ -156,7 +156,7 @@ namespace Game::BulletHell
 	                {
 	                    bullet.is_grazed = true;
 	                    state.graze ++;
-	                    Audio::sound_play(sound_registry["sound_graze"]);
+	                    Audio::audio_play(sound_registry["sound_graze"]);
 	                }
 	            }
                 continue;
@@ -194,7 +194,7 @@ namespace Game::BulletHell
 	        bullet.pierce--;
 
 	        // Activate Sound
-	        Audio::sound_play(sound_registry["sound_hit"]);
+	        Audio::audio_play(sound_registry["sound_hit"]);
 
 	    }
 	}

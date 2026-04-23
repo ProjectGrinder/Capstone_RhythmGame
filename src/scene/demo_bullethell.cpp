@@ -149,7 +149,7 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
     Rotation,
     Velocity,
     Acceleration,
-    AngularVelocity, Game::Physics::CircularCollider>(
+    AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::>(
         {}, Game::Render::Transform(), {}, {}, {}, {}, {}
     );
     tm->run_all();

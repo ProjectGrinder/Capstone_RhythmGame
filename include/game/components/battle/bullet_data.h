@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 
+#include "../audio/audio.h"
 #include "game/components/physics/base_collider.h"
-#include "game/components/sound.h"
 
 namespace Game::Battle
 {

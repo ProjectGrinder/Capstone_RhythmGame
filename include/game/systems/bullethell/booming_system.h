@@ -33,7 +33,7 @@ namespace Game::BulletHell
                     scl.scaleX = boomer.max_size;
                     scl.scaleY = boomer.max_size;
                     render.color.a = 0.25;
-                    Audio::sound_play(sound_registry["sound_bullet_boomer"]);
+                    Audio::audio_play(sound_registry["sound_bullet_boomer"]);
                 }
                 else if (delay_comp.delay <= 0)
                 {
