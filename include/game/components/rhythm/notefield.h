@@ -10,19 +10,22 @@ namespace Game::Rhythm
         float lane2_spawn;
         float lane3_spawn;
         float lane4_spawn;
+        float move_time;
         explicit NoteField(
             const float spawn_level,
             const float judge_level,
             const float lane1_spawn,
             const float lane2_spawn,
             const float lane3_spawn,
-            const float lane4_spawn) :
+            const float lane4_spawn,
+            const float move_time) :
         spawn_level(spawn_level),
         judge_level(judge_level),
         lane1_spawn(lane1_spawn),
         lane2_spawn(lane2_spawn),
         lane3_spawn(lane3_spawn),
-        lane4_spawn(lane4_spawn)
+        lane4_spawn(lane4_spawn),
+        move_time(move_time)
         {}
     };
 } // namespace Game::Rhythm

@@ -24,6 +24,7 @@ namespace Scene
             Game::Rhythm::NoteType,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::NoteField,
+            Game::Rhythm::HoldConnect,
             Game::Render::Camera2D,
             Game::Render::Sprite,
             Game::Render::Material,

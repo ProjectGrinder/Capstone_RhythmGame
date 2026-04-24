@@ -109,13 +109,15 @@ inline Game::Rhythm::NoteField create_field()
     constexpr float lane2_spawn = -1 * (note_width * 0.5);
     constexpr float lane3_spawn = note_width * 0.5;
     constexpr float lane4_spawn = note_width * 1.5;
+    constexpr float move_time = 5000.00f; // default speed 1
     return Game::Rhythm::NoteField(
         spawn_level,
         judge_level,
         lane1_spawn,
         lane2_spawn,
         lane3_spawn,
-        lane4_spawn);
+        lane4_spawn,
+        move_time);
 }
 
 inline Game::Battle::BpmInfo create_bpm_info()
@@ -141,6 +143,7 @@ inline Game::Battle::PhaseInfo create_phase_info()
 auto sp1 = load_sprite("img/rhythm/base_accent.dds", "accent", 200, 40);
 auto sp2 = load_sprite("img/rhythm/base_rain.dds", "rain", 200, 20);
 auto sp0 = load_sprite("img/rhythm/base_normal.dds", "normal", 200, 40);
+auto sp_hold = load_sprite("img/rhythm/base_hold.dds", "hold", 100, 960);
 InputAttributeDescription sprite_vs_input_attributes[] = {
     InputAttributeDescription{"POSITION", InputType::R32G32B32_FLOAT, 0},
     InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12}};
@@ -221,6 +224,17 @@ void Scene::DemoRhythm::load_chart(
                         NoteType{-1},
                         NoteStatus{0},
                         assign_sprite(-1),
+                        Game::Render::Material(sprite_vs, sprite_ps),
+                        Game::Render::Transform{pos, 0, 0, 0});
+                tm->create_entity<
+                    Game::Rhythm::HoldConnect, NoteStatus,
+                    Game::Render::Sprite,
+                    Game::Render::Material,
+                    Game::Render::Transform>(
+                        Game::Rhythm::HoldConnect{lane.lane_number, note.timing, note.timing_end},
+                        NoteStatus{0},
+                        Game::Render::Sprite{.sp = sp_hold, .pos = {{-25, 0, 0}, {25, 0, 0}, {25, 0, 0}, {-25, 0, 0}},
+                        .u0 = 0.0f, .v0 = 0.0f, .u1 = 1.0f, .v1 = 0.0f},
                         Game::Render::Material(sprite_vs, sprite_ps),
                         Game::Render::Transform{pos, 0, 0, 0});
             }

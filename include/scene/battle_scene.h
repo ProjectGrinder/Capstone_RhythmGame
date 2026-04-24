@@ -48,6 +48,7 @@ namespace Scene
             Game::Rhythm::NoteType,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::NoteField,
+            Game::Rhythm::HoldConnect,
             Game::Render::Animator,
             Game::Render::Transform,
             Game::Render::Sprite,
