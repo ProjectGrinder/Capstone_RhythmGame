@@ -7,9 +7,8 @@ namespace Game::Rhythm
         int lane;
         int timing_start;
         int timing_end;
-        bool hit;
         explicit HoldConnect(const int lane, const int timing_start, const int timing_end) :
-        lane(lane), timing_start(timing_start), timing_end(timing_end), hit(false)
+        lane(lane), timing_start(timing_start), timing_end(timing_end)
         {}
     };
 } // namespace Game::Rhythm

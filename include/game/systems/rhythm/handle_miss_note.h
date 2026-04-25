@@ -11,6 +11,7 @@ namespace Game::Rhythm
     void handle_miss_note(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Material, Sprite> &note_query,
+            System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<Battle::RhythmState> &rhythm_query,
             System::ECS::Query<Render::Text> &text_query)
@@ -58,21 +59,30 @@ namespace Game::Rhythm
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 2;
                     battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.hold;
                     // LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comp.get<Timing>().lane);
-                    int first_timing = 999999;
-                    System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Material, Sprite>::StoredTuple *note = nullptr;
+                    int end_time = 0;
+                    for (auto &[id2, comp2]: hold_query)
+                    {
+                        if (comp2.get<NoteStatus>().state == -1)
+                            continue;
+
+                        if (comp2.get<HoldConnect>().lane == comp.get<Timing>().lane
+                            && comp2.get<HoldConnect>().timing_start == note_time)
+                        {
+                            end_time = comp2.get<HoldConnect>().timing_end;
+                            auto sp = load_sprite("img/rhythm/base_hold_disabled.dds", "hold_disabled", 100, 960);
+                            comp2.get<Sprite>().sp = sp;
+                            comp2.get<NoteStatus>().state = -1;
+                            break;
+                        }
+                    }
+                    auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
                     for (auto &[id2, comp2]: note_query) // find ending note for the hold
                     {
                         if (comp2.get<NoteType>().type == -1 && comp2.get<NoteStatus>().state != -1
-                            && comp.get<Timing>().lane == comp2.get<Timing>().lane && comp2.get<Timing>().timing < first_timing)
+                            && comp.get<Timing>().lane == comp2.get<Timing>().lane && comp2.get<Timing>().timing == end_time)
                         {
-                            first_timing = comp2.get<Timing>().timing;
-                            note = &comp2;
+                            comp2.get<Sprite>().sp = sp;
                         }
-                    }
-                    if (note != nullptr)
-                    {
-                        auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
-                        note->get<Render::Sprite>().sp = sp;
                     }
                 }
                 comp.get<NoteStatus>().state = -1;

@@ -5,11 +5,14 @@
 
 namespace Game::Rhythm
 {
+    using Sprite = Render::Sprite;
+
     inline void handle_hold_note_release(
         const int &time_diff,
         System::ECS::Query<Lane>::StoredTuple *lane,
         System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
+        System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
         System::ECS::Query<Battle::RhythmState> &rhythm_query,
         System::ECS::Query<Render::Text> &text_query)
     {
@@ -61,6 +64,27 @@ namespace Game::Rhythm
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
             battle_query.front().get<Battle::BattleState>().current_accept -= rhythm_query.front().get<Battle::RhythmState>().accept_loss.hold_end;
+
+            for (auto &[id2, comp2] : hold_query)
+            {
+                if (comp2.get<HoldConnect>().timing_start == lane->get<Lane>().hold_start_time && comp2.get<HoldConnect>().timing_end == lane->get<Lane>().hold_end_time)
+                {
+                    auto sp = load_sprite("img/rhythm/base_hold_disabled.dds", "hold_disabled", 100, 960);
+                    comp2.get<Sprite>().sp = sp;
+                    comp2.get<NoteStatus>().state = -1;
+                }
+            }
+            for (auto &[id, comp] : note_query)
+            {
+                if (comp.get<NoteType>().type != -1)
+                    continue;
+
+                if (comp.get<Timing>().timing == lane->get<Lane>().hold_end_time && comp.get<Timing>().lane == lane->get<Lane>().lane_number)
+                {
+                    auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
+                    comp.get<Render::Sprite>().sp = sp;
+                }
+            }
             for (auto &[id2, comp2] : text_query)
             {
                 if (comp2.get<Render::Text>().name == "Miss")
@@ -71,19 +95,7 @@ namespace Game::Rhythm
             }
         }
 
-        for (auto &[id, comp] : note_query)
-        {
-            if (comp.get<NoteType>().type != -1)
-                continue;
-
-            if (comp.get<Timing>().timing == lane->get<Lane>().hold_end_time && comp.get<Timing>().lane == lane->get<Lane>().lane_number && time_diff <= great_judge)
-            {
-                auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
-                comp.get<Render::Sprite>().sp = sp;
-                LOG_INFO("Change sprite");
-            }
-        }
-        lane->get<Lane>().hold_active = false;
+        lane->get<Lane>().hold_start_time = 0;
         lane->get<Lane>().hold_end_time = 0;
     }
 
@@ -95,6 +107,7 @@ namespace Game::Rhythm
         System::ECS::Query<KeyInput> &input_query,
         System::ECS::Query<Lane> &lane_query,
         [[maybe_unused]] System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
+        [[maybe_unused]] System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
         System::ECS::Query<Render::Text> &text_query)
     {
         if (battle_query.begin() == battle_query.end())
@@ -110,7 +123,7 @@ namespace Game::Rhythm
 
         for (auto &[id, comp] : lane_query)
         {
-            if (comp.get<Lane>().hold_active == true && comp.get<Lane>().hold_end_time > 0)
+            if (comp.get<Lane>().hold_start_time > 0 && comp.get<Lane>().hold_end_time > 0)
             {
                 const auto current_timing = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
                 const auto time_end = comp.get<Lane>().hold_end_time;
@@ -120,12 +133,12 @@ namespace Game::Rhythm
                     || (comp.get<Lane>().lane_number == 2 && key_input.key3_hold == false)
                     || (comp.get<Lane>().lane_number == 3 && key_input.key4_hold == false))
                 {
-                    handle_hold_note_release(time_diff, &comp, battle_query, note_query, rhythm_query, text_query);
+                    handle_hold_note_release(time_diff, &comp, battle_query, note_query, hold_query, rhythm_query, text_query);
                 }
 
                 if (time_diff >= 0)
                 {
-                    handle_hold_note_release(time_diff, &comp, battle_query, note_query, rhythm_query, text_query);
+                    handle_hold_note_release(time_diff, &comp, battle_query, note_query, hold_query, rhythm_query, text_query);
                 }
             }
         }

@@ -64,7 +64,7 @@ namespace Game::Rhythm
 
         if (comp->get<HoldStart>().is_hold == true)
         {
-            lane->get<Lane>().hold_active = true; // start holding
+            lane->get<Lane>().hold_start_time = comp->get<Timing>().timing; // start holding
             LOG_INFO("Start Holding");
         }
             comp->get<NoteStatus>().state = -1; // remove tap notes
@@ -100,7 +100,7 @@ namespace Game::Rhythm
 
         if (comp->get<HoldStart>().is_hold == true)
         {
-            lane->get<Lane>().hold_active = true; // start holding
+            lane->get<Lane>().hold_start_time = comp->get<Timing>().timing; // start holding
             LOG_INFO("Start Holding");
         }
         comp->get<NoteStatus>().state = -1; // remove tap notes

@@ -23,7 +23,7 @@ inline Game::Battle::ChartData create_demo_chart()
         chart.lanes[lane].notes.clear();
         chart.lanes[lane].current_note = 0;
     }
-
+    /*
     // Pattern 1: Simple taps
     chart.lanes[0].notes.emplace_back(false, 5000, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[1].notes.emplace_back(false, 6000, 0, Game::Battle::RhythmType::NORMAL);
@@ -61,6 +61,7 @@ inline Game::Battle::ChartData create_demo_chart()
     chart.lanes[1].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
     chart.lanes[2].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
     chart.lanes[3].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
+    */
 
     /*
     Pattern 5: Mixed notes
@@ -78,6 +79,45 @@ inline Game::Battle::ChartData create_demo_chart()
     chart.lanes[2].notes.emplace_back(true, 35000, 36000);
     */
 
+    /*
+    chart.lanes[0].notes.emplace_back(true, 5000, 6000, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(true, 7000, 8000, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[2].notes.emplace_back(true, 9000, 12000, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[3].notes.emplace_back(true, 10000, 12000, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[0].notes.emplace_back(true, 13000, 15000, Game::Battle::RhythmType::ACCENT);
+    chart.lanes[1].notes.emplace_back(true, 13000, 15000, Game::Battle::RhythmType::ACCENT);
+    chart.lanes[2].notes.emplace_back(true, 13000, 15000, Game::Battle::RhythmType::ACCENT);
+    chart.lanes[3].notes.emplace_back(true, 13000, 15000, Game::Battle::RhythmType::ACCENT);
+    */
+
+    // vivid/stasis moment
+    chart.lanes[0].notes.emplace_back(false, 5000, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(false, 5120, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[2].notes.emplace_back(false, 5240, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[3].notes.emplace_back(false, 5360, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[2].notes.emplace_back(false, 5480, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(false, 5600, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[0].notes.emplace_back(false, 5720, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(false, 5840, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[2].notes.emplace_back(false, 5960, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[3].notes.emplace_back(false, 6080, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[2].notes.emplace_back(false, 6200, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(false, 6320, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[0].notes.emplace_back(false, 6440, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(false, 6560, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[2].notes.emplace_back(false, 6680, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[3].notes.emplace_back(false, 6800, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[2].notes.emplace_back(false, 6920, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(false, 7040, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[0].notes.emplace_back(true, 7160, 11200, Game::Battle::RhythmType::ACCENT);
+    chart.lanes[3].notes.emplace_back(true, 7640, 11200, Game::Battle::RhythmType::ACCENT);
+    for (int m = 0; m < 16; ++m)
+    {
+        chart.lanes[1].notes.emplace_back(false, 8000 + m * 200, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[2].notes.emplace_back(false, 8100 + m * 200, 0, Game::Battle::RhythmType::NORMAL);
+    }
+    chart.lanes[1].notes.emplace_back(false, 11200, 0, Game::Battle::RhythmType::NORMAL);
+
     return (chart);
 }
 
@@ -90,7 +130,7 @@ inline Game::Battle::BattleState create_battle_state()
 
 inline Game::Battle::RhythmState create_rhythm_state()
 {
-    Game::Battle::RhythmState state(1, 100, 60, 2.0f, 2.0f);
+    Game::Battle::RhythmState state(1, 100, 60, 6.0f, 6.0f);
     state.accept_loss.normal = 5;
     state.accept_loss.accent = 5;
     state.accept_loss.rain = 2;
@@ -105,10 +145,10 @@ inline Game::Rhythm::NoteField create_field()
     // position based on window size
     const float spawn_level = half_height;
     const float judge_level = half_height * -2 / 3;
-    constexpr float lane1_spawn = -1 * (note_width * 1.5);
-    constexpr float lane2_spawn = -1 * (note_width * 0.5);
-    constexpr float lane3_spawn = note_width * 0.5;
-    constexpr float lane4_spawn = note_width * 1.5;
+    constexpr float lane1_spawn = -1 * (note_width * 1.65f);
+    constexpr float lane2_spawn = -1 * (note_width * 0.55f);
+    constexpr float lane3_spawn = note_width * 0.55f;
+    constexpr float lane4_spawn = note_width * 1.65f;
     constexpr float move_time = 5000.00f; // default speed 1
     return Game::Rhythm::NoteField(
         spawn_level,
@@ -298,6 +338,11 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
 
     tm->create_entity<Game::Rhythm::NoteField>(create_field());
+
+    tm->create_entity(
+        Game::Render::Sprite{.sp = sp0, .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}}},
+        Game::Render::Material(sprite_vs, sprite_ps),
+        Game::Render::Transform{Math::Point{0, half_height * -2 / 3, 0}, 0, 0, 0});
 
     tm->create_entity(
         Game::Render::Text{.font = fn, .text = "PERFECT=0", .name = "Perfect"},
