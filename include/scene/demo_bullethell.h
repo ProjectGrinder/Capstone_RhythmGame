@@ -11,12 +11,16 @@ namespace Scene
 
     Game::Battle::BulletLoader create_bullet_data2();
 
+    Game::Battle::BulletLoader create_bullet_data_boom_test();
+
+    Game::Battle::BulletLoader create_bullet_data_laser_test();
+
     struct DemoBulletHell
     {
         static DemoBulletHell instance();
 
         constexpr static auto name = "DemoBulletHell";
-        constexpr static size_t MaxResource = 12000;
+        constexpr static size_t MaxResource = 10000;
         // declare scene parameters
         using ComponentTuple = std::tuple<
             Game::Battle::BattleState,

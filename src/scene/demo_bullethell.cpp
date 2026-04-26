@@ -77,54 +77,54 @@ Game::Battle::BulletRegistry Scene::init_bullet_graphic()
         BulletGraphicMap(ColliderData(CIRCLE, 29), GraphicData( 406, 302, 435, 331 )),
         BulletGraphicMap(ColliderData(CIRCLE, 29), GraphicData( 436, 302, 465, 331 )),
         BulletGraphicMap(ColliderData(CIRCLE, 29), GraphicData( 466, 302, 495, 331 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 0, 80, 9, 100 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 10, 80, 19, 100 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 20, 80, 29, 100 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 30, 80, 39, 100 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 40, 80, 49, 100 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 50, 80, 59, 100 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 60, 80, 69, 100 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 70, 80, 79, 100 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 0, 100, 11, 118 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 12, 100, 23, 118 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 24, 100, 35, 118 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 36, 100, 47, 118 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 48, 100, 59, 118 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 60, 100, 71, 118 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 72, 100, 83, 118 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 84, 100, 95, 118 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 0, 118, 11, 138 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 12, 118, 23, 138 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 24, 118, 35, 138 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 36, 118, 47, 138 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 48, 118, 59, 138 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 60, 118, 71, 138 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 72, 118, 83, 138 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 84, 118, 95, 138 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 0, 138, 11, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 12, 138, 23, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 24, 138, 35, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 36, 138, 47, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 48, 138, 59, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 60, 138, 71, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 72, 138, 83, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 84, 138, 93, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 0, 158, 17, 186 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 18, 158, 35, 186 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 36, 158, 53, 186 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 54, 158, 71, 186 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 72, 158, 89, 186 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 90, 158, 107, 186 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 108, 158, 125, 186 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 126, 158, 143, 186 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 13), GraphicData( 0, 186, 13, 208 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 13), GraphicData( 14, 186, 27, 208 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 13), GraphicData( 28, 186, 41, 208 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 13), GraphicData( 42, 186, 55, 208 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 13), GraphicData( 56, 186, 69, 208 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 13), GraphicData( 70, 186, 83, 208 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 13), GraphicData( 84, 186, 97, 208 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 13), GraphicData( 98, 186, 111, 208 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 9), GraphicData( 0, 80, 9, 100 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 9), GraphicData( 10, 80, 19, 100 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 9), GraphicData( 20, 80, 29, 100 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 9), GraphicData( 30, 80, 39, 100 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 9), GraphicData( 40, 80, 49, 100 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 9), GraphicData( 50, 80, 59, 100 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 9), GraphicData( 60, 80, 69, 100 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 9), GraphicData( 70, 80, 79, 100 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 0, 100, 11, 118 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 12, 100, 23, 118 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 24, 100, 35, 118 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 36, 100, 47, 118 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 48, 100, 59, 118 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 60, 100, 71, 118 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 72, 100, 83, 118 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 84, 100, 95, 118 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 0, 118, 11, 138 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 12, 118, 23, 138 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 24, 118, 35, 138 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 36, 118, 47, 138 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 48, 118, 59, 138 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 60, 118, 71, 138 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 72, 118, 83, 138 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 84, 118, 95, 138 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 0, 138, 11, 158 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 12, 138, 23, 158 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 24, 138, 35, 158 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 36, 138, 47, 158 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 48, 138, 59, 158 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 60, 138, 71, 158 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 11), GraphicData( 72, 138, 83, 158 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 9), GraphicData( 84, 138, 93, 158 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 17), GraphicData( 0, 158, 17, 186 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 17), GraphicData( 18, 158, 35, 186 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 17), GraphicData( 36, 158, 53, 186 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 17), GraphicData( 54, 158, 71, 186 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 17), GraphicData( 72, 158, 89, 186 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 17), GraphicData( 90, 158, 107, 186 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 17), GraphicData( 108, 158, 125, 186 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 17), GraphicData( 126, 158, 143, 186 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 13), GraphicData( 0, 186, 13, 208 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 13), GraphicData( 14, 186, 27, 208 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 13), GraphicData( 28, 186, 41, 208 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 13), GraphicData( 42, 186, 55, 208 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 13), GraphicData( 56, 186, 69, 208 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 13), GraphicData( 70, 186, 83, 208 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 13), GraphicData( 84, 186, 97, 208 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 13), GraphicData( 98, 186, 111, 208 )),
         BulletGraphicMap(ColliderData(CIRCLE, 15), GraphicData( 0, 209, 17, 224 )),
         BulletGraphicMap(ColliderData(CIRCLE, 15), GraphicData( 18, 209, 35, 224 )),
         BulletGraphicMap(ColliderData(CIRCLE, 15), GraphicData( 36, 209, 53, 224 )),
@@ -205,78 +205,23 @@ Game::Battle::BulletRegistry Scene::init_bullet_graphic()
         BulletGraphicMap(ColliderData(CIRCLE, 22), GraphicData( 110, 398, 132, 430 )),
         BulletGraphicMap(ColliderData(CIRCLE, 22), GraphicData( 132, 398, 154, 430 )),
         BulletGraphicMap(ColliderData(CIRCLE, 22), GraphicData( 154, 398, 176, 430 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 1, 431, 25, 459 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 27, 431, 51, 459 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 53, 431, 77, 459 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 79, 431, 103, 459 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 105, 431, 129, 459 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 131, 431, 155, 459 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 157, 431, 181, 459 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 183, 431, 207, 459 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 209, 431, 233, 459 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 14), GraphicData( 120, 460, 134, 492 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 320, 0, 384, 64 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 448, 64, 512, 128 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 320, 64, 384, 128 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 384, 0, 448, 64 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 384, 64, 448, 128 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 448, 0, 512, 64 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 256, 64, 320, 128 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 256, 0, 320, 64 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 256, 128, 273, 145 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 274, 128, 291, 145 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 292, 128, 309, 145 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 310, 128, 327, 145 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 19), GraphicData( 256, 146, 275, 165 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 19), GraphicData( 276, 146, 295, 165 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 19), GraphicData( 296, 146, 315, 165 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 19), GraphicData( 316, 146, 335, 165 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 29), GraphicData( 256, 166, 285, 195 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 29), GraphicData( 286, 166, 315, 195 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 29), GraphicData( 316, 166, 345, 195 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 29), GraphicData( 346, 166, 375, 195 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 256, 196, 265, 216 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 266, 196, 275, 216 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 276, 196, 285, 216 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 9), GraphicData( 286, 196, 295, 216 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 256, 216, 267, 234 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 268, 216, 279, 234 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 280, 216, 291, 234 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 292, 216, 303, 234 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 256, 234, 267, 254 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 268, 234, 279, 254 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 280, 234, 291, 254 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 292, 234, 303, 254 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 256, 254, 267, 274 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 268, 254, 279, 274 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 280, 254, 291, 274 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 11), GraphicData( 292, 254, 303, 274 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 256, 274, 273, 302 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 274, 274, 291, 302 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 292, 274, 309, 302 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 17), GraphicData( 310, 274, 327, 302 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 30), GraphicData( 384, 128, 414, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 30), GraphicData( 414, 128, 444, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 30), GraphicData( 444, 128, 474, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 30), GraphicData( 474, 128, 504, 158 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 27), GraphicData( 384, 158, 411, 185 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 27), GraphicData( 412, 158, 439, 185 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 27), GraphicData( 440, 158, 467, 185 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 27), GraphicData( 468, 158, 495, 185 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 19), GraphicData( 384, 186, 403, 206 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 19), GraphicData( 404, 186, 423, 206 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 19), GraphicData( 424, 186, 443, 206 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 19), GraphicData( 444, 186, 463, 206 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 32), GraphicData( 384, 206, 416, 238 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 32), GraphicData( 416, 206, 448, 238 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 32), GraphicData( 448, 206, 480, 238 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 32), GraphicData( 480, 206, 512, 238 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 385, 239, 409, 267 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 411, 239, 435, 267 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 437, 239, 461, 267 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 24), GraphicData( 463, 239, 487, 267 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 31), GraphicData( 480, 384, 511, 512 )),
-        BulletGraphicMap(ColliderData(CIRCLE, 94), GraphicData( 385, 417, 479, 511 )),
+        BulletGraphicMap(ColliderData(RECTANGLE, 24), GraphicData( 1, 431, 25, 459 ), SpecialBulletData(Laser,100,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(RECTANGLE, 24), GraphicData( 27, 431, 51, 459 ), SpecialBulletData(Laser,100,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(RECTANGLE, 24), GraphicData( 53, 431, 77, 459 ), SpecialBulletData(Laser,100,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(RECTANGLE, 24), GraphicData( 79, 431, 103, 459 ), SpecialBulletData(Laser,100,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(RECTANGLE, 24), GraphicData( 105, 431, 129, 459 ), SpecialBulletData(Laser,100,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(RECTANGLE, 24), GraphicData( 131, 431, 155, 459 ), SpecialBulletData(Laser,100,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(RECTANGLE, 24), GraphicData( 157, 431, 181, 459 ), SpecialBulletData(Laser,100,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(RECTANGLE, 24), GraphicData( 183, 431, 207, 459 ), SpecialBulletData(Laser,100,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(RECTANGLE, 24), GraphicData( 209, 431, 233, 459 ), SpecialBulletData(Laser,100,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 320, 0, 384, 64 ), SpecialBulletData(Booming,3,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 448, 64, 512, 128 ), SpecialBulletData(Booming,3,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 320, 64, 384, 128 ), SpecialBulletData(Booming,3,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 384, 0, 448, 64 ), SpecialBulletData(Booming,3,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 384, 64, 448, 128 ), SpecialBulletData(Booming,3,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 448, 0, 512, 64 ), SpecialBulletData(Booming,3,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 256, 64, 320, 128 ), SpecialBulletData(Booming,3,200), 1,999,2500),
+        BulletGraphicMap(ColliderData(CIRCLE, 64), GraphicData( 256, 0, 320, 64 ), SpecialBulletData(Booming,3,200), 1,999,2500),
     };
     return {BulletRegistry(maps)};
 }
@@ -354,8 +299,42 @@ Game::Battle::BulletLoader Scene::create_bullet_data2()
     {
         for (int j=0;j<8;j++)
         {
-            loader.CreateBullet(1000 + i*100, BulletData(0, 0, 100, (static_cast<float>(j) *45) + i*6,50,-45.f, 1000, (i*8 + j)%240));
+            loader.CreateBullet(1000 + i*100, BulletData(0, 0, 100, (static_cast<float>(j) *45) + i*6,50,-45.f, 0, (i*8 + j)%192));
         }
+    }
+
+    return loader;
+}
+
+Game::Battle::BulletLoader Scene::create_bullet_data_boom_test()
+{
+    using namespace Game::Battle;
+    using namespace Game::Physics;
+
+    BulletLoader loader;
+    for (int i=0;i<20;i++)
+    {
+        for (int j=0;j<4;j++)
+        {
+            loader.CreateBullet(1000 + i*3000 + j*100, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
+        }
+    }
+
+    return loader;
+}
+
+Game::Battle::BulletLoader Scene::create_bullet_data_laser_test()
+{
+    using namespace Game::Battle;
+    using namespace Game::Physics;
+
+    BulletLoader loader;
+    for (int i=0;i<20;i++)
+    {
+        loader.CreateBullet(1000 + i*3000, BulletData(rand_float(-500,500), -300, 0, rand_float(-135,-45), 1000, 176));
+        loader.CreateBullet(1000 + i*3000 + 250, BulletData(-500, rand_float(-300,300), 0, rand_float(-45,45), 1000, 177));
+        loader.CreateBullet(1000 + i*3000 + 500, BulletData(rand_float(-500,500), 300, 0, rand_float(45,135), 0, 1000, 178));
+        loader.CreateBullet(1000 + i*3000 + 750, BulletData(500, rand_float(-300,300), 0, rand_float(-225,-135), 1000, 179));
     }
 
     return loader;
@@ -386,7 +365,7 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
         Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(),
         init_bullet_graphic(),
-        create_bullet_data2(),
+        create_bullet_data_laser_test(),
         create_pattern_container(),
         Game::Audio::init_sounds(),
         Game::Rhythm::KeyInput(),
