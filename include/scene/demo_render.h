@@ -31,8 +31,7 @@ namespace Scene
                 Game::Test::fps_counter<Syscall>,
                 Game::Render::draw_triangle<Syscall>,
                 Game::Render::draw_sprite<Syscall>,
-                Game::Render::draw_text<Syscall>,
-                Game::Audio::play_audio<Syscall>>;
+                Game::Render::draw_text<Syscall>>;
 
         // declare functions
         static std::shared_ptr<TaskManager> init();

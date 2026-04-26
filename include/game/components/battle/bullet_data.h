@@ -3,6 +3,7 @@
 
 #include "../audio/audio.h"
 #include "game/components/physics/base_collider.h"
+#include "game/components/render/animation.h"
 
 namespace Game::Battle
 {
@@ -48,7 +49,7 @@ namespace Game::Battle
         float dest_rect[4];
         float r,g,b,a;
         int bullet_spawn_sound;
-        GraphicData() : src_rect{}, dest_rect{}, r(1), g(1), b(1), a(1), bullet_spawn_sound(-1)
+        GraphicData() : src_rect{}, dest_rect{}, r(1), g(1), b(1), a(1), bullet_spawn_sound(1)
         {}
         explicit GraphicData(
                 const float src0, const float src1, const float src2, const float src3,
@@ -56,7 +57,7 @@ namespace Game::Battle
                 const float g = 1,
                 const float b = 1,
                 const float a = 1,
-                const int bullet_spawn_sound = -1) :
+                const int bullet_spawn_sound = 1) :
             src_rect{src0,src1,src2,src3}, r(r), g(g), b(b), a(a), bullet_spawn_sound(bullet_spawn_sound)
         {
             dest_rect[0] = src0 - src2;
@@ -71,7 +72,7 @@ namespace Game::Battle
                 const float g,
                 const float b,
                 const float a,
-                const int bullet_spawn_sound = -1) :
+                const int bullet_spawn_sound = 1) :
             src_rect{src0,src1,src2,src3}, dest_rect{dest0, dest1, dest2, dest3}, r(r), g(g), b(b), a(a), bullet_spawn_sound(bullet_spawn_sound)
         {}
     };
@@ -85,7 +86,7 @@ namespace Game::Battle
         int pierce;
         int lifetime;
 
-        BulletGraphicMap() : damage_mul(0), pierce(1), lifetime(5000)
+        BulletGraphicMap() :  damage_mul(0), pierce(1), lifetime(5000)
         {}
 
         explicit BulletGraphicMap(
@@ -94,13 +95,19 @@ namespace Game::Battle
                 const SpecialBulletData &special_bullet_data = {},
                 const float damage_mul = 1,
                 const int pierce = 1,
-                const int lifetime = 5000 ) :
-            collider_data(collider_data), graphic_data(graphic_data), special_bullet_data(special_bullet_data), damage_mul(damage_mul), pierce(pierce), lifetime(lifetime)
+                const int lifetime = 10000) :
+            collider_data(collider_data),
+            graphic_data(graphic_data),
+            special_bullet_data(special_bullet_data),
+            damage_mul(damage_mul),
+            pierce(pierce),
+            lifetime(lifetime)
         {}
     };
 
     struct BulletRegistry
     {
+        std::string bullet_data_filepath;
         std::vector<BulletGraphicMap> bulletGraphicMaps;
         explicit BulletRegistry(std::vector<BulletGraphicMap>& bulletGraphicMaps) : bulletGraphicMaps(std::move(bulletGraphicMaps))
         {}

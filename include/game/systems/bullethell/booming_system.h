@@ -15,7 +15,7 @@ namespace Game::BulletHell
         if (sound_query.begin() == sound_query.end())
             return;
 
-        auto sound_registry = sound_query.front().components.get<Audio::SoundRegistry>().sounds;
+        auto sound_registry = sound_query.front().components.get<Audio::SoundRegistry>().audios;
 
         for (auto &[id, comps] : query)
         {

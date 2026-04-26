@@ -16,7 +16,7 @@ namespace Scene
         static DemoBulletHell instance();
 
         constexpr static auto name = "DemoBulletHell";
-        constexpr static size_t MaxResource = 1000;
+        constexpr static size_t MaxResource = 12000;
         // declare scene parameters
         using ComponentTuple = std::tuple<
             Game::Battle::BattleState,
@@ -50,9 +50,12 @@ namespace Scene
             Game::Render::Sprite,
             Game::Render::Material,
             Game::Render::Text,
+            Game::Render::Flicker,
             Game::Render::Camera2D,
             Game::Rhythm::NoteType,
-            Game::Audio::SoundRegistry
+            Game::Audio::SoundRegistry,
+            Game::Test::FpsCounter,
+            Game::Test::BulletCounter
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -74,8 +77,14 @@ namespace Scene
             Game::BulletHell::laser_system<Syscall>,
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
-            Game::BulletHell::logging_system<Syscall>,
-            Game::Battle::update_global_clock<Syscall>
+            // Game::BulletHell::logging_system<Syscall>,
+            Game::Battle::update_global_clock<Syscall>,
+            Game::Render::set_camera<Syscall>,
+            Game::Render::draw_sprite<Syscall>,
+            Game::Render::draw_text<Syscall>,
+            Game::Test::bullet_counter<Syscall>,
+            Game::Test::fps_counter<Syscall>,
+            Game::Render::flickering_system<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init();

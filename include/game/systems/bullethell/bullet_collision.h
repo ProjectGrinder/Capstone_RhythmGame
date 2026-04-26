@@ -116,6 +116,7 @@ namespace Game::BulletHell
 		    // TODO : Make this const
 		    // Activate Player iFrame
 		    state.iframe_time = 3000;
+		    syscall.add_component(player_query.front().id, Render::Flicker(3000));
 
 		    // Deactivate the bullet
 		    bullet.pierce --;
@@ -189,6 +190,7 @@ namespace Game::BulletHell
 	        // TODO : Make this const
 	        // Activate Player iFrame
 	        state.iframe_time = 3000;
+	        syscall.add_component(player_query.front().id, Render::Flicker(3000));
 
 	        // Deactivate the bullet
 	        bullet.pierce--;

@@ -46,6 +46,7 @@ namespace Scene
             Game::Render::Material,
             Game::Render::Text,
             Game::Render::Camera2D,
+            Game::Render::Flicker,
             Game::Rhythm::NoteType,
             Game::Rhythm::Lane,
             Game::Rhythm::NoteSpeed,
@@ -79,7 +80,8 @@ namespace Scene
             Game::BulletHell::logging_system<Syscall>,
             Game::Rhythm::load_notes<Syscall>,
             Game::Rhythm::handle_rhythm<Syscall>,
-            Game::Rhythm::handle_miss_note<Syscall>
+            Game::Rhythm::handle_miss_note<Syscall>,
+            Game::Render::flickering_system<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init()

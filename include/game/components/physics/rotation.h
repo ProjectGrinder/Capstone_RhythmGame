@@ -6,12 +6,12 @@ namespace Game::Physics
     struct Rotation
     {
         float angleX, angleY, angleZ;
-        bool attach_render = true;
-        Rotation() : angleX(0), angleY(0), angleZ(0)
+        bool attach_render;
+        Rotation() : angleX(0), angleY(0), angleZ(0), attach_render(false)
         {}
         explicit Rotation(const float angle, const bool attach_render = false) : angleX(0), angleY(0), angleZ(angle), attach_render(attach_render)
         {}
-        explicit Rotation(const float angleX, const float angleY, const float angleZ, const bool attach_render = true) :
+        explicit Rotation(const float angleX, const float angleY, const float angleZ, const bool attach_render = false) :
             angleX(angleX), angleY(angleY), angleZ(angleZ), attach_render(attach_render)
         {}
     };

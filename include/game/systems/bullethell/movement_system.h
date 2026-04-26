@@ -71,9 +71,9 @@ namespace Game::BulletHell
 
             if (rot.attach_render)
             {
-                tra.angleX = rot.angleX;
-                tra.angleY = rot.angleY;
-                tra.angleZ = rot.angleZ;
+                tra.angleX = rot.angleX * acos(0.0f)/90.0f;
+                tra.angleY = rot.angleY * acos(0.0f)/90.0f;
+                tra.angleZ = (rot.angleZ-90) * acos(0.0f)/90.0f;
             }
         }
     }

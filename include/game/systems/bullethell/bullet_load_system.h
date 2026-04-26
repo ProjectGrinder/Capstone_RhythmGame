@@ -10,7 +10,7 @@ namespace Game::BulletHell
     {
         const System::ECS::pid bullet = syscall.create_entity(Render::Transform(bullet_data.posX,bullet_data.posY), Delay(bullet_data.delay_frame));
 
-        syscall.add_components(bullet, Rotation(bullet_data.rot), Velocity(bullet_data.vel), Acceleration(bullet_data.acc), AngularVelocity(bullet_data.wvel), Pattern(bullet_data.patternID));
+        syscall.add_components(bullet, Rotation(bullet_data.rot,true), Velocity(bullet_data.vel), Acceleration(bullet_data.acc), AngularVelocity(bullet_data.wvel), Pattern(bullet_data.patternID));
 
         const Battle::BulletGraphicMap bullet_info = bullet_registry.bulletGraphicMaps[bullet_data.graphicID];
         syscall.add_components(bullet, Bullet(static_cast<int>(bullet_info.damage_mul * static_cast<float>(bhs.damage)), bullet_info.pierce), Particle(bullet_info.lifetime));
@@ -21,14 +21,13 @@ namespace Game::BulletHell
         const Battle::GraphicData bullet_graphic = bullet_info.graphic_data;
         syscall.add_components(bullet, Render::Sprite{
                     .sp = get_assets_record_ptr(get_assets_id("bullet_sprite")),
-                    .pos = {{bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[1], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[1], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[3], 0}},
+                    .pos = {{bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[1], 0}, {bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[1], 0}},
                     .layer = 1,
                     .u0 = bullet_graphic.src_rect[0]/512,
                     .v0 = bullet_graphic.src_rect[1]/512,
                     .u1 = bullet_graphic.src_rect[2]/512,
                     .v1 = bullet_graphic.src_rect[3]/512}
                     , Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")),get_assets_record_ptr(get_assets_id("sprite_ps")), {bullet_graphic.r, bullet_graphic.g, bullet_graphic.b, bullet_graphic.a}));
-
         if (const Battle::ColliderData bullet_collider = bullet_info.collider_data;
             bullet_collider.type == Physics::RECTANGLE) syscall.add_components(bullet, Physics::RectangularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
         else if (bullet_collider.type == Physics::CIRCLE) syscall.add_components(bullet, Physics::CircularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));

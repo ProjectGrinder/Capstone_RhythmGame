@@ -26,7 +26,7 @@ extern unsigned int intent_storage_get_current_frame();
 extern void intent_storage_next_frame();
 
 static SystemInfo system_info = {
-        .window = {.width = 640, .height = 480},
+        .window = {.width = 1920, .height = 1080},
         .monitor =
                 {
                         .width = 0,

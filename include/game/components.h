@@ -32,6 +32,7 @@
 #include "components/render/sprite.h"
 #include "components/render/text.h"
 #include "components/render/transform.h"
+#include "components/render/flicker.h"
 #include "components/render/triangle.h"
 #include "components/rhythm/holdactive.h"
 #include "components/rhythm/judgetext.h"
