@@ -9,7 +9,7 @@ namespace Game::Render
     {
         const AssetsRecord *font = nullptr; //font
         std::string text; // text
-        std::string name;
+        Math::Color color{1, 1, 1, 1};
         uint32_t layer = 0;     // Layer to render
         uint32_t order = 0;     // Order of render in layer
     };

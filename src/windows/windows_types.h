@@ -1,4 +1,5 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 #define INLINEOPTIMIZE static inline __attribute__((always_inline)) __forceinline
@@ -8,6 +9,7 @@ typedef void *IntentStorageHandler;
 typedef void *CompositorHandler;
 typedef void *DirectXHandler;
 typedef void *Dx11AdapterHandler;
+typedef void *AudioHandler;
 
 typedef enum
 {
@@ -65,4 +67,5 @@ typedef struct
     CompositorHandler compositor;
     Dx11AdapterHandler dx11_adapter;
     DirectXHandler directx;
+    AudioHandler audio;
 } SystemInfo;

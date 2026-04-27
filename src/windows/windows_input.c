@@ -1,6 +1,6 @@
-#include "windows_types.h"
-
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include "windows_types.h"
 
 extern HWND get_window_handler();
 

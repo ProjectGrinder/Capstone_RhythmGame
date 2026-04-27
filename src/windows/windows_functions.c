@@ -1,3 +1,4 @@
+#define WIN32_LEAN_AND_MEAN
 #include "windows_functions.h"
 
 #include "utils/windows_utils.h"
@@ -228,7 +229,8 @@ void __vectorcall sleep(_In_ const LONGLONG amount)
     do
     {
         QueryPerformanceCounter(&end);
-        Sleep(0);
+        YieldProcessor();
+        // Sleep(0);
     }
     while ((end.QuadPart - start.QuadPart) * 1000 / perf_frequency.QuadPart < amount);
 }

@@ -386,8 +386,8 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
     return (tm);
 }
 
-std::vector<Scene::DemoRhythm::ComponentTuple> Scene::DemoRhythm::exit()
+Scene::DemoRhythm::ResourceManager Scene::DemoRhythm::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
     LOG_INFO("Exiting DemoRhythm Scene.");
-    return {};
+    return ResourceManager();
 }

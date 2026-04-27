@@ -16,14 +16,15 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG /PROFILE")
 
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FAcs /W4 /WX /DNDEBUG /Zi")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /FAcs /W4 /WX /DNDEBUG /Zi")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FAcs /W4 /WX /DNDEBUG /Zi /bigobj")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /FAcs /W4 /WX /DNDEBUG /Zi /bigobj")
 add_compile_definitions(PROJECT_NAME=${PROJECT_NAME})
 
 include(cmake/FetchNASM.cmake)
 
 list(APPEND
     LIBS
+        audio
         scene
         engine
         assets_manager

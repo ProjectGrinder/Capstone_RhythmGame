@@ -32,7 +32,8 @@ extern "C"
         VERTEX_SHADER,
         PIXEL_SHADER,
         SPRITE,
-        FONT
+        FONT,
+        AUDIO
     } AssetsType;
 
     typedef struct
@@ -93,8 +94,9 @@ extern "C"
     load_vertex_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count);
     const AssetsRecord *
     load_pixel_shader(const char *path, const char *name, const InputAttributeDescription *attributes, size_t count);
-
+    const AssetsRecord *load_audio(const char *path, const char *name);
     const AssetsRecord *load_font(const char *atlas_path, const char *name, const char *attr_path);
+
     int has_assets(const char *name);
     AssetsRecord get_assets_record(assets_id id);
     const AssetsRecord *get_assets_record_ptr(const assets_id id);

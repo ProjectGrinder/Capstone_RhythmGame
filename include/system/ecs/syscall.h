@@ -5,15 +5,17 @@
 namespace System::ECS
 {
     template<typename T, typename... Ts>
-    struct get_index;
-
-    template<typename T, typename... Ts>
-    struct get_index<T, T, Ts...> : std::integral_constant<std::size_t, 0>
-    {};
-
-    template<typename T, typename U, typename... Ts>
-    struct get_index<T, U, Ts...> : std::integral_constant<std::size_t, 1 + get_index<T, Ts...>::value>
-    {};
+    struct get_index
+    {
+        static constexpr std::size_t value = []()
+        {
+            std::size_t count = 0;
+            std::size_t found_idx = 0;
+            bool found = false;
+            ((!found ? (std::is_same_v<T, Ts> ? (found = true, found_idx = count) : ++count) : 0), ...);
+            return found ? found_idx : (std::size_t) -1;
+        }();
+    };
 
     template<typename T, typename... Ts>
     static constexpr std::size_t type_index_v = get_index<T, Ts...>::value;
@@ -93,7 +95,7 @@ namespace System::ECS
             _to_add_components.template add<T>(id, std::forward<Component>(component));
         }
 
-        template<typename ...Components>
+        template<typename... Components>
         void add_components(pid id, Components &&...components)
         {
             (add_component(id, std::forward<Components>(components)), ...);

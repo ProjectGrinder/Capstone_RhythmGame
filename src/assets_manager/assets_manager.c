@@ -226,6 +226,14 @@ void free_assets(assets_id id)
     map->id = (uint32_t) -1;
 }
 
+const AssetsRecord *load_audio(const char *path, const char *name)
+{
+    AssetsInfo info = {0};
+    info.name = strdup(name);
+    info.type = AUDIO;
+    return (load_assets(path, name, info));
+}
+
 void assets_cleanup(void)
 {
     uint16_t i = 0;

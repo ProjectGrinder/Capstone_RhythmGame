@@ -1,4 +1,5 @@
 #pragma once
+#include "maths/color.h"
 #include "maths/point.h"
 #include "system/asset_manager.h"
 
@@ -19,6 +20,7 @@ namespace Game::Render
     {
         const AssetsRecord *sp = nullptr;
         Math::Point pos[4]{};
+        Math::Color color{1, 1, 1, 1};
         uint32_t layer = 0;     // Layer to render
         uint32_t order = 0;     // Order of render in layer
         float u0 = 0.0f;
