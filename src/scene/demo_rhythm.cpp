@@ -345,37 +345,21 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
         Game::Render::Transform{Math::Point{0, half_height * -2 / 3, 0}, 0, 0, 0});
 
     tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "PERFECT=0", .name = "Perfect"},
+        Game::Render::Text{.font = fn, .text = "PERFECT=0"},
         Game::Render::Material(sprite_vs, sprite_ps),
         Game::Render::Transform{Math::Point{-600, 300, 0}, 0, 0, 0});
     tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "GREAT=0", .name = "Great"},
+        Game::Render::Text{.font = fn, .text = "GREAT=0"},
         Game::Render::Material(sprite_vs, sprite_ps),
         Game::Render::Transform{Math::Point{-600, 250, 0}, 0, 0, 0});
     tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "FINE=0", .name = "Fine"},
+        Game::Render::Text{.font = fn, .text = "FINE=0"},
         Game::Render::Material(sprite_vs, sprite_ps),
         Game::Render::Transform{Math::Point{-600, 200, 0}, 0, 0, 0});
     tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "MISS=0", .name = "Miss"},
+        Game::Render::Text{.font = fn, .text = "MISS=0"},
         Game::Render::Material(sprite_vs, sprite_ps),
         Game::Render::Transform{Math::Point{-600, 150, 0}, 0, 0, 0});
-    tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "Input1=OFF", .name = "Input1"},
-        Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{400, 300, 0}, 0, 0, 0});
-    tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "Input2=OFF", .name = "Input2"},
-        Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{400, 250, 0}, 0, 0, 0});
-    tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "Input3=OFF", .name = "Input3"},
-        Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{400, 200, 0}, 0, 0, 0});
-    tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "Input4=OFF", .name = "Input4"},
-        Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{400, 150, 0}, 0, 0, 0});
 
     auto chart = create_demo_chart();
     auto field = create_field();

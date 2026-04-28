@@ -12,7 +12,6 @@ namespace Game::Rhythm
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<Battle::RhythmState> &rhythm_query,
             System::ECS::Query<KeyInput> &input_query,
-            System::ECS::Query<Render::Text> &text_query,
             System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query)
     {
         if (battle_query.begin() == battle_query.end())
@@ -44,14 +43,6 @@ namespace Game::Rhythm
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
                     battle_query.front().get<Battle::BattleState>().score += rhythm_query.front().get<Battle::RhythmState>().base_score / 2;
-                    for (auto &[id2, comp2] : text_query)
-                    {
-                        if (comp2.get<Render::Text>().name == "Perfect")
-                        {
-                            comp2.get<Render::Text>().text = "PERFECT=" + std::to_string(battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count);
-                            break;
-                        }
-                    }
                     comp.get<NoteStatus>().state = -1;
                     comp.get<Material>().visible = false;
                 }

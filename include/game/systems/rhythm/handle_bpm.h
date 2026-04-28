@@ -41,10 +41,10 @@ namespace Game::Rhythm
 
         if (clock >= bpm_list.at(idx).timing)
         {
-            LOG_INFO("Title: %s", level_data.title.c_str());
-            LOG_INFO("Artist: %s", level_data.artist_name.c_str());
-            LOG_INFO("Genre: %s", level_data.genre_name.c_str());
-            LOG_INFO("BPM: %d", static_cast<int>(bpm_list.at(idx).bpm));
+            // LOG_INFO("Title: %s", level_data.title.c_str());
+            // LOG_INFO("Artist: %s", level_data.artist_name.c_str());
+            // LOG_INFO("Genre: %s", level_data.genre_name.c_str());
+            // LOG_INFO("BPM: %d", static_cast<int>(bpm_list.at(idx).bpm));
             rhythm_query.front().get<Battle::RhythmState>().current_speed =
                 rhythm_query.front().get<Battle::RhythmState>().base_speed * (bpm_list.at(idx).bpm / level_data.main_bpm);
             if (bpm_list.at(idx).bpm != level_data.main_bpm || idx == 0)

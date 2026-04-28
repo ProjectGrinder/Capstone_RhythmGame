@@ -11,8 +11,7 @@ namespace Game::Battle
             [[maybe_unused]] T &syscall,
             System::ECS::Query<BattleState> &query1,
             System::ECS::Query<BulletHell::Input> &bullet_hell_input,
-            System::ECS::Query<Rhythm::KeyInput> &rhythm_input,
-            System::ECS::Query<Render::Text> &text_query)
+            System::ECS::Query<Rhythm::KeyInput> &rhythm_input)
     {
         if (query1.begin() == query1.end())
             return;
@@ -164,53 +163,6 @@ namespace Game::Battle
         }
 
         // Debug key inputs
-        System::ECS::Query<Render::Text>::StoredTuple *text1 = nullptr;
-        System::ECS::Query<Render::Text>::StoredTuple *text2 = nullptr;
-        System::ECS::Query<Render::Text>::StoredTuple *text3 = nullptr;
-        System::ECS::Query<Render::Text>::StoredTuple *text4 = nullptr;
-        for (auto &[id, comp]: text_query)
-        {
-            if (comp.get<Render::Text>().name == "Input1")
-            {
-                text1 = &comp;
-            }
-            if (comp.get<Render::Text>().name == "Input2")
-            {
-                text2 = &comp;
-            }
-            if (comp.get<Render::Text>().name == "Input3")
-            {
-                text3 = &comp;
-            }
-            if (comp.get<Render::Text>().name == "Input4")
-            {
-                text4 = &comp;
-            }
-        }
-        if (rhythm_input.front().get<Rhythm::KeyInput>().key1_hold == true)
-            if (text1 != nullptr)
-                text1->get<Render::Text>().text = "Input1=ON";
-        if (rhythm_input.front().get<Rhythm::KeyInput>().key1_hold == false)
-            if (text1 != nullptr)
-                text1->get<Render::Text>().text = "Input1=OFF";
-        if (rhythm_input.front().get<Rhythm::KeyInput>().key2_hold == true)
-            if (text2 != nullptr)
-                text2->get<Render::Text>().text = "Input2=ON";
-        if (rhythm_input.front().get<Rhythm::KeyInput>().key2_hold == false)
-            if (text2 != nullptr)
-                text2->get<Render::Text>().text = "Input2=OFF";
-        if (rhythm_input.front().get<Rhythm::KeyInput>().key3_hold == true)
-            if (text3 != nullptr)
-                text3->get<Render::Text>().text = "Input3=ON";
-        if (rhythm_input.front().get<Rhythm::KeyInput>().key3_hold == false)
-            if (text3 != nullptr)
-                text3->get<Render::Text>().text = "Input3=OFF";
-        if (rhythm_input.front().get<Rhythm::KeyInput>().key4_hold == true)
-            if (text4 != nullptr)
-                text4->get<Render::Text>().text = "Input4=ON";
-        if (rhythm_input.front().get<Rhythm::KeyInput>().key4_hold == false)
-            if (text4 != nullptr)
-                text4->get<Render::Text>().text = "Input4=OFF";
         /*
         if (bullet_hell_input.front().get<BulletHell::Input>().axis_x > 0)
         {
