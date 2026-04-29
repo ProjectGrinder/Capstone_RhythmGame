@@ -186,13 +186,15 @@ auto sp0 = load_sprite("img/rhythm/base_normal.dds", "normal", 200, 40);
 auto sp_hold = load_sprite("img/rhythm/base_hold.dds", "hold", 100, 960);
 InputAttributeDescription sprite_vs_input_attributes[] = {
     InputAttributeDescription{"POSITION", InputType::R32G32B32_FLOAT, 0},
-    InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12}};
+    InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12},
+    InputAttributeDescription{"COLOR", InputType::R32G32B32A32_FLOAT, 20}};
 
 InputAttributeDescription sprite_ps_input_attributes[] = {
     InputAttributeDescription{"SV_POSITION", InputType::R32G32B32A32_FLOAT, 0},
-    InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 16}};
-auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite_vs_input_attributes, 2);
-auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 2);
+    InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 16},
+    InputAttributeDescription{"COLOR", InputType::R32G32B32A32_FLOAT, 24}};
+auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite_vs_input_attributes, 3);
+auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 auto fn = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
 inline Math::Point field_to_point(const int lane, const Game::Rhythm::NoteField &field)
