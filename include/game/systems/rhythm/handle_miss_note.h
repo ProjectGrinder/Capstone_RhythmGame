@@ -13,7 +13,8 @@ namespace Game::Rhythm
             System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Material, Sprite> &note_query,
             System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
             System::ECS::Query<Battle::BattleState> &battle_query,
-            System::ECS::Query<Battle::RhythmState> &rhythm_query)
+            System::ECS::Query<Battle::RhythmState> &rhythm_query,
+            System::ECS::Query<JudgeText> &judge_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -86,6 +87,8 @@ namespace Game::Rhythm
                 }
                 comp.get<NoteStatus>().state = -1;
                 comp.get<Material>().visible = false;
+                judge_query.front().get<JudgeText>().judge = JudgeText::MISS;
+                judge_query.front().get<JudgeText>().change = true;
             }
             else if (comp.get<NoteType>().type == -1 && current_timing - note_time >= 0) // for hold end notes (stop rendering when time diff is 0)
             {

@@ -18,6 +18,7 @@ namespace Scene
             Game::Battle::LevelData, // structure required to satisfy HandleBPM
             Game::BulletHell::Input, // structure required to satisfy InputSystem
             Game::Rhythm::KeyInput,
+            Game::Rhythm::JudgeText,
             Game::Rhythm::Lane,
             Game::Rhythm::Timing,
             Game::Rhythm::HoldStart,
@@ -41,6 +42,7 @@ namespace Scene
             Game::Rhythm::set_holding_time<Syscall>,
             Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
+            Game::Rhythm::update_judge_text<Syscall>,
             Game::Rhythm::update_notes<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::draw_sprite<Syscall>,

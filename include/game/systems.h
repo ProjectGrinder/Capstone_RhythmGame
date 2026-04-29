@@ -29,6 +29,7 @@
 #include "game/systems/rhythm/handle_rain_note.h"
 #include "game/systems/rhythm/handle_tap_note.h"
 #include "game/systems/rhythm/set_holding_time.h"
+#include "game/systems/rhythm/update_judge_text.h"
 #include "game/systems/rhythm/update_notes.h"
 // General Battle Part
 #include "game/systems/phase_change.h"

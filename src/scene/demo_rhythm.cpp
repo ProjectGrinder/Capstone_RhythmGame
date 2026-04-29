@@ -345,10 +345,23 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
 
     tm->create_entity<Game::Rhythm::NoteField>(create_field());
 
-    tm->create_entity(
+    tm->create_entity<Game::Render::Sprite,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
         Game::Render::Sprite{.sp = sp_normal, .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}}},
         Game::Render::Material(sprite_vs, sprite_ps),
         Game::Render::Transform{Math::Point{0, half_height * -2 / 3, 0}, 0, 0, 0});
+
+    tm->create_entity<Game::Rhythm::JudgeText,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Rhythm::JudgeText(),
+        Game::Render::Text{.font = fn, .text = "", .layer = 5},
+        Game::Render::Material(sprite_vs, sprite_ps),
+        Game::Render::Transform{Math::Point{0, half_height * 3 / 4, 0}, 0, 0, 0});
 
     auto chart = create_demo_chart();
     auto field = create_field();

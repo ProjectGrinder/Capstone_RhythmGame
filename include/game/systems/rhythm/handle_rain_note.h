@@ -12,7 +12,8 @@ namespace Game::Rhythm
             System::ECS::Query<Battle::BattleState> &battle_query,
             System::ECS::Query<Battle::RhythmState> &rhythm_query,
             System::ECS::Query<KeyInput> &input_query,
-            System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query)
+            System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
+            System::ECS::Query<JudgeText> &judge_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -43,6 +44,8 @@ namespace Game::Rhythm
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
                     battle_query.front().get<Battle::BattleState>().score += rhythm_query.front().get<Battle::RhythmState>().base_score / 2;
+                    judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
+                    judge_query.front().get<JudgeText>().change = true;
                     comp.get<NoteStatus>().state = -1;
                     comp.get<Material>().visible = false;
                 }
