@@ -6,7 +6,7 @@ namespace Game::Physics
     template<typename T>
     void shaking_system(
             [[maybe_unused]] T &syscall,
-            System::ECS::Query<Shaker, Position, Rotation> &query,
+            System::ECS::Query<Shaker, Render::Transform, Rotation> &query,
             System::ECS::Query<Battle::BattleState> &query2)
     {
         if (query2.begin() == query2.end())
@@ -15,7 +15,7 @@ namespace Game::Physics
         for (auto &[id, comps]: query)
         {
             auto &shaker_c = comps.get<Shaker>();
-            auto &pos = comps.get<Position>();
+            auto &pos = comps.get<Render::Transform>().position;
             const auto &rot = comps.get<Rotation>();
 
             if (shaker_c.delay > 0)

@@ -41,7 +41,7 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
     auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 
     auto sp = load_sprite("img/somebodyIusedToKnow.dds", "somebody", 512, 512);
-    auto audio = load_audio("audio/chroma.flac", "audio");
+    load_audio("audio/chroma.flac", "audio");
     /*
     for (float i = 0; i < 100; ++i)
     {
@@ -52,13 +52,6 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
                 Game::Render::Transform{Math::Point{{i * 0.1f, i * 0.1f, 0}, {0, 0, 0, 0}}, 0, 0, 0});
     }
     */
-
-    tm->create_entity(Game::Audio::Audio{
-            .audio = audio,
-            .volume = 1,
-            .is_loop = true,
-    });
-
     tm->create_entity(
             Game::Physics::Rotation{0, 0, 0.002f},
             Game::Render::Sprite{
@@ -74,7 +67,7 @@ std::shared_ptr<Scene::DemoRender::TaskManager> Scene::DemoRender::init()
     tm->create_entity(
             Game::Physics::Rotation{0, 0, 0.002f},
             Game::Render::Sprite{
-                    .sp = sp2, .pos = {{-256, 256, 0}, {256, 256, 0}, {256, -256, 0}, {-256, -256, 0}}, .layer = 1},
+                    .sp = sp2, .pos = {{-128, 256, 0}, {128, 256, 0}, {128, -256, 0}, {-128, -256, 0}}, .layer = 1},
             Game::Render::Material(sprite_vs, sprite_ps),
             Game::Render::Transform{Math::Point{300, 0, 0}, 0, 0, 0});
 

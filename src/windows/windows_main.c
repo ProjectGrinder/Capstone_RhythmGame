@@ -212,6 +212,23 @@ int real_main()
         goto exit;
     }
 
+    // const AssetsRecord *test_sound = load_audio("audio/test.wav", "test_sound");
+    // AudioCache *out = NULL;
+    // load_audio_if_not_exist((AssetsRecord *) test_sound, &out);
+    //
+    // if (out != NULL && system_info.audio != NULL)
+    // {
+    //     AudioAPI *api = (AudioAPI *) system_info.audio;
+    //
+    //     api->mixer.sounds[0].pcm_data = out->pcm_data;
+    //     api->mixer.sounds[0].total_frames = out->frame_count;
+    //     api->mixer.sounds[0].current_frame = 0;
+    //     api->mixer.sounds[0].volume = 1.0f;
+    //     api->mixer.sounds[0].active = 1;
+    //
+    //     LOG_INFO("Pushed test.wav to Mixer Slot 0!");
+    // }
+
     LARGE_INTEGER start, end;
     long double input, scene;
 
@@ -240,12 +257,11 @@ int real_main()
         QueryPerformanceCounter(&end);
         system_info.delta_time = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
                                  (long double) system_info.perf_frequency.QuadPart;
-
-        LOG_INFO(
-                "Game Thread: %d us [ Input: %d us, Scene: %d us ]",
-                (int) (system_info.delta_time * 1000.0L),
-                (int) (input * 1000.0L),
-                (int) ((scene - input) * 1000.0L));
+        // LOG_INFO(
+        // "Game Thread: %d us [ Input: %d us, Scene: %d us ]",
+        // (int) (system_info.delta_time * 1000.0L),
+        // (int) (input * 1000.0L),
+        // (int) ((scene - input) * 1000.0L));
 
 
         sleep(max(system_info.precision - (LONGLONG) system_info.delta_time, 0));

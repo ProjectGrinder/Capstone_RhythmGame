@@ -21,7 +21,7 @@ namespace Game::Render
             const auto glyphs_count = font->info.info.as_font.count;
 
             // in local space, the "pen" starts at (0,0,0).
-            auto pen = Position(0,0,0);
+            auto pen = Math::Point(0,0,0);
 
             for (char c : text)
             {
