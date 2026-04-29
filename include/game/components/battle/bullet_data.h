@@ -3,7 +3,6 @@
 
 #include "../audio/audio.h"
 #include "game/components/physics/base_collider.h"
-#include "game/components/render/animation.h"
 
 namespace Game::Battle
 {
@@ -13,6 +12,28 @@ namespace Game::Battle
     {
         Bullet, Booming, Laser
     };
+    // enum class BulletAttribute {
+    //     None       = 0,
+    //     Homing     = 1 << 0,
+    //     Bounce     = 1 << 1,
+    //     Spin       = 1 << 2
+    // };
+    // inline BulletAttribute operator|(BulletAttribute a, BulletAttribute b) {
+    //     return static_cast<BulletAttribute>(
+    //         static_cast<int>(a) | static_cast<int>(b)
+    //     );
+    // }
+    //
+    // inline BulletAttribute operator&(BulletAttribute a, BulletAttribute b) {
+    //     return static_cast<BulletAttribute>(
+    //         static_cast<int>(a) & static_cast<int>(b)
+    //     );
+    // }
+    //
+    // inline bool hasAttribute(const BulletAttribute flags, const BulletAttribute flag) {
+    //     return (flags & flag) != BulletAttribute::None;
+    // }
+
     struct SpecialBulletData
     {
         BulletType type;
@@ -95,7 +116,7 @@ namespace Game::Battle
                 const SpecialBulletData &special_bullet_data = {},
                 const float damage_mul = 1,
                 const int pierce = 1,
-                const int lifetime = 10000) :
+                const int lifetime = 5000) :
             collider_data(collider_data),
             graphic_data(graphic_data),
             special_bullet_data(special_bullet_data),

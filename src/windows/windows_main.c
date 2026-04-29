@@ -258,15 +258,10 @@ int real_main()
         system_info.delta_time = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
                                  (long double) system_info.perf_frequency.QuadPart;
         // LOG_INFO(
-        //         "Process Time: %d us [ Input Process: %d us, Scene Update: %d us, Compositor: %d us, Converter: %d us, "
-        //         "Renderer: %d us, GPU Render: %d us]",
-        //         (int) (system_info.delta_time * 1000.0L),
-        //         (int) (input * 1000.0L),
-        //         (int) ((scene - input) * 1000.0L),
-        //         (int) ((compositor - scene) * 1000.0L),
-        //         (int) ((convert - compositor) * 1000.0L),
-        //         (int) ((render - convert) * 1000.0L),
-        //         (int) ((system_info.delta_time - render) * 1000));
+        // "Game Thread: %d us [ Input: %d us, Scene: %d us ]",
+        // (int) (system_info.delta_time * 1000.0L),
+        // (int) (input * 1000.0L),
+        // (int) ((scene - input) * 1000.0L));
 
 
         sleep(max(system_info.precision - (LONGLONG) system_info.delta_time, 0));

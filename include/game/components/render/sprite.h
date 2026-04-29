@@ -20,7 +20,7 @@ namespace Game::Render
     {
         const AssetsRecord *sp = nullptr;
         Math::Point pos[4]{};
-        Math::Color color{1, 1, 1, 1};
+        Math::Color color;
         uint32_t layer = 0;     // Layer to render
         uint32_t order = 0;     // Order of render in layer
         float u0 = 0.0f;

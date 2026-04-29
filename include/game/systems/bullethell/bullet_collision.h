@@ -57,7 +57,7 @@ namespace Game::BulletHell
 		    const auto &bullet_tra = comps.get<Render::Transform>();
             const auto &bullet_hitbox = comps.get<Physics::RectangularCollider>();
 
-		    const float bullet_angle = comps.get<Physics::Rotation>().angleZ * std::acos(0.0f)/90.0f;
+		    const float bullet_angle = (comps.get<Physics::Rotation>().angleZ-90) * std::acos(0.0f)/90.0f;
 		    const float bullet_hitbox_size_x = bullet_hitbox.size_x * bullet_tra.scaleX;
 		    const float bullet_hitbox_size_y = bullet_hitbox.size_y * bullet_tra.scaleY;
 
@@ -133,7 +133,7 @@ namespace Game::BulletHell
 	        const auto &bullet_tra = comps.get<Render::Transform>();
 	        const auto &bullet_hitbox = comps.get<Physics::CircularCollider>();
 
-	        const float bullet_angle = comps.get<Physics::Rotation>().angleZ * std::acos(0.0f)/90.0f;
+	        const float bullet_angle = (comps.get<Physics::Rotation>().angleZ-90) * std::acos(0.0f)/90.0f;
 	        const float bullet_hitbox_size_x = bullet_hitbox.radius_x * bullet_tra.scaleX;
 	        const float bullet_hitbox_size_y = bullet_hitbox.radius_y * bullet_tra.scaleY;
 	        if (!bullet.is_active)

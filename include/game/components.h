@@ -4,6 +4,7 @@
 #include "components/battle/bullet_data.h"
 #include "components/battle/pattern_container.h"
 #include "components/battle/transition_data.h"
+#include "components/battle/hpbar.h"
 
 #include "components/bullethell/booming.h"
 #include "components/bullethell/bullet.h"
@@ -25,7 +26,6 @@
 #include "components/physics/shaker.h"
 #include "components/physics/velocity.h"
 #include "components/render/animator.h"
-#include "components/render/animation.h"
 #include "components/render/animation_data.h"
 #include "components/render/camera.h"
 #include "components/render/material.h"

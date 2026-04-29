@@ -50,7 +50,7 @@ namespace Game::BulletHell
             }
             else
             {
-                if (particle.lifetime < 500)
+                if (particle.lifetime < 200)
                 {
                     const auto laser_speed = static_cast<float>(get_delta_time() * laser.length/200);
                     tra.scaleY -= laser_speed;

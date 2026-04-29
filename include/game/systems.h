@@ -40,7 +40,7 @@
 #include "systems/render/draw_triangle.h"
 #include "systems/render/set_camera.h"
 // Test
+#include "systems/test/fps_counter.h"
 #include "systems/test/spin_camera.h"
 #include "systems/test/spin_sprite.h"
-#include "systems/test/fps_counter.h"
-#include "systems/test/bullet_counter.h"
+#include "systems/test/stat_text_render.h"

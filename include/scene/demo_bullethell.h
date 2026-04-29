@@ -14,6 +14,7 @@ namespace Scene
     Game::Battle::BulletLoader create_bullet_data_boom_test();
 
     Game::Battle::BulletLoader create_bullet_data_laser_test();
+    Game::Battle::BulletLoader create_bullet_collision_test();
 
     struct DemoBulletHell
     {
@@ -32,6 +33,8 @@ namespace Scene
             Game::Battle::ChartData,
             Game::Battle::LevelData,
             Game::Battle::TransitionData,
+            Game::Battle::HpBarMax,
+            Game::Battle::HpBar,
             Game::BulletHell::Bullet,
             Game::BulletHell::BulletClearer,
             Game::BulletHell::Input,
@@ -59,7 +62,9 @@ namespace Scene
             Game::Rhythm::NoteType,
             Game::Audio::SoundRegistry,
             Game::Test::FpsCounter,
-            Game::Test::BulletCounter
+            Game::Test::BulletCounter,
+            Game::Test::GrazeText,
+            Game::Test::LifeText
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -67,7 +72,6 @@ namespace Scene
             Game::BulletHell::load_bullets<Syscall>,
             Game::Battle::input_system<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
-            Game::BulletHell::particle_system<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
             Game::BulletHell::acceleration_system<Syscall>,
             Game::BulletHell::rotation_system<Syscall>,
@@ -76,7 +80,7 @@ namespace Scene
             Game::BulletHell::player_system<Syscall>,
             Game::BulletHell::delay_system<Syscall>,
             Game::BulletHell::bullet_system<Syscall>,
-            Game::BulletHell::particle_system<Syscall>,
+            Game::BulletHell::particle_system<Syscall>, //->Main Prob (Permanant drop)
             Game::BulletHell::boomer_system<Syscall>,
             Game::BulletHell::laser_system<Syscall>,
             Game::BulletHell::bounce_pattern_system<Syscall>,
@@ -86,7 +90,7 @@ namespace Scene
             Game::Render::set_camera<Syscall>,
             Game::Render::draw_sprite<Syscall>,
             Game::Render::draw_text<Syscall>,
-            Game::Test::bullet_counter<Syscall>,
+            Game::Test::stat_text_render<Syscall>,
             Game::Test::fps_counter<Syscall>,
             Game::Render::flickering_system<Syscall>
             >;

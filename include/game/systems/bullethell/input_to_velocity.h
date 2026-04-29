@@ -22,7 +22,7 @@ namespace Game::BulletHell
         for (auto &[id, comps] : query2)
         {
             const auto &input = query1.front().get<Input>();
-            const float velocity_factor = (input.shift ? 40.f : 100.f);
+            const float velocity_factor = (input.shift ? 200.f : 500.f);
 
             float x = input.axis_x;
             float y = input.axis_y;

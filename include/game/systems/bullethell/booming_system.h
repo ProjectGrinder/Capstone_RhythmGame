@@ -55,10 +55,10 @@ namespace Game::BulletHell
             }
             else
             {
-                if (particle.lifetime < 500)
+                if (particle.lifetime < 100)
                 {
-                    scl.scaleX -= static_cast<float>(get_delta_time() * boomer.max_size / 50);
-                    scl.scaleY -= static_cast<float>(get_delta_time() * boomer.max_size/ 50);
+                    scl.scaleX -= static_cast<float>(get_delta_time() * boomer.max_size / 100);
+                    scl.scaleY -= static_cast<float>(get_delta_time() * boomer.max_size/ 100);
                 }
             }
         }
