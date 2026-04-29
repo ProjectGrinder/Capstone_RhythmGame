@@ -68,13 +68,13 @@ namespace Game::Rhythm
                             && comp2.get<HoldConnect>().timing_start == note_time)
                         {
                             end_time = comp2.get<HoldConnect>().timing_end;
-                            auto sp = load_sprite("img/rhythm/base_hold_disabled.dds", "hold_disabled", 100, 960);
+                            const auto sp = get_assets_record_ptr(get_assets_id("hold_disabled"));
                             comp2.get<Sprite>().sp = sp;
                             comp2.get<NoteStatus>().state = -1;
                             break;
                         }
                     }
-                    auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
+                    const auto sp = get_assets_record_ptr(get_assets_id("disabled"));
                     for (auto &[id2, comp2]: note_query) // find ending note for the hold
                     {
                         if (comp2.get<NoteType>().type == -1 && comp2.get<NoteStatus>().state != -1

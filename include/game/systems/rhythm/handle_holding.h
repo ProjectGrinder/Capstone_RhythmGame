@@ -44,7 +44,7 @@ namespace Game::Rhythm
             {
                 if (comp2.get<HoldConnect>().timing_start == lane->get<Lane>().hold_start_time && comp2.get<HoldConnect>().timing_end == lane->get<Lane>().hold_end_time)
                 {
-                    auto sp = load_sprite("img/rhythm/base_hold_disabled.dds", "hold_disabled", 100, 960);
+                    const auto sp = get_assets_record_ptr(get_assets_id("hold_disabled"));
                     comp2.get<Sprite>().sp = sp;
                     comp2.get<NoteStatus>().state = -1;
                 }
@@ -56,7 +56,7 @@ namespace Game::Rhythm
 
                 if (comp.get<Timing>().timing == lane->get<Lane>().hold_end_time && comp.get<Timing>().lane == lane->get<Lane>().lane_number)
                 {
-                    auto sp = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
+                    const auto sp = get_assets_record_ptr(get_assets_id("disabled"));
                     comp.get<Render::Sprite>().sp = sp;
                 }
             }

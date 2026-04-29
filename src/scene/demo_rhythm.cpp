@@ -113,8 +113,10 @@ inline Game::Battle::ChartData create_demo_chart()
     chart.lanes[3].notes.emplace_back(true, 7640, 11200, Game::Battle::RhythmType::ACCENT);
     for (int m = 0; m < 16; ++m)
     {
+        chart.lanes[0].notes.emplace_back(false, 8000 + m * 200, 0, Game::Battle::RhythmType::RAIN);
         chart.lanes[1].notes.emplace_back(false, 8000 + m * 200, 0, Game::Battle::RhythmType::NORMAL);
         chart.lanes[2].notes.emplace_back(false, 8100 + m * 200, 0, Game::Battle::RhythmType::NORMAL);
+        chart.lanes[3].notes.emplace_back(false, 8100 + m * 200, 0, Game::Battle::RhythmType::RAIN);
     }
     chart.lanes[1].notes.emplace_back(false, 11200, 0, Game::Battle::RhythmType::NORMAL);
 
@@ -141,7 +143,7 @@ inline Game::Battle::RhythmState create_rhythm_state()
 
 inline Game::Rhythm::NoteField create_field()
 {
-    constexpr float note_width = 100.0f;
+    constexpr float note_width = 150.0f;
     // position based on window size
     const float spawn_level = half_height;
     const float judge_level = half_height * -2 / 3;
@@ -180,10 +182,12 @@ inline Game::Battle::PhaseInfo create_phase_info()
     return (phase);
 }
 
-auto sp1 = load_sprite("img/rhythm/base_accent.dds", "accent", 200, 40);
-auto sp2 = load_sprite("img/rhythm/base_rain.dds", "rain", 200, 20);
-auto sp0 = load_sprite("img/rhythm/base_normal.dds", "normal", 200, 40);
+auto sp_accent = load_sprite("img/rhythm/base_accent.dds", "accent", 200, 40);
+auto sp_rain = load_sprite("img/rhythm/base_rain.dds", "rain", 200, 20);
+auto sp_normal = load_sprite("img/rhythm/base_normal.dds", "normal", 200, 40);
+auto sp_disabled = load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
 auto sp_hold = load_sprite("img/rhythm/base_hold.dds", "hold", 100, 960);
+auto sp_hold_disable = load_sprite("img/rhythm/base_hold_disabled.dds", "hold_disabled", 100, 960);
 InputAttributeDescription sprite_vs_input_attributes[] = {
     InputAttributeDescription{"POSITION", InputType::R32G32B32_FLOAT, 0},
     InputAttributeDescription{"TEXCOORD", InputType::R32G32_FLOAT, 12},
@@ -214,16 +218,16 @@ inline Game::Render::Sprite assign_sprite(const int type)
 {
     if (type == 1)
     {
-        return Game::Render::Sprite{.sp = sp1,
-            .pos = {{-50, 10, 0}, {50, 10, 0}, {50, -10, 0}, {-50, -10, 0}}};
+        return Game::Render::Sprite{.sp = sp_accent,
+            .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 1};
     }
     if (type == 2)
     {
-        return Game::Render::Sprite{.sp = sp2,
-            .pos = {{-50, 5, 0}, {50, 5, 0}, {50, -5, 0}, {-50, -5, 0}}};
+        return Game::Render::Sprite{.sp = sp_rain,
+            .pos = {{-75, 7.5, 0}, {75, 7.5, 0}, {75, -7.5, 0}, {-75, -7.5, 0}}, .layer = 2};
     }
-    return Game::Render::Sprite{.sp = sp0,
-            .pos = {{-50, 10, 0}, {50, 10, 0}, {50, -10, 0}, {-50, -10, 0}}};
+    return Game::Render::Sprite{.sp = sp_normal,
+        .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 1};
 }
 
 void Scene::DemoRhythm::load_chart(
@@ -276,7 +280,7 @@ void Scene::DemoRhythm::load_chart(
                         Game::Rhythm::HoldConnect{lane.lane_number, note.timing, note.timing_end},
                         NoteStatus{0},
                         Game::Render::Sprite{.sp = sp_hold, .pos = {{-25, 0, 0}, {25, 0, 0}, {25, 0, 0}, {-25, 0, 0}},
-                        .u0 = 0.0f, .v0 = 0.0f, .u1 = 1.0f, .v1 = 0.0f},
+                        .layer = 0, .u0 = 0.0f, .v0 = 0.0f, .u1 = 1.0f, .v1 = 0.0f},
                         Game::Render::Material(sprite_vs, sprite_ps),
                         Game::Render::Transform{pos, 0, 0, 0});
             }
@@ -311,7 +315,7 @@ Scene::DemoRhythm Scene::DemoRhythm::instance()
 std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
 {
     auto tm = std::make_shared<TaskManager>();
-    tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1280, .scaleY = 720, .rotation = 0});
+    tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
 
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::RhythmState,
@@ -342,26 +346,9 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
     tm->create_entity<Game::Rhythm::NoteField>(create_field());
 
     tm->create_entity(
-        Game::Render::Sprite{.sp = sp0, .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}}},
+        Game::Render::Sprite{.sp = sp_normal, .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}}},
         Game::Render::Material(sprite_vs, sprite_ps),
         Game::Render::Transform{Math::Point{0, half_height * -2 / 3, 0}, 0, 0, 0});
-
-    tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "PERFECT=0"},
-        Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{-600, 300, 0}, 0, 0, 0});
-    tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "GREAT=0"},
-        Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{-600, 250, 0}, 0, 0, 0});
-    tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "FINE=0"},
-        Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{-600, 200, 0}, 0, 0, 0});
-    tm->create_entity(
-        Game::Render::Text{.font = fn, .text = "MISS=0"},
-        Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{-600, 150, 0}, 0, 0, 0});
 
     auto chart = create_demo_chart();
     auto field = create_field();
