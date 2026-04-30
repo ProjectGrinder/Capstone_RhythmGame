@@ -31,7 +31,8 @@ namespace Scene
             Game::Render::Sprite,
             Game::Render::Material,
             Game::Render::Text,
-            Game::Render::Transform
+            Game::Render::Transform,
+            Game::Audio::SoundRegistry
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;

@@ -104,16 +104,15 @@ namespace Scene
             Game::Physics::CircularCollider,
             Game::Physics::RectangularCollider,
             Game::Physics::AngularVelocity,
-            Game::Physics::Position,
             Game::Physics::Rotation,
             Game::Physics::Velocity,
-            Game::Physics::Scale,
             Game::Render::Transform,
             Game::Render::Triangle,
             Game::Render::Sprite,
             Game::Render::Material,
             Game::Render::Text,
             Game::Render::Camera2D,
+            Game::Render::Flicker,
             Game::Rhythm::NoteType,
             Game::Rhythm::Lane,
             Game::Rhythm::Timing,
@@ -123,7 +122,8 @@ namespace Scene
             Game::Rhythm::NoteField,
             Game::Rhythm::KeyInput,
             Game::Rhythm::NoteStatus,
-            Game::Rhythm::HoldConnect
+            Game::Rhythm::HoldConnect,
+            Game::Audio::SoundRegistry
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -155,7 +155,8 @@ namespace Scene
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::update_judge_text<Syscall>,
             Game::Rhythm::update_combo<Syscall>,
-            Game::Rhythm::update_notes<Syscall>
+            Game::Rhythm::update_notes<Syscall>,
+            Game::Render::flickering_system<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init()
@@ -191,12 +192,12 @@ namespace Scene
                 );
 
             tm->create_entity<Game::BulletHell::Player,
-            Position, Rotation,
-            Game::Physics::Scale,
+            Game::Render::Transform,
+            Rotation,
             Velocity,
             Acceleration,
             AngularVelocity, Game::Physics::CircularCollider>(
-                {}, Position(50,50), {}, {}, {}, {}, {}, {}
+                {}, Game::Render::Transform(50,50), {}, {}, {}, {}, {}
             );
 
             tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));

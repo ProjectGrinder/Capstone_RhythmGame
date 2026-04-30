@@ -24,15 +24,19 @@ namespace Game::Render
             intent.common.sp = sprite.sp;
             intent.common.info.sp_id = ASSET_INDEX(sprite.sp->id);
 
+            const bool flipX = sprite.flipX ^ (tra.scaleX < 0);
+            const bool flipY = sprite.flipY ^ (tra.scaleY<0);
+            const Math::Point scale_point(Math::Point(tra.scaleX, tra.scaleY,1));
+
             intent.special.sprite = System::Render::SpriteDrawDesc{
-                    .points = {sprite.pos[0], sprite.pos[1], sprite.pos[2], sprite.pos[3]},
+                    .points = {sprite.pos[0] * scale_point, sprite.pos[1] * scale_point, sprite.pos[2] * scale_point, sprite.pos[3] * scale_point},
                     .color = sprite.color,
                     .u0 = sprite.u0,
                     .v0 = sprite.v0,
                     .u1 = sprite.u1,
                     .v1 = sprite.v1,
-                    .flipX = sprite.flipX,
-                    .flipY = sprite.flipY};
+                    .flipX = flipX,
+                    .flipY = flipY};
         }
     }
 } // namespace Game::Render

@@ -144,7 +144,7 @@ namespace Game::Battle
         int graze;
         int iframe_time;
         int damage;
-        BulletHellState(): graze(0), iframe_time(3000), damage(1)
+        BulletHellState(const int damage = 1): graze(0), iframe_time(0), damage(damage)
         {}
     };
 

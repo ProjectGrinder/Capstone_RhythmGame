@@ -14,16 +14,4 @@
 #include "scene/demo_render.h"
 #include "scene/demo_rhythm.h"
 
-// define configuration items
-namespace Scene::Config
-{
-    // starting scene
-    using StartingScene = DemoRhythm;
-
-    using SceneTuple = std::tuple<Demo, DemoRender, DemoRhythm, BattleScene, DemoGame>;
-    using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;
-    using TaskManagerVariant = Utils::make_task_manager_variant_t<SceneTuple>;
-
-} // namespace Scene::Config
-
 #include "scene/scene_manager.h"

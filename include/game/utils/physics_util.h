@@ -1,8 +1,7 @@
 #pragma once
 #include <cmath>
 #include <random>
-
-#include "game/components/physics/position.h"
+#include "maths/point.h"
 
 
 // TODO : Please find a better place for this
@@ -35,7 +34,7 @@ namespace Game::Physics
         return (atan2(y2 - y1, x2 - x1));
     }
 
-    inline float get_direction(const Position p1, const Position p2)
+    inline float get_direction(const Math::Point p1, const Math::Point p2)
     {
         return (atan2(p2.y - p1.y, p2.x - p1.x));
     }
@@ -46,7 +45,7 @@ namespace Game::Physics
         return (static_cast<float>(pow(pow(x2 - x1, 2) + pow(y2 - y1, 2), 0.5)));
     }
 
-    inline float get_distance(const Position p1, const Position p2)
+    inline float get_distance(const Math::Point p1, const Math::Point p2)
     {
         return (static_cast<float>(pow(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2), 0.5)));
     }

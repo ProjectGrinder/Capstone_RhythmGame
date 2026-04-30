@@ -38,14 +38,14 @@
 // Rendering Part
 #include "game/systems/animation_system.h"
 #include "systems/bullethell/shaking_system.h"
+#include "systems/render/flickering_system.h"
 // Render Intent
 #include "systems/render/draw_sprite.h"
 #include "systems/render/draw_text.h"
 #include "systems/render/draw_triangle.h"
 #include "systems/render/set_camera.h"
 // Test
+#include "systems/test/fps_counter.h"
 #include "systems/test/spin_camera.h"
 #include "systems/test/spin_sprite.h"
-#include "systems/test/fps_counter.h"
-
-#include "systems/audio/play_audio.h"
+#include "systems/test/stat_text_render.h"

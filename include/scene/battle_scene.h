@@ -1,7 +1,6 @@
 #pragma once
 
 #include "game.h"
-#include "system.h"
 
 namespace Scene
 {
@@ -56,7 +55,9 @@ namespace Scene
             Game::Render::Sprite,
             Game::Render::Material,
             Game::Render::Text,
-            Game::Render::Camera2D
+            Game::Render::Camera2D,
+            Game::Render::Flicker,
+            Game::Audio::SoundRegistry
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -86,7 +87,8 @@ namespace Scene
             Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::update_judge_text<Syscall>,
             Game::Rhythm::update_combo<Syscall>,
-            Game::Rhythm::update_notes<Syscall>
+            Game::Rhythm::update_notes<Syscall>,
+            Game::Render::flickering_system<Syscall>
             //Game::Render::AnimationSystem<Syscall>
             >;
 

@@ -6,7 +6,7 @@
 namespace Game::BulletHell
 {
     template <typename T>
-        void bounce_pattern_system([[maybe_unused]] T &syscall, System::ECS::Query<Bounce, Physics::Position, Physics::Rotation>& query, System::ECS::Query<Battle::BattleState> &query2)
+        void bounce_pattern_system([[maybe_unused]] T &syscall, System::ECS::Query<Bounce, Render::Transform, Physics::Rotation>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         // TODO: Replace with real bound
         constexpr float stage_bound_x_min = 0;
@@ -24,7 +24,7 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query)
         {
-            const auto &pos = comps.get<Physics::Position>();
+            const auto &pos = comps.get<Render::Transform>().position;
             auto &rot = comps.get<Physics::Rotation>();
             const auto &bounce_c = comps.get<Bounce>();
 
@@ -38,8 +38,8 @@ namespace Game::BulletHell
 
     template <typename T>
     void homing_pattern_system([[maybe_unused]] T &syscall,
-        System::ECS::Query<Homing, Physics::Position, Physics::Rotation>& query,
-        System::ECS::Query<Player, Physics::Position> & query2,
+        System::ECS::Query<Homing, Render::Transform, Physics::Rotation>& query,
+        System::ECS::Query<Player, Render::Transform> & query2,
         System::ECS::Query<Battle::BattleState> &query3)
     {
         if (query2.begin() == query2.end())
@@ -53,10 +53,10 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query)
         {
-            const auto &pos = comps.get<Physics::Position>();
+            const auto &pos = comps.get<Render::Transform>().position;
             auto &rot = comps.get<Physics::Rotation>();
             const auto &homing_c = comps.get<Homing>();
-            const Physics::Position target_pos = query2.front().get<Physics::Position>();
+            const Math::Point target_pos = query2.front().get<Render::Transform>().position;
 
             float target_angle = Physics::get_direction(pos,target_pos);
             if (abs(target_angle - rot.angleZ) < homing_c.strength)
