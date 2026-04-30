@@ -169,6 +169,9 @@ inline Game::Battle::BpmInfo create_bpm_info()
     info.bpm = 134.00f;
     info.timing = 0;
     bpm.bpm_list.emplace_back(info);
+    // info.bpm = 67.00f; // bro bpm becomes 67!!!
+    // info.timing = 6000;
+    // bpm.bpm_list.emplace_back(info);
     return (bpm);
 }
 
