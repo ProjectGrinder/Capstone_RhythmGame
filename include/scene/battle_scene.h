@@ -43,6 +43,7 @@ namespace Scene
             Game::Physics::Scale,
             Game::Rhythm::KeyInput,
             Game::Rhythm::JudgeText,
+            Game::Rhythm::Combo,
             Game::Rhythm::Lane,
             Game::Rhythm::Timing,
             Game::Rhythm::HoldStart,
@@ -84,6 +85,7 @@ namespace Scene
             Game::Rhythm::set_holding_time<Syscall>,
             Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::update_judge_text<Syscall>,
+            Game::Rhythm::update_combo<Syscall>,
             Game::Rhythm::update_notes<Syscall>
             //Game::Render::AnimationSystem<Syscall>
             >;

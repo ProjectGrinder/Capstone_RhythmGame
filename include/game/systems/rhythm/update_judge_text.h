@@ -11,10 +11,10 @@ namespace Game::Rhythm
         [[maybe_unused]] T &syscall,
         System::ECS::Query<JudgeText, Render::Text> &query)
     {
+        if (query.begin() == query.end())
+            return;
+
         auto comp = query.front();
-        std::string text;
-
-
 
         if (!comp.get<JudgeText>().change)
         {
@@ -32,27 +32,29 @@ namespace Game::Rhythm
         switch (comp.get<JudgeText>().judge)
         {
         case JudgeText::PERFECT :
-            text = "PERFECT";
+            comp.get<Render::Text>().text = "PERFECT";
+            comp.get<Render::Text>().color = {1, 1, 0, 1};
             break;
 
         case JudgeText::GREAT :
-            text = "GREAT";
+            comp.get<Render::Text>().text = "GREAT";
+            comp.get<Render::Text>().color = {0, 1, 0.5, 1};
             break;
 
         case JudgeText::FINE :
-            text = "FINE";
+            comp.get<Render::Text>().text = "FINE";
+            comp.get<Render::Text>().color = {0.5, 1, 1, 1};
             break;
 
         case JudgeText::MISS :
-            text = "MISS";
+            comp.get<Render::Text>().text = "MISS";
+            comp.get<Render::Text>().color = {1, 0, 0, 1};
             break;
 
         default:
-            text = "";
+            comp.get<Render::Text>().text = "";
             break;
         }
-
-        comp.get<Render::Text>().text = text;
         comp.get<JudgeText>().timer = 1000000;
         comp.get<JudgeText>().change = false;
     }
