@@ -2,10 +2,6 @@
 
 namespace Game::Rhythm
 {
-    struct Combo
-    {
-        int combo;
-        explicit Combo(const int combo) : combo(combo)
-        {}
-    };
+    struct Combo //attached to combo text
+    {};
 }

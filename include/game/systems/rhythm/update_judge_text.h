@@ -9,8 +9,15 @@ namespace Game::Rhythm
     template<typename T>
     void update_judge_text(
         [[maybe_unused]] T &syscall,
+        System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<JudgeText, Render::Text> &query)
     {
+        if (battle_query.begin() == battle_query.end())
+            return;
+
+        if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
+            return;
+
         if (query.begin() == query.end())
             return;
 

@@ -368,7 +368,7 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
     Game::Render::Material,
     Game::Render::Transform>
     (
-        Game::Rhythm::Combo(0),
+        Game::Rhythm::Combo(),
         Game::Render::Text{.font = fn, .text = "", .layer = 5},
         Game::Render::Material(sprite_vs, sprite_ps),
         Game::Render::Transform{Math::Point{0, half_height * 3 / 4, 0}, 0, 0, 0});

@@ -13,8 +13,7 @@ namespace Game::Rhythm
         System::ECS::Query<Lane>::StoredTuple *lane,
         System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<Battle::RhythmState> &rhythm_query,
-        System::ECS::Query<JudgeText> &judge_query,
-        System::ECS::Query<Combo> &combo_query)
+        System::ECS::Query<JudgeText> &judge_query)
     {
         constexpr auto perfect_judge = 50;
         constexpr auto great_judge = 75;
@@ -28,7 +27,7 @@ namespace Game::Rhythm
             battle_query.front().get<Battle::BattleState>().score += base_score;
             judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
             judge_query.front().get<JudgeText>().change = true;
-            combo_query.front().get<Combo>().combo += 1;
+            battle_query.front().get<Battle::BattleState>().combo += 1;
         }
         else if (time_diff > -1 * great_judge && time_diff < great_judge)
         {
@@ -36,7 +35,7 @@ namespace Game::Rhythm
             battle_query.front().get<Battle::BattleState>().score += base_score / 2;
             judge_query.front().get<JudgeText>().judge = JudgeText::GREAT;
             judge_query.front().get<JudgeText>().change = true;
-            combo_query.front().get<Combo>().combo += 1;
+            battle_query.front().get<Battle::BattleState>().combo += 1;
         }
         else if (time_diff > -1 * fine_judge && time_diff < fine_judge)
         {
@@ -44,7 +43,7 @@ namespace Game::Rhythm
             battle_query.front().get<Battle::BattleState>().score += base_score / 4;
             judge_query.front().get<JudgeText>().judge = JudgeText::FINE;
             judge_query.front().get<JudgeText>().change = true;
-            combo_query.front().get<Combo>().combo += 1;
+            battle_query.front().get<Battle::BattleState>().combo += 1;
         }
         else return;
 
@@ -63,8 +62,7 @@ namespace Game::Rhythm
         System::ECS::Query<Lane>::StoredTuple *lane,
         System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<Battle::RhythmState> &rhythm_query,
-        System::ECS::Query<JudgeText> &judge_query,
-        System::ECS::Query<Combo> &combo_query)
+        System::ECS::Query<JudgeText> &judge_query)
     {
         auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
 
@@ -76,7 +74,7 @@ namespace Game::Rhythm
             battle_query.front().get<Battle::BattleState>().score += base_score;
             judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
             judge_query.front().get<JudgeText>().change = true;
-            combo_query.front().get<Combo>().combo += 1;
+            battle_query.front().get<Battle::BattleState>().combo += 1;
         }
         else return;
 
@@ -96,8 +94,7 @@ namespace Game::Rhythm
         [[maybe_unused]] System::ECS::Query<KeyInput> &input_query,
         System::ECS::Query<Lane> &lane_query,
         [[maybe_unused]] System::ECS::Query<Battle::RhythmState> &rhythm_query,
-        System::ECS::Query<JudgeText> &judge_query,
-        System::ECS::Query<Combo> &combo_query)
+        System::ECS::Query<JudgeText> &judge_query)
     {
         if (comp == nullptr) return;
 
@@ -119,11 +116,11 @@ namespace Game::Rhythm
                 }
                 if (note_type == 1)
                 {
-                    handle_accent_note(time_diff, comp, lane, battle_query, rhythm_query, judge_query, combo_query);
+                    handle_accent_note(time_diff, comp, lane, battle_query, rhythm_query, judge_query);
                 }
                 else if (note_type == 0)
                 {
-                    handle_normal_note(time_diff, comp, lane, battle_query, rhythm_query, judge_query, combo_query);
+                    handle_normal_note(time_diff, comp, lane, battle_query, rhythm_query, judge_query);
                 }
                 break;
             }
@@ -138,8 +135,7 @@ namespace Game::Rhythm
             System::ECS::Query<KeyInput> &input_query,
             [[maybe_unused]] System::ECS::Query<Lane> &lane_query,
             [[maybe_unused]] System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
-            System::ECS::Query<JudgeText> &judge_query,
-            System::ECS::Query<Combo> &combo_query)
+            System::ECS::Query<JudgeText> &judge_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -210,19 +206,19 @@ namespace Game::Rhythm
         // Check if note is in hit range
         if (key_input.key1_pressed == true && note_comp1 != nullptr)
         {
-            handle_note_from_lane(0, note_comp1, battle_query, input_query, lane_query, rhythm_query, judge_query, combo_query);
+            handle_note_from_lane(0, note_comp1, battle_query, input_query, lane_query, rhythm_query, judge_query);
         }
         if (key_input.key2_pressed == true && note_comp2 != nullptr)
         {
-            handle_note_from_lane(1, note_comp2, battle_query, input_query, lane_query, rhythm_query, judge_query, combo_query);
+            handle_note_from_lane(1, note_comp2, battle_query, input_query, lane_query, rhythm_query, judge_query);
         }
         if (key_input.key3_pressed == true && note_comp3 != nullptr)
         {
-            handle_note_from_lane(2, note_comp3, battle_query, input_query, lane_query, rhythm_query, judge_query, combo_query);
+            handle_note_from_lane(2, note_comp3, battle_query, input_query, lane_query, rhythm_query, judge_query);
         }
         if (key_input.key4_pressed == true && note_comp4 != nullptr)
         {
-            handle_note_from_lane(3, note_comp4, battle_query, input_query, lane_query, rhythm_query, judge_query, combo_query);
+            handle_note_from_lane(3, note_comp4, battle_query, input_query, lane_query, rhythm_query, judge_query);
         }
     }
 } // namespace Game::Rhythm
