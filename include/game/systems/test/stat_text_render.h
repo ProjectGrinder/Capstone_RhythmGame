@@ -18,7 +18,7 @@ namespace Game::Test
         System::ECS::Query<Render::Text, BulletCounter> &query,
         System::ECS::Query<Render::Text, LifeText> &query2,
         System::ECS::Query<Render::Text, GrazeText> &query3,
-        System::ECS::Query<Battle::HpBar, Render::Sprite> &hpBar,
+        System::ECS::Query<Battle::UIComponent, Render::Sprite> &ui_query,
         System::ECS::Query<BulletHell::Bullet> &bullet_query,
         System::ECS::Query<Battle::BattleState, Battle::BulletHellState> &state_query)
     {
@@ -34,9 +34,15 @@ namespace Game::Test
 
         const float hp_remain_dest_x = -50.f + 100.f * static_cast<float>(hp)/static_cast<float>(max_hp);
 
-        hpBar.front().get<Render::Sprite>().pos[1] = {hp_remain_dest_x,10,0};
+        for (auto &[id, comps] : ui_query)
+        {
+            if (comps.get<Battle::UIComponent>().type == Battle::HpBar)
+            {
+                comps.get<Render::Sprite>().pos[1] = {hp_remain_dest_x,10,0};
 
-        hpBar.front().get<Render::Sprite>().pos[2] = {hp_remain_dest_x,-10,0};
+                comps.get<Render::Sprite>().pos[2] = {hp_remain_dest_x,-10,0};
+            }
+        }
 
         query3.front().get<Render::Text>().text = "Graze : " + std::to_string(state_query.front().get<Battle::BulletHellState>().graze);
 
