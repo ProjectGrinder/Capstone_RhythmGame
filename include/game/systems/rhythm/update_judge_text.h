@@ -40,29 +40,29 @@ namespace Game::Rhythm
         {
         case JudgeText::PERFECT :
             comp.get<Render::Text>().text = "PERFECT";
-            comp.get<Render::Text>().color = {1, 1, 0, 1};
+            comp.get<Render::Text>().color = {1, 1, 0, 1}; //yellow
             break;
 
         case JudgeText::GREAT :
             comp.get<Render::Text>().text = "GREAT";
-            comp.get<Render::Text>().color = {0, 1, 0.5, 1};
+            comp.get<Render::Text>().color = {0, 1, 0.5, 1}; //green
             break;
 
         case JudgeText::FINE :
             comp.get<Render::Text>().text = "FINE";
-            comp.get<Render::Text>().color = {0.5, 1, 1, 1};
+            comp.get<Render::Text>().color = {0.5, 1, 1, 1}; //light-blue
             break;
 
         case JudgeText::MISS :
             comp.get<Render::Text>().text = "MISS";
-            comp.get<Render::Text>().color = {1, 0, 0, 1};
+            comp.get<Render::Text>().color = {1, 0, 0, 1}; //red
             break;
 
         default:
             comp.get<Render::Text>().text = "";
             break;
         }
-        comp.get<JudgeText>().timer = 1000000;
+        comp.get<JudgeText>().timer = 1000000; //1-second timer
         comp.get<JudgeText>().change = false;
     }
 }

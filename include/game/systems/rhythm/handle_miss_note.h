@@ -26,6 +26,7 @@ namespace Game::Rhythm
 
         const auto &current_timing = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
         const auto &accept_loss = rhythm_query.front().get<Battle::RhythmState>().accept_loss;
+        constexpr auto miss_range = 100;
 
         for (auto &[id, comp]: note_query)
         {
@@ -35,7 +36,7 @@ namespace Game::Rhythm
             auto &note_time = comp.get<Timing>().timing;
             auto &type = comp.get<NoteType>().type;
 
-            if (current_timing - note_time >= 100 && type != -1)
+            if (current_timing - note_time >= miss_range && type != -1)
             {
                 if (comp.get<HoldStart>().is_hold == false) // tap note miss
                 {
