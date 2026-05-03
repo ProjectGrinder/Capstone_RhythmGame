@@ -4,77 +4,12 @@
 
 namespace Scene
 {
+    Game::Render::Sprite assign_sprite(int type);
+
     struct DemoGame
     {
         static DemoGame instance();
 
-        static Game::Battle::ChartData create_demo_chart()
-        {
-            Game::Battle::ChartData chart;
-
-            for (int lane = 0; lane < 4; ++lane)
-            {
-                chart.lanes[lane].lane_number = lane;
-                chart.lanes[lane].notes.clear();
-                chart.lanes[lane].current_note = 0;
-            }
-
-            // Pattern 1: Simple taps
-            chart.lanes[0].notes.emplace_back(false, 5000, 0, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[1].notes.emplace_back(false, 6000, 0, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[2].notes.emplace_back(false, 7000, 0, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[3].notes.emplace_back(false, 8000, 0, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[0].notes.emplace_back(false, 9000, 0, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[1].notes.emplace_back(false, 9000, 0, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[2].notes.emplace_back(false, 11000, 0, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[3].notes.emplace_back(false, 11000, 0, Game::Battle::RhythmType::NORMAL);
-
-            // Pattern 2: Accent notes
-            chart.lanes[0].notes.emplace_back(false, 13000, 0, Game::Battle::RhythmType::ACCENT);
-            chart.lanes[1].notes.emplace_back(false, 14000, 0, Game::Battle::RhythmType::ACCENT);
-            chart.lanes[2].notes.emplace_back(false, 15000, 0, Game::Battle::RhythmType::ACCENT);
-            chart.lanes[3].notes.emplace_back(false, 16000, 0, Game::Battle::RhythmType::ACCENT);
-            chart.lanes[1].notes.emplace_back(false, 17000, 0, Game::Battle::RhythmType::ACCENT);
-            chart.lanes[2].notes.emplace_back(false, 17000, 0, Game::Battle::RhythmType::ACCENT);
-
-            // Pattern 3: Rain notes (only taps)
-            for (int m = 0; m < 10; ++m)
-            {
-                chart.lanes[0].notes.emplace_back(false, 19000 + m * 100, 0, Game::Battle::RhythmType::RAIN);
-            }
-            for (int n = 0; n < 20; ++n)
-            {
-                chart.lanes[3].notes.emplace_back(false, 21000 + n * 50, 0, Game::Battle::RhythmType::RAIN);
-            }
-
-            // Pattern 4: Holds
-            chart.lanes[0].notes.emplace_back(true, 24000, 25000, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[1].notes.emplace_back(true, 26000, 27000, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[2].notes.emplace_back(true, 28000, 30000, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[3].notes.emplace_back(true, 29000, 30000, Game::Battle::RhythmType::NORMAL);
-            chart.lanes[0].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
-            chart.lanes[1].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
-            chart.lanes[2].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
-            chart.lanes[3].notes.emplace_back(true, 31500, 33000, Game::Battle::RhythmType::ACCENT);
-
-            /*
-            Pattern 5: Mixed notes
-            chart.lanes[0].notes.emplace_back(false, 24000, 0);
-            chart.lanes[0].notes.emplace_back(true, 25000, 26000);
-            chart.lanes[1].notes.emplace_back(false, 26000, 0);
-            chart.lanes[1].notes.emplace_back(true, 27000, 28000);
-            chart.lanes[2].notes.emplace_back(true, 28000, 29000);
-            chart.lanes[2].notes.emplace_back(false, 29500, 0);
-            chart.lanes[3].notes.emplace_back(true, 30000, 31000);
-            chart.lanes[3].notes.emplace_back(false, 31500, 0);
-            chart.lanes[0].notes.emplace_back(false, 33000, 0);
-            chart.lanes[2].notes.emplace_back(true, 33000, 34000);
-            chart.lanes[0].notes.emplace_back(false, 35000, 0);
-            chart.lanes[2].notes.emplace_back(true, 35000, 36000);
-            */
-
-            return (chart);
-        }
         constexpr static auto name = "DemoGame";
         constexpr static size_t MaxResource = 1000;
 
@@ -123,7 +58,11 @@ namespace Scene
             Game::Rhythm::KeyInput,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
-            Game::Audio::SoundRegistry
+            Game::Audio::SoundRegistry,
+            Game::Test::LifeText,
+            Game::Test::GrazeText,
+            Game::Battle::HpBarMax,
+            Game::Battle::HpBar
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -147,7 +86,6 @@ namespace Scene
             Game::BulletHell::laser_system<Syscall>,
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
-            Game::BulletHell::logging_system<Syscall>,
             Game::Rhythm::handle_bpm<Syscall>,
             Game::Rhythm::handle_tap_note<Syscall>,
             Game::Rhythm::set_holding_time<Syscall>,
@@ -156,59 +94,21 @@ namespace Scene
             Game::Rhythm::update_judge_text<Syscall>,
             Game::Rhythm::update_combo<Syscall>,
             Game::Rhythm::update_notes<Syscall>,
-            Game::Render::flickering_system<Syscall>
+            Game::Render::flickering_system<Syscall>,
+            Game::Render::set_camera<Syscall>,
+            Game::Render::draw_sprite<Syscall>,
+            Game::Render::draw_text<Syscall>
             >;
 
-        static std::shared_ptr<TaskManager> init()
-        {
-            auto tm = std::make_shared<TaskManager>();
+        static Game::Battle::BulletLoader create_bullet_test();
+        static Game::Battle::ChartData create_note_test();
 
-            auto config_battle_state = []
-            {
-                Game::Battle::BattleState state(100, 100, Game::Battle::Difficulty());
-                state.current_phase = Game::Battle::RHYTHM;
-                return (state);
-            };
+        static void load_chart(
+            std::shared_ptr<TaskManager> &tm,
+            Game::Battle::ChartData &chart,
+            Game::Rhythm::NoteField &field);
 
-            // Create and configure BattleState
-            tm->create_entity<Game::Battle::BattleState,
-            Game::Battle::BulletHellState,
-            Game::Battle::BulletRegistry,
-            Game::Battle::BulletLoader,
-            Game::Battle::PatternContainer,
-            Game::Battle::RhythmState,
-            Game::Battle::ChartData,
-            Game::Rhythm::KeyInput, Game::BulletHell::Input>
-            (
-                config_battle_state(),
-                Game::Battle::BulletHellState(),
-                init_bullet_graphic(),
-                create_bullet_data(),
-                create_pattern_container(),
-                Game::Battle::RhythmState(1, 1, 60, 1.0f, 1.0f),
-                create_demo_chart(),
-                Game::Rhythm::KeyInput(),
-                Game::BulletHell::Input()
-                );
-
-            tm->create_entity<Game::BulletHell::Player,
-            Game::Render::Transform,
-            Rotation,
-            Velocity,
-            Acceleration,
-            AngularVelocity, Game::Physics::CircularCollider>(
-                {}, Game::Render::Transform(50,50), {}, {}, {}, {}, {}
-            );
-
-            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
-            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));
-            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
-            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
-
-            tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(35000,5000,Game::Battle::BULLET_HELL));
-            tm->run_all();
-            return (tm);
-        }
+        static std::shared_ptr<TaskManager> init();
 
         static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data)
         {

@@ -1,5 +1,4 @@
 #include "scene.h"
-#include "system.h"
 #include "utils/print_debug.h"
 #include "../../src/windows/windows_types.h"
 
@@ -141,7 +140,7 @@ inline Game::Battle::RhythmState create_rhythm_state()
     return (state);
 }
 
-inline Game::Rhythm::NoteField create_field()
+Game::Rhythm::NoteField Scene::create_field()
 {
     constexpr float note_width = 150.0f;
     // position based on window size
@@ -175,16 +174,6 @@ inline Game::Battle::BpmInfo create_bpm_info()
     return (bpm);
 }
 
-inline Game::Battle::PhaseInfo create_phase_info()
-{
-    Game::Battle::PhaseInfo phase;
-    Game::Battle::PhaseInfo::InfoPair info{};
-    info.phase = Game::Battle::RHYTHM;
-    info.timing = 0;
-    phase.phase_list.emplace_back(info);
-    return (phase);
-}
-
 auto sp_accent = load_sprite("img/rhythm/base_accent.dds", "accent", 200, 40);
 auto sp_rain = load_sprite("img/rhythm/base_rain.dds", "rain", 200, 20);
 auto sp_normal = load_sprite("img/rhythm/base_normal.dds", "normal", 200, 40);
@@ -204,7 +193,7 @@ auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite
 auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 auto fn = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
-inline Math::Point field_to_point(const int lane, const Game::Rhythm::NoteField &field)
+Math::Point Scene::field_to_point(const int lane, const Game::Rhythm::NoteField &field)
 {
     if (lane == 0)
         return Math::Point{field.lane1_spawn, field.spawn_level, 0};

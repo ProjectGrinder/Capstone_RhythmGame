@@ -87,21 +87,6 @@ namespace Game::Battle
         {}
     };
 
-    struct PhaseInfo
-    {
-        struct InfoPair
-        {
-            int timing;
-            CurrentPhase phase;
-        };
-        std::vector<InfoPair> phase_list;
-        unsigned int idx;
-        PhaseInfo() : idx(0)
-        {}
-        explicit PhaseInfo(const unsigned int idx) : idx(idx)
-        {}
-    };
-
     struct AcceptLoss
     {
         int normal;
@@ -132,7 +117,7 @@ namespace Game::Battle
         JudgementCount judgement_count;
         CurrentPhase current_phase;
         BattleState() :
-            max_hp(0), hp(0), score(0), combo(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(0), current_phase(RHYTHM)
+            max_hp(0), hp(0), score(0), combo(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(0), current_phase(BULLET_HELL)
         {}
         explicit BattleState(
                 const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :

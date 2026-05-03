@@ -2,8 +2,13 @@
 
 #include "game.h"
 
+
 namespace Scene
 {
+    Game::Rhythm::NoteField create_field();
+
+    Math::Point field_to_point(int lane, const Game::Rhythm::NoteField &field);
+
     struct DemoRhythm
     {
         static DemoRhythm instance();
