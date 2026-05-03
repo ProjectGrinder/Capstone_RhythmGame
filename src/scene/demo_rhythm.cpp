@@ -143,14 +143,15 @@ inline Game::Battle::RhythmState create_rhythm_state()
 Game::Rhythm::NoteField Scene::create_field()
 {
     constexpr float note_width = 150.0f;
+    constexpr float padding = 20.0f;
     // position based on window size
-    const float spawn_level = half_height;
+    const float spawn_level = half_height + padding;
     const float judge_level = half_height * -2 / 3;
     constexpr float lane1_spawn = -1 * (note_width * 1.65f);
     constexpr float lane2_spawn = -1 * (note_width * 0.55f);
     constexpr float lane3_spawn = note_width * 0.55f;
     constexpr float lane4_spawn = note_width * 1.65f;
-    constexpr float move_time = 5000.00f; // default speed 1
+    constexpr float move_time = 4000.00f; // default speed 1
     return Game::Rhythm::NoteField(
         spawn_level,
         judge_level,

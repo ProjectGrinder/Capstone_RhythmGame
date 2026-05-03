@@ -215,7 +215,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     (
         Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
-        Game::Battle::RhythmState(1, 100, 60, 6.0f, 6.0f),
+        Game::Battle::RhythmState(1, 100, 60, 2.0f, 2.0f),
         init_bullet_graphic(),
         create_bullet_test(),
         create_pattern_container(),

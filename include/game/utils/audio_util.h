@@ -37,11 +37,11 @@ namespace Game::Audio
             {"sound_graze",Audio(sound_ptr[4])},
             {"sound_hit",Audio(sound_ptr[6])},
             {"sound_phase_transition",Audio(sound_ptr[2])},
-            {"sound_note_click",Audio(sound_ptr[0])},
-            {"sound_note_miss",Audio(sound_ptr[6])},
-            {"sound_note_hit", Audio(sound_ptr[0])},
-            {"sound_rain_note", Audio(sound_ptr[2])},
-            {"sound_accent_effect", Audio(sound_ptr[1])}
+            // {"sound_note_click",Audio(sound_ptr[0])},
+            // {"sound_note_miss",Audio(sound_ptr[6])},
+            {"sound_note_hit", Audio(sound_ptr[7])},
+            {"sound_rain_note", Audio(sound_ptr[9])},
+            {"sound_accent_effect", Audio(sound_ptr[8])}
         });
 
         for (const auto& [key, sound] : sound_registry.audios) {

@@ -109,7 +109,7 @@ namespace Game::Battle
         int hp;
         int score;
         int combo;
-        int clock_time;
+        int clock_time; // initialize clock with 3-second wait period
         int total_accept;
         int current_accept;
         int max_accept_gauge;
@@ -117,11 +117,11 @@ namespace Game::Battle
         JudgementCount judgement_count;
         CurrentPhase current_phase;
         BattleState() :
-            max_hp(0), hp(0), score(0), combo(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(0), current_phase(BULLET_HELL)
+            max_hp(0), hp(0), score(0), combo(0), clock_time(-3000000), total_accept(0), current_accept(0), max_accept_gauge(0), current_phase(BULLET_HELL)
         {}
         explicit BattleState(
                 const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :
-            max_hp(max_hp), hp(max_hp), score(0), combo(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), difficulty(difficulty), current_phase(BULLET_HELL)
+            max_hp(max_hp), hp(max_hp), score(0), combo(0), clock_time(-3000000), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), difficulty(difficulty), current_phase(BULLET_HELL)
         {}
     };
 
@@ -163,8 +163,6 @@ namespace Game::Battle
         float main_bpm;
         BpmInfo bpm_info;
         std::vector<Difficulty> difficulties;
-        LevelData() : main_bpm(0)
-        {}
         explicit LevelData(
                 std::string title,
                 std::string artist_name,
