@@ -6,6 +6,8 @@ extern "C" Window get_window_size();
 const float half_height = static_cast<float>(get_window_size().height) / 2;
 const float half_width = static_cast<float>(get_window_size().width) / 2;
 
+using UI = Game::Battle::UIDisplay;
+
 void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
 {
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
@@ -237,11 +239,12 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     Rotation,
     Velocity,
     Acceleration,
-    AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material>(
+    AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material, UI>(
         {}, Game::Render::Transform(0,-240), {}, {}, {},{},
         Game::Physics::CircularCollider(24),
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("test")), .pos = {{-24, 24, 0}, {24, 24, 0}, {24, -24, 0}, {-24, -24, 0}}, .layer = 1},
-        Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))}
+        Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
+        UI(UI::BULLET)
     );
 
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
@@ -266,59 +269,77 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     // temp judgement line
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
-    Game::Render::Transform>
+    Game::Render::Transform, UI>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}}},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0});
+        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0},
+        UI{UI::RHYTHM});
 
     tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(5000, 2000, Game::Battle::RHYTHM));
     tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(12000, 2000, Game::Battle::BULLET_HELL));
 
     const auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
-    tm->create_entity(
+    tm->create_entity<Game::Test::LifeText,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>(
            Game::Test::LifeText{},
            Game::Render::Text{.font = font, .text = "0"},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-           Game::Render::Transform{Math::Point{-600, 200, 0}, 0, 0, 0});
+           Game::Render::Transform{Math::Point{-600, 200, 0}, 0, 0, 0}),
+            UI{UI::BULLET};
 
-    tm->create_entity(
+    tm->create_entity<Game::Test::GrazeText,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>(
            Game::Test::GrazeText{},
            Game::Render::Text{.font = font, .text = "0"},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-           Game::Render::Transform{Math::Point{400, 200, 0}, 0, 0, 0});
+           Game::Render::Transform{Math::Point{400, 200, 0}, 0, 0, 0}),
+            UI{UI::BULLET};
 
-    tm->create_entity(
+    tm->create_entity<Game::Battle::HpBarMax,
+    Game::Render::Sprite,
+    Game::Render::Material,
+    Game::Render::Transform>(
            Game::Battle::HpBarMax{},
            Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square20px")), .pos = {{-55, 12.5, 0}, {55, 12.5, 0}, {55, -12.5, 0}, {-55, -12.5, 0}}, .layer = 6},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
            Game::Render::Transform{Math::Point{0, 300, 0}, 0, 0, 0});
 
-    tm->create_entity(
+    tm->create_entity<Game::Battle::HpBar,
+    Game::Render::Sprite,
+    Game::Render::Material,
+    Game::Render::Transform>(
            Game::Battle::HpBar{},
            Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-50, 10, 0}, {50, 10, 0}, {50, -10, 0}, {-50, -10, 0}}, .color = {0.2f,1,0.2f}, .layer = 5},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
            Game::Render::Transform{Math::Point{0, 300, 0}, 0, 0, 0});
+
     tm->create_entity<Game::Rhythm::JudgeText,
     Game::Render::Text,
     Game::Render::Material,
-    Game::Render::Transform>
+    Game::Render::Transform, UI>
     (
         Game::Rhythm::JudgeText(),
         Game::Render::Text{.font = font, .text = "", .layer = 5},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, half_height * 2 / 3, 0}, 0, 0, 0});
+        Game::Render::Transform{Math::Point{0, half_height * 2 / 3, 0}, 0, 0, 0},
+        UI{UI::RHYTHM});
 
     tm->create_entity<Game::Rhythm::Combo,
     Game::Render::Text,
     Game::Render::Material,
-    Game::Render::Transform>
+    Game::Render::Transform, UI>
     (
         Game::Rhythm::Combo(),
         Game::Render::Text{.font = font, .text = "", .layer = 5},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, half_height * 3 / 4, 0}, 0, 0, 0});
+        Game::Render::Transform{Math::Point{0, half_height * 3 / 4, 0}, 0, 0, 0},
+        UI{UI::RHYTHM});
 
     return (tm);
 }

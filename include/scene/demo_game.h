@@ -62,7 +62,8 @@ namespace Scene
             Game::Test::LifeText,
             Game::Test::GrazeText,
             Game::Battle::HpBarMax,
-            Game::Battle::HpBar
+            Game::Battle::HpBar,
+            Game::Battle::UIDisplay
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;

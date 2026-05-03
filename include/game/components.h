@@ -5,6 +5,7 @@
 #include "components/battle/pattern_container.h"
 #include "components/battle/transition_data.h"
 #include "components/battle/hpbar.h"
+#include "components/battle/ui_display.h"
 
 #include "components/bullethell/booming.h"
 #include "components/bullethell/bullet.h"
