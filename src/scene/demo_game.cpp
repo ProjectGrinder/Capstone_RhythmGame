@@ -43,7 +43,8 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
     using namespace Game::Battle;
     using namespace Game::Physics;
 
-    int left_padding = 1000;
+    const int left_padding = 0;
+    const int left_padding2 = 15000;
 
     BulletLoader loader;
     loader.CreateBullet(left_padding, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
@@ -55,6 +56,10 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
     loader.CreateBullet(left_padding + 3500, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
     loader.CreateBullet(left_padding + 4000, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
     loader.CreateBullet(left_padding + 4500, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
+    loader.CreateBullet(left_padding2, BulletData(rand_float(-500,500), -300, 0, rand_float(-135,-45), 1000, 176));
+    loader.CreateBullet(left_padding2 + 1000, BulletData(-500, rand_float(-300,300), 0, rand_float(-45,45), 1000, 177));
+    loader.CreateBullet(left_padding2 + 2000, BulletData(rand_float(-500,500), 300, 0, rand_float(45,135), 0, 1000, 178));
+    loader.CreateBullet(left_padding2 + 3000, BulletData(500, rand_float(-300,300), 0, rand_float(-225,-135), 1000, 179));
 
     return (loader);
 }
@@ -253,6 +258,11 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
         create_bpm_info(),
         std::vector<Game::Battle::Difficulty>()));
 
+    auto chart = create_note_test();
+    auto field = create_field();
+
+    load_chart(tm, chart, field);
+
     // temp judgement line
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
@@ -260,14 +270,10 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}}},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, half_height * -2 / 3, 0}, 0, 0, 0});
-
-    auto chart = create_note_test();
-    auto field = create_field();
-
-    load_chart(tm, chart, field);
+        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0});
 
     tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(5000, 2000, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(12000, 2000, Game::Battle::BULLET_HELL));
 
     const auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
