@@ -7,7 +7,7 @@ namespace Game::BulletHell
     struct Pattern
     {
         uint16_t sequenceID;
-        int sequenceIdx = -1; // Would not be good but require for init
+        int sequenceIdx = UNASSIGNED; // Would not be good but require for init
         int delay = 0;
 
         Pattern() : sequenceID(0)
