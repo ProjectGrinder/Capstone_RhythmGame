@@ -4,13 +4,18 @@
 
 namespace Game::Rhythm
 {
+    using Material = Render::Material;
+    using Sprite = Render::Sprite;
+
     template<typename T>
     void handle_miss_note(
-            T &syscall,
-            System::ECS::Query<Lane, Timing, TimingEnd, HoldActive> &note_query,
-            System::ECS::Query<Battle::BattleState> &battle_query)
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Material, Sprite> &note_query,
+            System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
+            System::ECS::Query<Battle::BattleState> &battle_query,
+            System::ECS::Query<Battle::RhythmState> &rhythm_query,
+            System::ECS::Query<JudgeText> &judge_query)
     {
-
         if (battle_query.begin() == battle_query.end())
             return;
 
@@ -20,31 +25,80 @@ namespace Game::Rhythm
         }
 
         const auto &current_timing = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
+        const auto &accept_loss = rhythm_query.front().get<Battle::RhythmState>().accept_loss;
+        constexpr auto miss_range = 100;
 
-        for (auto &[id, comps]: note_query)
+        for (auto &[id, comp]: note_query)
         {
-            auto &note_time = comps.get<Timing>().timing;
+            if (comp.get<NoteStatus>().state == -1)
+                continue;
 
-            if (current_timing - note_time >= 100)
+            auto &note_time = comp.get<Timing>().timing;
+            auto &type = comp.get<NoteType>().type;
+
+            if (current_timing - note_time >= miss_range && type != -1)
             {
-                if (comps.get<TimingEnd>().timing_end == 0) // tap note miss
+                if (comp.get<HoldStart>().is_hold == false) // tap note miss
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
-                    LOG_INFO("Timing %d Lane %d: Tap Miss", note_time, comps.get<Lane>().lane);
-                    LOG_INFO("Miss Count = %d", battle_query.front().get<Battle::BattleState>().judgement_count.miss_count);
+                    if (type == 2)
+                    {
+                        battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.rain;
+                    }
+                    else if (type == 1)
+                    {
+                        battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.accent;
+                    }
+                    else if (type == 0)
+                    {
+                        battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.normal;
+                    }
+                    // LOG_INFO("Timing %d Lane %d: Tap Miss", note_time, comp.get<Timing>().lane);
                 }
-                else if (comps.get<HoldActive>().hold_active == false) // hold note miss (not held at all)
+                else // hold note miss (not held at all)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 2;
-                    LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comps.get<Lane>().lane);
-                    LOG_INFO("Miss Count = %d", battle_query.front().get<Battle::BattleState>().judgement_count.miss_count);
-                }
-                else continue; // for hold notes that are still active
+                    battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.hold;
+                    // LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comp.get<Timing>().lane);
+                    int end_time = 0;
+                    for (auto &[id2, comp2]: hold_query)
+                    {
+                        if (comp2.get<NoteStatus>().state == -1)
+                            continue;
 
-                syscall.remove_entity(id);
+                        if (comp2.get<HoldConnect>().lane == comp.get<Timing>().lane
+                            && comp2.get<HoldConnect>().timing_start == note_time)
+                        {
+                            end_time = comp2.get<HoldConnect>().timing_end;
+                            const auto sp = get_assets_record_ptr(get_assets_id("hold_disabled"));
+                            comp2.get<Sprite>().sp = sp;
+                            comp2.get<NoteStatus>().state = -1;
+                            break;
+                        }
+                    }
+                    const auto sp = get_assets_record_ptr(get_assets_id("disabled"));
+                    for (auto &[id2, comp2]: note_query) // find ending note for the hold
+                    {
+                        if (comp2.get<NoteType>().type == -1 && comp2.get<NoteStatus>().state != -1
+                            && comp.get<Timing>().lane == comp2.get<Timing>().lane && comp2.get<Timing>().timing == end_time)
+                        {
+                            comp2.get<Sprite>().sp = sp;
+                        }
+                    }
+                }
+                comp.get<NoteStatus>().state = -1;
+                comp.get<Material>().visible = false;
+                judge_query.front().get<JudgeText>().judge = JudgeText::MISS;
+                judge_query.front().get<JudgeText>().change = true;
+                battle_query.front().get<Battle::BattleState>().combo = 0;
+            }
+            else if (comp.get<NoteType>().type == -1 && current_timing - note_time >= 0) // for hold end notes (stop rendering when time diff is 0)
+            {
+                comp.get<NoteStatus>().state = -1;
+                comp.get<Material>().visible = false;
             }
             // Handle miss for an entire hold note, which counts as two misses (start and end)
-            // If the note is held but released too early, it should be handled in handle_rhythm.h to be checked along
+            // If the note is held but released too early, it should be handled in handle_holding.h to be checked along
             // with other judgements
         }
     }

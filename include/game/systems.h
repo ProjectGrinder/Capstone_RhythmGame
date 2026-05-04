@@ -23,10 +23,15 @@
 #include "game/systems/bullethell/logging_system.h" // Only for demo
 
 // Rhythm Part
-#include "game/systems/rhythm/handle_rhythm.h" // TODO: Pooh implement this system
-#include "game/systems/rhythm/handle_miss_note.h"
 #include "game/systems/rhythm/handle_bpm.h"
-#include "game/systems/rhythm/load_notes.h"
+#include "game/systems/rhythm/handle_holding.h"
+#include "game/systems/rhythm/handle_miss_note.h"
+#include "game/systems/rhythm/handle_rain_note.h"
+#include "game/systems/rhythm/handle_tap_note.h"
+#include "game/systems/rhythm/set_holding_time.h"
+#include "game/systems/rhythm/update_combo.h"
+#include "game/systems/rhythm/update_judge_text.h"
+#include "game/systems/rhythm/update_notes.h"
 // General Battle Part
 #include "game/systems/phase_change.h"
 #include "game/systems/global_clock.h"
