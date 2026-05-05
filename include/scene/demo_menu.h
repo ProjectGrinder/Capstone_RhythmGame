@@ -6,6 +6,18 @@ namespace Scene
 {
     struct DemoMenu
     {
+        template<typename T>
+        static void enter_game([[maybe_unused]] T &syscall)
+        {
+            constexpr auto ENTER = 0x0D;
+
+            if (get_key_state(ENTER))
+            {
+                LOG_INFO("Enter pressed");
+                Scene::queue_change_scene<DemoGame>();
+            }
+        }
+
         static DemoMenu instance();
 
         constexpr static auto name = "DemoMenu";
@@ -24,7 +36,7 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
-            Game::Menu::enter_game<Syscall>,
+            enter_game<Syscall>,
             Game::Render::flickering_system<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::draw_sprite<Syscall>,

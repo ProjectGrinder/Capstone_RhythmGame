@@ -57,6 +57,6 @@ std::shared_ptr<Scene::DemoMenu::TaskManager> Scene::DemoMenu::init()
 
 Scene::DemoMenu::ResourceManager Scene::DemoMenu::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
-    LOG_INFO("Exiting DemoGame Scene.");
+    LOG_INFO("Exiting DemoMenu Scene.");
     return ResourceManager();
 }
