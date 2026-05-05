@@ -2,15 +2,8 @@
 
 namespace Game::BulletHell
 {
-    enum class Direction : uint8_t {
-        Left,
-        Right,
-        Up,
-        Down
-    };
     struct Player
     {
-        Direction face_dir{Direction::Up};
         bool is_active;
         Player() : is_active(true)
         {}

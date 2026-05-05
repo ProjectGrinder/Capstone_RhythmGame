@@ -18,7 +18,7 @@ namespace Game::Render
         {
             auto &sprite = comp.get<Sprite>();
             auto &animator = comp.get<Animator>();
-
+            LOG_INFO("%d",animator.anim_id);
             if (animator.anim_id == -1) continue;
 
             const auto &anim_data = anim_reg.animation_datas.at(animator.anim_id);
@@ -30,7 +30,7 @@ namespace Game::Render
                     if (anim_data.isLoop)
                         animator.current_frame = anim_data.loop_frame;
                     else
-                        animator.anim_id = -1;
+                        continue;
                 }
 
                 sprite.u0 = anim_data.size.x * animator.current_frame;
@@ -46,7 +46,7 @@ namespace Game::Render
     template<typename T>
     void anim_transition_system([[maybe_unused]] T &syscall,
         System::ECS::Query<AnimationDataRegistry> &anim_data_query,
-        System::ECS::Query<Sprite, Animator, Anim_Transition> &query)
+        System::ECS::Query<Sprite, Animator, Animation_Controller> &query)
     {
         const auto &anim_reg = anim_data_query.front().get<AnimationDataRegistry>();
 
@@ -54,14 +54,22 @@ namespace Game::Render
         {
             auto &sprite = comp.get<Sprite>();
             auto &animator = comp.get<Animator>();
-            const auto &anim_transition = comp.get<Anim_Transition>();
-            const auto &anim_data = anim_reg.animation_datas.at(animator.anim_id);
+            auto &anim_con = comp.get<Animation_Controller>();
 
-            animator.anim_id = anim_transition.anim_id;
-            sprite.v0 = anim_data.offset_y * anim_data.size.y;
-            sprite.v1 = anim_data.offset_y * anim_data.size.y + anim_data.size.y;
-            syscall.template remove_component<Anim_Transition>(id);
+            anim_con.current_id = animator.anim_id;
 
+            if (anim_con.to_id != anim_con.current_id)
+            {
+                if (!anim_con.has_exit_time || animator.current_frame != 0 && anim_con.to_id != -1)
+                {
+                    const auto &anim_data = anim_reg.animation_datas.at(anim_con.to_id);
+                    sprite.v0 = anim_data.offset_y * anim_data.size.y;
+                    sprite.v1 = anim_data.offset_y * anim_data.size.y + anim_data.size.y;
+                    animator.current_time = 0;
+                    animator.current_frame = 0;
+                    animator.anim_id = anim_con.to_id;
+                }
+            }
         }
     }
 } // namespace Game::Render

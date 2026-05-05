@@ -62,7 +62,7 @@ namespace Scene
             Game::Render::Flicker,
             Game::Render::Camera2D,
             Game::Render::AnimationDataRegistry,
-            Game::Render::Anim_Transition,
+            Game::Render::Animation_Controller,
             Game::Render::Animator,
             Game::Rhythm::NoteType,
             Game::Audio::SoundRegistry,
@@ -83,6 +83,7 @@ namespace Scene
             Game::BulletHell::bullet_collision<Syscall>,
             Game::BulletHell::bullet_clearer_system<Syscall>,
             Game::BulletHell::player_system<Syscall>,
+            Game::BulletHell::player_anim_system<Syscall>,
             Game::BulletHell::delay_system<Syscall>,
             Game::BulletHell::bullet_system<Syscall>,
             Game::BulletHell::particle_system<Syscall>, //->Main Prob (Permanant drop)

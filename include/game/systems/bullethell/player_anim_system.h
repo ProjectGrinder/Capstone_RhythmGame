@@ -1,39 +1,42 @@
 #pragma once
-#include "game/systems/global_clock.h"
+
+#include "game/components.h"
 
 namespace Game::BulletHell
 {
     template<typename T>
-    void player_animation_system(
+    void player_anim_system(
             [[maybe_unused]] T &syscall,
-            System::ECS::Query<Player, Render::Animator, Physics::Velocity> &player_query,
-            System::ECS::Query<Battle::BattleState> &query3)
+            System::ECS::Query<Battle::BattleState> &query2,
+            System::ECS::Query<Player, Render::Transform, Render::Sprite, Physics::Velocity, Render::Animation_Controller> &query3
+            )
     {
-        // if (query3.begin() == query3.end())
-        //     return;
-        //
-        // if (query3.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
-        //     return;
 
-        // for (auto &[id, comps] : player_query)
-        // {
-        //     auto &anim = comps.get<Render::Animator>();
-        //     const auto &player = comps.get<Player>();
-        //     const auto &velos = comps.get<Velocity>();
-        //     if (velos.vx <= 0 && velos.vy <= 0)
-        //     {
-        //         switch (player.face_dir)
-        //         {
-        //             case Direction::Up:
-        //
-        //             default:;
-        //         }
-        //     }
-        //     else
-        //     {
-        //
-        //     }
-        //
-        // }
+        if (query2.begin() == query2.end())
+            return;
+
+        if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
+            return;
+
+        for (auto &[id, comps]: query3)
+        {
+            auto &anim = comps.get<Render::Animation_Controller>();
+            const auto &velos = comps.get<Velocity>();
+
+            if (velos.vx != 0)
+            {
+                anim.to_id = 4;
+                comps.get<Render::Sprite>().flipX = velos.vx > 0;
+            }
+            else if (velos.vy > 0)
+                anim.to_id = 5;
+            else if (velos.vy < 0)
+                anim.to_id = 3;
+            else if (anim.current_id>=3)
+            {
+                anim.to_id = anim.current_id-3;
+            }
+        }
+
     }
 } // namespace Game::BulletHell

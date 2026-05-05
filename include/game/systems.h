@@ -13,6 +13,7 @@
 #include "game/systems/bullethell/bullet_collision.h"
 #include "game/systems/bullethell/pattern_system.h"
 #include "game/systems/bullethell/player_system.h"
+#include "game/systems/bullethell/player_anim_system.h"
 #include "game/systems/bullethell/bullet_system.h"
 #include "game/systems/bullethell/booming_system.h"
 #include "game/systems/bullethell/laser_system.h"
@@ -20,7 +21,6 @@
 #include "game/systems/bullethell/special_pattern_system.h"
 #include "game/systems/bullethell/particle_system.h"
 #include "game/systems/bullethell/bullet_load_system.h"
-#include "game/systems/bullethell/player_anim_system.h"
 #include "game/systems/bullethell/logging_system.h" // Only for demo
 
 // Rhythm Part

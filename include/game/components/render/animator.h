@@ -17,11 +17,11 @@ namespace Game::Render
         {}
     };
 
-
-    // Not used. Transition time later
-    struct Anim_Transition
+    struct Animation_Controller
     {
-        int anim_id;
-        Anim_Transition(const int anim_id) : anim_id(anim_id) {};
+        int current_id = 0;
+        int to_id = 0;
+        bool has_exit_time;
+        int transition_time;
     };
 } // namespace Game::Render

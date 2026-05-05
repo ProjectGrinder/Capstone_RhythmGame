@@ -178,13 +178,13 @@ Game::Battle::BulletLoader Scene::create_bullet_collision_test()
 
     BulletLoader loader;
 
-    for (int i=0;i<500;i++)
-    {
-        for (int j=0;j<8;j++)
-        {
-            loader.CreateBullet(1000 + i*250 + j*50, BulletData(0, 0, 100, (static_cast<float>(j) *45) + 6 * i, 50,-45.f, 0, (i*8 + j)%158));
-        }
-    }
+    // for (int i=0;i<500;i++)
+    // {
+    //     for (int j=0;j<8;j++)
+    //     {
+    //         loader.CreateBullet(1000 + i*250 + j*50, BulletData(0, 0, 100, (static_cast<float>(j) *45) + 6 * i, 50,-45.f, 0, (i*8 + j)%158));
+    //     }
+    // }
 
     // for (int i=0;i<8;i++)
     // {
@@ -247,15 +247,14 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
     Game::Render::Transform,
     Rotation,
     Velocity,
-    Acceleration,
-    AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material, Game::Render::Animator>(
-        {}, Game::Render::Transform(0,-240), {}, {}, {},{},
+    AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material, Game::Render::Animator, Game::Render::Animation_Controller>(
+        {}, Game::Render::Transform(0,-240), {}, {}, {},
         Game::Physics::CircularCollider(12),
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Player_Sprite")),
             .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 1,
             .u0 = 0.f, .v0 = 0.f, .u1 = 200.f/800.f, .v1 = 250.f/1500.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
-        Game::Render::Animator{0}
+        Game::Render::Animator{0}, Game::Render::Animation_Controller()
     );
 
     tm->create_entity<Game::BulletHell::PlayerHitbox, Game::Render::Transform, Game::Render::Sprite, Game::Render::Material>(
