@@ -4,11 +4,11 @@
 
 extern HWND get_window_handler();
 
-Position get_mouse_position()
+GlobalPosition get_mouse_position()
 {
     POINT p = {0};
     HWND handler = get_window_handler();
-    Position res = {0};
+    GlobalPosition res = {0};
 
     if (handler == NULL)
         goto exit;

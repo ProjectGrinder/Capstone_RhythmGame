@@ -4,6 +4,8 @@
 
 namespace Scene
 {
+    Game::Render::Sprite assign_sprite(int type);
+
     struct DemoGame
     {
         static DemoGame instance();
@@ -25,7 +27,6 @@ namespace Scene
             Game::BulletHell::Bullet,
             Game::BulletHell::BulletClearer,
             Game::BulletHell::Input,
-            Game::Rhythm::KeyInput,
             Game::BulletHell::Player,
             Game::BulletHell::PlayerHitbox,
             Game::BulletHell::Pattern,
@@ -50,11 +51,20 @@ namespace Scene
             Game::Render::Flicker,
             Game::Rhythm::NoteType,
             Game::Rhythm::Lane,
-            Game::Rhythm::NoteSpeed,
             Game::Rhythm::Timing,
-            Game::Rhythm::TimingEnd,
-            Game::Rhythm::HoldActive,
-            Game::Audio::SoundRegistry
+            Game::Rhythm::HoldStart,
+            Game::Rhythm::JudgeText,
+            Game::Rhythm::Combo,
+            Game::Rhythm::NoteField,
+            Game::Rhythm::KeyInput,
+            Game::Rhythm::NoteStatus,
+            Game::Rhythm::HoldConnect,
+            Game::Audio::SoundRegistry,
+            Game::Test::LifeText,
+            Game::Test::GrazeText,
+            Game::Battle::HpBarMax,
+            Game::Battle::HpBar,
+            Game::Battle::UIDisplay
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -78,63 +88,29 @@ namespace Scene
             Game::BulletHell::laser_system<Syscall>,
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
-            Game::BulletHell::logging_system<Syscall>,
-            Game::Rhythm::load_notes<Syscall>,
-            Game::Rhythm::handle_rhythm<Syscall>,
+            Game::Rhythm::handle_bpm<Syscall>,
+            Game::Rhythm::handle_tap_note<Syscall>,
+            Game::Rhythm::set_holding_time<Syscall>,
+            Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
-            Game::Render::flickering_system<Syscall>
+            Game::Rhythm::update_judge_text<Syscall>,
+            Game::Rhythm::update_combo<Syscall>,
+            Game::Rhythm::update_notes<Syscall>,
+            Game::Render::flickering_system<Syscall>,
+            Game::Render::set_camera<Syscall>,
+            Game::Render::draw_sprite<Syscall>,
+            Game::Render::draw_text<Syscall>
             >;
 
-        static std::shared_ptr<TaskManager> init()
-        {
-            auto tm = std::make_shared<TaskManager>();
+        static Game::Battle::BulletLoader create_bullet_test();
+        static Game::Battle::ChartData create_note_test();
 
-            auto config_battle_state = []
-            {
-                Game::Battle::BattleState state(100, 100, Game::Battle::Difficulty());
-                state.current_phase = Game::Battle::RHYTHM;
-                return (state);
-            };
+        static void load_chart(
+            std::shared_ptr<TaskManager> &tm,
+            Game::Battle::ChartData &chart,
+            Game::Rhythm::NoteField &field);
 
-            // Create and configure BattleState
-            tm->create_entity<Game::Battle::BattleState,
-            Game::Battle::BulletHellState,
-            Game::Battle::BulletRegistry,
-            Game::Battle::BulletLoader,
-            Game::Battle::PatternContainer,
-            Game::Battle::RhythmState,
-            Game::Battle::ChartData,
-            Game::Rhythm::KeyInput, Game::BulletHell::Input>
-            (
-                config_battle_state(),
-                Game::Battle::BulletHellState(),
-                init_bullet_graphic(),
-                create_bullet_data(),
-                create_pattern_container(),
-                Game::Battle::RhythmState(1, 1, 60, 1.0f),
-                create_demo_chart(),
-                Game::Rhythm::KeyInput(),
-                Game::BulletHell::Input()
-                );
-
-            tm->create_entity<Game::BulletHell::Player,
-            Game::Render::Transform,
-            Rotation,
-            Velocity,
-            Acceleration,
-            AngularVelocity, Game::Physics::CircularCollider>(
-                {}, Game::Render::Transform(50,50), {}, {}, {}, {}, {}
-            );
-
-            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
-            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));
-            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
-            tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
-
-            tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(35000,5000,Game::Battle::BULLET_HELL));
-            tm->run_all();
-            return (tm);
-        }
+        static std::shared_ptr<TaskManager> init();
 
         static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data)
         {

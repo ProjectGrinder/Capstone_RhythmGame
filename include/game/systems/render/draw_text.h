@@ -13,8 +13,11 @@ namespace Game::Render
     {
         for (auto &[id, comps] : query)
         {
-            const auto &[font, text, color, layer, order] = comps.get<Text>();
             const auto &material = comps.get<Material>();
+            if (!material.visible)
+                continue;
+
+            const auto &[font, text, color, layer, order] = comps.get<Text>();
             const auto &tra = comps.get<Transform>();
 
             const auto glyphs_data = font->info.info.as_font.data;

@@ -34,7 +34,7 @@ typedef struct
 {
     INT x;
     INT y;
-} Position;
+} GlobalPosition;
 
 typedef struct
 {

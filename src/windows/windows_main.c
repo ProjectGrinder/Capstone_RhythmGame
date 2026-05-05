@@ -53,6 +53,11 @@ static ThreadHandle g_render_thread = NULL;
 static EventHandle g_render_event = NULL;
 static atomic_size_t g_ready_frame_idx = (size_t) -1;
 
+Window get_window_size(void)
+{
+    return (system_info.window);
+}
+
 HWND get_window_handler(void)
 {
     return (system_info.window_handler);
