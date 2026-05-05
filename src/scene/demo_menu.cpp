@@ -26,6 +26,8 @@ void init_graphics(const std::shared_ptr<Scene::DemoMenu::TaskManager>& tm)
     load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 
     load_sprite("img/piano.dds", "piano", 3840, 2160);
+    load_sprite("img/music_verse.dds", "title", 1080, 1080);
+    load_sprite("img/start.dds", "start", 1280, 720);
 }
 
 std::shared_ptr<Scene::DemoMenu::TaskManager> Scene::DemoMenu::init()
@@ -38,9 +40,25 @@ std::shared_ptr<Scene::DemoMenu::TaskManager> Scene::DemoMenu::init()
     Game::Render::Material,
     Game::Render::Transform>
     (
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("piano")), .pos = {{-960, 540, 0}, {960, 540, 0}, {960, -540, 0}, {-960, -540, 0}}},
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("piano")), .pos = {{-960, 540, 0}, {960, 540, 0}, {960, -540, 0}, {-960, -540, 0}}, .layer = 0},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0});
+
+    tm->create_entity<Game::Render::Sprite,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("title")), .pos = {{-540, 540, 0}, {540, 540, 0}, {540, -540, 0}, {-540, -540, 0}}, .layer = 1},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{0, 350, 0}, 0, 0, 0});
+
+    tm->create_entity<Game::Render::Sprite,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("start")), .pos = {{-320, 180, 0}, {320, 180, 0}, {320, -180, 0}, {-320, -180, 0}}, .layer = 1},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{0, -360, 0}, 0, 0, 0});
 
     const auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
@@ -48,9 +66,17 @@ std::shared_ptr<Scene::DemoMenu::TaskManager> Scene::DemoMenu::init()
     Game::Render::Material,
     Game::Render::Transform>
     (
-    Game::Render::Text{.font = font, .text = "PRESS ENTER TO START"},
-       Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-       Game::Render::Transform{Math::Point{-600, -200, 0}, 0, 0, 0});
+        Game::Render::Text{.font = font, .text = "MADE_IN:KAWA_ENGINE", .layer = 1},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{-840, -480, 0}, 0, 0, 0});
+
+    tm->create_entity<Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Render::Text{.font = font, .text = "DEVELOPED_BY:TEAM_TAKAYAMA", .layer = 1},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{480, -480, 0}, 0, 0, 0});
 
     return (tm);
 }
