@@ -1,12 +1,15 @@
 #pragma once
 
+// Battle
 #include "components/battle/battlestate.h"
 #include "components/battle/bullet_data.h"
 #include "components/battle/pattern_container.h"
 #include "components/battle/transition_data.h"
 #include "components/battle/hpbar.h"
 #include "components/battle/ui_display.h"
+// Menu
 
+// Bullethell
 #include "components/bullethell/booming.h"
 #include "components/bullethell/bullet.h"
 #include "components/bullethell/bullet_clearer.h"
@@ -19,6 +22,7 @@
 #include "components/bullethell/pattern_homing.h"
 #include "components/bullethell/player.h"
 #include "components/bullethell/tag.h"
+// Physics
 #include "components/physics/acceleration.h"
 #include "components/physics/angular_velocity.h"
 #include "components/physics/circular_collider.h"
@@ -26,6 +30,7 @@
 #include "components/physics/rotation.h"
 #include "components/physics/shaker.h"
 #include "components/physics/velocity.h"
+// Render
 #include "components/render/animator.h"
 #include "components/render/animation_data.h"
 #include "components/render/camera.h"
@@ -35,6 +40,7 @@
 #include "components/render/transform.h"
 #include "components/render/flicker.h"
 #include "components/render/triangle.h"
+// Rhythm
 #include "components/rhythm/combo.h"
 #include "components/rhythm/holdconnect.h"
 #include "components/rhythm/holdstart.h"
@@ -45,6 +51,7 @@
 #include "components/rhythm/notestatus.h"
 #include "components/rhythm/notetype.h"
 #include "components/rhythm/timing.h"
+
 #include "components/audio/audio.h"
 
 #include "system/ecs.h"

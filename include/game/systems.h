@@ -35,6 +35,8 @@
 // General Battle Part
 #include "game/systems/phase_change.h"
 #include "game/systems/global_clock.h"
+// Main Menu Part
+#include "game/systems/menu/enter_game.h"
 // Rendering Part
 #include "game/systems/animation_system.h"
 #include "systems/bullethell/shaking_system.h"
