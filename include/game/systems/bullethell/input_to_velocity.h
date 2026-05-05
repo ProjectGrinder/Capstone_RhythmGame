@@ -22,10 +22,21 @@ namespace Game::BulletHell
         for (auto &[id, comps] : query2)
         {
             const auto &input = query1.front().get<Input>();
+            auto &player = comps.get<Player>();
             const float velocity_factor = (input.shift ? 200.f : 500.f);
 
             float x = input.axis_x;
             float y = input.axis_y;
+
+            if (x!=0)
+            {
+                player.face_dir = x>0 ? Direction::Right : Direction::Left;
+            }
+            else if (y!=0)
+            {
+                player.face_dir = y>0 ? Direction::Up : Direction::Down;
+            }
+
             if (const float length = sqrtf(x * x + y * y); length < 0.0f)
             {
                 x/=length;

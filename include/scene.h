@@ -7,7 +7,6 @@
 #include "scene/scene_decl.h"
 
 // define scene templates
-#include "scene/battle_scene.h"
 #include "scene/demo.h"
 #include "scene/demo_bullethell.h"
 #include "scene/demo_game.h"

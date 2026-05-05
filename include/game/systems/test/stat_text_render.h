@@ -32,7 +32,7 @@ namespace Game::Test
 
         query2.front().get<Render::Text>().text = "Life : " + std::to_string(hp) + "/" + std::to_string(max_hp);
 
-        const float hp_remain_dest_x = -50.f + 100.f * static_cast<float>(hp)/static_cast<float>(max_hp);
+        const float hp_remain_dest_x = -500.f + 1000.f * static_cast<float>(hp)/static_cast<float>(max_hp);
 
         for (auto &[id, comps] : ui_query)
         {

@@ -5,7 +5,6 @@
 #include "scene/scene_decl.h"
 #include "scene/demo.h"
 #include "scene/demo_scene_change.h"
-#include "scene/battle_scene.h"
 #include "scene/demo_game.h"
 #include "scene/demo_render.h"
 #include "scene/demo_rhythm.h"

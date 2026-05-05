@@ -22,9 +22,11 @@ void init_graphics(const std::shared_ptr<Scene::DemoBulletHell::TaskManager>& tm
     load_sprite("img/Default_Shot.dds", "bullet_sprite", 512, 512);
     load_sprite("img/test.dds", "test", 500, 500);
     load_sprite("img/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
+    load_sprite("img/Hitbox.dds", "Hitbox", 12, 12);
 
-    load_sprite("img/Square.dds", "Square", 20, 20);
-    load_sprite("img/Square20px.dds", "Square20px", 20, 20);
+    load_sprite("img/Square.dds", "Square", 64, 64);
+    load_sprite("img/Square64px.dds", "Square64px", 64, 64);
+    load_sprite("img/ring16px.dds", "ring16px", 72, 72);
 }
 
 Game::Render::AnimationDataRegistry Scene::init_anim_data()
@@ -194,10 +196,10 @@ Game::Battle::BulletLoader Scene::create_bullet_collision_test()
 
     // for (int i=0;i<10;i++)
     // {
-    //     loader.CreateBullet(150000 + i*3000, BulletData(rand_float(-500,500), -300, 0, rand_float(-135,-45), 1000, 159));
-    //     loader.CreateBullet(150000 + i*3000 + 250, BulletData(-500, rand_float(-300,300), 0, rand_float(-45,45), 1000, 161));
-    //     loader.CreateBullet(150000 + i*3000 + 500, BulletData(rand_float(-500,500), 300, 0, rand_float(45,135), 0, 1000, 162));
-    //     loader.CreateBullet(150000 + i*3000 + 750, BulletData(500, rand_float(-300,300), 0, rand_float(-225,-135), 1000, 163));
+    //     loader.CreateBullet(1000 + i*3000, BulletData(rand_float(-500,500), -300, 0, rand_float(-135,-45), 1000, 160));
+    //     loader.CreateBullet(1000 + i*3000 + 250, BulletData(-500, rand_float(-300,300), 0, rand_float(-45,45), 1000, 161));
+    //     loader.CreateBullet(1000 + i*3000 + 500, BulletData(rand_float(-500,500), 300, 0, rand_float(45,135), 0, 1000, 162));
+    //     loader.CreateBullet(1000 + i*3000 + 750, BulletData(500, rand_float(-300,300), 0, rand_float(-225,-135), 1000, 163));
     // }
 
     return loader;
@@ -248,13 +250,21 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
     Acceleration,
     AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material, Game::Render::Animator>(
         {}, Game::Render::Transform(0,-240), {}, {}, {},{},
-        Game::Physics::CircularCollider(24),
+        Game::Physics::CircularCollider(12),
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Player_Sprite")),
             .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 1,
             .u0 = 0.f, .v0 = 0.f, .u1 = 200.f/800.f, .v1 = 250.f/1500.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
         Game::Render::Animator{0}
     );
+
+    tm->create_entity<Game::BulletHell::PlayerHitbox, Game::Render::Transform, Game::Render::Sprite, Game::Render::Material>(
+        Game::BulletHell::PlayerHitbox(7.5f), Game::Render::Transform(0,-240),
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Hitbox")),
+            .pos = {{-12, 12, 0}, {12, 12, 0}, {12, -12, 0}, {-12, -12, 0}}, .color = {1,1,1,0}, .layer = 10},
+            Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))}
+    );
+
     auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
     tm->create_entity(
            Game::Test::FpsCounter{},
@@ -281,13 +291,13 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
 
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::HPBarMax},
-           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square20px")), .pos = {{-55, 12.5, 0}, {55, 12.5, 0}, {55, -12.5, 0}, {-55, -12.5, 0}}, .layer = 6},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square64px")), .pos = {{-510, 12, 0}, {510, 12, 0}, {510, -12, 0}, {-510, -12, 0}}, .layer = 6},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
            Game::Render::Transform{Math::Point{0, 300, 0}, 0, 0, 0});
 
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::HpBar},
-           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-50, 10, 0}, {50, 10, 0}, {50, -10, 0}, {-50, -10, 0}}, .color = {0.2f,1,0.2f}, .layer = 5},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-500, 10, 0}, {500, 10, 0}, {500, -10, 0}, {-500, -10, 0}}, .color = {0.2f,1,0.2f}, .layer = 5},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
            Game::Render::Transform{Math::Point{0, 300, 0}, 0, 0, 0});
     tm->run_all();

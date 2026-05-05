@@ -20,6 +20,7 @@
 #include "game/systems/bullethell/special_pattern_system.h"
 #include "game/systems/bullethell/particle_system.h"
 #include "game/systems/bullethell/bullet_load_system.h"
+#include "game/systems/bullethell/player_anim_system.h"
 #include "game/systems/bullethell/logging_system.h" // Only for demo
 
 // Rhythm Part
@@ -39,8 +40,10 @@
 #include "systems/render/draw_text.h"
 #include "systems/render/draw_triangle.h"
 #include "systems/render/set_camera.h"
+
 // Test
 #include "systems/test/fps_counter.h"
 #include "systems/test/spin_camera.h"
 #include "systems/test/spin_sprite.h"
 #include "systems/test/stat_text_render.h"
+#include "systems/test/draw_collider.h"
