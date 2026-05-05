@@ -64,7 +64,7 @@ namespace Game::BulletHell
             auto &homing_c = comps.get<Homing>();
             const Math::Point target_pos = query2.front().get<Render::Transform>().position;
 
-            homing_c.expire_time -= get_delta_time();
+            homing_c.expire_time -= (int)get_delta_time();
             if (homing_c.expire_time <= 0)
             {
                 syscall.template remove_component<Homing>(id);

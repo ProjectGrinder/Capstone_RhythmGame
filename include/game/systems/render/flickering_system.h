@@ -19,7 +19,7 @@ namespace Game::Render
             }
             else
             {
-                if (flicker.init_alpha == UNASSIGNED)
+                if (flicker.init_alpha == -1)
                 {
                     flicker.init_alpha = sprite.color.a;
                 }

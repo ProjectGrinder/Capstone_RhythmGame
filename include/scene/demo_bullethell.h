@@ -5,6 +5,8 @@ namespace Scene
 {
     Game::Battle::BulletRegistry init_bullet_graphic();
 
+    Game::Render::AnimationDataRegistry init_anim_data();
+
     Game::Battle::PatternContainer create_pattern_container();
 
     Game::Battle::BulletLoader create_bullet_data();
@@ -58,6 +60,9 @@ namespace Scene
             Game::Render::Text,
             Game::Render::Flicker,
             Game::Render::Camera2D,
+            Game::Render::AnimationDataRegistry,
+            Game::Render::Anim_Transition,
+            Game::Render::Animator,
             Game::Rhythm::NoteType,
             Game::Audio::SoundRegistry,
             Game::Test::FpsCounter,
@@ -87,6 +92,8 @@ namespace Scene
             // Game::BulletHell::logging_system<Syscall>,
             Game::Battle::update_global_clock<Syscall>,
             Game::Render::set_camera<Syscall>,
+            Game::Render::anim_transition_system<Syscall>,
+            Game::Render::animation_system<Syscall>,
             Game::Render::draw_sprite<Syscall>,
             Game::Render::draw_text<Syscall>,
             Game::Test::stat_text_render<Syscall>,

@@ -21,7 +21,7 @@ namespace Game::BulletHell
             auto &tra = comps.get<Render::Transform>();
             auto &material = comps.get<Render::Material>();
 
-            if (bullet_clearer.lifetime == UNASSIGNED) bullet_clearer.lifetime = comps.get<Particle>().lifetime;
+            if (bullet_clearer.lifetime == -1) bullet_clearer.lifetime = comps.get<Particle>().lifetime;
 
             // Growing
             tra.scaleX = tra.scaleY = Physics::clamp(static_cast<float>(tra.scaleX + bullet_clearer.speed * get_delta_time()),0.f,bullet_clearer.max_size);
