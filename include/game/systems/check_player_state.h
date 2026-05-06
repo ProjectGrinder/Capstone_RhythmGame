@@ -21,7 +21,7 @@ namespace Game::Battle
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-Normal")), .text = "HP", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "HP", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{-200, 100, 0}, 0, 0, 0});
         syscall.template create_entity<
@@ -29,7 +29,7 @@ namespace Game::Battle
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-Normal")), .text = std::to_string(battle_state.hp), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = std::to_string(battle_state.hp), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{-100, 100, 0}, 0, 0, 0});
         syscall.template create_entity<
@@ -37,7 +37,7 @@ namespace Game::Battle
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-Normal")), .text = "Score", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Score", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{-200, 50, 0}, 0, 0, 0});
         syscall.template create_entity<
@@ -45,7 +45,7 @@ namespace Game::Battle
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-Normal")), .text = std::to_string(battle_state.score), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = std::to_string(battle_state.score), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{-100, 50, 0}, 0, 0, 0});
         syscall.template create_entity<
@@ -53,7 +53,7 @@ namespace Game::Battle
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-Normal")), .text = "PERFECT=" + std::to_string(battle_state.judgement_count.perfect_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "PERFECT=" + std::to_string(battle_state.judgement_count.perfect_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{-200, 0, 0}, 0, 0, 0});
         syscall.template create_entity<
@@ -61,7 +61,7 @@ namespace Game::Battle
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-Normal")), .text = "GREAT=" + std::to_string(battle_state.judgement_count.great_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "GREAT=" + std::to_string(battle_state.judgement_count.great_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0});
         syscall.template create_entity<
@@ -69,7 +69,7 @@ namespace Game::Battle
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-Normal")), .text = "FINE=" + std::to_string(battle_state.judgement_count.fine_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "FINE=" + std::to_string(battle_state.judgement_count.fine_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{-200, -50, 0}, 0, 0, 0});
         syscall.template create_entity<
@@ -77,7 +77,7 @@ namespace Game::Battle
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-Normal")), .text = "MISS=" + std::to_string(battle_state.judgement_count.miss_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "MISS=" + std::to_string(battle_state.judgement_count.miss_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{0, -50, 0}, 0, 0, 0});
         // syscall.template create_entity<

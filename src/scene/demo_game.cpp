@@ -319,7 +319,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::JudgementLine>
     (
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}},.color = {1,1,1,0}, .layer = 2},
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-450, 10, 0}, {450, 10, 0}, {450, -10, 0}, {-450, -10, 0}},.color = {1,1,1,0}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}
         );
@@ -333,7 +333,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     // tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(78500, 3000, Game::Battle::BULLET_HELL));
     // tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 2000, Game::Battle::RHYTHM));
 
-    const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
+    const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::HPBarMax},
@@ -363,18 +363,18 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     Game::Render::Material,
     Game::Render::Transform>
     (
-        Game::Render::Text{.font = font, .text = "SCORE", .layer = 5},
+        Game::Render::Text{.font = font, .text = "SCORE", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{400, 400, 0}, 0, 0, 0});
+        Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
     tm->create_entity<Game::Battle::Score,
     Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform>
     (
         Game::Battle::Score(),
-        Game::Render::Text{.font = font, .text = "0", .layer = 5},
+        Game::Render::Text{.font = font, .text = "0", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 3 / 4, 0}, 0, 0, 0}
+        Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 4/5 - 50, 0}, 0, 0, 0}
         );
 
     tm->create_entity<Game::Battle::UIComponent,

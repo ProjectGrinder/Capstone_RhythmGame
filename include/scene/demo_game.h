@@ -85,7 +85,7 @@ namespace Scene
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
-            Game::Audio::SoundRegistry
+            Game::Audio::SoundRegistry,
             Game::Battle::Score
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
