@@ -103,7 +103,6 @@ namespace Game::Battle
 
     enum PlayerState
     {
-        READY,
         PLAY,
         DEAD,
         FINISH
@@ -126,11 +125,11 @@ namespace Game::Battle
         JudgementCount judgement_count;
         CurrentPhase current_phase;
         BattleState() :
-            max_hp(0), hp(0), score(0), combo(0), clock_time(-3000000), total_accept(0), current_accept(0), max_accept_gauge(0), player_state(READY), current_phase(BULLET_HELL)
+            max_hp(0), hp(0), score(0), combo(0), clock_time(-3000000), total_accept(0), current_accept(0), max_accept_gauge(0), player_state(PLAY), current_phase(BULLET_HELL)
         {}
         explicit BattleState(
                 const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :
-            max_hp(max_hp), hp(max_hp), score(0), combo(0), clock_time(-3000000), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), player_state(READY), difficulty(difficulty), current_phase(BULLET_HELL)
+            max_hp(max_hp), hp(max_hp), score(0), combo(0), clock_time(-3000000), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), player_state(PLAY), difficulty(difficulty), current_phase(BULLET_HELL)
         {}
     };
 
