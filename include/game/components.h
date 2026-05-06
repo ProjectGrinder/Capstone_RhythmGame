@@ -6,7 +6,6 @@
 #include "components/battle/pattern_container.h"
 #include "components/battle/transition_data.h"
 #include "components/battle/ui_object.h"
-#include "components/battle/ui_display.h"
 
 #include "components/audio/audio.h"
 #include "components/bullethell/booming.h"

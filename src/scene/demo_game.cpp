@@ -5,8 +5,6 @@
 
 #include "game.h"
 
-using UI = Game::Battle::UIDisplay;
-
 void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
 {
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
@@ -50,14 +48,25 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
     using namespace Game::Physics;
 
     BulletLoader loader;
-    // for (int i=0;i<500;i++)
-    // {
-    //     for (int j=0;j<8;j++)
-    //     {
-    //         loader.CreateBullet(1000 + i*250 + j*50, BulletData(0, 0, 100, (static_cast<float>(j) *45) + 6 * i, 50,-45.f, 0, (i*8 + j)%158));
-    //     }
-    // }
+    for (int i=0;i<32;i++)
+    {
+        for (int j=0;j<8;j++)
+        {
+            loader.CreateBullet(i*250 + j*50, BulletData(0, 0, 100, (static_cast<float>(j) *45) + 6 * i, 50,-45.f, 0, (i*8 + j)%158));
+        }
+    }
 
+    for (int i=0;i<4;i++)
+    {
+        for (int j=0;j<2;j++)
+        {
+            loader.CreateBullet(18000 + i*2500 + j*500, BulletData(rand_float(-200,200), rand_float(-250,50), 0, 0, 1000, rand_int(169,177)));
+        }
+        loader.CreateBullet(19500 + i*2500, BulletData(rand_float(-200,200), -300, 0, -90, 1000, 160));
+        loader.CreateBullet(19500 + i*2500 + 250, BulletData(-500, rand_float(-250,50), 0, 0, 1000, 161));
+        loader.CreateBullet(19500 + i*2500 + 500, BulletData(rand_float(-200,200), 300, 0, 90, 0, 1000, 162));
+        loader.CreateBullet(19500 + i*2500 + 750, BulletData(500, rand_float(-250,50), 0, -180, 1000, 163));
+    }
 
     return (loader);
 }
@@ -73,16 +82,29 @@ Game::Battle::ChartData Scene::DemoGame::create_note_test()
         chart.lanes[lane].current_note = 0;
     }
 
-    // chart.lanes[0].notes.emplace_back(false, 8000 + 7500, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[1].notes.emplace_back(false, 8000 + 8000, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[2].notes.emplace_back(false, 8000 + 8500, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[3].notes.emplace_back(false, 8000 + 9000, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[0].notes.emplace_back(false, 8000 + 9500, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[1].notes.emplace_back(false, 8000 + 10000, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[2].notes.emplace_back(false, 8000 + 10500, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[3].notes.emplace_back(false, 8000 + 11000, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[0].notes.emplace_back(true, 8000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[3].notes.emplace_back(true, 8000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
+    chart.lanes[0].notes.emplace_back(false, 5000 + 7500, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(false, 5000 + 8000, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[2].notes.emplace_back(false, 5000 + 8500, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[3].notes.emplace_back(false, 5000 + 9000, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[0].notes.emplace_back(false, 5000 + 9500, 0, Game::Battle::RhythmType::ACCENT);
+    chart.lanes[1].notes.emplace_back(false, 5000 + 10000, 0, Game::Battle::RhythmType::ACCENT);
+    chart.lanes[2].notes.emplace_back(false, 5000 + 10500, 0, Game::Battle::RhythmType::ACCENT);
+    chart.lanes[3].notes.emplace_back(false, 5000 + 11000, 0, Game::Battle::RhythmType::ACCENT);
+    chart.lanes[0].notes.emplace_back(true, 5000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
+    chart.lanes[3].notes.emplace_back(true, 5000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
+
+    for (int i=0;i<80;i++)
+    {
+        chart.lanes[1].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::NORMAL);
+        if (i>12)
+        {
+            if (i%8==0)
+                chart.lanes[0].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::ACCENT);
+            if (i%8==4)
+                chart.lanes[3].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::ACCENT);
+        }
+        if (i==60) chart.lanes[2].notes.emplace_back(true, 30000 + i*100, 25000 + 80*100, Game::Battle::RhythmType::ACCENT);
+    }
 
     return (chart);
 }
@@ -293,16 +315,16 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     // temp judgement line
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
-    Game::Render::Transform, UI>
+    Game::Render::Transform>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0},
-        UI{UI::RHYTHM});
+        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}
+        );
 
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(1500, 3000, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(7500, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(10500, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(8000, 3000, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(17000, 1500, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(28000, 1500, Game::Battle::RHYTHM));
     // tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(15500, 3000, Game::Battle::RHYTHM));
     // tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(49000, 5000, Game::Battle::BULLET_HELL));
     // tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 2000, Game::Battle::RHYTHM));
@@ -326,24 +348,24 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     tm->create_entity<Game::Rhythm::JudgeText,
     Game::Render::Text,
     Game::Render::Material,
-    Game::Render::Transform, UI>
+    Game::Render::Transform>
     (
         Game::Rhythm::JudgeText(),
         Game::Render::Text{.font = font, .text = "", .layer = 100},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 2 / 3, 0}, 0, 0, 0},
-        UI{UI::RHYTHM});
+        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 2 / 3, 0}, 0, 0, 0}
+        );
 
     tm->create_entity<Game::Rhythm::Combo,
     Game::Render::Text,
     Game::Render::Material,
-    Game::Render::Transform, UI>
+    Game::Render::Transform>
     (
         Game::Rhythm::Combo(),
         Game::Render::Text{.font = font, .text = "", .layer = 100},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 3 / 4, 0}, 0, 0, 0},
-        UI{UI::RHYTHM});
+        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 3 / 4, 0}, 0, 0, 0}
+        );
 
     tm->create_entity<Game::Battle::UIComponent,
     Game::Render::Text,

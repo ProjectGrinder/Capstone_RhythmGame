@@ -64,8 +64,7 @@ namespace Scene
             Game::Rhythm::KeyInput,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
-            Game::Audio::SoundRegistry,
-            Game::Battle::UIDisplay
+            Game::Audio::SoundRegistry
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -77,7 +76,6 @@ namespace Scene
             Game::Battle::phase_player_change<Syscall>,
             Game::BulletHell::load_bullets<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
-            Game::BulletHell::particle_system<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
             Game::BulletHell::acceleration_system<Syscall>,
             Game::BulletHell::rotation_system<Syscall>,
@@ -100,14 +98,14 @@ namespace Scene
             Game::Rhythm::update_judge_text<Syscall>,
             Game::Rhythm::update_combo<Syscall>,
             Game::Rhythm::update_notes<Syscall>,
-            Game::Render::flickering_system<Syscall>,
             Game::Render::set_camera<Syscall>,
+            Game::Render::flickering_system<Syscall>,
             Game::Render::draw_sprite<Syscall>,
             Game::Render::draw_text<Syscall>,
             Game::Render::anim_transition_system<Syscall>,
             Game::Render::animation_system<Syscall>,
-            Game::Test::stat_text_render<Syscall>,
-            Game::Render::flickering_system<Syscall>
+            Game::Test::stat_text_render<Syscall>
+
             >;
 
         static Game::Battle::BulletLoader create_bullet_test();
