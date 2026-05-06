@@ -3,7 +3,7 @@ namespace Game::Render
 {
     struct Flicker
     {
-        float init_alpha =UNASSIGNED;
+        float init_alpha = -1;
         bool flicker = false;
         int time;
         int flicker_rate;
