@@ -36,6 +36,7 @@ namespace Game::Battle
             rhythm_input.front().get<BulletHell::Input>().key3_hold = false;
             rhythm_input.front().get<BulletHell::Input>().key4_pressed = false;
             rhythm_input.front().get<BulletHell::Input>().key4_hold = false;
+            return;
         }
         // TODO: Change fixed key bindings to be rebindable
         constexpr auto LEFT = 0x25;
