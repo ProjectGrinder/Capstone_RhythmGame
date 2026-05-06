@@ -2,6 +2,7 @@
 
 #include "components/battle/battlestate.h"
 #include "components/battle/bullet_data.h"
+#include "components/battle/border.h"
 #include "components/battle/pattern_container.h"
 #include "components/battle/transition_data.h"
 #include "components/battle/ui_object.h"

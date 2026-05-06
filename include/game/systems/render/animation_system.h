@@ -12,13 +12,14 @@ namespace Game::Render
         System::ECS::Query<AnimationDataRegistry> &anim_data_query,
         System::ECS::Query<Sprite, Animator> &query)
     {
+        if (anim_data_query.begin() == anim_data_query.end())
+            return;
         const auto &anim_reg = anim_data_query.front().get<AnimationDataRegistry>();
 
         for (auto &[id, comp]: query)
         {
             auto &sprite = comp.get<Sprite>();
             auto &animator = comp.get<Animator>();
-            LOG_INFO("%d",animator.anim_id);
             if (animator.anim_id == -1) continue;
 
             const auto &anim_data = anim_reg.animation_datas.at(animator.anim_id);
@@ -48,6 +49,8 @@ namespace Game::Render
         System::ECS::Query<AnimationDataRegistry> &anim_data_query,
         System::ECS::Query<Sprite, Animator, Animation_Controller> &query)
     {
+        if (anim_data_query.begin() == anim_data_query.end())
+            return;
         const auto &anim_reg = anim_data_query.front().get<AnimationDataRegistry>();
 
         for (auto &[id, comp]: query)

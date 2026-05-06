@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/components.h"
+#include "game/utils/constant.h"
 
 namespace Game::BulletHell
 {
@@ -28,6 +29,9 @@ namespace Game::BulletHell
         if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
             return;
 
+        if (!query3.front().get<Player>().is_active)
+            return;
+
         auto &state = query.front().get<Battle::BulletHellState>();
         if (state.iframe_time > 0)
             state.iframe_time -= static_cast<int>(get_delta_time());
@@ -38,23 +42,11 @@ namespace Game::BulletHell
         // Assume 1 player
         query4.front().get<Render::Transform>() = query3.front().get<Render::Transform>();
         float& alpha = query4.front().get<PlayerHitbox>().alpha;
-        if (input_query.front().get<Input>().shift)
-        {
-            if (alpha < 1)
-            {
+        if (input_query.front().get<Input>().shift && alpha < 1)
                 alpha += (float)get_delta_time()/1000.f * query4.front().get<PlayerHitbox>().show_speed;
-                query3.front().get<Render::Sprite>().color.a = 1.f-(alpha*0.6f);
-                query4.front().get<Render::Sprite>().color.a = alpha;
-            }
-        }
-        else
-        {
-            if (alpha > 0)
-            {
+        else if (!input_query.front().get<Input>().shift && alpha > 0)
                 alpha -= (float)get_delta_time()/1000.f * query4.front().get<PlayerHitbox>().show_speed;
-                query3.front().get<Render::Sprite>().color.a = 1.f-(alpha*0.6f);
-                query4.front().get<Render::Sprite>().color.a = alpha;
-            }
-        }
+        query3.front().get<Render::Sprite>().color.a = 1.f-(alpha*0.6f);
+        query4.front().get<Render::Sprite>().color.a = alpha;
     }
 } // namespace Game::BulletHell

@@ -68,8 +68,10 @@ namespace Game::Render
                 intent.common.sp = font;
                 intent.common.info.sp_id = ASSET_INDEX(font->id);
 
+                const Math::Point scale_point(Math::Point(tra.scaleX, tra.scaleY,1));
+
                 intent.special.sprite = System::Render::SpriteDrawDesc{
-                .points = {glyph_top_left, glyph_top_right, glyph_bottom_right, glyph_bottom_left},
+                .points = {glyph_top_left*scale_point, glyph_top_right*scale_point, glyph_bottom_right*scale_point, glyph_bottom_left*scale_point},
                 .color = color,
                 .u0 = u0,
                 .v0 = v0,

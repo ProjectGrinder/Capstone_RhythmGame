@@ -35,6 +35,7 @@
 #include "game/systems/rhythm/update_notes.h"
 // General Battle Part
 #include "game/systems/phase_change.h"
+#include "game/systems/phase_change_effect.h"
 #include "game/systems/global_clock.h"
 // Rendering Part
 #include "systems/render/animation_system.h"

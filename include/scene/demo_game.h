@@ -19,11 +19,13 @@ namespace Scene
             Game::Battle::BulletHellState,
             Game::Battle::BulletRegistry,
             Game::Battle::BulletLoader,
+            Game::Battle::Border,
             Game::Battle::PatternContainer,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
             Game::Battle::LevelData,
             Game::Battle::TransitionData,
+            Game::Battle::UIComponent,
             Game::BulletHell::Bullet,
             Game::BulletHell::BulletClearer,
             Game::BulletHell::Input,
@@ -49,6 +51,9 @@ namespace Scene
             Game::Render::Text,
             Game::Render::Camera2D,
             Game::Render::Flicker,
+            Game::Render::AnimationDataRegistry,
+            Game::Render::Animation_Controller,
+            Game::Render::Animator,
             Game::Rhythm::NoteType,
             Game::Rhythm::Lane,
             Game::Rhythm::Timing,
@@ -60,10 +65,6 @@ namespace Scene
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Audio::SoundRegistry,
-            Game::Test::LifeText,
-            Game::Test::GrazeText,
-            Game::Battle::HpBarMax,
-            Game::Battle::HpBar,
             Game::Battle::UIDisplay
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
@@ -72,6 +73,8 @@ namespace Scene
             Game::Battle::input_system<Syscall>,
             Game::Battle::phase_change<Syscall>,
             Game::Battle::update_global_clock<Syscall>,
+            Game::Battle::phase_border_change<Syscall>,
+            Game::Battle::phase_player_change<Syscall>,
             Game::BulletHell::load_bullets<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::particle_system<Syscall>,
@@ -81,6 +84,7 @@ namespace Scene
             Game::BulletHell::bullet_collision<Syscall>,
             Game::BulletHell::bullet_clearer_system<Syscall>,
             Game::BulletHell::player_system<Syscall>,
+            Game::BulletHell::player_anim_system<Syscall>,
             Game::BulletHell::delay_system<Syscall>,
             Game::BulletHell::bullet_system<Syscall>,
             Game::BulletHell::particle_system<Syscall>,
@@ -99,7 +103,11 @@ namespace Scene
             Game::Render::flickering_system<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::draw_sprite<Syscall>,
-            Game::Render::draw_text<Syscall>
+            Game::Render::draw_text<Syscall>,
+            Game::Render::anim_transition_system<Syscall>,
+            Game::Render::animation_system<Syscall>,
+            Game::Test::stat_text_render<Syscall>,
+            Game::Render::flickering_system<Syscall>
             >;
 
         static Game::Battle::BulletLoader create_bullet_test();

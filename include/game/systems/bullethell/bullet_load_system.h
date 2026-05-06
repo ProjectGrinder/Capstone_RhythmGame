@@ -24,7 +24,7 @@ namespace Game::BulletHell
         syscall.add_components(bullet, Render::Sprite{
                     .sp = get_assets_record_ptr(get_assets_id("bullet_sprite")),
                     .pos = {{bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[1], 0}, {bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[1], 0}},
-                    .layer = 1,
+                    .layer = 5,
                     .u0 = static_cast<float>(bullet_graphic.src_rect[0]) /512,
                     .v0 = static_cast<float>(bullet_graphic.src_rect[1])/512,
                     .u1 = static_cast<float>(bullet_graphic.src_rect[2])/512,
