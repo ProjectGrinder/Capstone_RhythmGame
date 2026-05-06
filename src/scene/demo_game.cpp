@@ -243,8 +243,8 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     (
         Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
-        Game::Battle::RhythmState(1, 500, 60, 4.0f, 4.0f),
-        init_bullet_graphic(),
+        Game::Battle::RhythmState(1, 100, 60, 2.0f, 2.0f),
+        read_bullet_data_from_file("ShotData.txt"),
         create_bullet_test(),
         create_pattern_container(),
         init_anim_data(),

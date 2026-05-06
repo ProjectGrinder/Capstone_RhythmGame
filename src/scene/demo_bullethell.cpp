@@ -42,29 +42,25 @@ Game::Render::AnimationDataRegistry Scene::init_anim_data()
             {{0.25f,0.167f},5,4,10},
         }
     };
-
     return anim_datas;
-}
-
-Game::Battle::BulletRegistry Scene::init_bullet_graphic()
-{
-    using namespace Game::Battle;
-    using namespace Game::Physics;
-
-    BulletRegistry test{};
-    read_bullet_data_from_file("ShotData.txt", test);
-    return {test};
 }
 
 Game::Battle::PatternContainer Scene::create_pattern_container()
 {
     using namespace Game::Battle;
     const std::vector<PatternStep> demo_step = {
+
+
+
+
         PatternStep(3000, OP_ADD, 2, 15),  // 3s Rot+15
         PatternStep(3000, OP_ADD, 2, -15), // 3s Rot-15
         PatternStep(3000, OP_SET, 1, 3),   // 3s Vel=3
 };
     const std::vector<PatternSequence> demo_pattern = {
+
+
+
         PatternSequence(false),
         PatternSequence(false, 0, 2),
         PatternSequence(false, 1, 2),
@@ -137,74 +133,6 @@ Game::Battle::BulletLoader Scene::create_bullet_data2()
     return loader;
 }
 
-Game::Battle::BulletLoader Scene::create_bullet_data_boom_test()
-{
-    using namespace Game::Battle;
-    using namespace Game::Physics;
-
-    BulletLoader loader;
-    for (int i=0;i<20;i++)
-    {
-        for (int j=0;j<4;j++)
-        {
-            loader.CreateBullet(1000 + i*3000 + j*100, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
-        }
-    }
-
-    return loader;
-}
-
-Game::Battle::BulletLoader Scene::create_bullet_data_laser_test()
-{
-    using namespace Game::Battle;
-    using namespace Game::Physics;
-
-    BulletLoader loader;
-    for (int i=0;i<20;i++)
-    {
-        loader.CreateBullet(1000 + i*3000, BulletData(rand_float(-500,500), -300, 0, rand_float(-135,-45), 1000, 176));
-        loader.CreateBullet(1000 + i*3000 + 250, BulletData(-500, rand_float(-300,300), 0, rand_float(-45,45), 1000, 177));
-        loader.CreateBullet(1000 + i*3000 + 500, BulletData(rand_float(-500,500), 300, 0, rand_float(45,135), 0, 1000, 178));
-        loader.CreateBullet(1000 + i*3000 + 750, BulletData(500, rand_float(-300,300), 0, rand_float(-225,-135), 1000, 179));
-    }
-
-    return loader;
-}
-
-Game::Battle::BulletLoader Scene::create_bullet_collision_test()
-{
-    using namespace Game::Battle;
-    using namespace Game::Physics;
-
-    BulletLoader loader;
-
-    // for (int i=0;i<500;i++)
-    // {
-    //     for (int j=0;j<8;j++)
-    //     {
-    //         loader.CreateBullet(1000 + i*250 + j*50, BulletData(0, 0, 100, (static_cast<float>(j) *45) + 6 * i, 50,-45.f, 0, (i*8 + j)%158));
-    //     }
-    // }
-
-    // for (int i=0;i<8;i++)
-    // {
-    //     for (int j=0;j<4;j++)
-    //     {
-    //         loader.CreateBullet(127000 + i*2000 + j*100, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, rand_int(169,177)));
-    //     }
-    // }
-
-    // for (int i=0;i<10;i++)
-    // {
-    //     loader.CreateBullet(1000 + i*3000, BulletData(rand_float(-500,500), -300, 0, rand_float(-135,-45), 1000, 160));
-    //     loader.CreateBullet(1000 + i*3000 + 250, BulletData(-500, rand_float(-300,300), 0, rand_float(-45,45), 1000, 161));
-    //     loader.CreateBullet(1000 + i*3000 + 500, BulletData(rand_float(-500,500), 300, 0, rand_float(45,135), 0, 1000, 162));
-    //     loader.CreateBullet(1000 + i*3000 + 750, BulletData(500, rand_float(-300,300), 0, rand_float(-225,-135), 1000, 163));
-    // }
-
-    return loader;
-}
-
 Scene::DemoBulletHell Scene::DemoBulletHell::instance()
 {
     static DemoBulletHell instance;
@@ -230,8 +158,8 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
     (
         Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
-        init_bullet_graphic(),
-        create_bullet_collision_test(),
+        read_bullet_data_from_file("ShotData.txt"),
+        create_bullet_data(),
         create_pattern_container(),
         init_anim_data(),
         Game::Audio::init_sounds(),

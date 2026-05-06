@@ -26,8 +26,8 @@ namespace Game::Battle
             auto &pos = border_spr.pos;
             auto quad_box = [&pos, &border_c](int i)
             {
-                pos[i].x += (BOX_BH_POS[i].x - pos[i].x) * static_cast<float>(get_delta_time())/border_c.init_reduce_smooth_factor;
-                pos[i].y += (BOX_BH_POS[i].y - pos[i].y) * static_cast<float>(get_delta_time())/border_c.init_reduce_smooth_factor;
+                pos[i].x += (BOX_BH_POS[i].x - pos[i].x) /border_c.init_reduce_smooth_factor;
+                pos[i].y += (BOX_BH_POS[i].y - pos[i].y) /border_c.init_reduce_smooth_factor;
             };
 
             for (int i=0;i<4;i++) quad_box(i);
@@ -60,7 +60,8 @@ namespace Game::Battle
         [[maybe_unused]] T &syscall,
         System::ECS::Query<BattleState> &battle_query,
         System::ECS::Query<TransitionData> &transition_query,
-        System::ECS::Query<BulletHell::Player, Render::Sprite> &player_query
+        System::ECS::Query<BulletHell::Player, Render::Sprite, Render::Material, Render::Animation_Controller> &player_query,
+        System::ECS::Query<BulletHell::PlayerHitbox, Render::Material> &player_hitbox_query
         )
     {
         if (battle_query.begin() == battle_query.end())
@@ -82,16 +83,28 @@ namespace Game::Battle
             {
                 if (transition_data.phase == BULLET_HELL)
                 {
+                    player_query.front().get<Render::Material>().visible = true;
+                    player_hitbox_query.front().get<Render::Material>().visible = true;
                     player_query.front().get<BulletHell::Player>().is_active = true;
                     player_spr.color.a = t;
                 }
 
                 else if (transition_data.phase == RHYTHM)
                 {
+                    if (player_query.front().get<BulletHell::Player>().is_active)
+                        player_query.front().get<Render::Animation_Controller>().to_id = 0;
                     player_query.front().get<BulletHell::Player>().is_active = false;
                     player_spr.color.a = 1 - t;
                 }
-
+            }
+            else if (transition_data.state == 2)
+            {
+                // Shut down
+                if (transition_data.phase == RHYTHM)
+                {
+                    player_query.front().get<Render::Material>().visible = false;
+                    player_hitbox_query.front().get<Render::Material>().visible = false;
+                }
             }
         }
     }
