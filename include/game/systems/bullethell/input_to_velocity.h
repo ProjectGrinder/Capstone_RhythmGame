@@ -22,10 +22,8 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query2)
         {
-            if (!comps.get<Player>().is_active) return;
-
             const auto &input = query1.front().get<Input>();
-            const float velocity_factor = (input.shift ? 200.f : 500.f);
+            float velocity_factor = (input.shift ? 200.f : 500.f);
 
             float x = input.axis_x;
             float y = input.axis_y;
@@ -35,6 +33,9 @@ namespace Game::BulletHell
                 x/=length;
                 y/=length;
             }
+
+            if (!comps.get<Player>().is_active)
+                velocity_factor = 0;
 
             comps.get<Physics::Velocity>().vx = x * velocity_factor;
             comps.get<Physics::Velocity>().vy = y * velocity_factor;
