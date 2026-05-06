@@ -60,12 +60,12 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
     {
         for (int j=0;j<2;j++)
         {
-            loader.CreateBullet(18000 + i*2500 + j*500, BulletData(rand_float(-200,200), rand_float(-250,50), 0, 0, 1000, rand_int(169,177)));
+            loader.CreateBullet(18000 + i*2500 + j*500, BulletData(rand_float(-200,200), rand_float(-200,50), 0, 0, 1000, rand_int(169,177)));
         }
         loader.CreateBullet(19500 + i*2500, BulletData(rand_float(-200,200), -300, 0, -90, 1000, 160));
-        loader.CreateBullet(19500 + i*2500 + 250, BulletData(-500, rand_float(-250,50), 0, 0, 1000, 161));
+        loader.CreateBullet(19500 + i*2500 + 250, BulletData(-500, rand_float(-200,50), 0, 0, 1000, 161));
         loader.CreateBullet(19500 + i*2500 + 500, BulletData(rand_float(-200,200), 300, 0, 90, 0, 1000, 162));
-        loader.CreateBullet(19500 + i*2500 + 750, BulletData(500, rand_float(-250,50), 0, -180, 1000, 163));
+        loader.CreateBullet(19500 + i*2500 + 750, BulletData(500, rand_float(-200,50), 0, -180, 1000, 163));
     }
 
     return (loader);
@@ -315,11 +315,11 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     // temp judgement line
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
-    Game::Render::Transform>
+    Game::Render::Transform, Game::Rhythm::JudgementLine>
     (
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}}, .layer = 2},
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}},.color = {1,1,1,0}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}
+        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}
         );
 
     tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(8000, 3000, Game::Battle::RHYTHM));

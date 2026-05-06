@@ -43,6 +43,7 @@ namespace Game::Battle
                 transition_text.text = "1";
                 transition_text.color = Math::Color{1,0.2f,0.2f,1};
                 transition_data.state = 1;
+                battle_state.current_phase = transition_data.phase;
             }
             else if (transition_data.state == 1 && transition_data.timing_start + transition_data.duration < battle_state.clock_time/1000)
             {
@@ -58,7 +59,7 @@ namespace Game::Battle
                     transition_text.text = "Respond";
                 }
                 transition_text.color = Math::Color{1,0.2f,0.2f,1};
-                battle_state.current_phase = transition_data.phase;
+                // battle_state.current_phase = transition_data.phase;
                 transition_data.state = 0;
 
             }

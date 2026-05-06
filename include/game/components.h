@@ -46,5 +46,6 @@
 #include "components/rhythm/notestatus.h"
 #include "components/rhythm/notetype.h"
 #include "components/rhythm/timing.h"
+#include "components/rhythm/judgement_line.h"
 
 #include "system/ecs.h"

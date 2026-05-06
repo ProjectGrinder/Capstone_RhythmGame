@@ -95,4 +95,48 @@ namespace Game::Battle
             }
         }
     }
+
+    template<typename T>
+    void phase_judgement_change(
+        [[maybe_unused]] T &syscall,
+        System::ECS::Query<BattleState> &battle_query,
+        System::ECS::Query<TransitionData> &transition_query,
+        System::ECS::Query<Rhythm::JudgementLine, Render::Sprite> &judgement_query
+        )
+    {
+        if (battle_query.begin() == battle_query.end())
+            return;
+
+        if (judgement_query.begin() == judgement_query.end())
+            return;
+
+        auto &battle_state = battle_query.front().get<BattleState>();
+        auto &judgement_spr = judgement_query.front().get<Render::Sprite>();
+        auto &pos = judgement_spr.pos;
+
+        for (auto &[id, comps] : transition_query)
+        {
+            const auto &transition_data = comps.get<TransitionData>();
+            const float duration = static_cast<float>(transition_data.duration) * 1 / 3;
+            const float t = (battle_state.clock_time/1000 - transition_data.timing_start - duration*(3-transition_data.state))/duration;
+            // Changing state
+            if (transition_data.state == 3 && transition_data.phase == BULLET_HELL)
+            {
+                pos[0] = {-500*(1-t),5,0};
+                pos[1] = {500*(1-t),5,0};
+                pos[2] = {500*(1-t),-5,0};
+                pos[3] = {-500*(1-t),-5,0};
+                judgement_spr.color.a = (1-t);
+            }
+            else if (transition_data.state == 1 && transition_data.phase == RHYTHM)
+            {
+                pos[0] = {-500*t,5,0};
+                pos[1] = {500*t,5,0};
+                pos[2] = {500*t,-5,0};
+                pos[3] = {-500*t,-5,0};
+                judgement_spr.color.a = t;
+
+            }
+        }
+    }
 } // namespace Game::Battle

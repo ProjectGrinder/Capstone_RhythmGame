@@ -64,6 +64,7 @@ namespace Scene
             Game::Rhythm::KeyInput,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
+            Game::Rhythm::JudgementLine,
             Game::Audio::SoundRegistry
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
@@ -74,6 +75,7 @@ namespace Scene
             Game::Battle::update_global_clock<Syscall>,
             Game::Battle::phase_border_change<Syscall>,
             Game::Battle::phase_player_change<Syscall>,
+            Game::Battle::phase_judgement_change<Syscall>,
             Game::BulletHell::load_bullets<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
