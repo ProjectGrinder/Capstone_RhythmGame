@@ -36,6 +36,7 @@
 #include "game/systems/phase_change.h"
 #include "game/systems/global_clock.h"
 #include "game/systems/check_player_state.h"
+#include "game/systems/update_score.h"
 // Main Menu Part
 
 // Rendering Part

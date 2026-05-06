@@ -83,6 +83,7 @@ namespace Scene
             Game::Test::GrazeText,
             Game::Battle::HpBarMax,
             Game::Battle::HpBar,
+            Game::Battle::Score,
             Game::Battle::UIDisplay
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
@@ -120,7 +121,8 @@ namespace Scene
             Game::Render::flickering_system<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::draw_sprite<Syscall>,
-            Game::Render::draw_text<Syscall>
+            Game::Render::draw_text<Syscall>,
+            Game::Battle::update_score<Syscall>
             >;
 
         static Game::Battle::BulletLoader create_bullet_test();

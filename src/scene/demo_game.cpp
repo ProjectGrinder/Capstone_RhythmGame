@@ -226,7 +226,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     (
         Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
-        Game::Battle::RhythmState(1, 100, 60, 2.0f, 2.0f),
+        Game::Battle::RhythmState(1, 500, 60, 4.0f, 4.0f),
         init_bullet_graphic(),
         create_bullet_test(),
         create_pattern_container(),
@@ -285,25 +285,25 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
 
     const auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
-    tm->create_entity<Game::Test::LifeText,
-    Game::Render::Text,
-    Game::Render::Material,
-    Game::Render::Transform>(
-           Game::Test::LifeText{},
-           Game::Render::Text{.font = font, .text = "0"},
-           Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-           Game::Render::Transform{Math::Point{-600, 200, 0}, 0, 0, 0}),
-            UI{UI::BULLET};
-
-    tm->create_entity<Game::Test::GrazeText,
-    Game::Render::Text,
-    Game::Render::Material,
-    Game::Render::Transform>(
-           Game::Test::GrazeText{},
-           Game::Render::Text{.font = font, .text = "0"},
-           Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-           Game::Render::Transform{Math::Point{400, 200, 0}, 0, 0, 0}),
-            UI{UI::BULLET};
+    // tm->create_entity<Game::Test::LifeText,
+    // Game::Render::Text,
+    // Game::Render::Material,
+    // Game::Render::Transform>(
+    //        Game::Test::LifeText{},
+    //        Game::Render::Text{.font = font, .text = "0"},
+    //        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+    //        Game::Render::Transform{Math::Point{-600, 200, 0}, 0, 0, 0}),
+    //         UI{UI::BULLET};
+    //
+    // tm->create_entity<Game::Test::GrazeText,
+    // Game::Render::Text,
+    // Game::Render::Material,
+    // Game::Render::Transform>(
+    //        Game::Test::GrazeText{},
+    //        Game::Render::Text{.font = font, .text = "0"},
+    //        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+    //        Game::Render::Transform{Math::Point{400, 200, 0}, 0, 0, 0}),
+    //         UI{UI::BULLET};
 
     tm->create_entity<Game::Battle::HpBarMax,
     Game::Render::Sprite,
@@ -334,16 +334,36 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
         Game::Render::Transform{Math::Point{0, half_height * 2 / 3, 0}, 0, 0, 0},
         UI{UI::RHYTHM});
 
-    tm->create_entity<Game::Rhythm::Combo,
+    tm->create_entity<
     Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform, UI>
     (
-        Game::Rhythm::Combo(),
-        Game::Render::Text{.font = font, .text = "", .layer = 5},
+        Game::Render::Text{.font = font, .text = "SCORE", .layer = 5},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, half_height * 3 / 4, 0}, 0, 0, 0},
-        UI{UI::RHYTHM});
+        Game::Render::Transform{Math::Point{400, 400, 0}, 0, 0, 0},
+        UI{UI::BOTH});
+    tm->create_entity<Game::Battle::Score,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform, UI>
+    (
+        Game::Battle::Score(),
+        Game::Render::Text{.font = font, .text = "0", .layer = 5},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{400, 350, 0}, 0, 0, 0},
+        UI{UI::BOTH});
+
+    // tm->create_entity<Game::Rhythm::Combo,
+    // Game::Render::Text,
+    // Game::Render::Material,
+    // Game::Render::Transform, UI>
+    // (
+    //     Game::Rhythm::Combo(),
+    //     Game::Render::Text{.font = font, .text = "", .layer = 5},
+    //     Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+    //     Game::Render::Transform{Math::Point{0, half_height * 3 / 4, 0}, 0, 0, 0},
+    //     UI{UI::RHYTHM});
 
     return (tm);
 }
