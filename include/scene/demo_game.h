@@ -71,6 +71,7 @@ namespace Scene
             Game::Battle::input_system<Syscall>,
             Game::Battle::phase_change<Syscall>,
             Game::Battle::update_global_clock<Syscall>,
+            Game::Battle::check_player_state<Syscall>,
             Game::BulletHell::load_bullets<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::particle_system<Syscall>,
