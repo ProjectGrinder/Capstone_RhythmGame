@@ -8,6 +8,7 @@ namespace Game::Battle
         [[maybe_unused]] T &syscall,
         System::ECS::Query<TransitionData> &transition_query,
         System::ECS::Query<BattleState> &battle_query,
+        System::ECS::Query<Audio::SoundRegistry> &sound_query,
         System::ECS::Query<UIComponent, Render::Text, Render::Material, Render::Transform> &transition_text_query)
     {
         if (battle_query.begin() == battle_query.end())
@@ -15,6 +16,16 @@ namespace Game::Battle
 
         auto &battle_state = battle_query.front().get<BattleState>();
         auto &transition_text = transition_text_query.front().get<Render::Text>();
+
+        // Init Music. Fix later
+        if (battle_state.clock_time>=0 && battle_state.clock_time<1000)
+        {
+            if (!sound_query.front().get<Audio::SoundRegistry>().audios["DemoSong"].play)
+            {
+                Audio::audio_play(sound_query.front().get<Audio::SoundRegistry>().audios["DemoSong"]);
+                sound_query.front().get<Audio::SoundRegistry>().audios["DemoSong"].play = true;
+            }
+        }
 
         for (auto &[id, comps] : transition_query)
         {

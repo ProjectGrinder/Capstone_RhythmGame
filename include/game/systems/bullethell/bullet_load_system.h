@@ -38,13 +38,13 @@ namespace Game::BulletHell
         switch (bullet_info.graphic_data.bullet_spawn_sound)
         {
             case 1 :
-                Audio::audio_play(sounds["sound_bullet_spawn_0"]);
+                // Audio::audio_play(sounds["sound_bullet_spawn_0"]);
                 break;
             case 2 :
-                Audio::audio_play(sounds["sound_bullet_spawn_1"]);
+                // Audio::audio_play(sounds["sound_bullet_spawn_1"]);
                 break;
             case 3 :
-                Audio::audio_play(sounds["sound_bullet_spawn_2"]);
+                //  Audio::audio_play(sounds["sound_bullet_spawn_2"]);
                 break;
             default:;
         }

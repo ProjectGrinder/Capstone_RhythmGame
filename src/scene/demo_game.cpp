@@ -242,7 +242,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
         Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
         Game::Battle::RhythmState(1, 100, 60, 2.0f, 2.0f),
-        init_bullet_graphic(),
+        read_bullet_data_from_file("ShotData.txt"),
         create_bullet_test(),
         create_pattern_container(),
         init_anim_data(),
@@ -331,7 +331,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     // tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(78500, 3000, Game::Battle::BULLET_HELL));
     // tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 2000, Game::Battle::RHYTHM));
 
-    const auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
+    const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::HPBarMax},

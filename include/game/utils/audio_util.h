@@ -17,7 +17,8 @@ namespace Game::Audio
             load_audio("audio/fishdam1.wav","sound_hit"),
             load_audio("audio/edm-clap-53.wav","base_note"),
             load_audio("audio/VEC2 Percussion 32.wav","accent_fx"),
-            load_audio("audio/edm-hihat-12.wav","rain_note")
+            load_audio("audio/edm-hihat-12.wav","rain_note"),
+            load_audio("audio/DemoSong.wav","DemoSong")
         };
         SoundRegistry sound_registry;
         sound_registry.audios.insert({
@@ -41,7 +42,8 @@ namespace Game::Audio
             // {"sound_note_miss",Audio(sound_ptr[6])},
             {"sound_note_hit", Audio(sound_ptr[7])},
             {"sound_rain_note", Audio(sound_ptr[9])},
-            {"sound_accent_effect", Audio(sound_ptr[8])}
+            {"sound_accent_effect", Audio(sound_ptr[8])},
+            {"DemoSong", Audio(sound_ptr[10])}
         });
 
         for (const auto& [key, sound] : sound_registry.audios) {

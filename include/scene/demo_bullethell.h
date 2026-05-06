@@ -3,8 +3,6 @@
 
 namespace Scene
 {
-    Game::Battle::BulletRegistry init_bullet_graphic();
-
     Game::Render::AnimationDataRegistry init_anim_data();
 
     Game::Battle::PatternContainer create_pattern_container();
@@ -12,11 +10,6 @@ namespace Scene
     Game::Battle::BulletLoader create_bullet_data();
 
     Game::Battle::BulletLoader create_bullet_data2();
-
-    Game::Battle::BulletLoader create_bullet_data_boom_test();
-
-    Game::Battle::BulletLoader create_bullet_data_laser_test();
-    Game::Battle::BulletLoader create_bullet_collision_test();
 
     struct DemoBulletHell
     {
