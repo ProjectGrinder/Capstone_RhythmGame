@@ -60,7 +60,7 @@ std::shared_ptr<Scene::DemoMenu::TaskManager> Scene::DemoMenu::init()
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{0, -360, 0}, 0, 0, 0});
 
-    const auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
+    const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
     tm->create_entity<Game::Render::Text,
     Game::Render::Material,

@@ -281,7 +281,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(5000, 2000, Game::Battle::RHYTHM));
     tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(12000, 2000, Game::Battle::BULLET_HELL));
 
-    const auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
+    const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
     // tm->create_entity<Game::Test::LifeText,
     // Game::Render::Text,
