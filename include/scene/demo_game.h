@@ -1,5 +1,5 @@
 #pragma once
-#include "demo_rhythm.h"
+
 #include "game.h"
 
 namespace Scene
@@ -8,6 +8,26 @@ namespace Scene
 
     struct DemoGame
     {
+        template<typename T>
+        static void return_to_menu(
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<Game::Battle::BattleState> &battle_query)
+        {
+            if (battle_query.begin() == battle_query.end())
+                return;
+
+            if (battle_query.front().get<Game::Battle::BattleState>().player_state == Game::Battle::PlayerState::PLAY)
+                return;
+
+            constexpr auto ESC = 0x1B;
+
+            if (get_key_state(ESC))
+            {
+                LOG_INFO("Escape pressed");
+                Scene::queue_change_scene<DemoMenu>();
+            }
+        }
+
         static DemoGame instance();
 
         constexpr static auto name = "DemoGame";
@@ -68,6 +88,7 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
+            return_to_menu<Syscall>,
             Game::Battle::input_system<Syscall>,
             Game::Battle::phase_change<Syscall>,
             Game::Battle::update_global_clock<Syscall>,
