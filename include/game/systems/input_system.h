@@ -19,6 +19,25 @@ namespace Game::Battle
         if (bullet_hell_input.begin() == bullet_hell_input.end() || rhythm_input.begin() == rhythm_input.end())
             return;
 
+        // if not in play state, disable every gameplay input
+        if (query1.front().get<BattleState>().player_state != PlayerState::PLAY)
+        {
+            bullet_hell_input.front().get<BulletHell::Input>().axis_x = 0;
+            bullet_hell_input.front().get<BulletHell::Input>().axis_y = 0;
+            bullet_hell_input.front().get<BulletHell::Input>().x = false;
+            bullet_hell_input.front().get<BulletHell::Input>().z = false;
+            bullet_hell_input.front().get<BulletHell::Input>().shift = false;
+
+            rhythm_input.front().get<BulletHell::Input>().key1_pressed = false;
+            rhythm_input.front().get<BulletHell::Input>().key1_hold = false;
+            rhythm_input.front().get<BulletHell::Input>().key2_pressed = false;
+            rhythm_input.front().get<BulletHell::Input>().key2_hold = false;
+            rhythm_input.front().get<BulletHell::Input>().key3_pressed = false;
+            rhythm_input.front().get<BulletHell::Input>().key3_hold = false;
+            rhythm_input.front().get<BulletHell::Input>().key4_pressed = false;
+            rhythm_input.front().get<BulletHell::Input>().key4_hold = false;
+            return;
+        }
         // TODO: Change fixed key bindings to be rebindable
         constexpr auto LEFT = 0x25;
         constexpr auto UP = 0x26;
@@ -36,10 +55,10 @@ namespace Game::Battle
         switch (query1.front().get<BattleState>().current_phase)
         {
         case BULLET_HELL:
-            if (bullet_hell_input.begin() == bullet_hell_input.end())
-            {
-                break;
-            }
+            // if (bullet_hell_input.begin() == bullet_hell_input.end())
+            // {
+            //     break;
+            // }
             bullet_hell_input.front().get<BulletHell::Input>().axis_x =
                     static_cast<float>(get_key_state(RIGHT) - get_key_state(LEFT));
             bullet_hell_input.front().get<BulletHell::Input>().axis_y =
@@ -49,10 +68,10 @@ namespace Game::Battle
             bullet_hell_input.front().get<BulletHell::Input>().shift = get_key_state(LSHIFT);
             break;
         case RHYTHM:
-            if (rhythm_input.begin() == rhythm_input.end())
-            {
-                break;
-            }
+            // if (rhythm_input.begin() == rhythm_input.end())
+            // {
+            //     break;
+            // }
 
             if (get_key_state(D))
             {

@@ -37,6 +37,10 @@
 #include "game/systems/phase_change.h"
 #include "game/systems/phase_change_effect.h"
 #include "game/systems/global_clock.h"
+#include "game/systems/check_player_state.h"
+#include "game/systems/update_score.h"
+// Main Menu Part
+
 // Rendering Part
 #include "systems/render/animation_system.h"
 #include "systems/bullethell/shaking_system.h"
