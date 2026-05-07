@@ -9,7 +9,6 @@ namespace Scene
 
     // Use these methods for the demo level
     Game::Battle::ChartData create_level1_chart();
-    Game::Battle::LevelData create_level1_data(); // create this for the rhythm game system
 
     Math::Point field_to_point(int lane, const Game::Rhythm::NoteField &field);
 
