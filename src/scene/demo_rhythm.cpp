@@ -324,19 +324,6 @@ Game::Rhythm::NoteField Scene::create_field()
 
 inline Game::Battle::BpmInfo create_bpm_info()
 {
-    Game::Battle::BpmInfo bpm;
-    Game::Battle::BpmInfo::InfoPair info{};
-    info.bpm = 134.00f;
-    info.timing = 0;
-    bpm.bpm_list.emplace_back(info);
-    // info.bpm = 67.00f; // bro bpm becomes 67!!!
-    // info.timing = 6000;
-    // bpm.bpm_list.emplace_back(info);
-    return (bpm);
-}
-
-Game::Battle::BpmInfo Scene::create_rhythm_bpm()
-{
     Game::Battle::BpmInfo bpm_info;
     constexpr float bpm = 134.00f;
     constexpr std::array timing_list = {17910, 66269, 123582};
@@ -348,6 +335,18 @@ Game::Battle::BpmInfo Scene::create_rhythm_bpm()
     }
 
     return (bpm_info);
+}
+
+Game::Battle::LevelData create_level1_data()
+{
+    Game::Battle::LevelData level{
+    "A World Without You",
+    "Nakuya",
+    "Digital Jpop",
+    134.00f,
+    create_bpm_info(),
+    std::vector<Game::Battle::Difficulty>()};
+    return (level);
 }
 
 auto sp_accent = load_sprite("img/rhythm/base_accent.dds", "accent", 200, 40);
