@@ -11,6 +11,7 @@ as this duration is a direct indicator of runtime responsiveness and execution e
 
 For each framework, system frame duration is measured by recording a timestamp immediately before the execution of
 the user system and another immediately after.
+We repeat this process for different entity counts to observe underlying performance degradation.
 To evaluate the framework performance, we assume an instantaneous, highly optimized renderer.
 To this end, we minimize or exclude all rendering overhead present in each framework as much as possible, where applicable.
 This lets us take the system frame duration to be representative of the response time from input to output,
@@ -44,7 +45,7 @@ Bevy’s system chaining mechanism is used to guarantee deterministic execution 
 benchmark systems and the systems under test.
 Each user system is allowed to be parallelized by Bevy's ECS scheduler.
 To idiomatically measure only user systems and minimize additional overhead, we use Bevy's \texttt{MinimalPlugins} plugin group.
-According to related documentation, this plugin group represents the absolute minimum bare-bones application.
+According to related documentation~\cite{bevy_minimalplugins}, this plugin group represents the absolute minimum bare-bones application.
 
 The elapsed duration between the two timestamps was written both to standard output and to a log file
 using \texttt{std::fs::File} guarded by a mutex for safe access.
@@ -53,7 +54,7 @@ using \texttt{std::fs::File} guarded by a mutex for safe access.
 
 For the EnTT implementation, timing measurements were performed using C++’s \texttt{<chrono>} library.
 The benchmark instrumentation was placed directly within the main \texttt{update()} function responsible for executing all ECS systems.
-
+For the user system, we use a range-for implementation as documented in accordance to the framework's given code example~\cite{ValtoLibraries_EnTT}.
 
 A timestamp was recorded immediately before system execution using \texttt{std::chrono::steady\_clock::now()},
 and a second timestamp was recorded immediately after all systems completed execution.
