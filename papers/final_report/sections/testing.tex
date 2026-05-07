@@ -1,2 +1,71 @@
 \section{Testing and Experimentation}
 \label{sec:testing}
+
+\subsection{Methodology}
+\label{subsec:methodology}
+
+The purpose of the testing is to evaluate the performance characteristics of our custom engine in comparison with industry-standard
+ECS frameworks under comparable workloads.
+We assess performance through measuring system frame duration, the time required to run the user system,
+as this duration is a direct indicator of runtime responsiveness and execution efficiency.
+
+For each framework, system frame duration is measured by recording a timestamp immediately before the execution of
+the user system and another immediately after.
+We repeat this process for different entity counts to observe underlying performance degradation.
+To evaluate the framework performance, we assume an instantaneous, highly optimized renderer.
+To this end, we minimize or exclude all rendering overhead present in each framework as much as possible, where applicable.
+This lets us take the system frame duration to be representative of the response time from input to output,
+making it an effective metric for overall system performance.
+
+All ECS frameworks were tested using the language’s debug build profile.
+Systems for each framework were implemented according to official tutorials and documentation
+to ensure that implementations were idiomatic and representative of recommended usage patterns.
+
+All tests were executed on local hardware using the same machine and operating environment to ensure consistency across measurements.
+The test system specifications are as follows:
+
+\begin{itemize}
+    \item CPU: 11th Gen Intel(R) Core(TM) i7-11800H @ 2.30 GHz
+    \item GPU: Intel(R) UHD Graphics
+    \item Memory: 3200 MHz 16.0 GB RAM
+    \item Operating System: Windows 10 Version 22H2 (OS Build 19045.6466)
+\end{itemize}
+
+The user system used for the benchmark is a simple process that adds an entity's velocity to its position.
+This system is used as it measures the framework's efficiency in iteration and data modification.
+
+\subsubsection*{Bevy ECS}
+
+For the Bevy ECS implementation, timing measurements are performed using the Rust standard library's \texttt{std::time::Instant}.
+A benchmarking resource is defined to store frame timing information and maintain a handle to a log file for persistent output.
+
+Two benchmark systems are inserted into the Bevy update schedule: one system records the start timestamp immediately
+before execution of the user-defined systems, while another records the end timestamp immediately afterward.
+Bevy’s system chaining mechanism is used to guarantee deterministic execution order between the
+benchmark systems and the systems under test.
+Each user system is allowed to be parallelized by Bevy's ECS scheduler.
+To idiomatically measure only user systems and minimize additional overhead, we use Bevy's \texttt{MinimalPlugins} plugin group.
+According to related documentation~\cite{bevy_minimalplugins}, this plugin group represents the absolute minimum bare-bones application.
+
+The elapsed duration between the two timestamps was written both to standard output and to a log file
+using \texttt{std::fs::File} guarded by a mutex for safe access.
+
+\subsubsection*{EnTT}
+
+For the EnTT implementation, timing measurements were performed using C++’s \texttt{<chrono>} library.
+The benchmark instrumentation was placed directly within the main \texttt{update()} function responsible for executing all ECS systems.
+For the user system, we use a range-for implementation as documented in accordance to the framework's given code example~\cite{ValtoLibraries_EnTT}.
+
+A timestamp was recorded immediately before system execution using \texttt{std::chrono::steady\_clock::now()},
+and a second timestamp was recorded immediately after all systems completed execution.
+The elapsed duration was converted to microseconds using \texttt{std::chrono::duration\_cast}.
+
+Measured frame times were printed to standard output and appended to a persistent log file using \texttt{std::ofstream}.
+
+\subsubsection*{Custom Engine}
+
+For the custom engine, frame timing was measured using the Windows high-resolution timing API \texttt{QueryPerformanceCounter}.
+Timestamps were recorded before and after processing inputs and updating the scene within the main game loop.
+
+Timing values were converted to microseconds using the system performance frequency obtained from \texttt{QueryPerformanceFrequency}.
+Results were written to the engine logging system and manually extracted for later analysis and processing.
