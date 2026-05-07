@@ -74,7 +74,6 @@ namespace Game::BulletHell
                     }
                     if ((patt.mask & 2) > 0)
                     {
-                        LOG_INFO("%d",static_cast<int>(patt.p[p_idx]));
                         comps.get<Acceleration>().ax = comps.get<Acceleration>().ax * op + patt.p[p_idx];
                         p_idx++;
                     }

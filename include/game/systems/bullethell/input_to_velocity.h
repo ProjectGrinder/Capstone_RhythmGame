@@ -17,13 +17,16 @@ namespace Game::BulletHell
         if (query3.begin() == query3.end())
             return;
 
-        if (query3.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
-            return;
+        // if (query3.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)
+        //     return;
 
         for (auto &[id, comps] : query2)
         {
             const auto &input = query1.front().get<Input>();
             float velocity_factor = (input.shift ? 200.f : 500.f);
+
+            // Log timing
+            if (input.z_pressed) LOG_INFO("Timing : %d", query3.front().get<Battle::BattleState>().clock_time/1000)
 
             float x = input.axis_x;
             float y = input.axis_y;

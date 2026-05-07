@@ -65,6 +65,8 @@ namespace Game::Battle
                     static_cast<float>(get_key_state(UP) - get_key_state(DOWN));
             bullet_hell_input.front().get<BulletHell::Input>().x = get_key_state(X);
             bullet_hell_input.front().get<BulletHell::Input>().z = get_key_state(Z);
+            bullet_hell_input.front().get<BulletHell::Input>().z_pressed = get_key_state(Z) && !bullet_hell_input.front().get<BulletHell::Input>().z_hold;
+            bullet_hell_input.front().get<BulletHell::Input>().z_hold = get_key_state(Z);
             bullet_hell_input.front().get<BulletHell::Input>().shift = get_key_state(LSHIFT);
             break;
         case RHYTHM:
