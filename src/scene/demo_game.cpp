@@ -46,19 +46,16 @@ void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
 
 Game::Battle::PatternContainer create_pattern_container2()
 {
-    int t_beat = 448;
+    int t_beat = 447;
     using namespace Game::Battle;
     const std::vector<PatternStep> demo_step = {
-        PatternStep(400, OP_SET, 0b1000, 300),
-        PatternStep(0, OP_SET, 0b0100, -90),
-        PatternStep(0, OP_SET, 0b0010, 0),
-        PatternStep(1000, OP_SET, 0b1000, 300),
+        PatternStep(t_beat/2, OP_SET, 0b1110, 300, -90 ,0),
         PatternStep(t_beat/2, OP_SET, 0b0010, -5000),
 
 };
     const std::vector<PatternSequence> demo_pattern = {
-        PatternSequence(false, 0,1,2),
-        PatternSequence(false, 4),
+        PatternSequence(false, 0),
+        // PatternSequence(false, 4),
 
     };
     auto demo_pattern_container = PatternContainer(demo_step,demo_pattern);
@@ -72,11 +69,11 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
 
     BulletLoader loader;
 
-    int t_beat = 448;
+    int t_beat = 447;
     float b_offset = 0;
+    constexpr float time_per_beat = 60000.f / 134.f;
     auto beat_time = [](const float beat)
     {
-        const float time_per_beat = 60000.f / 134.f;
         return static_cast<int>(std::round(beat * time_per_beat));
     };
 
@@ -107,7 +104,7 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
     }
 
 
-    b_offset = 110;
+    b_offset = 116;
     for (int i=0; i < 3; i++, b_offset+=2.0f)
     {
         float randX;
@@ -215,9 +212,9 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
         }
     }
 
-    b_offset = 170;
+    b_offset = 180;
     loader.CreateBullet(beat_time(b_offset),BulletData(box_left + (box_right-box_left)/2, box_down + (box_up-box_down)/2, 0, 0, t_beat*2,t_beat*3, 176));
-    for (int i=0;i<448;i++, b_offset+=0.125f)
+    for (int i=0;i<480;i++, b_offset+=0.125f)
     {
         loader.CreateBullet(beat_time(b_offset),BulletData(box_left + (box_right-box_left)/2, box_down + (box_up-box_down)/2, 300, (float)i*42.f,0,5000,53));
         if (i>=192 && i%16==0)
@@ -232,7 +229,7 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
         }
     }
 
-    b_offset = 230;
+    b_offset = 244;
     for (int i=0; i < 3; i++, b_offset+=2.0f)
     {
         float randX;
@@ -360,7 +357,8 @@ inline Game::Battle::LevelData create_level1_chartdata()
     "Digital Jpop",
     134.00f,
     bpm,
-    std::vector<Game::Battle::Difficulty>());
+    std::vector<Game::Battle::Difficulty>(), 142000
+    );
 }
 
 Game::Battle::ChartData Scene::DemoGame::create_note_test()
@@ -598,11 +596,11 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
         Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}
         );
 
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16000, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(48000, 2000, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(62000, 1000, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(75000, 1000, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(115000, 1000, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16400, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(50149, 1500, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(80000, 1500, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 1000, Game::Battle::RHYTHM));
 
     const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 
