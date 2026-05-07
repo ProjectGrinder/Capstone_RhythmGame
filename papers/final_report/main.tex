@@ -14,6 +14,7 @@
 \usepackage{tabularx}
 \usepackage{array}
 \usepackage{multicol}
+\usepackage{multirow}
 
 \captionsetup[figure]{
     font={it, small},
@@ -96,7 +97,14 @@
         \input{sections/design}
         \input{sections/implementation}
         \input{sections/testing}
-        \input{sections/results}
+    \end{multicols}
+    \newpage
+    \begin{multicols}{1}
+        \input{sections/results_one_column}
+    \end{multicols}
+    \begin{multicols}{2}
+        \raggedcolumns
+        \input{sections/results_two_column}
     \end{multicols}
     \begin{multicols}{1}
         \input{sections/team_one_column}

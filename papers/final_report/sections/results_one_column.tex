@@ -1,0 +1,27 @@
+\section{Results and Analysis}
+\label{sec:results-and-analysis}
+
+\subsection{Test Results}
+\label{subsec:test-results}
+\vspace{1em}
+\centering
+\small
+\begin{minipage}{\textwidth}
+    \begin{tabularx}{\textwidth}{|Y|Y|Y|Y|}
+        \hline
+        \multirow{2}{*}{\textbf{Entity Count}} &
+        \multicolumn{3}{c|}{\textbf{System Frame Duration (in microseconds)}} \\
+        \cline{2-4}
+        & \textbf{Bevy ECS} & \textbf{EnTT} & \textbf{Custom Engine} \\
+        \hline
+        1000 & 144.8 & 229.9 & 27.5 \\
+        2000 & 264.0 & 452.5 & 56.6 \\
+        4000 & 503.7 & 917.4 & 101.5 \\
+        8000 & 969.4 & 1811.5 & 200.0 \\
+        16000 & 1977.4 & 3529.7 & 402.7 \\
+        \hline
+    \end{tabularx}
+    \captionof{table}{System frame duration for each ECS framework}
+    \label{tab:system-frame-duration-benchmark}
+\end{minipage}
+
