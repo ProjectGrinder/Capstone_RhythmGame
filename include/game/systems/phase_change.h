@@ -17,8 +17,9 @@ namespace Game::Battle
         auto &battle_state = battle_query.front().get<BattleState>();
         auto &transition_text = transition_text_query.front().get<Render::Text>();
 
+
         // Init Music. Fix later
-        if (battle_state.clock_time>=0 && battle_state.clock_time<1000)
+        if (battle_state.clock_time>=0 && battle_state.clock_time/1000<1000)
         {
             if (!sound_query.front().get<Audio::SoundRegistry>().audios["DemoSong"].play)
             {

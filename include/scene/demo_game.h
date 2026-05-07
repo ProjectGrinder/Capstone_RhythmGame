@@ -113,6 +113,7 @@ namespace Scene
             Game::BulletHell::particle_system<Syscall>,
             Game::BulletHell::boomer_system<Syscall>,
             Game::BulletHell::laser_system<Syscall>,
+            Game::BulletHell::pattern_system<Syscall>,
             Game::BulletHell::bounce_pattern_system<Syscall>,
             Game::BulletHell::homing_pattern_system<Syscall>,
             Game::Rhythm::handle_bpm<Syscall>,

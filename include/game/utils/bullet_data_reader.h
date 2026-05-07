@@ -188,10 +188,6 @@ inline Game::Battle::BulletRegistry read_bullet_data_from_file(const char *filep
         {
             current.pierce = std::stoi(line.substr(7, line.size() - 7 + 1));
         }
-        else if (line.starts_with("lifetime"))
-        {
-            current.lifetime = std::stoi(line.substr(9, line.size() - 9 + 1)) * 1000 / 60;
-        }
         file_free(&file_content);
     }
 

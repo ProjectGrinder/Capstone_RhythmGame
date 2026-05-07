@@ -15,7 +15,7 @@ namespace Game::BulletHell
         syscall.add_components(bullet, Rotation(bullet_data.rot,true), Velocity(bullet_data.vel), Acceleration(bullet_data.acc), AngularVelocity(bullet_data.wvel), Pattern(bullet_data.patternID));
 
         const Battle::BulletGraphicMap bullet_info = bullet_registry.bulletGraphicMaps[bullet_data.graphicID];
-        syscall.add_components(bullet, Bullet(static_cast<int>(bullet_info.damage_mul * static_cast<float>(bhs.damage)), bullet_info.pierce), Particle(bullet_info.lifetime));
+        syscall.add_components(bullet, Bullet(static_cast<int>(bullet_info.damage_mul * static_cast<float>(bhs.damage)), bullet_info.pierce), Particle(bullet_data.lifetime));
 
         if (bullet_info.special_bullet_data.type == Battle::Booming) syscall.add_components(bullet, Booming(bullet_info.special_bullet_data.size, bullet_info.special_bullet_data.frame));
         else if (bullet_info.special_bullet_data.type == Battle::Laser) syscall.add_components(bullet, Laser(bullet_data.posX, bullet_data.posY, bullet_info.special_bullet_data.size, bullet_info.special_bullet_data.frame));

@@ -49,23 +49,17 @@ Game::Battle::PatternContainer Scene::create_pattern_container()
 {
     using namespace Game::Battle;
     const std::vector<PatternStep> demo_step = {
+        PatternStep(400, OP_SET, 0b1000, 300),
+        PatternStep(0, OP_SET, 0b0100, -90),
+        PatternStep(0, OP_SET, 0b0010, 0),
+        PatternStep(1000, OP_SET, 0b1000, 300),
+        PatternStep(0, OP_SET, 0b0010, 0),
 
-
-
-
-        PatternStep(3000, OP_ADD, 2, 15),  // 3s Rot+15
-        PatternStep(3000, OP_ADD, 2, -15), // 3s Rot-15
-        PatternStep(3000, OP_SET, 1, 3),   // 3s Vel=3
 };
     const std::vector<PatternSequence> demo_pattern = {
+        PatternSequence(false, 0,1,2),
+        PatternSequence(false, 0,1,2,3),
 
-
-
-        PatternSequence(false),
-        PatternSequence(false, 0, 2),
-        PatternSequence(false, 1, 2),
-        PatternSequence(true, 0, 2),
-        PatternSequence(true, 1, 2),
     };
     auto demo_pattern_container = PatternContainer(demo_step,demo_pattern);
     return { PatternContainer(demo_pattern_container) };
@@ -76,43 +70,7 @@ Game::Battle::BulletLoader Scene::create_bullet_data()
         using namespace Game::Battle;
         using namespace Game::Physics;
 
-        int left_padding = 2500;
-        // Math::Point boss_pos = {0,240};
-
         BulletLoader loader;
-        loader.CreateBullet(left_padding, BulletData(5, 5, 1,135, 100, 0));
-        loader.CreateBullet(left_padding + 200, BulletData(5, 5,0.9f, 120 ,  100, 0));
-        loader.CreateBullet(left_padding + 400, BulletData(5, 5,0.8f, 105, 100, 0));
-        loader.CreateBullet(left_padding + 600, BulletData(5, 5,0.9f, 150, 100, 0));
-        loader.CreateBullet(left_padding + 800, BulletData(5, 5, 0.8f, 165, 100, 0));
-
-        loader.CreateBullet(left_padding + 3000, BulletData(10, 5, 1,135, 1, 0, 1));
-        loader.CreateBullet(left_padding + 3500, BulletData(20, 5, 1,135, 1, 0, 1));
-        loader.CreateBullet(left_padding + 4000, BulletData(30, 5, 1,135, 1, 0, 1));
-        loader.CreateBullet(left_padding + 4500, BulletData(40, 5, 1,135, 1, 0, 1));
-        loader.CreateBullet(left_padding + 5000, BulletData(50, 5, 1,135, 1, 0, 1));
-
-        loader.CreateBullet(left_padding + 3000, BulletData(50, 5, 1,135, 2, 0, 1));
-        loader.CreateBullet(left_padding + 3500, BulletData(40, 5, 1,135, 2, 0, 1));
-        loader.CreateBullet(left_padding + 4000, BulletData(30, 5, 1,135, 2, 0, 1));
-        loader.CreateBullet(left_padding + 4500, BulletData(20, 5, 1,135, 2, 0, 1));
-        loader.CreateBullet(left_padding + 5000, BulletData(10, 5, 1,135, 2, 0, 1));
-
-        loader.CreateBullet(left_padding + 7000, BulletData(25, 25, 0, 3));
-        loader.CreateBullet(left_padding + 7500, BulletData(50, 50, 0, 3));
-        loader.CreateBullet(left_padding + 8000, BulletData(75, 75, 0, 3));
-
-        loader.CreateBullet(left_padding + 10000, BulletData(150, 25, 0, 3));
-        loader.CreateBullet(left_padding + 10500, BulletData(125, 50, 0, 3));
-        loader.CreateBullet(left_padding + 11000, BulletData(100, 75, 0, 3));
-
-        loader.CreateBullet(left_padding + 12000, BulletData(25, 25, 150, 4));
-        loader.CreateBullet(left_padding + 12500, BulletData(50, 50, 150, 4));
-        loader.CreateBullet(left_padding + 13000, BulletData(75, 75, 150, 4));
-
-        loader.CreateBullet(left_padding + 14000, BulletData(150, 25, 150, 4));
-        loader.CreateBullet(left_padding + 14500, BulletData(125, 50, 150, 4));
-        loader.CreateBullet(left_padding + 15000, BulletData(100, 75, 150, 4));
         return loader;
     }
 
@@ -126,7 +84,7 @@ Game::Battle::BulletLoader Scene::create_bullet_data2()
     {
         for (int j=0;j<8;j++)
         {
-            loader.CreateBullet(1000 + i*100, BulletData(0, 0, 100, (static_cast<float>(j) *45) + 6 * i, 50,-45.f, 0, (i*8 + j)%152));
+            loader.CreateBullet(1000 + i*100, BulletData(0, 0, 100, (static_cast<float>(j) *45) + 6 * (float)i, 50,-45.f,0, 5000, (i*8 + j)%152));
         }
     }
 

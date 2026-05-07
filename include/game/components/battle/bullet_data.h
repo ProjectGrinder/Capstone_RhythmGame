@@ -104,9 +104,8 @@ namespace Game::Battle
         SpecialBulletData special_bullet_data;
         float damage_mul;
         int pierce;
-        int lifetime;
 
-        BulletGraphicMap() :  damage_mul(1), pierce(1), lifetime(5000)
+        BulletGraphicMap() :  damage_mul(1), pierce(1)
         {}
 
         explicit BulletGraphicMap(
@@ -114,14 +113,12 @@ namespace Game::Battle
                 const GraphicData &graphic_data = {},
                 const SpecialBulletData &special_bullet_data = {},
                 const float damage_mul = 1,
-                const int pierce = 1,
-                const int lifetime = 5000) :
+                const int pierce = 1) :
             collider_data(collider_data),
             graphic_data(graphic_data),
             special_bullet_data(special_bullet_data),
             damage_mul(damage_mul),
-            pierce(pierce),
-            lifetime(lifetime)
+            pierce(pierce)
         {}
     };
 
@@ -140,11 +137,13 @@ namespace Game::Battle
         float acc, wvel;
         uint16_t patternID;
         int delay_frame;
+        int lifetime;
         int graphicID;
         BulletData(
                 const float posX,
                 const float posY,
                 const int delay_frame,
+                const int lifetime,
                 const int graphicID) :
             posX(posX),
             posY(posY),
@@ -154,6 +153,7 @@ namespace Game::Battle
             wvel(0),
             patternID(0),
             delay_frame(delay_frame),
+            lifetime(lifetime),
             graphicID(graphicID)
         {}
         BulletData(
@@ -162,6 +162,7 @@ namespace Game::Battle
                 const float vel,
                 const float rot,
                 const int delay_frame,
+                const int lifetime,
                 const int graphicID) :
             posX(posX),
             posY(posY),
@@ -171,6 +172,7 @@ namespace Game::Battle
             wvel(0),
             patternID(0),
             delay_frame(delay_frame),
+            lifetime(lifetime),
             graphicID(graphicID)
         {}
         BulletData(
@@ -180,8 +182,9 @@ namespace Game::Battle
                 const float rot,
                 const uint16_t patternID,
                 const int delay_frame,
+                const int lifetime,
                 const int graphicID) :
-            posX(posX), posY(posY), vel(vel), rot(rot), acc(0), wvel(0), patternID(patternID), delay_frame(delay_frame), graphicID(graphicID)
+            posX(posX), posY(posY), vel(vel), rot(rot), acc(0), wvel(0), patternID(patternID), delay_frame(delay_frame), lifetime(lifetime), graphicID(graphicID)
         {}
         BulletData(
                 const float posX,
@@ -191,6 +194,7 @@ namespace Game::Battle
                 const float acc,
                 const float wvel,
                 const int delay_frame,
+                const int lifetime,
                 const int graphicID) :
             posX(posX),
             posY(posY),
@@ -200,6 +204,7 @@ namespace Game::Battle
             wvel(wvel),
             patternID(0),
             delay_frame(delay_frame),
+            lifetime(lifetime),
             graphicID(graphicID)
         {}
 
@@ -212,8 +217,9 @@ namespace Game::Battle
                 const float wvel,
                 const uint16_t patternID,
                 const int delay_frame,
+                const int lifetime,
                 const int graphicID) :
-            posX(posX), posY(posY), vel(vel), rot(rot), acc(acc), wvel(wvel), patternID(patternID), delay_frame(delay_frame), graphicID(graphicID)
+            posX(posX), posY(posY), vel(vel), rot(rot), acc(acc), wvel(wvel), patternID(patternID), delay_frame(delay_frame), lifetime(lifetime), graphicID(graphicID)
         {}
     };
 
