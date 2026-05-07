@@ -345,7 +345,7 @@ Game::Battle::LevelData create_level1_data()
     "Digital Jpop",
     134.00f,
     create_bpm_info(),
-    std::vector<Game::Battle::Difficulty>()};
+    std::vector<Game::Battle::Difficulty>(),142000};
     return (level);
 }
 
@@ -504,7 +504,7 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
         "Digital Jpop",
         134.00f,
         create_bpm_info(),
-        std::vector<Game::Battle::Difficulty>()));
+        std::vector<Game::Battle::Difficulty>(),142000));
 
     // Create Lane
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));

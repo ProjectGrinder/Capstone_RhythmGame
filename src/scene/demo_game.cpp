@@ -49,16 +49,15 @@ Game::Battle::PatternContainer create_pattern_container2()
     int t_beat = 448;
     using namespace Game::Battle;
     const std::vector<PatternStep> demo_step = {
-        PatternStep(400, OP_SET, 0b1000, 300),
-        PatternStep(0, OP_SET, 0b0100, -90),
-        PatternStep(0, OP_SET, 0b0010, 0),
+        PatternStep(400, OP_SET, 0b1110, 300, -90 ,0),
         PatternStep(1000, OP_SET, 0b1000, 300),
+        PatternStep(0, OP_SET, 0b0010, 0),
         PatternStep(t_beat/2, OP_SET, 0b0010, -5000),
 
 };
     const std::vector<PatternSequence> demo_pattern = {
         PatternSequence(false, 0,1,2),
-        PatternSequence(false, 4),
+        // PatternSequence(false, 4),
 
     };
     auto demo_pattern_container = PatternContainer(demo_step,demo_pattern);
@@ -107,7 +106,7 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
     }
 
 
-    b_offset = 110;
+    b_offset = 118;
     for (int i=0; i < 3; i++, b_offset+=2.0f)
     {
         float randX;
@@ -215,7 +214,7 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
         }
     }
 
-    b_offset = 170;
+    b_offset = 176;
     loader.CreateBullet(beat_time(b_offset),BulletData(box_left + (box_right-box_left)/2, box_down + (box_up-box_down)/2, 0, 0, t_beat*2,t_beat*3, 176));
     for (int i=0;i<448;i++, b_offset+=0.125f)
     {
@@ -232,7 +231,7 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
         }
     }
 
-    b_offset = 230;
+    b_offset = 244;
     for (int i=0; i < 3; i++, b_offset+=2.0f)
     {
         float randX;
@@ -341,6 +340,27 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
     }
 
     return (loader);
+}
+
+inline Game::Battle::LevelData create_level1_chartdata()
+{
+    Game::Battle::BpmInfo bpm;
+    constexpr std::array timing_list = {17910, 66269, 123582};
+    for (int m : timing_list)
+    {
+        Game::Battle::BpmInfo::InfoPair info{};
+        info.bpm = 134.00f;
+        info.timing = m;
+        bpm.bpm_list.emplace_back(info);
+    }
+    return Game::Battle::LevelData(
+    "A World Without You",
+    "Nakuya",
+    "Digital Jpop",
+    134.00f,
+    bpm,
+    std::vector<Game::Battle::Difficulty>(), 1420000
+    );
 }
 
 Game::Battle::ChartData Scene::DemoGame::create_note_test()
@@ -452,7 +472,7 @@ void Scene::DemoGame::load_chart(
                         Game::Rhythm::HoldConnect{lane.lane_number, note.timing, note.timing_end},
                         NoteStatus{0},
                         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("hold")), .pos = {{-25, 0, 0}, {25, 0, 0}, {25, 0, 0}, {-25, 0, 0}},
-                        .layer = 0, .u0 = 0.0f, .v0 = 0.0f, .u1 = 1.0f, .v1 = 0.0f},
+                        .layer = 3, .u0 = 0.0f, .v0 = 0.0f, .u1 = 1.0f, .v1 = 0.0f},
                         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
                         Game::Render::Transform{pos, 0, 0, 0});
             }
@@ -476,16 +496,6 @@ void Scene::DemoGame::load_chart(
         }
     }
     LOG_INFO("Finished loading chart")
-}
-
-inline Game::Battle::BpmInfo create_bpm_info()
-{
-    Game::Battle::BpmInfo bpm;
-    Game::Battle::BpmInfo::InfoPair info{};
-    info.bpm = 134.00f;
-    info.timing = 0;
-    bpm.bpm_list.emplace_back(info);
-    return (bpm);
 }
 
 Scene::DemoGame Scene::DemoGame::instance()
@@ -513,7 +523,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     (
         Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
-        Game::Battle::RhythmState(1, 100, 60, 2.0f, 2.0f),
+        Game::Battle::RhythmState(1, 500, 247, 4.0f, 4.0f),
         read_bullet_data_from_file("ShotData.txt"),
         create_bullet_test(),
         create_pattern_container2(),
@@ -571,13 +581,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
 
     tm->create_entity<Game::Rhythm::NoteField>(create_field());
-    tm->create_entity<Game::Battle::LevelData>(Game::Battle::LevelData(
-        "A World Without You",
-        "Nakuya",
-        "Digital Jpop",
-        134.00f,
-        create_bpm_info(),
-        std::vector<Game::Battle::Difficulty>()));
+    tm->create_entity<Game::Battle::LevelData>(create_level1_chartdata());
 
     auto chart = create_level1_chart();
     auto field = create_field();
@@ -594,11 +598,11 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
         Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}
         );
 
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16000, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(48000, 2000, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(62000, 1000, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(75000, 1000, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(115000, 1000, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16400, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(50149, 1500, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 1000, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(80000, 2000, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 1000, Game::Battle::RHYTHM));
 
     const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 

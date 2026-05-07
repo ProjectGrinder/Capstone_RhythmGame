@@ -100,15 +100,23 @@ namespace Game::Battle
     template<typename T>
     void check_player_state(
         [[maybe_unused]] T &syscall,
-        System::ECS::Query<BattleState> &battle_query)
+        System::ECS::Query<BattleState> &battle_query,
+        System::ECS::Query<LevelData> &level_data_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
 
         const auto battle_state = battle_query.front().get<BattleState>();
+        const auto level_data = level_data_query.front().get<LevelData>();
 
         if (battle_state.player_state == PlayerState::DEAD || battle_state.player_state == PlayerState::FINISH)
             return;
+
+        if (battle_state.clock_time/1000 > level_data.duration + 3000)
+        {
+            battle_query.front().get<BattleState>().player_state = PlayerState::FINISH;
+        }
+
 
         if (battle_state.clock_time >= 0)
         {
