@@ -579,7 +579,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
         create_bpm_info(),
         std::vector<Game::Battle::Difficulty>()));
 
-    auto chart = create_note_test();
+    auto chart = create_level1_chart();
     auto field = create_field();
 
     load_chart(tm, chart, field);
