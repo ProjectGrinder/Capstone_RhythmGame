@@ -58,15 +58,55 @@ void data_callback(ma_device *device, void *output, const void *input, ma_uint32
 
     while (audio_system_pull_command(&cmd) == 0)
     {
-        size_t slot = api->mixer.next_slot;
+        int found_slot = -1;
 
-        api->mixer.sounds[slot].pcm_data = cmd.pcm_data;
-        api->mixer.sounds[slot].total_frames = cmd.total_frames;
-        api->mixer.sounds[slot].current_frame = 0;
-        api->mixer.sounds[slot].volume = cmd.volume;
-        api->mixer.sounds[slot].active = 1;
-        api->mixer.sounds[slot].is_loop = cmd.is_loop;
-        api->mixer.next_slot = (slot + 1) % MAX_ACTIVE_SOUNDS;
+        for (int i = 0; i < MAX_ACTIVE_SOUNDS; ++i)
+        {
+            if (api->mixer.sounds[i].active == 0)
+            {
+                found_slot = i;
+                break;
+            }
+        }
+
+        if (found_slot != -1)
+        {
+            api->mixer.sounds[found_slot].pcm_data = cmd.pcm_data;
+            api->mixer.sounds[found_slot].total_frames = cmd.total_frames;
+            api->mixer.sounds[found_slot].current_frame = 0;
+            api->mixer.sounds[found_slot].volume = cmd.volume;
+            api->mixer.sounds[found_slot].is_loop = cmd.is_loop;
+            api->mixer.sounds[found_slot].active = 1;
+        }
+        else
+        {
+            int slot_to_steal = -1;
+            float highest_progress = -1.0f;
+
+            for (int i = 0; i < MAX_ACTIVE_SOUNDS; ++i)
+            {
+                if (api->mixer.sounds[i].is_loop == 0)
+                {
+                    float progress =
+                            (float) api->mixer.sounds[i].current_frame / (float) api->mixer.sounds[i].total_frames;
+
+                    if (progress > highest_progress)
+                    {
+                        highest_progress = progress;
+                        slot_to_steal = i;
+                    }
+                }
+            }
+
+            if (slot_to_steal != -1)
+            {
+                api->mixer.sounds[slot_to_steal].pcm_data = cmd.pcm_data;
+                api->mixer.sounds[slot_to_steal].total_frames = cmd.total_frames;
+                api->mixer.sounds[slot_to_steal].current_frame = 0;
+                api->mixer.sounds[slot_to_steal].volume = cmd.volume;
+                api->mixer.sounds[slot_to_steal].is_loop = cmd.is_loop;
+            }
+        }
     }
 
     for (ma_uint32 i = 0; i < frame_count * device->playback.channels; ++i)
