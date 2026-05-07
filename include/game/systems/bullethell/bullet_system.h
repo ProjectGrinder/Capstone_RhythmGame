@@ -13,8 +13,6 @@ namespace Game::BulletHell
         if (query2.begin() == query2.end())
             return;
 
-
-
         for (auto &[id, comps] : query)
         {
             if (query2.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::BULLET_HELL)

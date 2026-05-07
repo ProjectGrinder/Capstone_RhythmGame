@@ -13,6 +13,7 @@
 #include "game/systems/bullethell/bullet_collision.h"
 #include "game/systems/bullethell/pattern_system.h"
 #include "game/systems/bullethell/player_system.h"
+#include "game/systems/bullethell/player_anim_system.h"
 #include "game/systems/bullethell/bullet_system.h"
 #include "game/systems/bullethell/booming_system.h"
 #include "game/systems/bullethell/laser_system.h"
@@ -34,9 +35,14 @@
 #include "game/systems/rhythm/update_notes.h"
 // General Battle Part
 #include "game/systems/phase_change.h"
+#include "game/systems/phase_change_effect.h"
 #include "game/systems/global_clock.h"
+#include "game/systems/check_player_state.h"
+#include "game/systems/update_score.h"
+// Main Menu Part
+
 // Rendering Part
-#include "game/systems/animation_system.h"
+#include "systems/render/animation_system.h"
 #include "systems/bullethell/shaking_system.h"
 #include "systems/render/flickering_system.h"
 // Render Intent
@@ -44,8 +50,10 @@
 #include "systems/render/draw_text.h"
 #include "systems/render/draw_triangle.h"
 #include "systems/render/set_camera.h"
+
 // Test
 #include "systems/test/fps_counter.h"
 #include "systems/test/spin_camera.h"
 #include "systems/test/spin_sprite.h"
 #include "systems/test/stat_text_render.h"
+#include "systems/test/draw_collider.h"

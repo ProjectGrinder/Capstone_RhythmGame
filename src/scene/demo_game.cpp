@@ -1,12 +1,9 @@
+#pragma once
+
 #include "scene.h"
 #include "system.h"
-#include "../../src/windows/windows_types.h"
 
-extern "C" Window get_window_size();
-const float half_height = static_cast<float>(get_window_size().height) / 2;
-const float half_width = static_cast<float>(get_window_size().width) / 2;
-
-using UI = Game::Battle::UIDisplay;
+#include "game.h"
 
 void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
 {
@@ -26,11 +23,14 @@ void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
 
     load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 
-    load_sprite("img/Default_Shot.dds", "bullet_sprite", 512, 512);
+    load_sprite("img/bullethell/Default_Shot.dds", "bullet_sprite", 512, 512);
     load_sprite("img/test.dds", "test", 500, 500);
+    load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
+    load_sprite("img/bullethell/Hitbox.dds", "Hitbox", 12, 12);
 
-    load_sprite("img/Square.dds", "Square", 20, 20);
-    load_sprite("img/Square20px.dds", "Square20px", 20, 20);
+    load_sprite("img/Square.dds", "Square", 64, 64);
+    load_sprite("img/Square64px.dds", "Square64px", 64, 64);
+    load_sprite("img/ring16px.dds", "ring16px", 72, 72);
 
     load_sprite("img/rhythm/base_accent.dds", "accent", 200, 40);
     load_sprite("img/rhythm/base_rain.dds", "rain", 200, 20);
@@ -38,6 +38,31 @@ void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
     load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
     load_sprite("img/rhythm/base_hold.dds", "hold", 100, 960);
     load_sprite("img/rhythm/base_hold_disabled.dds", "hold_disabled", 100, 960);
+
+    load_sprite("img/return.dds", "return", 1280, 720);
+
+    load_sprite("img/level1_bg.dds", "level1_bg", 3840, 2160);
+}
+
+Game::Battle::PatternContainer create_pattern_container2()
+{
+    int t_beat = 448;
+    using namespace Game::Battle;
+    const std::vector<PatternStep> demo_step = {
+        PatternStep(400, OP_SET, 0b1000, 300),
+        PatternStep(0, OP_SET, 0b0100, -90),
+        PatternStep(0, OP_SET, 0b0010, 0),
+        PatternStep(1000, OP_SET, 0b1000, 300),
+        PatternStep(t_beat/2, OP_SET, 0b0010, -5000),
+
+};
+    const std::vector<PatternSequence> demo_pattern = {
+        PatternSequence(false, 0,1,2),
+        PatternSequence(false, 4),
+
+    };
+    auto demo_pattern_container = PatternContainer(demo_step,demo_pattern);
+    return { PatternContainer(demo_pattern_container) };
 }
 
 Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
@@ -45,25 +70,297 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
     using namespace Game::Battle;
     using namespace Game::Physics;
 
-    const int left_padding = 0;
-    const int left_padding2 = 15000;
-
     BulletLoader loader;
-    loader.CreateBullet(left_padding, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
-    loader.CreateBullet(left_padding + 1000, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
-    loader.CreateBullet(left_padding + 1500, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
-    loader.CreateBullet(left_padding + 2000, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
-    loader.CreateBullet(left_padding + 2500, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
-    loader.CreateBullet(left_padding + 3000, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
-    loader.CreateBullet(left_padding + 3500, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
-    loader.CreateBullet(left_padding + 4000, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
-    loader.CreateBullet(left_padding + 4500, BulletData(rand_float(-500,500), rand_float(-300,300), 0, 0, 1000, 185));
-    loader.CreateBullet(left_padding2, BulletData(rand_float(-500,500), -300, 0, rand_float(-135,-45), 1000, 176));
-    loader.CreateBullet(left_padding2 + 1000, BulletData(-500, rand_float(-300,300), 0, rand_float(-45,45), 1000, 177));
-    loader.CreateBullet(left_padding2 + 2000, BulletData(rand_float(-500,500), 300, 0, rand_float(45,135), 0, 1000, 178));
-    loader.CreateBullet(left_padding2 + 3000, BulletData(500, rand_float(-300,300), 0, rand_float(-225,-135), 1000, 179));
+
+    int t_beat = 448;
+    float b_offset = 0;
+    auto beat_time = [](const float beat)
+    {
+        const float time_per_beat = 60000.f / 134.f;
+        return static_cast<int>(std::round(beat * time_per_beat));
+    };
+
+    const auto box_left = -Game::BOX_SIZE + Game::HALF_WIDTH / 32;
+    const auto box_right = Game::BOX_SIZE - Game::HALF_WIDTH / 32;
+    const auto box_up = Game::BOX_SIZE + Game::HALF_HEIGHT / 32 - Game::HALF_HEIGHT/ 3;
+    const auto box_down = -Game::BOX_SIZE-Game::HALF_HEIGHT/32-Game::HALF_HEIGHT/3;
+
+    for (int i=0; i < 16; i++ , b_offset+=0.5f)
+    {
+        int i8 = i%8;
+        float d = (i8 / 4 == 1) ? (float)(8 - i8 -1) : (float)i8;
+        loader.CreateBullet(beat_time(b_offset),BulletData(box_left + (box_right-box_left)*d/4 + rand_float(-50,50), box_up, 400, 90, -1000,0, 1,0,5000,12));
+        loader.CreateBullet(beat_time(b_offset + 0.25f),BulletData(box_right - (box_right-box_left)*d/4 + rand_float(-50,50), box_up+100, 400, 90, -1000,0, 1,0,5000,13));
+    }
+    for (int i=0; i < 15; i++, b_offset+=2.f)
+    {
+        float randX;
+        if (i%2==0) randX = box_left + rand_float(50,200);
+        else randX = box_right - rand_float(50,200);
+        float randAcc = -rand_float(1000,5000);
+        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
+        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
+        for (int j=0; j < 8; j++)
+        {
+            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
+        }
+    }
+
+
+    b_offset = 110;
+    for (int i=0; i < 3; i++, b_offset+=2.0f)
+    {
+        float randX;
+        if (i%2==0) randX = box_left + rand_float(50,200);
+        else randX = box_right - rand_float(50,200);
+        float randAcc = -rand_float(1000,5000);
+        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
+        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
+
+        if (i==2)
+        {
+            loader.CreateBullet(beat_time(b_offset+0.f), BulletData(box_left+100 , box_down+250, 0, 0,t_beat*2,t_beat*3,172));
+            loader.CreateBullet(beat_time(b_offset+0.5f), BulletData(box_right-100 , box_down+250, 0, 0,t_beat*2,t_beat*3,172));
+            loader.CreateBullet(beat_time(b_offset+1.f), BulletData(box_left+100 , box_down+500, 0, 0,t_beat*2,t_beat*3,172));
+        }
+
+        for (int j=0; j < 8; j++)
+        {
+            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
+        }
+
+        if (i==2)
+        {
+            loader.CreateBullet(beat_time(b_offset+1.5f), BulletData(box_right-100 , box_down+500, 0, 0,t_beat*2,t_beat*3,172));
+        }
+    }
+
+    b_offset+=2.f;
+
+    for (int i=0; i < 4; i++, b_offset+=2.0f)
+    {
+        float randX;
+        if (i%2==0) randX = box_left + rand_float(50,200);
+        else randX = box_right - rand_float(50,200);
+        float randAcc = -rand_float(1000,5000);
+        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
+        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
+
+        if (i==2)
+        {
+            loader.CreateBullet(beat_time(b_offset+0.f), BulletData(Game::HALF_WIDTH, box_down + 100, 0, 180, t_beat*2,t_beat*3, 164));
+            loader.CreateBullet(beat_time(b_offset+0.33f), BulletData(-Game::HALF_WIDTH, box_down + 200, 0, 0, t_beat*2,t_beat*3, 164));
+            loader.CreateBullet(beat_time(b_offset+0.67f), BulletData(Game::HALF_WIDTH, box_down + 300, 0, 180, t_beat*2,t_beat*3, 164));
+        }
+
+        for (int j=0; j < 8; j++)
+        {
+            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
+        }
+
+        if (i==2)
+        {
+            loader.CreateBullet(beat_time(b_offset+1.f), BulletData(-Game::HALF_WIDTH, box_down + 400, 0, 0, t_beat*2,t_beat*3, 164));
+            loader.CreateBullet(beat_time(b_offset+1.33f), BulletData(Game::HALF_WIDTH, box_down + 500, 0, 180, t_beat*2,t_beat*3, 164));
+            loader.CreateBullet(beat_time(b_offset+1.67f), BulletData(-Game::HALF_WIDTH, box_down + 600, 0, 0, t_beat*2,t_beat*3, 164));
+        }
+    }
+
+    b_offset+=2.f;
+
+    for (int i=0; i < 3; i++, b_offset+=2.0f)
+    {
+        float randX;
+        if (i%2==0) randX = box_left + rand_float(50,200);
+        else randX = box_right - rand_float(50,200);
+        float randAcc = -rand_float(1000,5000);
+        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
+        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
+
+        if (i==1 || i==2)
+        {
+            for (int tof = 0; tof < 8; tof++)
+            {
+                loader.CreateBullet(beat_time(b_offset) + 40*tof,BulletData(0 , box_up, 500, static_cast<float>(-155 + tof*15),0,5000,100));
+            }
+        }
+
+        for (int j=0; j < 8; j++)
+        {
+            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
+        }
+
+        if (i==1 || i==2)
+        {
+            for (int tof = 0; tof < 8; tof++)
+            {
+                loader.CreateBullet(beat_time(b_offset+1) + 40*tof,BulletData(0 , box_up, 500, static_cast<float>(-15 - tof*15),0,5000,100));
+            }
+        }
+    }
+
+    b_offset+=2.f;
+
+    for (int i=0; i < 2; i++, b_offset+=2.0f)
+    {
+        float randX;
+        if (i%2==0) randX = box_left + rand_float(50,200);
+        else randX = box_right - rand_float(50,200);
+        float randAcc = -rand_float(1000,5000);
+        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
+        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
+        for (int j=0; j < 8; j++)
+        {
+            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
+        }
+    }
+
+    b_offset = 170;
+    loader.CreateBullet(beat_time(b_offset),BulletData(box_left + (box_right-box_left)/2, box_down + (box_up-box_down)/2, 0, 0, t_beat*2,t_beat*3, 176));
+    for (int i=0;i<448;i++, b_offset+=0.125f)
+    {
+        loader.CreateBullet(beat_time(b_offset),BulletData(box_left + (box_right-box_left)/2, box_down + (box_up-box_down)/2, 300, (float)i*42.f,0,5000,53));
+        if (i>=192 && i%16==0)
+        {
+            const float x = i % 32 == 0 ? box_left + 100 : box_right - 100;
+            const float y = (i%64/32)==0? box_down+250 : box_down+500;
+            loader.CreateBullet(beat_time(b_offset), BulletData(x , y, 0, 0,t_beat*2,t_beat*3,172));
+        }
+        if (i>=256 && i%8==4)
+        {
+            loader.CreateBullet(beat_time(b_offset),BulletData(rand_float(box_left,box_right), box_up, 400, 90, -1000,0, 1,0,5000,144));
+        }
+    }
+
+    b_offset = 230;
+    for (int i=0; i < 3; i++, b_offset+=2.0f)
+    {
+        float randX;
+        if (i%2==0) randX = box_left + rand_float(50,200);
+        else randX = box_right - rand_float(50,200);
+        float randAcc = -rand_float(1000,5000);
+        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
+        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
+
+        if (i==2)
+        {
+            loader.CreateBullet(beat_time(b_offset+0.f), BulletData(box_left+100 , box_down+250, 0, 0,t_beat*2,t_beat*3,172));
+            loader.CreateBullet(beat_time(b_offset+0.5f), BulletData(box_right-100 , box_down+250, 0, 0,t_beat*2,t_beat*3,172));
+            loader.CreateBullet(beat_time(b_offset+1.f), BulletData(box_left+100 , box_down+500, 0, 0,t_beat*2,t_beat*3,172));
+        }
+
+        for (int j=0; j < 8; j++)
+        {
+            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
+        }
+
+        if (i==2)
+        {
+            loader.CreateBullet(beat_time(b_offset+1.5f), BulletData(box_right-100 , box_down+500, 0, 0,t_beat*2,t_beat*3,172));
+        }
+    }
+
+    b_offset+=2.f;
+
+    for (int i=0; i < 4; i++, b_offset+=2.0f)
+    {
+        float randX;
+        if (i%2==0) randX = box_left + rand_float(50,200);
+        else randX = box_right - rand_float(50,200);
+        float randAcc = -rand_float(1000,5000);
+        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
+        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
+
+        if (i==2)
+        {
+            loader.CreateBullet(beat_time(b_offset+0.f), BulletData(Game::HALF_WIDTH, box_down + 100, 0, 180, t_beat*2,t_beat*3, 164));
+            loader.CreateBullet(beat_time(b_offset+0.33f), BulletData(-Game::HALF_WIDTH, box_down + 200, 0, 0, t_beat*2,t_beat*3, 164));
+            loader.CreateBullet(beat_time(b_offset+0.67f), BulletData(Game::HALF_WIDTH, box_down + 300, 0, 180, t_beat*2,t_beat*3, 164));
+        }
+
+        for (int j=0; j < 8; j++)
+        {
+            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
+        }
+
+        if (i==2)
+        {
+            loader.CreateBullet(beat_time(b_offset+1.f), BulletData(-Game::HALF_WIDTH, box_down + 400, 0, 0, t_beat*2,t_beat*3, 164));
+            loader.CreateBullet(beat_time(b_offset+1.33f), BulletData(Game::HALF_WIDTH, box_down + 500, 0, 180, t_beat*2,t_beat*3, 164));
+            loader.CreateBullet(beat_time(b_offset+1.67f), BulletData(-Game::HALF_WIDTH, box_down + 600, 0, 0, t_beat*2,t_beat*3, 164));
+        }
+    }
+
+    b_offset+=2.f;
+
+    for (int i=0; i < 3; i++, b_offset+=2.0f)
+    {
+        float randX;
+        if (i%2==0) randX = box_left + rand_float(50,200);
+        else randX = box_right - rand_float(50,200);
+        float randAcc = -rand_float(1000,5000);
+        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
+        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
+
+        if (i==1 || i==2)
+        {
+            for (int tof = 0; tof < 8; tof++)
+            {
+                loader.CreateBullet(beat_time(b_offset) + 40*tof,BulletData(0 , box_up, 500, static_cast<float>(-155 + tof*15),0,5000,100));
+            }
+        }
+
+        for (int j=0; j < 8; j++)
+        {
+            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
+        }
+
+        if (i==1 || i==2)
+        {
+            for (int tof = 0; tof < 8; tof++)
+            {
+                loader.CreateBullet(beat_time(b_offset+1) + 40*tof,BulletData(0 , box_up, 500, static_cast<float>(-15 - tof*15),0,5000,100));
+            }
+        }
+    }
+
+    b_offset+=2.f;
+
+    for (int i=0; i < 2; i++, b_offset+=2.0f)
+    {
+        float randX;
+        if (i%2==0) randX = box_left + rand_float(50,200);
+        else randX = box_right - rand_float(50,200);
+        float randAcc = -rand_float(1000,5000);
+        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
+        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
+        for (int j=0; j < 8; j++)
+        {
+            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
+        }
+    }
 
     return (loader);
+}
+
+inline Game::Battle::LevelData create_level1_chartdata()
+{
+    Game::Battle::BpmInfo bpm;
+    constexpr std::array timing_list = {17910, 66269, 123582};
+    for (int m : timing_list)
+    {
+        Game::Battle::BpmInfo::InfoPair info{};
+        info.bpm = 134.00f;
+        info.timing = m;
+        bpm.bpm_list.emplace_back(info);
+    }
+    return Game::Battle::LevelData(
+    "A World Without You",
+    "Nakuya",
+    "Digital Jpop",
+    134.00f,
+    bpm,
+    std::vector<Game::Battle::Difficulty>());
 }
 
 Game::Battle::ChartData Scene::DemoGame::create_note_test()
@@ -77,16 +374,29 @@ Game::Battle::ChartData Scene::DemoGame::create_note_test()
         chart.lanes[lane].current_note = 0;
     }
 
-    chart.lanes[0].notes.emplace_back(false, 7500, 0, Game::Battle::RhythmType::NORMAL);
-    chart.lanes[1].notes.emplace_back(false, 8000, 0, Game::Battle::RhythmType::NORMAL);
-    chart.lanes[2].notes.emplace_back(false, 8500, 0, Game::Battle::RhythmType::NORMAL);
-    chart.lanes[3].notes.emplace_back(false, 9000, 0, Game::Battle::RhythmType::NORMAL);
-    chart.lanes[0].notes.emplace_back(false, 9500, 0, Game::Battle::RhythmType::ACCENT);
-    chart.lanes[1].notes.emplace_back(false, 10000, 0, Game::Battle::RhythmType::ACCENT);
-    chart.lanes[2].notes.emplace_back(false, 10500, 0, Game::Battle::RhythmType::ACCENT);
-    chart.lanes[3].notes.emplace_back(false, 11000, 0, Game::Battle::RhythmType::ACCENT);
-    chart.lanes[0].notes.emplace_back(true, 12000, 13000, Game::Battle::RhythmType::ACCENT);
-    chart.lanes[3].notes.emplace_back(true, 12000, 13000, Game::Battle::RhythmType::ACCENT);
+    // chart.lanes[0].notes.emplace_back(false, 5000 + 7500, 0, Game::Battle::RhythmType::NORMAL);
+    // chart.lanes[1].notes.emplace_back(false, 5000 + 8000, 0, Game::Battle::RhythmType::NORMAL);
+    // chart.lanes[2].notes.emplace_back(false, 5000 + 8500, 0, Game::Battle::RhythmType::NORMAL);
+    // chart.lanes[3].notes.emplace_back(false, 5000 + 9000, 0, Game::Battle::RhythmType::NORMAL);
+    // chart.lanes[0].notes.emplace_back(false, 5000 + 9500, 0, Game::Battle::RhythmType::ACCENT);
+    // chart.lanes[1].notes.emplace_back(false, 5000 + 10000, 0, Game::Battle::RhythmType::ACCENT);
+    // chart.lanes[2].notes.emplace_back(false, 5000 + 10500, 0, Game::Battle::RhythmType::ACCENT);
+    // chart.lanes[3].notes.emplace_back(false, 5000 + 11000, 0, Game::Battle::RhythmType::ACCENT);
+    // chart.lanes[0].notes.emplace_back(true, 5000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
+    // chart.lanes[3].notes.emplace_back(true, 5000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
+    //
+    // for (int i=0;i<80;i++)
+    // {
+    //     chart.lanes[1].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::NORMAL);
+    //     if (i>12)
+    //     {
+    //         if (i%8==0)
+    //             chart.lanes[0].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::ACCENT);
+    //         if (i%8==4)
+    //             chart.lanes[3].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::ACCENT);
+    //     }
+    //     if (i==60) chart.lanes[2].notes.emplace_back(true, 30000 + i*100, 25000 + 80*100, Game::Battle::RhythmType::ACCENT);
+    // }
 
     return (chart);
 }
@@ -96,15 +406,15 @@ Game::Render::Sprite Scene::assign_sprite(const int type)
     if (type == 1)
     {
         return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("accent")),
-            .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 1};
+            .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
     }
     if (type == 2)
     {
         return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("rain")),
-            .pos = {{-75, 7.5, 0}, {75, 7.5, 0}, {75, -7.5, 0}, {-75, -7.5, 0}}, .layer = 2};
+            .pos = {{-75, 7.5, 0}, {75, 7.5, 0}, {75, -7.5, 0}, {-75, -7.5, 0}}, .layer = 5};
     }
     return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")),
-        .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 1};
+        .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
 }
 
 void Scene::DemoGame::load_chart(
@@ -162,7 +472,7 @@ void Scene::DemoGame::load_chart(
                         Game::Rhythm::HoldConnect{lane.lane_number, note.timing, note.timing_end},
                         NoteStatus{0},
                         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("hold")), .pos = {{-25, 0, 0}, {25, 0, 0}, {25, 0, 0}, {-25, 0, 0}},
-                        .layer = 0, .u0 = 0.0f, .v0 = 0.0f, .u1 = 1.0f, .v1 = 0.0f},
+                        .layer = 3, .u0 = 0.0f, .v0 = 0.0f, .u1 = 1.0f, .v1 = 0.0f},
                         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
                         Game::Render::Transform{pos, 0, 0, 0});
             }
@@ -188,16 +498,6 @@ void Scene::DemoGame::load_chart(
     LOG_INFO("Finished loading chart")
 }
 
-inline Game::Battle::BpmInfo create_bpm_info()
-{
-    Game::Battle::BpmInfo bpm;
-    Game::Battle::BpmInfo::InfoPair info{};
-    info.bpm = 134.00f;
-    info.timing = 0;
-    bpm.bpm_list.emplace_back(info);
-    return (bpm);
-}
-
 Scene::DemoGame Scene::DemoGame::instance()
 {
     static DemoGame instance;
@@ -217,15 +517,17 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     Game::Battle::BulletRegistry,
     Game::Battle::BulletLoader,
     Game::Battle::PatternContainer,
+    Game::Render::AnimationDataRegistry,
     Game::Audio::SoundRegistry,
     Game::Rhythm::KeyInput, Game::BulletHell::Input>
     (
         Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
-        Game::Battle::RhythmState(1, 100, 60, 2.0f, 2.0f),
-        init_bullet_graphic(),
+        Game::Battle::RhythmState(1, 500, 247, 4.0f, 4.0f),
+        read_bullet_data_from_file("ShotData.txt"),
         create_bullet_test(),
-        create_pattern_container(),
+        create_pattern_container2(),
+        init_anim_data(),
         Game::Audio::init_sounds(),
         Game::Rhythm::KeyInput(),
         Game::BulletHell::Input());
@@ -234,17 +536,43 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     AudioCache *out = nullptr;
     load_audio_if_not_exist((AssetsRecord *) hit_sound, &out);
 
+    // Background
+    tm->create_entity<Game::Render::Sprite,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("level1_bg")), .pos = {{-960, 540, 0}, {960, 540, 0}, {960, -540, 0}, {-960, -540, 0}},.layer = 0},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        {});
+
+    // Border
+    tm->create_entity<Game::Render::Sprite,
+    Game::Render::Material,
+    Game::Render::Transform, Game::Battle::Border>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square64px")), .pos = {{-Game::HALF_WIDTH, Game::HALF_HEIGHT, 0}, {Game::HALF_WIDTH, Game::HALF_HEIGHT, 0}, {Game::HALF_WIDTH, -Game::HALF_HEIGHT, 0}, {-Game::HALF_WIDTH, -Game::HALF_HEIGHT, 0}},.layer = 4},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        {0,-Game::HALF_HEIGHT*1/3},{});
+
     tm->create_entity<Game::BulletHell::Player,
     Game::Render::Transform,
     Rotation,
     Velocity,
-    Acceleration,
-    AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material, UI>(
-        {}, Game::Render::Transform(0,-240), {}, {}, {},{},
-        Game::Physics::CircularCollider(24),
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("test")), .pos = {{-24, 24, 0}, {24, 24, 0}, {24, -24, 0}, {-24, -24, 0}}, .layer = 1},
+    AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material, Game::Render::Animator, Game::Render::Animation_Controller>(
+        {}, Game::Render::Transform(0,-240), {}, {}, {},
+        Game::Physics::CircularCollider(12),
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Player_Sprite")),
+            .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 1,
+            .u0 = 0.f, .v0 = 0.f, .u1 = 200.f/800.f, .v1 = 250.f/1500.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
-        UI(UI::BULLET)
+        Game::Render::Animator{0}, Game::Render::Animation_Controller()
+    );
+
+    tm->create_entity<Game::BulletHell::PlayerHitbox, Game::Render::Transform, Game::Render::Sprite, Game::Render::Material>(
+        Game::BulletHell::PlayerHitbox(7.5f), Game::Render::Transform(0,-240),
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Hitbox")),
+            .pos = {{-12, 12, 0}, {12, 12, 0}, {12, -12, 0}, {-12, -12, 0}}, .color = {1,1,1,0}, .layer = 10},
+            Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))}
     );
 
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
@@ -253,15 +581,9 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
 
     tm->create_entity<Game::Rhythm::NoteField>(create_field());
-    tm->create_entity<Game::Battle::LevelData>(Game::Battle::LevelData(
-        "A World Without You",
-        "Nakuya",
-        "Digital Jpop",
-        134.00f,
-        create_bpm_info(),
-        std::vector<Game::Battle::Difficulty>()));
+    tm->create_entity<Game::Battle::LevelData>(create_level1_chartdata());
 
-    auto chart = create_note_test();
+    auto chart = create_level1_chart();
     auto field = create_field();
 
     load_chart(tm, chart, field);
@@ -269,77 +591,72 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     // temp judgement line
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
-    Game::Render::Transform, UI>
+    Game::Render::Transform, Game::Rhythm::JudgementLine>
     (
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}}},
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-450, 10, 0}, {450, 10, 0}, {450, -10, 0}, {-450, -10, 0}},.color = {1,1,1,0}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0},
-        UI{UI::RHYTHM});
+        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}
+        );
 
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(5000, 2000, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(12000, 2000, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16000, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(48000, 2000, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(62000, 1000, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(75000, 1000, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(115000, 1000, Game::Battle::RHYTHM));
 
-    const auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
+    const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 
-    tm->create_entity<Game::Test::LifeText,
-    Game::Render::Text,
-    Game::Render::Material,
-    Game::Render::Transform>(
-           Game::Test::LifeText{},
-           Game::Render::Text{.font = font, .text = "0"},
+    tm->create_entity(
+           Game::Battle::UIComponent{Game::Battle::HPBarMax},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square64px")), .pos = {{-110, 12, 0}, {110, 12, 0}, {110, -12, 0}, {-110, -12, 0}}, .layer = 101},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-           Game::Render::Transform{Math::Point{-600, 200, 0}, 0, 0, 0}),
-            UI{UI::BULLET};
+           Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
 
-    tm->create_entity<Game::Test::GrazeText,
-    Game::Render::Text,
-    Game::Render::Material,
-    Game::Render::Transform>(
-           Game::Test::GrazeText{},
-           Game::Render::Text{.font = font, .text = "0"},
+    tm->create_entity(
+           Game::Battle::UIComponent{Game::Battle::HpBar},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-100, 10, 0}, {100, 10, 0}, {100, -10, 0}, {-100, -10, 0}}, .color = {0.2f,1,0.2f}, .layer = 100},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-           Game::Render::Transform{Math::Point{400, 200, 0}, 0, 0, 0}),
-            UI{UI::BULLET};
-
-    tm->create_entity<Game::Battle::HpBarMax,
-    Game::Render::Sprite,
-    Game::Render::Material,
-    Game::Render::Transform>(
-           Game::Battle::HpBarMax{},
-           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square20px")), .pos = {{-55, 12.5, 0}, {55, 12.5, 0}, {55, -12.5, 0}, {-55, -12.5, 0}}, .layer = 6},
-           Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-           Game::Render::Transform{Math::Point{0, 300, 0}, 0, 0, 0});
-
-    tm->create_entity<Game::Battle::HpBar,
-    Game::Render::Sprite,
-    Game::Render::Material,
-    Game::Render::Transform>(
-           Game::Battle::HpBar{},
-           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-50, 10, 0}, {50, 10, 0}, {50, -10, 0}, {-50, -10, 0}}, .color = {0.2f,1,0.2f}, .layer = 5},
-           Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-           Game::Render::Transform{Math::Point{0, 300, 0}, 0, 0, 0});
+           Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
 
     tm->create_entity<Game::Rhythm::JudgeText,
     Game::Render::Text,
     Game::Render::Material,
-    Game::Render::Transform, UI>
+    Game::Render::Transform>
     (
         Game::Rhythm::JudgeText(),
-        Game::Render::Text{.font = font, .text = "", .layer = 5},
+        Game::Render::Text{.font = font, .text = "", .layer = 100},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, half_height * 2 / 3, 0}, 0, 0, 0},
-        UI{UI::RHYTHM});
+        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 2 / 3, 0}, 0, 0, 0}
+        );
 
-    tm->create_entity<Game::Rhythm::Combo,
+    tm->create_entity<
     Game::Render::Text,
     Game::Render::Material,
-    Game::Render::Transform, UI>
+    Game::Render::Transform>
     (
-        Game::Rhythm::Combo(),
-        Game::Render::Text{.font = font, .text = "", .layer = 5},
+        Game::Render::Text{.font = font, .text = "SCORE", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, half_height * 3 / 4, 0}, 0, 0, 0},
-        UI{UI::RHYTHM});
+        Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
+    tm->create_entity<Game::Battle::Score,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Battle::Score(),
+        Game::Render::Text{.font = font, .text = "0", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 4/5 - 50, 0}, 0, 0, 0}
+        );
+
+    tm->create_entity<Game::Battle::UIComponent,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Battle::UIComponent{Game::Battle::PhaseChangeText},
+        Game::Render::Text{.font = font, .text = "", .layer = 105},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{0, Game::HALF_HEIGHT * 4/5, 0, 0, 0, 2.5f,2.5f,1});
 
     return (tm);
 }

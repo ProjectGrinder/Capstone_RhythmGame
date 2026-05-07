@@ -26,13 +26,19 @@ namespace Game::BulletHell
         {
             const auto &pos = comps.get<Render::Transform>().position;
             auto &rot = comps.get<Physics::Rotation>();
-            const auto &bounce_c = comps.get<Bounce>();
+            auto &bounce_c = comps.get<Bounce>();
 
             if ((bounce_c.reflect_side[0] && pos.x < stage_bound_x_min) || (bounce_c.reflect_side[1] && pos.x > stage_bound_x_max))
                 rot.angleZ = 180 - rot.angleZ;
 
             else if ((bounce_c.reflect_side[2] && pos.y < stage_bound_y_min) || (bounce_c.reflect_side[3] && pos.y > stage_bound_y_max))
                 rot.angleZ = 360 - rot.angleZ;
+
+            bounce_c.bounce_time--;
+            if (bounce_c.bounce_time < 0)
+            {
+                syscall.template remove_component<Bounce>(id);
+            }
         }
     }
 
@@ -55,8 +61,15 @@ namespace Game::BulletHell
         {
             const auto &pos = comps.get<Render::Transform>().position;
             auto &rot = comps.get<Physics::Rotation>();
-            const auto &homing_c = comps.get<Homing>();
+            auto &homing_c = comps.get<Homing>();
             const Math::Point target_pos = query2.front().get<Render::Transform>().position;
+
+            homing_c.expire_time -= (int)get_delta_time();
+            if (homing_c.expire_time <= 0)
+            {
+                syscall.template remove_component<Homing>(id);
+                continue;
+            }
 
             float target_angle = Physics::get_direction(pos,target_pos);
             if (abs(target_angle - rot.angleZ) < homing_c.strength)
