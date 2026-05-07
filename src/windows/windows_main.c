@@ -1,3 +1,4 @@
+#include "system/atomic.h"
 #include "system/thread.h"
 #define WIN32_LEAN_AND_MEAN
 
@@ -36,7 +37,7 @@ static SystemInfo system_info = {
         .window_handler = NULL,
         .display_type = DT_WINDOW,
         .is_running = 0,
-        .precision = 8,
+        .precision = 15,
         .perf_frequency = {0},
         .delta_time = 0,
         .vertex_queue = NULL,
@@ -50,6 +51,7 @@ static SystemInfo system_info = {
 };
 
 static ThreadHandle g_render_thread = NULL;
+static EventHandle g_main_event = NULL;
 static EventHandle g_render_event = NULL;
 static atomic_size_t g_ready_frame_idx = (size_t) -1;
 
@@ -119,6 +121,12 @@ __forceinline void directx_cleanup(_In_ DirectXHandler *directx_api)
     directx_device_cleanup(directx_api);
 }
 
+atomic_int get_is_running()
+{
+    atomic_int res = ATOMIC_LOAD(&system_info.is_running);
+    return (res);
+}
+
 unsigned long render_thread_loop(void *args)
 {
     UNREFERENCED_PARAMETER(args);
@@ -126,11 +134,11 @@ unsigned long render_thread_loop(void *args)
 
     LARGE_INTEGER start, end;
 
-    while (system_info.is_running)
+    while (get_is_running())
     {
         event_wait(g_render_event);
 
-        if (!system_info.is_running)
+        if (!get_is_running())
             break;
 
         int frame_to_draw = (int) ATOMIC_LOAD(&g_ready_frame_idx);
@@ -148,6 +156,7 @@ unsigned long render_thread_loop(void *args)
 
             QueryPerformanceCounter(&end);
         }
+        event_signal(g_main_event);
     }
 
     LOG_INFO("Render Thread Exiting.");
@@ -235,29 +244,35 @@ int real_main()
     // }
 
     LARGE_INTEGER start, end;
-    long double input, scene;
-
+    // long double input, scene;
+    g_main_event = event_create();
     g_render_event = event_create();
     g_render_thread = thread_create(render_thread_loop, NULL);
 
-    while (system_info.is_running)
+    while (get_is_running())
     {
         QueryPerformanceCounter(&start);
         process_system_message(&system_info, &msg);
         QueryPerformanceCounter(&end);
-        input = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
-                (long double) system_info.perf_frequency.QuadPart;
+        // input = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
+        //         (long double) system_info.perf_frequency.QuadPart;
+
+        if (!get_is_running())
+        {
+            break;
+        }
 
         scene_manager_update(&system_info.scene_manager);
         QueryPerformanceCounter(&end);
-        scene = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
-                (long double) system_info.perf_frequency.QuadPart;
+        // scene = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
+        //         (long double) system_info.perf_frequency.QuadPart;
 
         unsigned int finished_frame = intent_storage_get_current_frame();
         ATOMIC_STORE(&g_ready_frame_idx, (size_t) finished_frame);
 
         event_signal(g_render_event);
         intent_storage_next_frame();
+        event_wait(g_main_event);
 
         QueryPerformanceCounter(&end);
         system_info.delta_time = ((long double) (end.QuadPart - start.QuadPart) * 1000L) /
@@ -267,15 +282,15 @@ int real_main()
         // (int) (system_info.delta_time * 1000.0L),
         // (int) (input * 1000.0L),
         // (int) ((scene - input) * 1000.0L));
-
-
-        sleep(max(system_info.precision - (LONGLONG) system_info.delta_time, 0));
-        system_info.delta_time = max(system_info.delta_time, system_info.precision);
     }
 
 exit:
     LOG_INFO("Cleaning up");
 
+    if (g_main_event != NULL)
+    {
+        event_signal(g_main_event);
+    }
     if (g_render_event != NULL)
     {
         event_signal(g_render_event);
@@ -283,6 +298,10 @@ exit:
     if (g_render_thread != NULL)
     {
         thread_join(g_render_thread);
+    }
+    if (g_main_event != NULL)
+    {
+        event_destroy(g_main_event);
     }
     if (g_render_event != NULL)
     {

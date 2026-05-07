@@ -1,6 +1,7 @@
 #pragma once
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include "system/atomic.h"
 
 #define INLINEOPTIMIZE static inline __attribute__((always_inline)) __forceinline
 
@@ -53,7 +54,7 @@ typedef struct
     HWND window_handler;
 
     DisplayType display_type;
-    char is_running;
+    atomic_int is_running;
 
     LONGLONG precision;
     LARGE_INTEGER perf_frequency;

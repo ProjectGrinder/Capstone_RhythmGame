@@ -7,11 +7,6 @@ using HoldStart = Game::Rhythm::HoldStart;
 using NoteType = Game::Rhythm::NoteType;
 using NoteStatus = Game::Rhythm::NoteStatus;
 
-extern "C" Window get_window_size();
-
-const float half_height = static_cast<float>(get_window_size().height) / 2;
-const float half_width = static_cast<float>(get_window_size().width) / 2;
-
 inline Game::Battle::ChartData create_demo_chart()
 {
     Game::Battle::ChartData chart;
@@ -305,8 +300,8 @@ Game::Rhythm::NoteField Scene::create_field()
     constexpr float note_width = 150.0f;
     constexpr float padding = 20.0f;
     // position based on window size
-    const float spawn_level = half_height + padding;
-    const float judge_level = half_height * -2 / 3;
+    const float spawn_level = Game::HALF_HEIGHT + padding;
+    const float judge_level = Game::HALF_HEIGHT * -2 / 3;
     constexpr float lane1_spawn = -1 * (note_width * 1.65f);
     constexpr float lane2_spawn = -1 * (note_width * 0.55f);
     constexpr float lane3_spawn = note_width * 0.55f;
@@ -320,33 +315,6 @@ Game::Rhythm::NoteField Scene::create_field()
         lane3_spawn,
         lane4_spawn,
         move_time);
-}
-
-inline Game::Battle::BpmInfo create_bpm_info()
-{
-    Game::Battle::BpmInfo bpm_info;
-    constexpr float bpm = 134.00f;
-    constexpr std::array timing_list = {17910, 66269, 123582};
-    Game::Battle::BpmInfo::InfoPair info{};
-    info.bpm = bpm;
-    for (int m = 0; m < timing_list.size(); ++m)
-    {
-        bpm_info.bpm_list.emplace_back(info);
-    }
-
-    return (bpm_info);
-}
-
-Game::Battle::LevelData create_level1_data()
-{
-    Game::Battle::LevelData level{
-    "A World Without You",
-    "Nakuya",
-    "Digital Jpop",
-    134.00f,
-    create_bpm_info(),
-    std::vector<Game::Battle::Difficulty>(),142000};
-    return (level);
 }
 
 auto sp_accent = load_sprite("img/rhythm/base_accent.dds", "accent", 200, 40);
@@ -498,13 +466,7 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
         Game::Rhythm::KeyInput(),
         Game::BulletHell::Input());
 
-    tm->create_entity<Game::Battle::LevelData>(Game::Battle::LevelData(
-        "A World Without You",
-        "Nakuya",
-        "Digital Jpop",
-        134.00f,
-        create_bpm_info(),
-        std::vector<Game::Battle::Difficulty>(),142000));
+    // tm->create_entity<Game::Battle::LevelData>(create_level1_chartdata());
 
     // Create Lane
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
@@ -520,7 +482,7 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
     (
         Game::Render::Sprite{.sp = sp_normal, .pos = {{-500, 5, 0}, {500, 5, 0}, {500, -5, 0}, {-500, -5, 0}}},
         Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{0, half_height * -2 / 3, 0}, 0, 0, 0});
+        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * -2 / 3, 0}, 0, 0, 0});
 
     tm->create_entity<Game::Rhythm::JudgeText,
     Game::Render::Text,
@@ -530,7 +492,7 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
         Game::Rhythm::JudgeText(),
         Game::Render::Text{.font = fn, .text = "", .layer = 5},
         Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{0, half_height * 2 / 3, 0}, 0, 0, 0});
+        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 2 / 3, 0}, 0, 0, 0});
 
     tm->create_entity<Game::Rhythm::Combo,
     Game::Render::Text,
@@ -540,7 +502,7 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
         Game::Rhythm::Combo(),
         Game::Render::Text{.font = fn, .text = "", .layer = 5},
         Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{0, half_height * 3 / 4, 0}, 0, 0, 0});
+        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 3 / 4, 0}, 0, 0, 0});
 
     auto chart = create_demo_chart();
     auto field = create_field();
