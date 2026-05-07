@@ -1,2 +1,20 @@
 \section{Testing and Experimentation}
 \label{sec:testing}
+
+\subsection{Testing Plan}
+\label{subsec:testing-plan}
+
+The purpose of the testing is to evaluate the performance characteristics of each ECS framework under comparable workloads.
+Performance is assessed through measuring system frame duration, as this duration is a direct indicator of
+runtime responsiveness and execution efficiency.
+
+For each framework, system frame duration is measured by recording a timestamp immediately before the execution of
+user-defined systems and another immediately after.
+The elapsed time between these two measurements represents the time required to run every user system once.
+To evaluate the framework performance, we assume an instantaneous, highly optimized renderer.
+This lets us take the system frame duration to be representative of the response time from input to output,
+making it an effective metric for overall system performance.
+
+All ECS frameworks were tested using the language’s debug build profile.
+Systems for each framework were implemented according to official tutorials and documentation
+to ensure that implementations were idiomatic and representative of recommended usage patterns.
