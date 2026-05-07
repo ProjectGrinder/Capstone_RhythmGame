@@ -112,14 +112,15 @@ namespace Game::Battle
         if (battle_state.player_state == PlayerState::DEAD || battle_state.player_state == PlayerState::FINISH)
             return;
 
-        if (battle_state.clock_time/1000 > level_data.duration + 3000)
-        {
-            battle_query.front().get<BattleState>().player_state = PlayerState::FINISH;
-        }
-
 
         if (battle_state.clock_time >= 0)
         {
+            if (battle_state.clock_time/1000 > level_data.duration + 3000)
+            {
+                battle_query.front().get<BattleState>().player_state = PlayerState::FINISH;
+                create_end_ui(syscall, battle_query);
+            }
+
             if (battle_state.hp > 0)
             {
                 battle_query.front().get<BattleState>().player_state = PlayerState::PLAY;

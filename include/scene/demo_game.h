@@ -31,7 +31,7 @@ namespace Scene
         static DemoGame instance();
 
         constexpr static auto name = "DemoGame";
-        constexpr static size_t MaxResource = 1000;
+        constexpr static size_t MaxResource = 10000;
 
         // declare scene parameters
         using ComponentTuple = std::tuple<
@@ -118,6 +118,7 @@ namespace Scene
             Game::BulletHell::homing_pattern_system<Syscall>,
             Game::Rhythm::handle_bpm<Syscall>,
             Game::Rhythm::handle_tap_note<Syscall>,
+            Game::Rhythm::handle_rain_note<Syscall>,
             Game::Rhythm::set_holding_time<Syscall>,
             Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
