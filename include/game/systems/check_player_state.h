@@ -106,7 +106,7 @@ namespace Game::Battle
         if (battle_query.begin() == battle_query.end())
             return;
 
-        const auto battle_state = battle_query.front().get<BattleState>();
+        auto &battle_state = battle_query.front().get<BattleState>();
         const auto level_data = level_data_query.front().get<LevelData>();
 
         if (battle_state.player_state == PlayerState::DEAD || battle_state.player_state == PlayerState::FINISH)
@@ -117,18 +117,17 @@ namespace Game::Battle
         {
             if (battle_state.clock_time/1000 > level_data.duration + 3000)
             {
-                battle_query.front().get<BattleState>().player_state = PlayerState::FINISH;
+                battle_state.player_state = PlayerState::FINISH;
                 create_end_ui(syscall, battle_query);
             }
-
-            if (battle_state.hp > 0)
+            else if (battle_state.hp > 0)
             {
-                battle_query.front().get<BattleState>().player_state = PlayerState::PLAY;
+                battle_state.player_state = PlayerState::PLAY;
             }
             else
             {
                 create_end_ui(syscall, battle_query);
-                battle_query.front().get<BattleState>().player_state = PlayerState::DEAD;
+                battle_state.player_state = PlayerState::DEAD;
             }
             return;
         }
