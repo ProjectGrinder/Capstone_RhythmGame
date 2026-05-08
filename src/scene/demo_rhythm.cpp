@@ -138,7 +138,7 @@ Game::Battle::ChartData Scene::create_level1_chart()
     chart.lanes[2].notes.emplace_back(true, 38507, 39403, Game::Battle::RhythmType::NORMAL);
     chart.lanes[2].notes.emplace_back(false, 38843, 0, Game::Battle::RhythmType::RAIN);
     chart.lanes[2].notes.emplace_back(false, 39179, 0, Game::Battle::RhythmType::RAIN);
-    chart.lanes[1].notes.emplace_back(false, 37612, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(false, 39403, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[3].notes.emplace_back(false, 39851, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[2].notes.emplace_back(false, 40299, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[0].notes.emplace_back(true, 40299, 41194, Game::Battle::RhythmType::NORMAL);
