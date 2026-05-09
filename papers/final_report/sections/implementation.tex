@@ -4,9 +4,51 @@
 \subsection{Development Process}
 \label{subsec:development-process}
 
+% Engine side
+\subsubsection*{Engine Development}
+
+\subsubsection*{Game Development}
+
+In the first stage of development, the game developers were tasked with creating a concept and design of the game,
+while waiting for the core functionality of the engine and ECS system
+The game combines bullet hell gameplay with rhythm gameplay to demonstrate the engine's high performance.
+Due to the multi-genre gameplay design, the developer took time to refine methods to blend both gameplay styles
+while preserving the player's experience.
+The game developers were also given a time to study the ECS framework on how to utilize it and design the
+components and systems used for gameplay prior to the framework's completion.
+Furthermore, art, music, and story design were developed during this phase.
+
+After the ECS framework was completed, the game developers were then tasked with implementing the designed gameplay systems
+and testing the game logic by Googletest in parallel to the integration of the renderer.
+In the phase, the developers were getting familiar with the engine and started implementing the gameplay logic without the graphical system.
+Scenes are split into a bullet-hell scene and a rhythm game scene to separate theirs developer for their own environment before
+merging them together in one demo scene.
+
+After the renderer implementation was completed, the game developers were given their chances to see their gameplay graphically
+via the provided APIs from the engine developer.
+The game developers were integrating their assets into the game and implementing their first demo scene to test overall functionality.
+
+Lastly, the game developers then created a demo scene together for the project demonstration, including a main menu scene, smooth transition, and gameplay polishing.
+
+
 \subsection{Implementation Detail}
 \label{subsec:implementation-detail}
+
+% Implementation Detail + Tools + Challenge
 
 \subsubsection*{ECS Engine}
 
 \subsubsection*{Game System}
+The gameplay development was implemented using the custom ECS framework provided by the engine team utilizing
+C++20, the custom engine APIs, and GoogleTest.
+
+A major challenge of the game development was designing systems that are highly scalable for future full-game development
+while utilizing a new and unfamiliar engine with an unfamiliar ECS architecture.
+Therefore, the developers would not only have to quickly adapt from the usual object-oriented programming architecture they were familiar with,
+and also have to perfectly design systems that support scalability for future stages, new gameplay mechanics, and graphical polishing.
+
+Another challenge involved integrating two different gameplay genres while maintaining responsive player controls and gameplay readability.
+To mitigate the issue, the development spent a considerable amount of time refining methods to smoothly transition the gameplay
+from both the graphical perspective down to the engine's mechanical perspective and testing the overall smoothness of the transition.
+
+
