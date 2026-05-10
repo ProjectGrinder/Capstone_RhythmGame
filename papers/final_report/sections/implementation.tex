@@ -7,25 +7,35 @@
 % Engine side
 \subsubsection*{Engine Development}
 
+For the first stages of development, the core functionality of the ECS framework was to be implemented fully.
+While the engine's implementation is being worked on, the main game loop and scene change system was established.
+After the ECS framework performed to an acceptable level of performance, the focus shifted to providing utilities
+needed for game development.
+Among these were a way to integrate assets, a way to output draw commands, and a way to inject inputs and timestamps for
+time-sensitive functions.
+One important feature was the ability to switch between ECS registries, which resulted in the development of the Scene Manager.
+Finally, while the game is in development fully, the system designers helped support the game developers and address
+issues and performance degradation by continuously iterating upon the engine implementation and optimizing for performance.
+
 \subsubsection*{Game Development}
 
-In the first stage of development, the game developers were tasked with creating a concept and design of the game,
-while waiting for the core functionality of the engine and ECS system
+In the first stage of development, the game developers were tasked with creating a concept and design of the game
+while waiting for the core functionality of the engine and ECS system.
 The game combines bullet hell gameplay with rhythm gameplay to demonstrate the engine's high performance.
 Due to the multi-genre gameplay design, the developer took time to refine methods to blend both gameplay styles
 while preserving the player's experience.
-The game developers were also given a time to study the ECS framework on how to utilize it and design the
+The game developers were also given time to study the ECS framework on how to utilize it and design the
 components and systems used for gameplay prior to the framework's completion.
 Furthermore, art, music, and story design were developed during this phase.
 
 After the ECS framework was completed, the game developers were then tasked with implementing the designed gameplay systems
 and testing the game logic by Googletest in parallel to the integration of the renderer.
 In the phase, the developers were getting familiar with the engine and started implementing the gameplay logic without the graphical system.
-Scenes are split into a bullet-hell scene and a rhythm game scene to separate theirs developer for their own environment before
-merging them together in one demo scene.
+Scenes are split into a bullet-hell scene and a rhythm game scene to separate their developer from their own environment before
+merging them in one demo scene.
 
 After the renderer implementation was completed, the game developers were given their chances to see their gameplay graphically
-via the provided APIs from the engine developer.
+via the provided APIs from the system designers.
 The game developers were integrating their assets into the game and implementing their first demo scene to test overall functionality.
 
 Lastly, the game developers then created a demo scene together for the project demonstration, including a main menu scene, smooth transition, and gameplay polishing.
@@ -37,6 +47,37 @@ Lastly, the game developers then created a demo scene together for the project d
 % Implementation Detail + Tools + Challenge
 
 \subsubsection*{ECS Engine}
+The custom engine was implemented with the C++20 standard and tested for correctness with GoogleTest.
+
+As the designers were not familiar with the ECS architecture, it took many months for the form of the engine to be finalized.
+In the beginning, the engine built the ECS architecture upon an object-oriented C++ class structure, but this was deemed
+antithesis to the reason ECS was chosen for the engine in the first place.
+The system designers then iterated upon this by replacing inheritance-based classes and functions with templates
+and concept metaprogramming.
+The compiler handled the template specialization, resulting in performance close to programming with no framework.
+
+A challenge that later arose was the providing of entities matching querying components to registered functions.
+For every registered function, heavy metaprogramming had to be used to match the function's arguments to component types,
+then to filter existing entities based on those types, and after that to provide them as reference lists to the functions.
+To expedite the process, a special query class was provided for use in transferring entity references to systems.
+The class contained C++ reference wrappers and convenience functions to iterate upon entities as if upon simple vectors,
+reducing mental overhead when implementing game logic.
+
+\subsubsection*{Scene Manager}
+The Scene Manager is an extension of the ECS engine for use with multi-world ECS logic.
+Each scene was a class implemented with functions to initialize and cleanup their own ECS manager object, each with
+differently registered components and systems.
+The Scene Manager used these scenes through template functions to seamlessly switch between different parts of the game,
+allowing for easy logic separation and data passing.
+
+One challenge encountered when implementing the Scene Manager was the shape of the data between scenes.
+While the data emitted from each scene could vary based on their registered components, a scene could only
+accept data that's compatible with their own registered component.
+This challenge was partially alleviated by implementing a templated function that converts data in-transit, but
+care must still be given to prevent loss of important data and invalid states of gameplay.
+
+\subsubsection*{Asset Manager \& Renderer}
+% Nack maybe you'd want to add something here about the rendering pipeline. I'll leave space for you.
 
 \subsubsection*{Game System}
 The gameplay development was implemented using the custom ECS framework provided by the engine team utilizing
