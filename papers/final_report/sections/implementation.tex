@@ -23,23 +23,17 @@ issues and performance degradation by continuously iterating upon the engine imp
 In the first stage of development, the game developers were tasked with creating a concept and design of the game
 while waiting for the core functionality of the engine and ECS system.
 The game combines bullet hell gameplay with rhythm gameplay to demonstrate the engine's high performance.
-Due to the multi-genre gameplay design, the developer took time to refine methods to blend both gameplay styles
-while preserving the player's experience.
-The game developers were also given time to study the ECS framework on how to utilize it and design the
-components and systems used for gameplay prior to the framework's completion.
-Furthermore, art, music, and story design were developed during this phase.
+Due to the multi-genre gameplay design, mechanics and systems must be designed for ECS framework and able to
+blend both gameplay styles while preserving the player's experience.
+Furthermore, art, music, and story design were planned during this phase.
 
-After the ECS framework was completed, the game developers were then tasked with implementing the designed gameplay systems
-and testing the game logic by Googletest in parallel to the integration of the renderer.
-In the phase, the developers were getting familiar with the engine and started implementing the gameplay logic without the graphical system.
-Scenes are split into a bullet-hell scene and a rhythm game scene to separate their developer from their own environment before
-merging them in one demo scene.
+After the ECS framework was completed, gameplay systems were implemented and tested in parallel to the integration of the renderer.
+Scenes were splitted into a bullet-hell scene and a rhythm game scene to separate into their own environment before
+merging into one scene. Meanwhile, assets were being designed and created for the game, including characters, background art and music.
 
-After the renderer implementation was completed, the game developers were given their chances to see their gameplay graphically
-via the provided APIs from the system designers.
-The game developers were integrating their assets into the game and implementing their first demo scene to test overall functionality.
-
-Lastly, the game developers then created a demo scene together for the project demonstration, including a main menu scene, smooth transition, and gameplay polishing.
+After the rendering system was implemented, visuals were added to the gameplay systems, allowing them to be polished and tested for performance.
+Finished assets such as character sprites and background art were integrated into the game.
+Lastly, a game demo was created for the project demonstration, including a main menu scene, gameplay transition, and a playable level.
 
 
 \subsection{Implementation Detail}
@@ -85,12 +79,11 @@ The gameplay development was implemented using the custom ECS framework provided
 C++20, the custom engine APIs, and GoogleTest.
 
 A major challenge of the game development was designing systems that are highly scalable for future full-game development
-while utilizing a new and unfamiliar engine with an unfamiliar ECS architecture.
-Therefore, the developers would not only have to quickly adapt from the usual object-oriented programming architecture they were familiar with
-and also have to perfectly design systems that support scalability for future stages, new gameplay mechanics, and graphical polishing.
+while utilizing a new and unfamiliar engine.
+Therefore, the developers have to perfectly design systems that support scalability for future stages, new gameplay mechanics, and graphical polishing.
 
 Another challenge involved integrating two different gameplay genres while maintaining responsive player controls and gameplay readability.
-To mitigate the issue, the development spent a considerable amount of time refining methods to smoothly transition the gameplay
+To mitigate the issue, the game development processspent a considerable amount of time refining methods to smoothly transition the gameplay
 from both the graphical perspective down to the engine's mechanical perspective and testing the overall smoothness of the transition.
 
 
