@@ -1,20 +1,23 @@
 \section{Conclusion and Future Work}
 \label{sec:conclusion-and-future-work}
 
-% Achievements + Objective met + Application + Future work (Without section?). Should we?
+In this project, we addressed the limitations of existing game engines when used for general purpose interactive media
+and established issues with performance, scalability, and maintainability in such use cases.
+Upon analysis, we explored alternative approaches and developed a custom engine built upon the ECS framework with an
+emphasis on reducing abstraction and overhead, while still providing a flexible and scalable foundation for interactive
+media development.
+As an evaluation of the engine's efficiency in real-world conditions, we developed a bullet hell game and rhythm game
+hybrid system with real-time input handling, precise timing, and large numbers of objects.
+We also benchmark the engine's core logic processing in comparison to existing ECS libraries to evaluate the difference
+in performance with industry standards.
+The results show potential in the use of this engine for effective and maintainable interactive media development, as well
+as being sufficiently versatile across different domains of such media.
 
-\subsection{Achievements}
-\label{subsec:achievements}
-
-
-\subsection{Objective met}
-\label{subsec:objective-met}
-
-
-\subsection{Applications}
-\label{subsec:applications}
-
-\subsection{Future work}
-\label{subsec:future-work}
+Future work may involve expanding the engine's ECS logic to encompass more common ECS programming paradigms, such as
+more powerful query support and query iteration across the ECS resources directly from the system.
+The engine itself can also serve as the foundation for more extensive research towards ECS optimization techniques.
+One such technique is the compile-time determination of multithreaded system execution order via the creation of
+a system dependency graph, which will greatly increase performance when multiple systems are concerned.
+The game developed as the case study will be continually improved upon and be launched as a full game in the future.
 
 \label{tag:end}
