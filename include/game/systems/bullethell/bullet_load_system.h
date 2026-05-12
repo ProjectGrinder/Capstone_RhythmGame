@@ -8,19 +8,24 @@ namespace Game::BulletHell
     template<typename T>
     void spawn_bullet(T &syscall, const Battle::BulletData& bullet_data, const Battle::BulletRegistry& bullet_registry, const Battle::BulletHellState bhs, const Audio::SoundRegistry sound_registry)
     {
-        if (bullet_data.graphicID >= bullet_registry.bulletGraphicMaps.size()) return;
+        if (bullet_data.bullet_id >= bullet_registry.bulletStageMaps.size()) return;
 
-        const System::ECS::pid bullet = syscall.create_entity(Render::Transform(bullet_data.posX,bullet_data.posY), Delay(bullet_data.delay_frame));
+        const auto bullet_stage_data = bullet_registry.bulletStageMaps[bullet_data.bullet_id];
+        const auto bullet_graphic_data = bullet_registry.bulletGraphicMaps[bullet_stage_data.graphicID];
 
-        syscall.add_components(bullet, Rotation(bullet_data.rot,true), Velocity(bullet_data.vel), Acceleration(bullet_data.acc), AngularVelocity(bullet_data.wvel), Pattern(bullet_data.patternID));
+        auto bullet_movement = bullet_data.movement_data;
+        auto bullet_timing = bullet_stage_data.bullet_timing_data;
 
-        const Battle::BulletGraphicMap bullet_info = bullet_registry.bulletGraphicMaps[bullet_data.graphicID];
-        syscall.add_components(bullet, Bullet(static_cast<int>(bullet_info.damage_mul * static_cast<float>(bhs.damage)), bullet_info.pierce), Particle(bullet_data.lifetime));
+        const System::ECS::pid bullet = syscall.create_entity(Render::Transform(bullet_movement.posX,bullet_movement.posY,0,0,0,bullet_stage_data.size.x,bullet_stage_data.size.y,1), Delay(bullet_timing.delay_frame));
 
-        if (bullet_info.special_bullet_data.type == Battle::Booming) syscall.add_components(bullet, Booming(bullet_info.special_bullet_data.size, bullet_info.special_bullet_data.frame));
-        else if (bullet_info.special_bullet_data.type == Battle::Laser) syscall.add_components(bullet, Laser(bullet_data.posX, bullet_data.posY, bullet_info.special_bullet_data.size, bullet_info.special_bullet_data.frame));
+        syscall.add_components(bullet, Rotation(bullet_movement.rot,true), Velocity(bullet_movement.vel), Acceleration(bullet_movement.acc), AngularVelocity(bullet_movement.wvel), Pattern(bullet_data.pattern));
 
-        const Battle::GraphicData bullet_graphic = bullet_info.graphic_data;
+        syscall.add_components(bullet, Bullet(static_cast<int>(bullet_stage_data.damage_mul * static_cast<float>(bhs.damage)), bullet_stage_data.pierce), Particle(bullet_timing.lifetime));
+
+        if (bullet_stage_data.special_bullet_data.type == Battle::Booming) syscall.add_components(bullet, Booming(bullet_stage_data.special_bullet_data.size, bullet_stage_data.special_bullet_data.frame));
+        else if (bullet_stage_data.special_bullet_data.type == Battle::Laser) syscall.add_components(bullet, Laser(bullet_movement.posX, bullet_movement.posY, bullet_stage_data.special_bullet_data.size, bullet_stage_data.special_bullet_data.frame));
+
+        const Battle::GraphicData bullet_graphic = bullet_graphic_data.graphic_data;
         syscall.add_components(bullet, Render::Sprite{
                     .sp = get_assets_record_ptr(get_assets_id("bullet_sprite")),
                     .pos = {{bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[1], 0}, {bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[1], 0}},
@@ -30,12 +35,12 @@ namespace Game::BulletHell
                     .u1 = static_cast<float>(bullet_graphic.src_rect[2])/512,
                     .v1 = static_cast<float>(bullet_graphic.src_rect[3])/512}
                     , Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")),get_assets_record_ptr(get_assets_id("sprite_ps")), {bullet_graphic.r, bullet_graphic.g, bullet_graphic.b, bullet_graphic.a}));
-        if (const Battle::ColliderData bullet_collider = bullet_info.collider_data;
+        if (const Battle::ColliderData bullet_collider = bullet_graphic_data.collider_data;
             bullet_collider.type == Physics::RECTANGLE) syscall.add_components(bullet, Physics::RectangularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
         else if (bullet_collider.type == Physics::CIRCLE) syscall.add_components(bullet, Physics::CircularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
 
         auto sounds = sound_registry.audios;
-        switch (bullet_info.graphic_data.bullet_spawn_sound)
+        switch (bullet_graphic_data.graphic_data.bullet_spawn_sound)
         {
             case 1 :
                 // Audio::audio_play(sounds["sound_bullet_spawn_0"]);
@@ -63,6 +68,18 @@ namespace Game::BulletHell
         auto &pointer = bullet_loader.pointer;
         auto &batches = bullet_loader.batches;
         const auto &current_frame = query3.front().get<Battle::BattleState>().clock_time / 1000;
+
+        // Sort bullet spawn frame
+        if (!bullet_loader.initialized)
+        {
+            std::sort(batches.begin(), batches.end(),
+            [](const Battle::BulletBatch & a, const Battle::BulletBatch& b)
+            {
+                return a.frame < b.frame;
+            });
+            bullet_loader.initialized = true;
+        }
+
         while ((pointer < static_cast<int>(batches.size())) && (batches[pointer].frame <= current_frame))
         {
             for (auto& b : batches[pointer].bullets)

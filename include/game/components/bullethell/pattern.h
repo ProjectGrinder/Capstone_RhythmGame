@@ -10,12 +10,14 @@ namespace Game::BulletHell
         int sequenceIdx = -1; // Would not be good but require for init
         int delay = 0;
 
-        Pattern() : sequenceID(0)
+        float params[4];
+
+        Pattern() : sequenceID(0), params{}
         {}
 
-        explicit Pattern(
-                const uint16_t sequenceID) :
-            sequenceID(sequenceID)
+        explicit Pattern(const uint16_t sequenceID) : sequenceID(sequenceID), params{}
         {}
+
+        //TODO : Constructor with params
     };
 } // namespace Game::BulletHell

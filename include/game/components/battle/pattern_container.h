@@ -5,7 +5,9 @@ namespace Game::Battle
     enum PatternOp : uint8_t
     {
         OP_SET,
-        OP_ADD
+        OP_ADD,
+        OP_MULT,
+        OP_PARAM
     };
     constexpr size_t MAX_PATTERNS = 128;
     constexpr size_t MAX_PATTERN_SEQUENCE = 16;
