@@ -2,19 +2,19 @@
 #include "../../components/audio/audio.h"
 #include "game/components.h"
 
-// TODO : Render stuffs
 namespace Game::BulletHell
 {
+    // Refactor later
     template<typename T>
     void spawn_bullet(T &syscall, const Battle::BulletData& bullet_data, const Battle::BulletRegistry& bullet_registry, const Battle::BulletHellState bhs, const Audio::SoundRegistry sound_registry)
     {
         if (bullet_data.bullet_id >= bullet_registry.bulletStageMaps.size()) return;
 
-        const auto bullet_stage_data = bullet_registry.bulletStageMaps[bullet_data.bullet_id];
-        const auto bullet_graphic_data = bullet_registry.bulletGraphicMaps[bullet_stage_data.graphicID];
+        const auto &bullet_stage_data = bullet_registry.bulletStageMaps[bullet_data.bullet_id];
+        const auto &bullet_graphic_data = bullet_registry.bulletGraphicMaps[bullet_stage_data.graphicID];
 
-        auto bullet_movement = bullet_data.movement_data;
-        auto bullet_timing = bullet_stage_data.bullet_timing_data;
+        auto &bullet_movement = bullet_data.movement_data;
+        auto &bullet_timing = bullet_stage_data.bullet_timing_data;
 
         const System::ECS::pid bullet = syscall.create_entity(Render::Transform(bullet_movement.posX,bullet_movement.posY,0,0,0,bullet_stage_data.size.x,bullet_stage_data.size.y,1), Delay(bullet_timing.delay_frame));
 
@@ -25,7 +25,7 @@ namespace Game::BulletHell
         if (bullet_stage_data.special_bullet_data.type == Battle::Booming) syscall.add_components(bullet, Booming(bullet_stage_data.special_bullet_data.size, bullet_stage_data.special_bullet_data.frame));
         else if (bullet_stage_data.special_bullet_data.type == Battle::Laser) syscall.add_components(bullet, Laser(bullet_movement.posX, bullet_movement.posY, bullet_stage_data.special_bullet_data.size, bullet_stage_data.special_bullet_data.frame));
 
-        const Battle::GraphicData bullet_graphic = bullet_graphic_data.graphic_data;
+        const Battle::GraphicData &bullet_graphic = bullet_graphic_data.graphic_data;
         syscall.add_components(bullet, Render::Sprite{
                     .sp = get_assets_record_ptr(get_assets_id("bullet_sprite")),
                     .pos = {{bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[1], 0}, {bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[1], 0}},
@@ -35,11 +35,11 @@ namespace Game::BulletHell
                     .u1 = static_cast<float>(bullet_graphic.src_rect[2])/512,
                     .v1 = static_cast<float>(bullet_graphic.src_rect[3])/512}
                     , Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")),get_assets_record_ptr(get_assets_id("sprite_ps")), {bullet_graphic.r, bullet_graphic.g, bullet_graphic.b, bullet_graphic.a}));
-        if (const Battle::ColliderData bullet_collider = bullet_graphic_data.collider_data;
+        if (const Battle::ColliderData &bullet_collider = bullet_graphic_data.collider_data;
             bullet_collider.type == Physics::RECTANGLE) syscall.add_components(bullet, Physics::RectangularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
         else if (bullet_collider.type == Physics::CIRCLE) syscall.add_components(bullet, Physics::CircularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
 
-        auto sounds = sound_registry.audios;
+        // auto &sounds = sound_registry.audios;
         switch (bullet_graphic_data.graphic_data.bullet_spawn_sound)
         {
             case 1 :

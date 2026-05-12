@@ -229,7 +229,7 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
         }
     }
 
-    b_offset = 244;
+    b_offset = 245;
     for (int i=0; i < 3; i++, b_offset+=2.0f)
     {
         float randX;

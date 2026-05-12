@@ -119,7 +119,7 @@ namespace Game::Battle
         int delay_frame;
         int lifetime;
 
-        BulletTimingData(const int delay_frame = 0, const int lifetime = 0): delay_frame(delay_frame), lifetime(lifetime){}
+        BulletTimingData(const int delay_frame = 0, const int lifetime = 5000): delay_frame(delay_frame), lifetime(lifetime){}
     };
 
     struct BulletGraphicMap
