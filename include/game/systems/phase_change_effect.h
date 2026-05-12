@@ -60,8 +60,8 @@ namespace Game::Battle
         [[maybe_unused]] T &syscall,
         System::ECS::Query<BattleState> &battle_query,
         System::ECS::Query<TransitionData> &transition_query,
-        System::ECS::Query<BulletHell::Player, Render::Sprite, Render::Material, Render::Animation_Controller> &player_query,
-        System::ECS::Query<BulletHell::PlayerHitbox, Render::Material> &player_hitbox_query
+        System::ECS::Query<BulletHell::Player, Render::Transform, Render::Sprite, Render::Material, Render::Animation_Controller> &player_query,
+        System::ECS::Query<BulletHell::PlayerHitbox, Render::Transform, Render::Material> &player_hitbox_query
         )
     {
         if (battle_query.begin() == battle_query.end())
@@ -83,6 +83,8 @@ namespace Game::Battle
             {
                 if (transition_data.phase == BULLET_HELL)
                 {
+                    player_query.front().get<Render::Transform>().position = Math::Point(0,-240);
+                    player_hitbox_query.front().get<Render::Transform>().position = Math::Point(0,-240);
                     player_query.front().get<Render::Material>().visible = true;
                     player_hitbox_query.front().get<Render::Material>().visible = true;
                     player_query.front().get<BulletHell::Player>().is_active = true;
