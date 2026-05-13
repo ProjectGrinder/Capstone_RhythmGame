@@ -123,12 +123,12 @@ Moreover, the movement system computes the next frame position to render, and la
 \noindent Rhythm games require precise timing to catch the notes at the right time,
 so very few optimization issues can be tolerated as a result.
 However, ECS architecture is powerful enough to handle all the requirements
-such as large quantity of notes and an accurate time tracking device centralized by a single system.
+such as a large quantity of notes and an accurate time tracking device centralized by a single system.
 With entities as simple as notes and lanes, components are widely adjustable with speed and timing.
-In addition, the system design is fairly simple as the input system are centralized and the
+In addition, the system design is fairly simple as the input systems are centralized and the
 note update system moves all visible notes on the screen.
 Along with the bullet hell section, they contain backgrounds that are adjustable by shader and particle effects.
-The core mechanic revolves around spawning the notes at the right time as set up and calculate the position of the sprite as it moves.
+The core mechanic revolves around spawning the notes at the right time and calculating the position of the sprite as it moves.
 However, the real logic of the note is being computed by its own system depending on its type, such as tap note and hold note.
 Once the note reaches its timing range, the system will check the timing of the player's input and display the corresponding accuracy known as judgment.
 \\\\
@@ -143,7 +143,7 @@ by including a countdown to inform the duration of the transition.
 Lastly, the screen changing the gameplay rendered has to be creative and visually appealing to not make the transition jarring or out of place.
 % To achieve this, a line animation system is used to express animation of the transition, and the game transition system
 % will be triggered if the state has been changed.
-One of the proposed transition is a line animation that starts from the center of the screen and expands until it covers the whole screen.
+One of the proposed transitions is a line animation that starts from the center of the screen and expands until it covers the whole screen.
 Following this, the new gameplay is rendered for a section of the screen expanding until full.
 \\\\
 The biggest concern of the game logic is the control of the rhythm game's charts and bullet hell's patterns
@@ -167,14 +167,11 @@ The entities will have a position, text, sprite and animation components and are
 For audios in the game, including sound effects and music, each is assigned to its own entity with a tag or trigger to be played on an instance sound system.
 Finally, in-game cutscenes could be added as a video format to be rendered in an instance video player system.
 
-
-
 \subsection{Components}
 \label{subsec:components}
 
 The system is a self-contained application, but interfacing with a keyboard and mouse is required for its operation.
-
-
+It also interacts with DirectX 11 to render to a display interface such as a desktop window.
 
 \subsection{Design Considerations}
 \label{subsec:design-considerations}
@@ -186,3 +183,6 @@ The system is a self-contained application, but interfacing with a keyboard and 
 
 % Adjustments from proposal to implementation
 
+Largely, the proposed design did not undergo major changes in the implementation process.
+As the design is modular, as the engine's execution is optimized, modules that serve the same purpose were being swapped out
+with more efficient ones that serve the same function.
