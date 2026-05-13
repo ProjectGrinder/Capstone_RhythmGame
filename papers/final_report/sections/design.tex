@@ -15,8 +15,6 @@ We refer to these smaller ECS instances, alongside the data necessary to registe
 as well as compute and store initial data into those instances, as scenes.
 Communications between scenes, such as the data transfer when creating a new scene, are facilitated through
 a SceneManager, which will also execute the registered systems during the main game loop.
-DirectX 11 is used for the rendering of the game with the use of a custom rendering pipeline implementation.
-User input is collected through the Windows API\@.
 
 \vspace{0.5cm}
 
@@ -32,7 +30,7 @@ User input is collected through the Windows API\@.
 
 \noindent Figure~\ref{fig:engine} shows the outline of the engine to implement.
 The SceneManager takes ownership and executes user-level systems during runtime by receiving inputs from the operating system,
-passing logs, audio and render object references to different specialized components.
+passing logs, audio, and render-object references to different specialized components.
 Those components will then pass information to the operating system to pass information to the device outputs as appropriate.
 For modularity, the communications are passed through the Window/Lifetime Manager, which acts as an adapter for the operating system.
 \\\\
@@ -76,8 +74,8 @@ This way, the system's implementation does not concern itself with fetching data
 \subsubsection*{Game Design}
 
 The project's core game design will involve combining rhythm games and bullet hell games into a hybrid game
-structured around distinct but smoothly transitioning phases,
-thus requiring a seamless transition between the two, creating a revolutionary take on hybrid games.
+structured around distinct but smoothly transitioning phases.
+This requires a seamless transition between the two to create a revolutionary take on hybrid games.
 Considering that both of the games hugely relied on great optimization, as with a little disruption,
 it can cause a fatal mistake for the player inciting frustration, the design of the game must be made cautiously.
 
@@ -97,11 +95,11 @@ it can cause a fatal mistake for the player inciting frustration, the design of 
 while great performance is still required to retain the player’s fluidity of movement.
 To achieve this, an ECS architecture is highly favored as opposed to object-oriented
 since the large number of entities can be handled more efficiently with it.
-Entities of the system are composed of player, bullets, boss, enemies, background and effects
+Entities of the system are composed of player, bullets, boss, enemies, background, and effects
 using shared components such as position, velocity, sprite, shader, etc.
 Each system will be executed every frame thus handling the entity movement,
-collision check and input allowing it to handle all the bullets in a frame efficiently.
-Such systems consist of a player system, movement system, collision system, particle system and much more.
+collision check, and input allowing it to handle all the bullets in a frame efficiently.
+Such systems consist of a player system, movement system, collision system, particle system, and much more.
 The core mechanics are that, for each frame, the input was processed to control the player system.
 Meanwhile, the collision system will check each ongoing colliding entity by computing if each entity with a collider component
 is colliding with another entity.
@@ -157,13 +155,13 @@ allowing more complex and challenging designs and features.
 To complete a game, a narrative device should be implemented to make the game more immersive and enjoyable;
 the proposed gameplay would be a 2D side-scrolling style that allows players to choose a level and progress the story of the game.
 Additionally, explorations are added to the game such as interacting with interactable entities such as NPC, or objects,
-getting new in-game items and accessing new areas.
+getting new in-game items, and accessing new areas.
 Such requirements must be implemented with an entirely separate game logic.
 Interactable and solid collision components are needed to be implemented along with the new system,
-for example, a new movement system, interact system and area load system.
+for example, a new movement system, interact system, and area load system.
 \\\\
 Lastly, using ECS, UI entities are being rendered concurrently in a higher priority by default.
-The entities will have a position, text, sprite and animation components and are created organizedly using functions for each set of UIs.
+The entities will have a position, text, sprite, and animation components and are created organizedly using functions for each set of UIs.
 For audios in the game, including sound effects and music, each is assigned to its own entity with a tag or trigger to be played on an instance sound system.
 Finally, in-game cutscenes could be added as a video format to be rendered in an instance video player system.
 
@@ -171,12 +169,20 @@ Finally, in-game cutscenes could be added as a video format to be rendered in an
 \label{subsec:components}
 
 The system is a self-contained application, but interfacing with a keyboard and mouse is required for its operation.
-It also interacts with DirectX 11 to render to a display interface such as a desktop window.
+DirectX 11 is used for the rendering of the game with the use of a custom rendering pipeline implementation.
+User input is collected through the Windows API\@.
 
 \subsection{Design Considerations}
 \label{subsec:design-considerations}
 
 % Performance, scalability, usability, sustainability, environment
+We formed the design with considerations of usability at the forefront.
+The interface was to allow user-level system design to be as close to natural C++ functional design as possible,
+while still retaining the power of ECS systems.
+We also ensured the design allowed for aggressive compiler optimization and inlining by avoiding virtual function calls,
+abstractions with hidden costs or overhead, and pointer arithmetic whose behaviors are challenging to predict.
+The architecture was highly modular with little coupling to allow for incremental additions to the engine during the planned
+implementation process and in future works.
 
 \subsection{Proposed vs. Final Design}
 \label{subsec:proposed-vs-final}
