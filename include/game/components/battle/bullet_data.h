@@ -181,13 +181,24 @@ namespace Game::Battle
         BulletHell::Pattern pattern;
         int bullet_id;
 
+        BulletData() = default;
+
         BulletData(
                 const int bullet_id,
-                const BulletMovementData &movement_data,
-                const BulletHell::Pattern &pattern = {}
+                const float posX = 0,
+                const float posY = 0,
+                const float speed = 0,
+                const float rot = 0,
+                const float acc = 0,
+                const float vwel = 0,
+                const uint16_t pattern_id = 0,
+                const float p0 = 0,
+                const float p1 = 0,
+                const float p2 = 0,
+                const float p3 = 0
                 ) :
-            movement_data(movement_data),
-            pattern(pattern),
+            movement_data({posX,posY, speed, rot,acc,vwel}),
+            pattern({pattern_id,p0,p1,p2,p3}),
             bullet_id(bullet_id)
         {}
     };

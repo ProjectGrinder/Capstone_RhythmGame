@@ -15,8 +15,13 @@ namespace Game::BulletHell
         Pattern() : sequenceID(0), params{}
         {}
 
-        explicit Pattern(const uint16_t sequenceID) : sequenceID(sequenceID), params{}
+        Pattern(const uint16_t sequenceID,
+                const float p0 = 0,
+                const float p1 = 0,
+                const float p2 = 0,
+                const float p3 = 0) : sequenceID(sequenceID), params{p0,p1,p2,p3}
         {}
+
 
         //TODO : Constructor with params
     };

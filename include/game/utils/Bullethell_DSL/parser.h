@@ -1,119 +1,129 @@
 #pragma once
-#include <stdint.h>
+#include <memory>
+#include <variant>
+
 #include "tokenizer.h"
 
-enum class Op {
-    SET,
-    ADD,
-    SELECT,
-    FIRE,
-    SLEEP,
-    LOOP_START,
-    LOOP_END,
-    INIT,
-    PUSH,
-    CLEAR,
-    IF,
-    ELSE,
-    END_IF
-};
-
-struct Instruction {
-    Op op;
-    std::vector<std::string> args;
-    int jump = -1;
-};
-
-struct Parser
+namespace DSL
 {
-    std::vector<Token> &tokens;
-    size_t pos = 0;
-    size_t line = 1;
+    struct Expr;
 
-    Token &current()
+    struct NumberExpr
     {
-        if (pos >= tokens.size())
-            return tokens.back();
-        return tokens[pos];
-    }
-    Token &advance()
+        float value;
+    };
+
+    struct VariableExpr
     {
-        return tokens[pos++];
-    }
+        std::string name;
+    };
 
-    std::string expect_ident(bool optional = false) {
-        Token &t = current();
-        if (t.type != Token_Type::T_IDENT)
-        {
-            if (optional) return "";
-            throw std::runtime_error("DSL line " + std::to_string(line) +  " error : Expected identifier");
-        }
-        return advance().text;
-    }
+    struct BooleanExpr
+    {
+        bool value;
+    };
+    struct UnaryExpr
+    {
+        Op_Type op;
+        std::unique_ptr<Expr> value;
+    };
 
-    std::string expect_expression(bool optional = false) {
-        Token &t = current();
+    struct BinaryExpr
+    {
+        Op_Type op;
+        std::unique_ptr<Expr> left;
+        std::unique_ptr<Expr> right;
+    };
 
-        if (t.type == Token_Type::T_EXP)
-            return advance().text;
-        if (optional) return "";
+    struct FunctionExpr
+    {
+        std::string name;
+        std::vector<std::unique_ptr<Expr>> args;
+    };
 
-        throw std::runtime_error("DSL line " + std::to_string(line) +  " error : Expected expression");
-    }
+    using ExprVariant = std::variant<NumberExpr, VariableExpr, BooleanExpr, UnaryExpr, BinaryExpr, FunctionExpr>;
 
-    std::string expect_value(bool optional = false) {
-        Token &t = current();
+    struct Expr
+    {
+        ExprVariant expr;
+        template<typename T>
+        explicit Expr(T v) : expr(std::move(v)) {}
+    };
 
-        if (t.type == Token_Type::T_NUM ||
-            t.type == Token_Type::T_IDENT ||
-            t.type == Token_Type::T_EXP)
-            return advance().text;
-        if (optional) return "";
+    struct Statement;
 
-        throw std::runtime_error("DSL line " + std::to_string(line) +  " error : Expected value");
-    }
+    struct SpawnStatement
+    {
+        std::vector<std::unique_ptr<Expr>> args;
+    };
 
-    Instruction parse_line() {
-        Token cmd = advance();
+    struct AssignStatement
+    {
+        std::string name;
+        Op_Type op;
+        std::unique_ptr<Expr> value;
+    };
 
-        if (cmd.type != Token_Type::T_IDENT)
-            throw std::runtime_error("DSL line " + std::to_string(line) +  " error : Shouldn't you start with Operation?");
+    struct AscentStatement
+    {
+        std::string iterator;
+        std::unique_ptr<Expr> start;
+        std::unique_ptr<Expr> end;
+        std::vector<std::unique_ptr<Statement>> body;
+    };
 
-        if (cmd.text == "SET") return {Op::SET, {expect_ident(), expect_value()}};
-        if (cmd.text == "ADD") return {Op::ADD, {expect_ident(), expect_value()}};
-        if (cmd.text == "SELECT") return {Op::SELECT, {expect_ident(), expect_value(true), expect_value(true)}};
-        if (cmd.text == "LOOP_START") return {Op::LOOP_START, {}};
-        if (cmd.text == "LOOP_END") return {Op::LOOP_END, {expect_ident(), expect_value()}};
-        if (cmd.text == "SLEEP") return {Op::SLEEP, {expect_value()}};
-        if (cmd.text == "FIRE") return {Op::FIRE, {expect_value(true), expect_value(true)}};
-        if (cmd.text == "CLEAR") return {Op::CLEAR, {expect_ident(), expect_value(true), expect_value(true)}};
-        if (cmd.text == "IF") return {Op::IF, {expect_expression()}};
-        if (cmd.text == "ELSE") return {Op::ELSE, {}};
-        if (cmd.text == "END_IF") return {Op::END_IF, {}};
-        if (cmd.text == "INIT") return {Op::INIT, {expect_ident(), expect_value(true), expect_value(true)}};
-        if (cmd.text == "PUSH") return {Op::PUSH, {expect_ident()}};
+    struct BlockStatement
+    {
+        std::vector<std::unique_ptr<Statement>> body;
+    };
 
+    struct IfBranch
+    {
+        std::unique_ptr<Expr> condition;
+        std::vector<std::unique_ptr<Statement>> body;
+    };
 
+    struct IfStatement
+    {
+        std::vector<IfBranch> branches;
+        std::vector<std::unique_ptr<Statement>> else_body;
+    };
 
-        throw std::runtime_error("DSL line " + std::to_string(line) +  " error : What is that operation?");
-    }
+    using StmtVariant = std::variant<
+        SpawnStatement,
+        AssignStatement,
+        AscentStatement,
+        BlockStatement,
+        IfStatement
+    >;
 
-    std::vector<Instruction> parse() {
-        std::vector<Instruction> program;
+    struct Statement
+    {
+        size_t line;
+        StmtVariant stmt;
+        template<typename T>
+        explicit Statement(T v, size_t line) : stmt(std::move(v)), line(line) {}
+    };
 
-        while (current().type != Token_Type::T_END) {
-            while (current().type == Token_Type::T_NEWLINE) {
-                advance();
-                line++;
-            }
+    struct AST
+    {
+        std::vector<std::unique_ptr<Statement>> statements;
+    };
 
-            if (current().type == Token_Type::T_END) break;
+    std::unique_ptr<Expr> extract_binary_expr(const std::vector<Token>& tokens, size_t& pos, const size_t& line, const int min_order = 0);
+    std::unique_ptr<Expr> extract_function_expr(const std::vector<Token>& tokens, size_t& pos, const size_t& line);
 
-            program.push_back(parse_line());
-        }
+    std::unique_ptr<Expr> extract_primary_expr(const std::vector<Token>& tokens, size_t& pos, const size_t& line);
 
-        return program;
-    }
+    std::unique_ptr<Statement> parse_block(const std::vector<Token> &tokens, size_t &pos, size_t &line);
+    std::unique_ptr<Statement> parse_if(const std::vector<Token> &tokens, size_t &pos, size_t &line);
+    std::unique_ptr<Statement> parse_ascent(const std::vector<Token> &tokens, size_t &pos, size_t &line);
 
-};
+    std::unique_ptr<Statement> parse_spawn(const std::vector<Token> &tokens, size_t &pos, size_t &line);
+    std::unique_ptr<Statement> parse_assign(const std::vector<Token> &tokens, size_t &pos,const size_t &line);
+
+    std::unique_ptr<Statement> parse_line(const std::vector<Token> &tokens, size_t &pos, size_t &line);
+
+    AST parser(const std::vector<Token> &tokens);
+}
 
