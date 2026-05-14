@@ -7,6 +7,20 @@ namespace Game::Rhythm
 {
     using Material = Render::Material;
 
+    inline void heal_hp(
+        System::ECS::Query<Battle::BattleState> &battle_query,
+        const int heal_amount)
+    {
+        const int max_hp = battle_query.front().get<Battle::BattleState>().max_hp;
+        if (battle_query.front().get<Battle::BattleState>().hp == max_hp || heal_amount <= 0)
+            return;
+
+        battle_query.front().get<Battle::BattleState>().hp += heal_amount;
+
+        if (battle_query.front().get<Battle::BattleState>().hp > max_hp)
+            battle_query.front().get<Battle::BattleState>().hp = max_hp;
+    }
+
     inline void handle_normal_note(
         const int &time_diff,
         System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
@@ -22,31 +36,32 @@ namespace Game::Rhythm
         auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
 
         // const auto timing = battle_query.front().get<Battle::BattleState>().clock_time;
+        int heal_amount = rhythm_query.front().get<Battle::RhythmState>().heal_hp;
         if (time_diff > -1 * perfect_judge && time_diff < perfect_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             battle_query.front().get<Battle::BattleState>().score += base_score;
             judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
-            judge_query.front().get<JudgeText>().change = true;
-            battle_query.front().get<Battle::BattleState>().combo += 1;
         }
         else if (time_diff > -1 * great_judge && time_diff < great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
             battle_query.front().get<Battle::BattleState>().score += base_score / 2;
             judge_query.front().get<JudgeText>().judge = JudgeText::GREAT;
-            judge_query.front().get<JudgeText>().change = true;
-            battle_query.front().get<Battle::BattleState>().combo += 1;
         }
         else if (time_diff > -1 * fine_judge && time_diff < fine_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
             battle_query.front().get<Battle::BattleState>().score += base_score / 4;
             judge_query.front().get<JudgeText>().judge = JudgeText::FINE;
-            judge_query.front().get<JudgeText>().change = true;
-            battle_query.front().get<Battle::BattleState>().combo += 1;
+            heal_amount = 0;
         }
         else return;
+
+        judge_query.front().get<JudgeText>().change = true;
+        battle_query.front().get<Battle::BattleState>().combo += 1;
+
+        heal_hp(battle_query, heal_amount);
 
         if (comp->get<HoldStart>().is_hold == true)
         {

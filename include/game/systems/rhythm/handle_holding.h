@@ -28,6 +28,16 @@ namespace Game::Rhythm
             judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
             judge_query.front().get<JudgeText>().change = true;
             battle_query.front().get<Battle::BattleState>().combo += 1;
+
+            // heal only perfect hold end
+            const int max_hp = battle_query.front().get<Battle::BattleState>().max_hp;
+            if (battle_query.front().get<Battle::BattleState>().hp < max_hp)
+            {
+                battle_query.front().get<Battle::BattleState>().hp += rhythm_query.front().get<Battle::RhythmState>().heal_hp;
+
+                if (battle_query.front().get<Battle::BattleState>().hp > max_hp)
+                    battle_query.front().get<Battle::BattleState>().hp = max_hp;
+            }
         }
         else if (time_diff > great_judge)
         {
