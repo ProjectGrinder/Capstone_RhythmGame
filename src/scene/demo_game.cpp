@@ -187,7 +187,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     Game::Audio::SoundRegistry,
     Game::Rhythm::KeyInput, Game::BulletHell::Input>
     (
-        Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
+        Game::Battle::BattleState(200, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
         Game::Battle::RhythmState(1, 500, 247, 4.0f, 4.0f),
         std::move(script.bullet_registry),

@@ -49,6 +49,15 @@ namespace Game::Rhythm
                     judge_query.front().get<JudgeText>().change = true;
                     battle_query.front().get<Battle::BattleState>().combo += 1;
 
+                    const int max_hp = battle_query.front().get<Battle::BattleState>().max_hp;
+                    if (battle_query.front().get<Battle::BattleState>().hp < max_hp)
+                    {
+                        battle_query.front().get<Battle::BattleState>().hp += rhythm_query.front().get<Battle::RhythmState>().heal_hp;
+
+                        if (battle_query.front().get<Battle::BattleState>().hp > max_hp)
+                            battle_query.front().get<Battle::BattleState>().hp = max_hp;
+                    }
+
                     auto sounds = sound_query.front().get<Audio::SoundRegistry>().audios;
                     Audio::audio_play(sounds["sound_rain_note"]);
 
