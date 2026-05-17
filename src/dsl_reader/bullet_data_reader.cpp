@@ -2,13 +2,12 @@
 #include <sstream>
 #include "game/utils/Bullethell_DSL/bullet_data_reader.h"
 
-#include "utils/print_debug.h"
-
 extern "C"{
     typedef unsigned long       DWORD;
     DWORD file_read(_Out_ FileContent **content, const char *name);
     void file_free(FileContent **file);
 }
+
 using namespace Game::Battle;
 using namespace Game::BulletHell;
 
@@ -42,7 +41,7 @@ std::vector<std::string> split(const std::string& s, const char delim)
 }
 
 
-BulletRegistry read_bullet_graphic_data_from_file(const char *filepath)
+BulletRegistry Game::BulletHell::read_bullet_graphic_data_from_file(const char *filepath)
 {
     BulletRegistry bullet_registry;
     FileContent *file_content;
@@ -150,7 +149,7 @@ BulletRegistry read_bullet_graphic_data_from_file(const char *filepath)
     return bullet_registry;
 }
 
-void read_bullet_stage_data(const std::string &content, BulletRegistry &bullet_registry)
+void Game::BulletHell::read_bullet_stage_data(const std::string& content, BulletRegistry &bullet_registry)
 {
     std::istringstream f(content);
 
@@ -245,7 +244,7 @@ void read_bullet_stage_data(const std::string &content, BulletRegistry &bullet_r
     }
 }
 
-std::vector<PatternSequence> parse_pattern_sequences(const std::string& source)
+std::vector<PatternSequence> Game::BulletHell::parse_pattern_sequences(const std::string& source)
 {
     std::vector<PatternSequence> result;
 
@@ -282,7 +281,7 @@ std::vector<PatternSequence> parse_pattern_sequences(const std::string& source)
     return result;
 }
 
-std::vector<PatternStep> parse_pattern_step(const std::string &source)
+std::vector<PatternStep> Game::BulletHell::parse_pattern_step(const std::string &source)
 {
     std::vector<PatternStep> result;
 

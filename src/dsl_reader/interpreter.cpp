@@ -1,121 +1,131 @@
 #include <utility>
 
 #include "game/utils/Bullethell_DSL/interpreter.h"
-#include "game/utils/physics_util.h"
+
 #include "game/utils/constant.h"
+#include "game/utils/physics_util.h"
+#include "utils/print_debug.h"
 
 using namespace DSL;
 
-void Validator::validate_function(const FunctionExpr& func, Scope &scope, const size_t &line)
+void Validator::validate_function(const FunctionExpr& func, Scope &local, const size_t &line)
 {
     const auto it = BUILTIN_FUNCTIONS.find(func.name);
 
     if (it == BUILTIN_FUNCTIONS.end())
-        throw std::runtime_error("DSL line " + std::to_string(line) + " error : No built-in function for this");
+        throw std::runtime_error("DSL line " + std::to_string(line) + " error : No built-in function for " + func.name);
 
     const auto &[min_args, max_args] = it->second;
 
     if (const int count = static_cast<int>(func.args.size()); count < min_args || count > max_args)
         throw std::runtime_error(
-                "DSL line " + std::to_string(line) + " error : This function accept " + std::to_string(max_args) +
+        "DSL line " + std::to_string(line) + " error : This function accept " + std::to_string(max_args) +
                 " arguments not " + std::to_string(count));
 
     for (const auto &arg: func.args)
-        validate_expr(*arg, scope, line);
+        validate_expr(*arg, local, line);
 }
 
-void Validator::validate_variable(const VariableExpr &var, const Scope &scope, const size_t &line)
+void Validator::validate_variable(const VariableExpr &var, Scope &local, const size_t &line)
 {
-    if (!(BUILTIN_CONSTANTS.contains(var.name) || scope.variables.contains(var.name)))
+    if (!(BUILTIN_CONSTANTS.contains(var.name) || local.find(var.name)))
         throw std::runtime_error("DSL line " + std::to_string(line) + " error : Unknown variable " + var.name);
 }
 
-void Validator::validate_assign(const AssignStatement &stmt, Scope &scope, const size_t &line)
+void Validator::validate_assign(const AssignStatement &stmt, Scope &local, const size_t &line)
 {
-    if (BUILTIN_FUNCTIONS.contains(stmt.name) && BUILTIN_CONSTANTS.contains(stmt.name))
-        throw std::runtime_error("DSL line " + std::to_string(line) + " error : Trying to assign " + stmt.name);
+    if (BUILTIN_FUNCTIONS.contains(stmt.name) || BUILTIN_CONSTANTS.contains(stmt.name))
+        throw std::runtime_error("DSL line " + std::to_string(line) + " error : Trying to assign constant " + stmt.name);
 
-    validate_expr(*stmt.value, scope, line);
+    if (stmt.op != Op_Type::O_ASSIGN && !local.find(stmt.name))
+        throw std::runtime_error("DSL line " + std::to_string(line) + " error : Variable " + stmt.name + " not initialized");
 
-    scope.variables.insert(stmt.name);
+    validate_expr(*stmt.value, local, line);
+
+    if (stmt.op == Op_Type::O_ASSIGN)
+        local.variables[stmt.name] = 0.f;
 }
 
-void Validator::validate_ascent(const AscentStatement &stmt, const Scope &parent, const size_t &line)
+void Validator::validate_ascent(const AscentStatement &stmt, Scope &parent, const size_t &line)
 {
-    Scope local = parent;
+    Scope local;
+    local.parent = &parent;
 
-    local.variables.insert(stmt.iterator);
+    local.variables[stmt.iterator] = 0.f;
 
     validate_expr(*stmt.start, local, line);
     validate_expr(*stmt.end, local, line);
 
     for (const auto &s: stmt.body)
-        validate_stmt(*s, local,line);
+        validate_stmt(*s, local);
 }
 
-void Validator::validate_expr(const Expr &expr, Scope &scope, const size_t &line)
+void Validator::validate_expr(const Expr &expr, Scope &local, const size_t &line)
 {
     std::visit([&](const auto &e)
     {
         using T = std::decay_t<decltype(e)>;
 
         if constexpr (std::is_same_v<T, VariableExpr>)
-            validate_variable(e, scope);
+            validate_variable(e, local, line);
         else if constexpr (std::is_same_v<T, UnaryExpr>)
-            validate_expr(*e.value, scope);
+            validate_expr(*e.value, local, line);
         else if constexpr (std::is_same_v<T, BinaryExpr>)
         {
-            validate_expr(*e.left, scope);
-            validate_expr(*e.right, scope);
+            validate_expr(*e.left, local, line);
+            validate_expr(*e.right, local, line);
         }
         else if constexpr (std::is_same_v<T, FunctionExpr>)
-            validate_function(e, scope);
+            validate_function(e, local, line);
     },
     expr.expr);
 }
 
-void Validator::validate_stmt(const Statement& stmt, Scope& scope, const size_t &line)
+void Validator::validate_stmt(const Statement& stmt, Scope& local)
 {
     std::visit([&](const auto& s)
     {
         using T = std::decay_t<decltype(s)>;
 
         if constexpr (std::is_same_v<T, AssignStatement>)
-            validate_assign(s, scope);
+            validate_assign(s, local, stmt.line);
 
         else if constexpr (std::is_same_v<T, SpawnStatement>)
         {
             for (const auto& arg : s.args)
-                validate_expr(*arg, scope);
+                validate_expr(*arg, local, stmt.line);
         }
 
         else if constexpr (std::is_same_v<T, BlockStatement>)
         {
-            Scope local = scope;
+            Scope local2;
+            local2.parent = &local;
 
             for (const auto& sub_stmt : s.body)
-                validate_stmt(*sub_stmt, local);
+                validate_stmt(*sub_stmt, local2);
         }
 
         else if constexpr (std::is_same_v<T, AscentStatement>)
-            validate_ascent(s, scope);
+            validate_ascent(s, local, stmt.line);
 
         else if constexpr (std::is_same_v<T, IfStatement>)
         {
             for (const auto& branch : s.branches)
             {
-                Scope local = scope;
+                Scope local2;
+                local2.parent = &local;
 
-                validate_expr(*branch.condition, local);
+                validate_expr(*branch.condition, local2, stmt.line);
 
                 for (const auto& sub_stmt : branch.body)
-                    validate_stmt(*sub_stmt, local);
+                    validate_stmt(*sub_stmt, local2);
             }
 
-            Scope local = scope;
+            Scope local2;
+            local2.parent = &local;
 
             for (const auto& sub_stmt : s.else_body)
-                validate_stmt(*sub_stmt, local);
+                validate_stmt(*sub_stmt, local2);
         }
 
     }, stmt.stmt);
@@ -126,47 +136,64 @@ void Validator::validate(const AST &ast)
     Scope global;
 
     for (const auto &stmt: ast.statements)
-        validate_stmt(*stmt, global, stmt->line);
+        validate_stmt(*stmt, global);
 }
 
-float Evaluator::as_number(const Value& v)
+float as_number(const Value& v)
 {
     if (std::holds_alternative<float>(v)) return std::get<float>(v);
     if (std::holds_alternative<bool>(v)) return std::get<bool>(v) ? 1.f : 0.f;
     return 0.f;
 }
 
-bool Evaluator::as_bool(const Value& v)
+bool as_bool(const Value& v)
 {
     if (std::holds_alternative<float>(v)) return std::get<float>(v)!=0;
     if (std::holds_alternative<bool>(v)) return std::get<bool>(v);
     return false;
 }
 
-Value Evaluator::eval_function(const FunctionExpr& func, RuntimeScope& scope)
+Value BulletHellCompiler::eval_function(const FunctionExpr& func, Scope& scope, const size_t &line)
 {
     std::vector<Value> args;
 
     for (const auto& arg : func.args)
-        args.push_back(eval_expr(*arg, scope));
+        args.push_back(eval_expr(*arg, scope, line));
 
     if (func.name == "sin") return std::sin(as_number(args[0]));
     if (func.name == "cos") return std::cos(as_number(args[0]));
-    if (func.name == "sqrt") return std::sqrt(as_number(args[0]));
+    if (func.name == "sqrt")
+    {
+        if (as_number(args[0]) < 0) throw std::runtime_error("DSL line " + std::to_string(line) + " error : square root negative number");
+        return std::sqrt(as_number(args[0]));
+    }
     if (func.name == "abs") return std::abs(as_number(args[0]));
     if (func.name == "rand")
     {
         if (args.empty()) return Game::Physics::rand_float(0.f,1.f);
 
-        if (args.size() == 2) return Game::Physics::rand_float(as_number(args[0]), as_number(args[1]));
+        if (args.size() == 2)
+        {
+            if (as_number(args[0]) > as_number(args[1]))
+                throw std::runtime_error("DSL line " + std::to_string(line) + " rand min > rand max??");
+            return Game::Physics::rand_float(as_number(args[0]), as_number(args[1]));
+        }
     }
-    return {};
+    if (func.name == "round") return std::round(as_number(args[0]));
+    if (func.name == "ceil") return std::ceil(as_number(args[0]));
+    if (func.name == "floor") return std::floor(as_number(args[0]));
+    throw std::runtime_error("DSL line " + std::to_string(line) + " error : Unsupported function");
 }
 
-Value Evaluator::eval_binary(const BinaryExpr &expr, RuntimeScope& scope)
+Value BulletHellCompiler::eval_binary(const BinaryExpr &expr, Scope& scope, const size_t &line)
 {
-    Value left = eval_expr(*expr.left, scope);
-    Value right = eval_expr(*expr.right, scope);
+    const Value left = eval_expr(*expr.left, scope, line);
+
+    if (expr.op == Op_Type::O_AND) if (!as_bool(left)) return false;
+    if (expr.op == Op_Type::O_OR)
+        if (as_bool(left))
+            return true;
+    const Value right = eval_expr(*expr.right, scope, line);
 
     if (expr.op == Op_Type::O_ADD)
         return as_number(left) + as_number(right);
@@ -176,12 +203,12 @@ Value Evaluator::eval_binary(const BinaryExpr &expr, RuntimeScope& scope)
         return as_number(left) * as_number(right);
     if (expr.op == Op_Type::O_DIV)
     {
-        if (as_number(right) == 0) throw std::runtime_error("divide by zero somewhere IDK lol");
+        if (as_number(right) == 0) throw std::runtime_error("DSL line " + std::to_string(line) + " error : bro divide by zero");
         return as_number(left) / as_number(right);
     }
     if (expr.op == Op_Type::O_MOD)
     {
-        if (as_number(right) == 0) throw std::runtime_error("modulo by zero somewhere IDK lol");
+        if (as_number(right) == 0) throw std::runtime_error("DSL line " + std::to_string(line) + " error : bro modulo by zero");
         return static_cast<float>(static_cast<int>(as_number(left)) % static_cast<int>(as_number(right)));
     }
 
@@ -196,21 +223,13 @@ Value Evaluator::eval_binary(const BinaryExpr &expr, RuntimeScope& scope)
     if (expr.op == Op_Type::O_GTE)
         return as_number(left) >= as_number(right);
     if (expr.op == Op_Type::O_AND)
-    {
-        if (!as_bool(left))
-            return false;
         return as_bool(left) && as_bool(right);
-    }
     if (expr.op == Op_Type::O_OR)
-    {
-        if (as_bool(left))
-            return true;
         return as_bool(left) || as_bool(right);
-    }
-    return {};
+    throw std::runtime_error("DSL line " + std::to_string(line) + " error : Unknown operation");
 }
 
-Value Evaluator::eval_expr(const Expr& expr, RuntimeScope& scope)
+Value BulletHellCompiler::eval_expr(const Expr& expr, Scope& scope, const size_t &line)
 {
     return std::visit([&](const auto& e) -> Value
     {
@@ -225,15 +244,16 @@ Value Evaluator::eval_expr(const Expr& expr, RuntimeScope& scope)
             if (e.name == "BOX_DOWN") return -Game::BOX_SIZE-Game::HALF_HEIGHT/32-Game::HALF_HEIGHT/3;
             if (e.name == "HALF_WIDTH") return Game::HALF_WIDTH;
             if (e.name == "HALF_HEIGHT") return Game::HALF_HEIGHT;
+            if (e.name == "BEAT") return 60000.f/ bpm;
 
-            const auto it = scope.variables.find(e.name);
-            if (it == scope.variables.end())
-                return {};
-            return it->second;
+            const Value* v = scope.find(e.name);
+            if (!v)
+                throw std::runtime_error("DSL line " + std::to_string(line) + " error : Unknown variable " + e.name);
+            return *v;
         }
         if constexpr (std::is_same_v<T, UnaryExpr>)
         {
-            Value value = eval_expr(*e.value, scope);
+            Value value = eval_expr(*e.value, scope, line);
             if (e.op == Op_Type::O_SUB) return -as_number(value);
             if (e.op == Op_Type::O_ADD) return +as_number(value);
             if (e.op == Op_Type::O_NOT) return !as_bool(value);
@@ -242,33 +262,28 @@ Value Evaluator::eval_expr(const Expr& expr, RuntimeScope& scope)
         }
         if constexpr (std::is_same_v<T, BinaryExpr>)
         {
-            return eval_binary(e, scope);
+            return eval_binary(e, scope, line);
         }
         if constexpr (std::is_same_v<T, FunctionExpr>)
         {
-            return eval_function(e, scope);
+            return eval_function(e, scope, line);
         }
 
-        return {};
+        throw std::runtime_error("DSL line " + std::to_string(line) + " error : Invalid Expression");
 
     }, expr.expr);
 }
 
-Value Evaluator::eval(const Expr &expr, RuntimeScope& scope)
-{
-    return eval_expr(expr, scope);
-}
-
-
 void BulletHellCompiler::compile_if(
     const IfStatement& stmt,
-    RuntimeScope& scope)
+    Scope& scope, const size_t &line)
 {
     for (auto& branch : stmt.branches)
     {
-        if (Evaluator::as_bool(evaluator.eval(*branch.condition, scope)))
+        if (as_bool(eval_expr(*branch.condition, scope, line)))
         {
-            RuntimeScope child = scope;
+            Scope child;
+            child.parent = &scope;
 
             for (auto& s : branch.body)
                 compile_statement(*s, child);
@@ -279,21 +294,22 @@ void BulletHellCompiler::compile_if(
 
     if (!stmt.else_body.empty())
     {
-        RuntimeScope child = scope;
+        Scope child;
+        child.parent = &scope;
 
         for (auto& s : stmt.else_body)
             compile_statement(*s, child);
     }
 }
 
-void BulletHellCompiler::compile_ascent(const AscentStatement &stmt, RuntimeScope &scope)
+void BulletHellCompiler::compile_ascent(const AscentStatement &stmt, Scope &scope, const size_t &line)
 {
-    const int start = static_cast<int>(Evaluator::as_number(evaluator.eval(*stmt.start, scope)));
-    const int end   = static_cast<int>(Evaluator::as_number(evaluator.eval(*stmt.end, scope)));
-
+    int start = static_cast<int>(as_number(eval_expr(*stmt.start, scope, line)));
+    int end   = static_cast<int>(as_number(eval_expr(*stmt.end, scope, line)));
     for (int i = start; i < end; i++)
     {
-        RuntimeScope child = scope;
+        Scope child;
+        child.parent = &scope;
         child.variables[stmt.iterator] = static_cast<float>(i);
 
         for (auto& st : stmt.body)
@@ -301,109 +317,137 @@ void BulletHellCompiler::compile_ascent(const AscentStatement &stmt, RuntimeScop
     }
 }
 
-void BulletHellCompiler::compile_assign(const AssignStatement& stmt, RuntimeScope& scope)
+void BulletHellCompiler::compile_assign(const AssignStatement& stmt, Scope& scope, const size_t &line)
 {
-    const Value v = evaluator.eval(*stmt.value, scope);
-    auto &var = scope.variables[stmt.name];
-    float num = Evaluator::as_number(v);
+    // if (stmt.op != Op_Type::O_ASSIGN && !scope.find(stmt.name))
+    // {
+    //     throw std::runtime_error(
+    //         "DSL line " + std::to_string(line) + " error : Variable " + stmt.name + " not initialized");
+    // }
 
-    switch(stmt.op)
+    const Value v = eval_expr(*stmt.value, scope, line);
+    float num = as_number(v);
+    Value* var = scope.find(stmt.name);
+
+    if (stmt.name == "@BPM")
     {
-    case Op_Type::O_ASSIGN:
-        scope.variables[stmt.name] = num;
-        break;
+        bpm = num;
+        return;
+    }
 
-    case Op_Type::O_ADD_ASSIGN:
-        if (!std::holds_alternative<float>(v)) var = 0.f;
-        std::get<float>(var) += num;
-        break;
-
-    case Op_Type::O_SUB_ASSIGN:
-        if (!std::holds_alternative<float>(v)) var = 0.f;
-        std::get<float>(var) -= num;
-        break;
-    default:
+    if (var)
+    {
+        if (stmt.op == Op_Type::O_ASSIGN) *var = num;
+        else if (stmt.op == Op_Type::O_ADD_ASSIGN) *var = as_number(*var) + num;
+        else if (stmt.op == Op_Type::O_SUB_ASSIGN) *var = as_number(*var) - num;
+        else if (stmt.op == Op_Type::O_MUL_ASSIGN) *var = as_number(*var) * num;
+        else if (stmt.op == Op_Type::O_DIV_ASSIGN)
+        {
+            if (num == 0) throw std::runtime_error("DSL line " + std::to_string(line) + " error : bro divide by zero");
+            *var = as_number(*var) / num;
+        }
+        else if (stmt.op == Op_Type::O_MOD_ASSIGN)
+        {
+            if (num == 0) throw std::runtime_error("DSL line " + std::to_string(line) + " error : bro divide by zero");
+            *var = (float)((int)as_number(*var) % (int)num);
+        }
+    }
+    else if (stmt.op == Op_Type::O_ASSIGN)
+    {
         scope.variables[stmt.name] = num;
-        break;
     }
 }
 
-void BulletHellCompiler::compile_statement(const Statement& stmt, RuntimeScope& scope)
+void BulletHellCompiler::compile_statement(const Statement& stmt, Scope& scope)
 {
     std::visit([&](auto&& s)
     {
         using T = std::decay_t<decltype(s)>;
 
         if constexpr (std::is_same_v<T, SpawnStatement>)
-            compile_spawn(s, scope);
+            compile_spawn(s, scope ,stmt.line);
 
         else if constexpr (std::is_same_v<T, AssignStatement>)
-            compile_assign(s, scope);
+            compile_assign(s, scope,stmt.line);
 
         else if constexpr (std::is_same_v<T, IfStatement>)
-            compile_if(s, scope);
+            compile_if(s, scope,stmt.line);
 
         else if constexpr (std::is_same_v<T, AscentStatement>)
-            compile_ascent(s, scope);
+            compile_ascent(s, scope,stmt.line);
 
         else if constexpr (std::is_same_v<T, BlockStatement>)
         {
+            Scope child;
+            child.parent = &scope;
             for (auto& st : s.body)
-                compile_statement(*st, scope);
+                compile_statement(*st, child);
         }
 
     }, stmt.stmt);
 }
 
-void BulletHellCompiler::compile_spawn(const SpawnStatement& stmt, RuntimeScope& scope)
+int ComputeBeat(const float bpm, const float beat)
+{
+    const float time_per_beat = 60000.f/ bpm;
+    return static_cast<int>(std::round(beat * time_per_beat));
+}
+
+void BulletHellCompiler::compile_spawn(const SpawnStatement& stmt, Scope& scope, const size_t &line)
 {
     std::vector<float> args;
 
-    for (auto& e : stmt.args)
+    for (auto &e: stmt.args)
     {
-        Value v = evaluator.eval(*e, scope);
-        args.push_back(Evaluator::as_number(v));
+        Value v = eval_expr(*e, scope, line);
+        args.push_back(as_number(v));
     }
+    if (bpm == -1)
+    {
+        throw std::runtime_error("DSL line " + std::to_string(line) + " error : BPM not config");
+    }
+    const int spawn_frame = ComputeBeat(bpm, args[0]);
 
-    // Scalability is not real. I'm sleep-deprived now.
-    if (args.size() == 4) bullet_reg.CreateBullet(static_cast<int>(args[0]),Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3]});
-    if (args.size() == 5) bullet_reg.CreateBullet(static_cast<int>(args[0]),Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4]});
-    if (args.size() == 6) bullet_reg.CreateBullet(static_cast<int>(args[0]),Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5]});
-    if (args.size() == 7) bullet_reg.CreateBullet(static_cast<int>(args[0]),Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4], args[5],args[6]});
-    if (args.size() == 8) bullet_reg.CreateBullet(static_cast<int>(args[0]),Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7]});
-    if (args.size() == 9) bullet_reg.CreateBullet(static_cast<int>(args[0]),Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7] ,static_cast<unsigned short>(args[8])});
-    if (args.size() == 10) bullet_reg.CreateBullet(static_cast<int>(args[0]),Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7] ,static_cast<unsigned short>(args[8]), args[9]});
-    if (args.size() == 11) bullet_reg.CreateBullet(static_cast<int>(args[0]),Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7] ,static_cast<unsigned short>(args[8]), args[9], args[10]});
-    if (args.size() == 12) bullet_reg.CreateBullet(static_cast<int>(args[0]),Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7] ,static_cast<unsigned short>(args[8]), args[9], args[10], args[11]});
-    if (args.size() == 13) bullet_reg.CreateBullet(static_cast<int>(args[0]),Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7] ,static_cast<unsigned short>(args[8]), args[9], args[10], args[11], args[12]});
+    // Scalability is my passion.
+    if (args.size() == 4) bullet_reg.CreateBullet(spawn_frame,Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3]});
+    else if (args.size() == 5) bullet_reg.CreateBullet(spawn_frame,Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4]});
+    else if (args.size() == 6) bullet_reg.CreateBullet(spawn_frame,Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5]});
+    else if (args.size() == 7) bullet_reg.CreateBullet(spawn_frame,Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4], args[5],args[6]});
+    else if (args.size() == 8) bullet_reg.CreateBullet(spawn_frame,Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7]});
+    else if (args.size() == 9) bullet_reg.CreateBullet(spawn_frame,Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7] ,static_cast<unsigned short>(args[8])});
+    else if (args.size() == 10) bullet_reg.CreateBullet(spawn_frame,Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7] ,static_cast<unsigned short>(args[8]), args[9]});
+    else if (args.size() == 11) bullet_reg.CreateBullet(spawn_frame,Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7] ,static_cast<unsigned short>(args[8]), args[9], args[10]});
+    else if (args.size() == 12) bullet_reg.CreateBullet(spawn_frame,Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7] ,static_cast<unsigned short>(args[8]), args[9], args[10], args[11]});
+    else if (args.size() == 13) bullet_reg.CreateBullet(spawn_frame,Game::Battle::BulletData{static_cast<int>(args[1]),args[2],args[3],args[4],args[5], args[6],args[7] ,static_cast<unsigned short>(args[8]), args[9], args[10], args[11], args[12]});
+    else throw std::runtime_error("DSL line " + std::to_string(line) + " error : Invalid spawn argument count");
 }
 
-Game::Battle::BulletLoader BulletHellCompiler::extract_bullet_from_file(const char *filepath)
+Game::Battle::BulletLoader BulletHellCompiler::extract_bullets(const std::string &content)
 {
-    this->filepath = filepath;
-    tokens = tokenize(filepath);
+    tokens = tokenize(content);
     ast = parser(tokens);
+
+    bpm = -1;
     bullet_reg = {};
+    global = {};
 
-    RuntimeScope global;
+    Validator validator;
+    validator.validate(ast);
 
+    // Currently doesn't convert beat -> millisecond
     for (auto& stmt : ast.statements)
     {
         compile_statement(*stmt, global);
     }
 
+    // for (auto &[frame, bullets] : bullet_reg.batches)
+    // {
+    //     for (const auto & b : bullets)
+    //         LOG_INFO("A bullet no.%d spawns at frame %d at pos (%d,%d) with speed %d angle %d acc %d wvel %d with pattern %d",
+    //             b.bullet_id, frame, (int)b.movement_data.posX, (int)b.movement_data.posY, (int)b.movement_data.vel, (int)b.movement_data.rot,
+    //             (int)b.movement_data.acc, (int)b.movement_data.wvel, b.pattern.sequenceID);
+    //
+    // }
+
     return bullet_reg;
 }
-Game::Battle::BulletLoader BulletHellCompiler::get_bullet_reg()
-{
-    if (this->filepath != nullptr && this->bullet_reg.batches.empty()) return extract_bullet_from_file(filepath);
-    return this->bullet_reg;
-}
-
-Game::Battle::BulletLoader BulletHellCompiler::get_bullet_reg(const char *filepath)
-{
-    if (this->filepath == nullptr || this->bullet_reg.batches.empty())
-        return extract_bullet_from_file(filepath);
-    return this->bullet_reg;
-}
-

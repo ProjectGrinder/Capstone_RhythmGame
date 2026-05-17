@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "../audio/audio.h"
+#include "../audio/audio_component.h"
 #include "game/components/bullethell/pattern.h"
 #include "game/components/physics/base_collider.h"
 #include "maths/point.h"

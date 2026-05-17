@@ -1,5 +1,5 @@
 #pragma once
-#include "../../components/audio/audio.h"
+#include "../../components/audio/audio_component.h"
 #include "game/components.h"
 
 namespace Game::BulletHell
@@ -39,17 +39,17 @@ namespace Game::BulletHell
             bullet_collider.type == Physics::RECTANGLE) syscall.add_components(bullet, Physics::RectangularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
         else if (bullet_collider.type == Physics::CIRCLE) syscall.add_components(bullet, Physics::CircularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
 
-        // auto &sounds = sound_registry.audios;
+        auto &sounds = sound_registry.audios;
         switch (bullet_graphic_data.graphic_data.bullet_spawn_sound)
         {
             case 1 :
-                // Audio::audio_play(sounds["sound_bullet_spawn_0"]);
+                // Audio::audio_play(sounds.at("sound_bullet_spawn_0"));
                 break;
             case 2 :
-                // Audio::audio_play(sounds["sound_bullet_spawn_1"]);
+                // Audio::audio_play(sounds.at("sound_bullet_spawn_1"));
                 break;
             case 3 :
-                //  Audio::audio_play(sounds["sound_bullet_spawn_2"]);
+                Audio::audio_play(sounds.at("sound_bullet_spawn_2"));
                 break;
             default:;
         }

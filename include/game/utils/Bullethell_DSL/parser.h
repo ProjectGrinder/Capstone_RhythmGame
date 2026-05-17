@@ -110,17 +110,18 @@ namespace DSL
         std::vector<std::unique_ptr<Statement>> statements;
     };
 
-    std::unique_ptr<Expr> extract_binary_expr(const std::vector<Token>& tokens, size_t& pos, const size_t& line, const int min_order = 0);
-    std::unique_ptr<Expr> extract_function_expr(const std::vector<Token>& tokens, size_t& pos, const size_t& line);
+    std::unique_ptr<Expr> extract_binary_expr(const std::vector<Token>& tokens, size_t& pos, size_t& line, int min_order = 0);
+    std::unique_ptr<Expr> extract_function_expr(const std::vector<Token>& tokens, size_t& pos, size_t& line);
 
-    std::unique_ptr<Expr> extract_primary_expr(const std::vector<Token>& tokens, size_t& pos, const size_t& line);
+    std::unique_ptr<Expr> extract_primary_expr(const std::vector<Token>& tokens, size_t& pos, size_t& line);
 
     std::unique_ptr<Statement> parse_block(const std::vector<Token> &tokens, size_t &pos, size_t &line);
     std::unique_ptr<Statement> parse_if(const std::vector<Token> &tokens, size_t &pos, size_t &line);
     std::unique_ptr<Statement> parse_ascent(const std::vector<Token> &tokens, size_t &pos, size_t &line);
 
     std::unique_ptr<Statement> parse_spawn(const std::vector<Token> &tokens, size_t &pos, size_t &line);
-    std::unique_ptr<Statement> parse_assign(const std::vector<Token> &tokens, size_t &pos,const size_t &line);
+    std::unique_ptr<Statement> parse_assign(const std::vector<Token> &tokens, size_t &pos,size_t &line);
+    std::unique_ptr<Statement> parse_bpm(const std::vector<Token> &tokens, size_t &pos,size_t &line);
 
     std::unique_ptr<Statement> parse_line(const std::vector<Token> &tokens, size_t &pos, size_t &line);
 

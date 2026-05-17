@@ -1,3 +1,4 @@
+#include "game/utils/Bullethell_DSL/bullet_script.h"
 #include "scene.h"
 #include "system.h"
 
@@ -45,52 +46,6 @@ Game::Render::AnimationDataRegistry Scene::init_anim_data()
     return anim_datas;
 }
 
-Game::Battle::PatternContainer Scene::create_pattern_container()
-{
-    using namespace Game::Battle;
-    const std::vector<PatternStep> demo_step = {
-        PatternStep(400, OP_SET, 0b1000, 300),
-        PatternStep(0, OP_SET, 0b0100, -90),
-        PatternStep(0, OP_SET, 0b0010, 0),
-        PatternStep(1000, OP_SET, 0b1000, 300),
-        PatternStep(0, OP_SET, 0b0010, 0),
-
-};
-    const std::vector<PatternSequence> demo_pattern = {
-        PatternSequence(false, 0,1,2),
-        PatternSequence(false, 0,1,2,3),
-
-    };
-    auto demo_pattern_container = PatternContainer(demo_step,demo_pattern);
-    return { PatternContainer(demo_pattern_container) };
-}
-
-Game::Battle::BulletLoader Scene::create_bullet_data()
-    {
-        using namespace Game::Battle;
-        using namespace Game::Physics;
-
-        BulletLoader loader;
-        return loader;
-    }
-
-Game::Battle::BulletLoader Scene::create_bullet_data2()
-{
-    using namespace Game::Battle;
-    using namespace Game::Physics;
-
-    BulletLoader loader;
-    for (int i=0;i<500;i++)
-    {
-        for (int j=0;j<8;j++)
-        {
-            loader.CreateBullet(1000 + i*100, BulletData(0, 0, 100, (static_cast<float>(j) *45) + 6 * (float)i, 50,-45.f,0, 5000, (i*8 + j)%152));
-        }
-    }
-
-    return loader;
-}
-
 Scene::DemoBulletHell Scene::DemoBulletHell::instance()
 {
     static DemoBulletHell instance;
@@ -104,6 +59,8 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
 
     init_graphics(tm);
 
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Demo.th0"};
+
     // Create and configure BattleState
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
@@ -116,9 +73,9 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
     (
         Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
-        read_bullet_data_from_file("ShotData.txt"),
-        create_bullet_data(),
-        create_pattern_container(),
+        std::move(script.bullet_registry),
+        std::move(script.bullet_loader),
+        std::move(script.pattern_container),
         init_anim_data(),
         Game::Audio::init_sounds(),
         Game::Rhythm::KeyInput(),

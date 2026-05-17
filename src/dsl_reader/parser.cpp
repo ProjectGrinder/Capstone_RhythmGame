@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include "utils/print_debug.h"
+
 using namespace DSL;
 
 int get_order(const Op_Type op)
@@ -36,8 +38,27 @@ int get_order(const Op_Type op)
     }
 }
 
-std::unique_ptr<Expr> DSL::extract_binary_expr(const std::vector<Token>& tokens, size_t& pos, const size_t& line, const int min_order)
+void validate_eof(const std::vector<Token> &tokens, size_t &pos, size_t &line)
 {
+    if (pos >= tokens.size() || tokens[pos].type == Token_Type::T_END)
+    {
+        throw std::runtime_error("DSL line " + std::to_string(line) + " error : Unexpected End Of File");
+    }
+}
+
+void skip_newline(const std::vector<Token> &tokens, size_t &pos, size_t &line)
+{
+    while (tokens[pos].type == Token_Type::T_NEWLINE)
+    {
+        pos++;
+        line++;
+    }
+    validate_eof(tokens, pos, line);
+}
+
+std::unique_ptr<Expr> DSL::extract_binary_expr(const std::vector<Token>& tokens, size_t& pos, size_t& line, int min_order)
+{
+    validate_eof(tokens, pos, line);
     auto left = extract_primary_expr(tokens, pos, line);
     while (true)
     {
@@ -58,8 +79,9 @@ std::unique_ptr<Expr> DSL::extract_binary_expr(const std::vector<Token>& tokens,
     return left;
 }
 
-std::unique_ptr<Expr> DSL::extract_function_expr(const std::vector<Token>& tokens, size_t& pos, const size_t& line)
+std::unique_ptr<Expr> DSL::extract_function_expr(const std::vector<Token>& tokens, size_t& pos, size_t& line)
 {
+    validate_eof(tokens, pos, line);
     FunctionExpr func;
     func.name = tokens[pos].text;
 
@@ -67,8 +89,7 @@ std::unique_ptr<Expr> DSL::extract_function_expr(const std::vector<Token>& token
 
     while (true)
     {
-        if (tokens[pos].type == Token_Type::T_END)
-            throw std::runtime_error("DSL line " + std::to_string(line) +  " error : Expect )");
+        validate_eof(tokens, pos, line);
 
         if (tokens[pos].type == Token_Type::T_SYMBOL && tokens[pos].symbol_type == Symbol_Type::S_RPAREN)
         {
@@ -78,6 +99,7 @@ std::unique_ptr<Expr> DSL::extract_function_expr(const std::vector<Token>& token
 
         func.args.push_back(
             extract_binary_expr(tokens, pos, line, 0));
+        validate_eof(tokens, pos, line);
 
         if (tokens[pos].type == Token_Type::T_SYMBOL && tokens[pos].symbol_type == Symbol_Type::S_COMMA)
         {
@@ -98,8 +120,9 @@ std::unique_ptr<Expr> DSL::extract_function_expr(const std::vector<Token>& token
     return std::make_unique<Expr>(std::move(func));
 }
 
-std::unique_ptr<Expr> DSL::extract_primary_expr(const std::vector<Token>& tokens, size_t& pos, const size_t& line)
+std::unique_ptr<Expr> DSL::extract_primary_expr(const std::vector<Token>& tokens, size_t& pos, size_t& line)
 {
+    validate_eof(tokens, pos, line);
     const Token& token = tokens[pos];
 
     // number
@@ -165,27 +188,25 @@ std::unique_ptr<Expr> DSL::extract_primary_expr(const std::vector<Token>& tokens
         return expr;
     }
 
-    throw std::runtime_error(
-        "DSL line " + std::to_string(line) +
-        " error : Invalid expression");
+    throw std::runtime_error("DSL line " + std::to_string(line) + " error : Invalid expression");
 }
+
 
 std::unique_ptr<Statement> DSL::parse_block(const std::vector<Token> &tokens, size_t &pos, size_t &line)
 {
     BlockStatement block;
+    const size_t start_line = line;
+    skip_newline(tokens, pos, line);
     if (tokens[pos].type != Token_Type::T_SYMBOL ||tokens[pos].symbol_type != Symbol_Type::S_LBRACE)
         throw std::runtime_error("DSL line " + std::to_string(line) + " error : Expected { for initing a block");
     pos++;
     while (true)
     {
+        validate_eof(tokens, pos, line);
         if (tokens[pos].type == Token_Type::T_END)
             throw std::runtime_error("DSL line " + std::to_string(line) +  " error : Expect }");
 
-        while (tokens[pos].type == Token_Type::T_NEWLINE)
-        {
-            pos++;
-            line++;
-        }
+        skip_newline(tokens, pos, line);
 
         if (tokens[pos].type == Token_Type::T_SYMBOL && tokens[pos].symbol_type == Symbol_Type::S_RBRACE)
         {
@@ -195,13 +216,13 @@ std::unique_ptr<Statement> DSL::parse_block(const std::vector<Token> &tokens, si
 
         block.body.push_back(parse_line(tokens, pos, line));
     }
-
-    return std::make_unique<Statement>(std::move(block), line);
+    return std::make_unique<Statement>(std::move(block), start_line);
 }
 std::unique_ptr<Statement> DSL::parse_if(const std::vector<Token> &tokens, size_t &pos, size_t &line)
 {
     IfStatement stmt;
-
+    const size_t start_line = line;
+    validate_eof(tokens, pos, line);
     while (true)
     {
         IfBranch branch;
@@ -216,7 +237,7 @@ std::unique_ptr<Statement> DSL::parse_if(const std::vector<Token> &tokens, size_
             else
                 has_condition = false;
         }
-
+        skip_newline(tokens, pos, line);
         if (has_condition)
         {
             if (tokens[pos].type != Token_Type::T_SYMBOL || tokens[pos].symbol_type != Symbol_Type::S_LPAREN)
@@ -225,13 +246,12 @@ std::unique_ptr<Statement> DSL::parse_if(const std::vector<Token> &tokens, size_
             pos++;
 
             branch.condition = extract_binary_expr(tokens, pos, line);
-
+            validate_eof(tokens, pos, line);
             if (tokens[pos].type != Token_Type::T_SYMBOL || tokens[pos].symbol_type != Symbol_Type::S_RPAREN)
                 throw std::runtime_error("DSL line " + std::to_string(line) + " error : Expected ) after if");
 
             pos++;
         }
-
         auto body = parse_block(tokens, pos, line);
 
         auto* block = std::get_if<BlockStatement>(&body->stmt);
@@ -247,46 +267,49 @@ std::unique_ptr<Statement> DSL::parse_if(const std::vector<Token> &tokens, size_
             break;
         }
 
-        while (tokens[pos].type == Token_Type::T_NEWLINE)
-        {
-            pos++;
-            line++;
-        }
+        size_t temp_pos = pos;
+        size_t temp_line = line;
 
+        skip_newline(tokens, pos, line);
         if (!(tokens[pos].type == Token_Type::T_KEYWORD && tokens[pos].keyword_type == Keyword_Type::K_ELSE))
+        {
+            pos = temp_pos;
+            line = temp_line;
             break;
+        }
     }
-
-    return std::make_unique<Statement>(std::move(stmt), line);
+    return std::make_unique<Statement>(std::move(stmt), start_line);
 }
 std::unique_ptr<Statement> DSL::parse_ascent(const std::vector<Token> &tokens, size_t &pos, size_t &line)
 {
     AscentStatement stmt;
+    const size_t start_line = line;
+    validate_eof(tokens, pos, line);
     if (tokens[pos].type != Token_Type::T_SYMBOL ||tokens[pos].symbol_type != Symbol_Type::S_LPAREN)
         throw std::runtime_error("DSL line " + std::to_string(line) + " error : Expected ( after ascent");
 
     pos++;
-
+    validate_eof(tokens, pos, line);
     if (tokens[pos].type != Token_Type::T_ID)
         throw std::runtime_error("DSL line " + std::to_string(line) + " error : Expected iterator name to ascent");
 
     stmt.iterator = tokens[pos].text;
     pos++;
-
+    validate_eof(tokens, pos, line);
     if (tokens[pos].text != "in")
         throw std::runtime_error("DSL line " + std::to_string(line) + " error : Expected \"in\" in ascent");
 
     pos++;
-
+    validate_eof(tokens, pos, line);
     stmt.start = extract_binary_expr(tokens, pos, line);
-
+    validate_eof(tokens, pos, line);
     if (tokens[pos].type != Token_Type::T_OP || tokens[pos].op_type != Op_Type::O_RANGE)
         throw std::runtime_error("DSL line " + std::to_string(line) + " error : Expected .. in ascent");
 
     pos++;
-
+    validate_eof(tokens, pos, line);
     stmt.end = extract_binary_expr(tokens, pos, line);
-
+    validate_eof(tokens, pos, line);
     if (tokens[pos].type != Token_Type::T_SYMBOL ||tokens[pos].symbol_type != Symbol_Type::S_RPAREN)
         throw std::runtime_error("DSL line " + std::to_string(line) + " error : Expected ) after ascent");
 
@@ -298,20 +321,21 @@ std::unique_ptr<Statement> DSL::parse_ascent(const std::vector<Token> &tokens, s
 
     stmt.body = std::move(block->body);
 
-    return std::make_unique<Statement>(std::move(stmt), line);
+    return std::make_unique<Statement>(std::move(stmt), start_line);
 }
 
 std::unique_ptr<Statement> DSL::parse_spawn(const std::vector<Token> &tokens, size_t &pos, size_t &line)
 {
     SpawnStatement stmt;
+    const size_t start_line = line;
+    validate_eof(tokens, pos, line);
     if (tokens[pos].type != Token_Type::T_SYMBOL ||tokens[pos].symbol_type != Symbol_Type::S_LPAREN)
         throw std::runtime_error("DSL line " + std::to_string(line) + " error : Expected ( after spawn");
     pos++;
 
     while (true)
     {
-        if (tokens[pos].type == Token_Type::T_END)
-            throw std::runtime_error("DSL line " + std::to_string(line) +  " error : Expect )");
+        validate_eof(tokens, pos, line);
 
         stmt.args.push_back(
             extract_binary_expr(tokens, pos, line));
@@ -334,17 +358,30 @@ std::unique_ptr<Statement> DSL::parse_spawn(const std::vector<Token> &tokens, si
         throw std::runtime_error("DSL line " + std::to_string(line) + " error : Expected , or )");
     }
 
-    return std::make_unique<Statement>(std::move(stmt), line);
+    return std::make_unique<Statement>(std::move(stmt), start_line);
 }
-std::unique_ptr<Statement> DSL::parse_assign(const std::vector<Token> &tokens, size_t &pos,const size_t &line)
+std::unique_ptr<Statement> DSL::parse_assign(const std::vector<Token> &tokens, size_t &pos,size_t &line)
 {
     const std::string name = tokens[pos].text;
     pos++;
+    validate_eof(tokens, pos, line);
     const Token &op = tokens[pos];
     if (op.type != Token_Type::T_OP)
         throw std::runtime_error("DSL line " + std::to_string(line) +  " error : I don't understand the statement. " + name + "and then " + op.text + "?");
     if (!(op.op_type >= Op_Type::O_ASSIGN && op.op_type <= Op_Type::O_MOD_ASSIGN))
         throw std::runtime_error("DSL line " + std::to_string(line) +  " error : I don't understand the statement. What do you mean \"" + op.text + "\" as an assign statement?");
+    pos++;
+    return std::make_unique<Statement>(AssignStatement{name, op.op_type, extract_binary_expr(tokens, pos, line,0)}, line);
+}
+
+std::unique_ptr<Statement> DSL::parse_bpm(const std::vector<Token> &tokens, size_t &pos,size_t &line)
+{
+    const std::string name = "@" + tokens[pos].text;
+    pos++;
+    validate_eof(tokens, pos, line);
+    const Token &op = tokens[pos];
+    if (op.type != Token_Type::T_OP && op.op_type != Op_Type::O_ASSIGN)
+        throw std::runtime_error("DSL line " + std::to_string(line) +  " error : To config the system, you use @var = x");
     pos++;
     return std::make_unique<Statement>(AssignStatement{name, op.op_type, extract_binary_expr(tokens, pos, line,0)}, line);
 }
@@ -370,6 +407,12 @@ std::unique_ptr<Statement> DSL::parse_line(const std::vector<Token> &tokens, siz
     {
         if (cmd.symbol_type == Symbol_Type::S_LBRACE)
             return parse_block(tokens, pos, line);
+        if (cmd.symbol_type == Symbol_Type::S_AMPERSAND)
+        {
+            pos++;
+            return parse_bpm(tokens, pos, line);
+        }
+
     }
 
     if (cmd.type == Token_Type::T_ID)

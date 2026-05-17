@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 
 namespace Game::Battle
 {
@@ -47,6 +48,7 @@ namespace Game::Battle
         std::vector<PatternSequence> pattern_sequences;
         std::vector<PatternStep> pattern_steps;
 
+        PatternContainer() = default;
         PatternContainer(
             std::vector<PatternStep> steps,
             std::vector<PatternSequence> seqs)

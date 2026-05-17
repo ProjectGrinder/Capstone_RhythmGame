@@ -1,8 +1,8 @@
 #pragma once
-#include "parser.h"
 #include <unordered_set>
-#include "game/components/battle/bullet_data.h"
 #include "game/components/battle/battlestate.h"
+#include "game/components/battle/bullet_data.h"
+#include "parser.h"
 
 namespace DSL
 {
@@ -12,6 +12,10 @@ namespace DSL
     {
         int min_args;
         int max_args;
+    };
+
+    inline const std::unordered_set<std::string> BUILTIN_CONFIG = {
+        "@BPM"
     };
 
     inline const std::unordered_set<std::string> BUILTIN_CONSTANTS = {
@@ -29,69 +33,72 @@ namespace DSL
         {"ceil", {1,1}},
         {"floor", {1,1}},
     };
+    struct Scope
+    {
+        Scope* parent = nullptr;
+        std::unordered_map<std::string, Value> variables;
+        Value* find(const std::string &name)
+        {
+            const auto it = variables.find(name);
 
+            if (it != variables.end())
+                return &it->second;
+
+            if (parent)
+                return parent->find(name);
+
+            return nullptr;
+        }
+        const Value* find(const std::string& name) const{
+            const auto it = variables.find(name);
+
+            if (it != variables.end())
+                return &it->second;
+
+            if (parent)
+                return parent->find(name);
+
+            return nullptr;
+        }
+    };
     class Validator
     {
     public:
-        struct Scope
-        {
-            std::unordered_set<std::string> variables;
-        };
         void validate(const AST& ast);
-
-    private:
         Scope scope;
 
-        void validate_stmt(const Statement& stmt, Scope &scope, const size_t &line);
+    private:
+        void validate_stmt(const Statement& stmt, Scope &scope);
         void validate_expr(const Expr& expr, Scope &scope, const size_t &line);
 
-        static void validate_variable(const VariableExpr &var, const Scope &scope, const size_t &line);
+        static void validate_variable(const VariableExpr &var, Scope &scope, const size_t &line);
         void validate_assign(const AssignStatement& stmt,Scope &scope, const size_t &line);
-        void validate_ascent(const AscentStatement& stmt, const Scope &scope, const size_t &line);
+        void validate_ascent(const AscentStatement& stmt, Scope &scope, const size_t &line);
         void validate_function(const FunctionExpr& func, Scope &scope, const size_t &line);
     };
-
-    struct RuntimeScope
-    {
-        std::unordered_map<std::string, Value> variables;
-    };
-    class Evaluator
-    {
-    public:
-        Value eval(const Expr& expr, RuntimeScope& scope);
-        static float as_number(const Value &v);
-        static bool as_bool(const Value& v);
-
-    private:
-        Value eval_expr(const Expr& expr, RuntimeScope& scope);
-        Value eval_function(const FunctionExpr& func, RuntimeScope& scope);
-        Value eval_binary(const BinaryExpr& expr, RuntimeScope& scope);
-    };
-
-
 
     class BulletHellCompiler
     {
     public:
-        RuntimeScope global;
-        Game::Battle::BulletLoader extract_bullet_from_file(const char * filepath);
-        Game::Battle::BulletLoader get_bullet_reg();
-        Game::Battle::BulletLoader get_bullet_reg(const char * filepath);
+        Scope global;
+        Game::Battle::BulletLoader extract_bullets(const std::string &content);
+
 
     private:
         // Cache
-        const char *filepath = nullptr;
         std::vector<Token> tokens;
         AST ast;
-        Evaluator evaluator;
-
         Game::Battle::BulletLoader bullet_reg;
         size_t pos = 0;
-        void compile_statement(const Statement& stmt, RuntimeScope& scope);
-        void compile_if(const IfStatement& stmt, RuntimeScope& scope);
-        void compile_ascent(const AscentStatement &stmt, RuntimeScope &scope);
-        void compile_spawn(const SpawnStatement &stmt, RuntimeScope &scope);
-        void compile_assign(const AssignStatement& stmt, RuntimeScope& scope);
+        float bpm = -1;
+        void compile_statement(const Statement& stmt, Scope& scope);
+        void compile_if(const IfStatement& stmt, Scope& scope, const size_t &line);
+        void compile_ascent(const AscentStatement &stmt, Scope &scope, const size_t &line);
+        void compile_spawn(const SpawnStatement &stmt, Scope &scope, const size_t &line);
+        void compile_assign(const AssignStatement& stmt, Scope& scope, const size_t &line);
+        Value eval_expr(const Expr& expr, Scope& scope, const size_t &line);
+        Value eval_function(const FunctionExpr& func, Scope& scope, const size_t &line);
+        Value eval_binary(const BinaryExpr& expr, Scope& scope, const size_t &line);
     };
 }
 

@@ -2,14 +2,6 @@
 
 #include <stdexcept>
 
-#include "system/asset_manager.h"
-
-extern "C"{
-    typedef unsigned long       DWORD;
-    DWORD file_read(_Out_ FileContent **content, const char *name);
-    void file_free(FileContent **file);
-}
-
 using namespace DSL;
 
 Op_Type check_op(const std::string &src, const size_t i, __out int &length)
@@ -37,6 +29,8 @@ Op_Type check_op(const std::string &src, const size_t i, __out int &length)
     if(src.compare(i,length, "=")==0) return Op_Type::O_ASSIGN;
     if(src.compare(i,length, ".")==0) return Op_Type::O_DOT;
     if(src.compare(i,length, "!")==0) return Op_Type::O_NOT;
+    if(src.compare(i,length, "<")==0) return Op_Type::O_LT;
+    if(src.compare(i,length, ">")==0) return Op_Type::O_GT;
 
     return Op_Type::O_UNKNOWN;
 }
@@ -49,6 +43,7 @@ Symbol_Type check_symbol(const std::string &src, const size_t i, __out int &leng
     if(src.compare(i,1, "{")==0) return Symbol_Type::S_LBRACE;
     if(src.compare(i,1, "}")==0) return Symbol_Type::S_RBRACE;
     if(src.compare(i,1, ",")==0) return Symbol_Type::S_COMMA;
+    if(src.compare(i,1, "@")==0) return Symbol_Type::S_AMPERSAND;
     return Symbol_Type::S_UNKNOWN;
 }
 
@@ -78,15 +73,10 @@ Keyword_Type check_keyword(const std::string &src, const size_t i, __out int &le
     return Keyword_Type::K_UNKNOWN;
 }
 
-std::vector<Token> DSL::tokenize(const char * filepath) {
+std::vector<Token> DSL::tokenize(const std::string &src) {
     std::vector<Token> tokens;
     size_t i = 0;
     size_t line = 1;
-
-    FileContent* file_content;
-    file_read(&file_content, filepath);
-
-    const std::string src(file_content->data, file_content->size);
 
     while (i < src.size()) {
         // skip whitespace
@@ -223,7 +213,7 @@ std::vector<Token> DSL::tokenize(const char * filepath) {
         }
 
         // --- Unknown character ---
-        throw std::runtime_error("DSL line" + std::to_string(line) +  " error : What did you do?");
+        throw std::runtime_error("DSL line" + std::to_string(line) +  " error : What do you mean by \"" + c + "\"?");
     }
 
     tokens.push_back({Token_Type::T_END, ""});

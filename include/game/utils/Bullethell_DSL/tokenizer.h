@@ -52,6 +52,7 @@ namespace DSL
         S_LBRACE,
         S_RBRACE,
         S_COMMA,
+        S_AMPERSAND,
         S_UNKNOWN
     };
 
@@ -70,10 +71,10 @@ namespace DSL
         Token_Type type;
         std::string text;
 
-        Op_Type op_type;
-        Symbol_Type symbol_type;
-        Keyword_Type keyword_type;
+        Op_Type op_type = Op_Type::O_UNKNOWN;
+        Symbol_Type symbol_type = Symbol_Type::S_UNKNOWN;
+        Keyword_Type keyword_type = Keyword_Type::K_UNKNOWN;
     };
 
-    std::vector<Token> tokenize(const char * filepath);
+    std::vector<Token> tokenize(const std::string &src);
 }

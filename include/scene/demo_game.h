@@ -136,9 +136,6 @@ namespace Scene
 
             >;
 
-        static Game::Battle::BulletLoader create_bullet_test();
-        static Game::Battle::ChartData create_note_test();
-
         static void load_chart(
             std::shared_ptr<TaskManager> &tm,
             Game::Battle::ChartData &chart,

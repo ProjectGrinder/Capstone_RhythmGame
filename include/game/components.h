@@ -8,7 +8,7 @@
 #include "components/battle/transition_data.h"
 #include "components/battle/ui_object.h"
 
-#include "components/audio/audio.h"
+#include "components/audio/audio_component.h"
 #include "components/bullethell/booming.h"
 #include "components/bullethell/bullet.h"
 #include "components/bullethell/bullet_clearer.h"
@@ -40,6 +40,7 @@
 #include "components/rhythm/combo.h"
 #include "components/rhythm/holdconnect.h"
 #include "components/rhythm/holdstart.h"
+#include "components/rhythm/judgement_line.h"
 #include "components/rhythm/judgetext.h"
 #include "components/rhythm/keyinput.h"
 #include "components/rhythm/lane.h"
@@ -47,6 +48,5 @@
 #include "components/rhythm/notestatus.h"
 #include "components/rhythm/notetype.h"
 #include "components/rhythm/timing.h"
-#include "components/rhythm/judgement_line.h"
 
 #include "system/ecs.h"
