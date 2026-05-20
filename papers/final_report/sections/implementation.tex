@@ -9,7 +9,7 @@
 
 For the first stages of development, the core functionality of the ECS framework was to be implemented fully.
 While the engine's implementation is being worked on, the main game loop and scene change system was established.
-After the ECS framework performed to an acceptable level of performance, the focus shifted to providing utilities
+After the ECS framework performed to an acceptable level, the focus shifted to providing utilities
 needed for game development.
 Among these were a way to integrate assets, a way to output draw commands, and a way to inject inputs and timestamps for
 time-sensitive functions.
@@ -45,7 +45,7 @@ Lastly, a game demo was created for the project demonstration, including a main 
 \subsubsection*{ECS Engine}
 The custom engine was implemented with the C++20 standard and tested for correctness with GoogleTest.
 
-As the designers were not familiar with the ECS architecture, it took many months for the form of the engine to be finalized.
+As the designers were not familiar with the ECS architecture, it took many months to finalize the design.
 In the beginning, the engine built the ECS architecture upon an object-oriented C++ class structure, but this was deemed
 antithesis to the reason ECS was chosen for the engine in the first place.
 The system designers then iterated upon this by replacing inheritance-based classes and functions with templates
