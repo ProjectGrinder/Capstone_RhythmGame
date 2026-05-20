@@ -13,7 +13,7 @@ After the ECS framework performed to an acceptable level, the focus shifted to p
 needed for game development.
 Among these were a way to integrate assets, a way to output draw commands, and a way to inject inputs and timestamps for
 time-sensitive functions.
-
+\\\\
 One important feature was the ability to switch between ECS registries, which resulted in the development of the Scene Manager.
 Finally, while the game is in development fully, the system designers helped support the game developers and address
 issues and performance degradation by continuously iterating upon the engine implementation and optimizing for performance.
@@ -26,13 +26,15 @@ The game combines bullet hell gameplay with rhythm gameplay to demonstrate the e
 Due to the multi-genre gameplay design, mechanics and systems must be designed for the ECS framework and able to
 blend both gameplay styles while preserving the player's experience.
 Furthermore, art, music, and story design were planned during this phase.
-
-After the ECS framework was completed, gameplay systems were implemented and tested in parallel to the integration of the renderer.
+\\\\
+After the ECS framework was completed, gameplay systems were implemented and tested in parallel to the integration
+of the renderer.
 Scenes were split into a bullet-hell scene and a rhythm game scene to separate into their own environment before
 merging into one scene.
 Meanwhile, assets were being designed and created for the game, including characters, background art, and music.
-
-After the rendering system was implemented, visuals were added to the gameplay systems, allowing them to be polished and tested for performance.
+\\\\
+After the rendering system was implemented, visuals were added to the gameplay systems, allowing them to be polished and
+tested for performance.
 Finished assets such as character sprites and background art were integrated into the game.
 Lastly, a game demo was created for the project demonstration, including a main menu scene, gameplay transition, and a playable level.
 
@@ -44,14 +46,14 @@ Lastly, a game demo was created for the project demonstration, including a main 
 
 \subsubsection*{ECS Engine}
 The custom engine was implemented with the C++20 standard and tested for correctness with GoogleTest.
-
+\\\\
 As the designers were not familiar with the ECS architecture, it took many months to finalize the design.
 In the beginning, the engine built the ECS architecture upon an object-oriented C++ class structure, but this was deemed
 antithesis to the reason ECS was chosen for the engine in the first place.
 The system designers then iterated upon this by replacing inheritance-based classes and functions with templates
 and concept metaprogramming.
 The compiler handled the template specialization, resulting in performance close to programming with no framework.
-
+\\\\
 A challenge that later arose was the providing of entities matching querying components to registered functions.
 For every registered function, heavy metaprogramming had to be used to match the function's arguments to component types,
 then to filter existing entities based on those types, and after that to provide them as reference lists to the functions.
@@ -65,7 +67,7 @@ Each scene was a class implemented with functions to initialize and cleanup thei
 differently registered components and systems.
 The Scene Manager used these scenes through template functions to seamlessly switch between different parts of the game,
 allowing for easy logic separation and data passing.
-
+\\\\
 One challenge encountered when implementing the Scene Manager was the shape of the data between scenes.
 While the data emitted from each scene could vary based on their registered components, a scene could only
 accept data that's compatible with their own registered component.
@@ -78,13 +80,25 @@ care must still be given to prevent loss of important data and invalid states of
 \subsubsection*{Game System}
 The gameplay development was implemented using the custom ECS framework provided by the engine team utilizing
 C++20, the custom engine APIs, and GoogleTest.
-
-A major challenge of the game development was designing systems that are highly scalable for future full-game development
-while utilizing a new and unfamiliar engine.
-Therefore, the developers have to perfectly design systems that support scalability for future stages, new gameplay mechanics, and graphical polishing.
-
-Another challenge involved integrating two different gameplay genres while maintaining responsive player controls and gameplay readability.
-To mitigate the issue, the game development process spent a considerable amount of time refining methods to smoothly transition the gameplay
-from both the graphical perspective down to the engine's mechanical perspective and testing the overall smoothness of the transition.
+\\\\
+At first, the gameplay systems for both genres were implemented according to the initial design with ECS paradigm.
+Entities such as bullets and notes were defined with components that contained data relevant to their purpose,
+and systems were defined as functions that operated on a query of entities with specific components.
+Utilizing the new and unfamiliar custom engine was a major challenge for the game developers, as they had to understand
+the engine's architecture and APIs while implementing the gameplay systems.
+Because the rendering system was not implemented at the time, debugging tools such as logging and test cases were used
+to verify the correctness of their systems.
+As the game development progressed, the game developers had to be aware of the engine's performance and optimize their
+systems to ensure smooth gameplay.
+This lead to some systems being restructured to be more efficient, such as using a bullet registry to manage bullet patterns
+and graphics.
+\\\\
+Another challenge involved integrating two different gameplay genres while maintaining responsive player controls and gameplay
+readability.
+To mitigate the issue, the game development process spent a considerable amount of time refining methods to smoothly transition
+the gameplay.
+This included designing visual cues to signal the transition and transitioning the gameplay without interrupting the player's flow.
+After the transition was implemented, it was tested to ensure the smoothness of the transition and the player's experience
+was not disrupted.
 
 
