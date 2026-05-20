@@ -7,19 +7,19 @@ In all cases, frame duration increases approximately linearly with respect to th
 This indicates that each framework scales proportionally with workload size and does not exhibit
 significant nonlinear overhead within the tested range.
 
-Among the evaluated implementations, the custom engine demonstrated significantly lower execution times than both
-general-purpose ECS frameworks among all entity counts.
-At 16,000 entities, the custom engine was approximately 4.9 times faster than Bevy ECS and approximately 8.8 times faster than EnTT\@.
-This result is attributable to the reduced abstraction overhead and compile-time fixed-component specializations present
-in the custom engine compared to the runtime dynamic-component architectures of Bevy ECS and EnTT\@.
+We find that our custom engine consistently outperforms EnTT in terms of iteration performance.
+The custom engine exhibits 2.7× speedup at 2000 entities, which decreases to 1.3× speedup at 64,000 entities.
+When comparing with Bevy, however, while the custom engine begins at 5.7× speedup at 2000 entities,
+its performance degrades to a 0.7× slowdown at 128,000 entities.
 
-The relatively linear growth across all implementations suggests that the benchmark workload is dominated
-primarily by system iteration cost rather than synchronization, scheduling, or memory management bottlenecks.
-No abrupt increases in frame duration were observed as the entity count increased, indicating stable scaling behavior
-within the tested range.
+When we analyze the entity iteration time in Table~\ref{tab:system-iter-benchmark}, we can see that the iteration cost for
+both EnTT and our custom engine generally increases as entity count increases.
+For Bevy, however, the iteration cost reduces as entity count increases, alluding to its optimization for batch processing,
+something not used in the implementation of the other two options.
 
-Overall, the results indicate that the custom engine provides the highest execution performance for the evaluated
-workload among the tested ECS frameworks.
+Overall, the results indicate that the custom engine provides competitive performance for the evaluated
+workload among the tested ECS frameworks for the 2000 to 16000 entity range.
+For use cases asking for more than 32000 entities, Bevy remains a superior option compared to our custom engine.
 
 \subsection{Limitations}
 \label{subsec:limitations-and-lessons}
@@ -29,8 +29,4 @@ It does not factor in the other aspects of an ECS architecture, such as the quer
 the adding and removing of components and entities.
 This means that we cannot properly measure the performance of the custom engine in those aspects in comparison to
 general-purpose architectures.
-
-This test was performed in the language's debug build profile.
-With the release build profile, the well-established ECS architectures could take advantage of more aggressive compiler optimizations.
-Informal testing indicated that the custom engine would be able to provide a competitive performance
-to the other tested frameworks, being approximately 1.3 times slower than EnTT and 1.6 times slower than Bevy ECS\@.
+We plan to benchmark these aspects of our custom engine in the future.\@.
