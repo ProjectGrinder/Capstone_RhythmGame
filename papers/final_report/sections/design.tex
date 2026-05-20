@@ -78,6 +78,16 @@ structured around distinct but smoothly transitioning phases.
 This requires a seamless transition between the two to create a revolutionary take on hybrid games.
 Considering that both of the games hugely relied on great optimization, as with a little disruption,
 it can cause a fatal mistake for the player inciting frustration, the design of the game must be made cautiously.
+\\\\
+\noindent The bullet hell section is mostly composed of large numbers of bullets and particles,
+while great performance is still required to retain the player’s fluidity of movement.
+To achieve this, an ECS architecture is highly favored as opposed to object-oriented
+since the large number of entities can be handled more efficiently with it.
+Entities of the system are composed of player, bullets, boss, enemies, background, and effects
+using shared components such as position, velocity, sprite, shader, etc.
+Each system will be executed every frame thus handling the entity movement,
+collision check, and input allowing it to handle all the bullets in a frame efficiently.
+Such systems consist of a player system, movement system, collision system, particle system, and much more.
 
 \vspace{0.5cm}
 
@@ -91,16 +101,14 @@ it can cause a fatal mistake for the player inciting frustration, the design of 
 
 \vspace{0.5cm}
 
-\noindent The bullet hell section is mostly composed of large numbers of bullets and particles,
-while great performance is still required to retain the player’s fluidity of movement.
-To achieve this, an ECS architecture is highly favored as opposed to object-oriented
-since the large number of entities can be handled more efficiently with it.
-Entities of the system are composed of player, bullets, boss, enemies, background, and effects
-using shared components such as position, velocity, sprite, shader, etc.
-Each system will be executed every frame thus handling the entity movement,
-collision check, and input allowing it to handle all the bullets in a frame efficiently.
-Such systems consist of a player system, movement system, collision system, particle system, and much more.
-The core mechanics are that, for each frame, the input was processed to control the player system.
+\noindent Figure~\ref{fig:designbullet} shows a current system design for bullet hell gameplay.
+A bullet loader entity is initialized during the initiation process of the scene alongside all bullet data used within the scene.
+The bullet loader system then spawn bullets from the data stored in its component at the configured frame timing.
+Each spawned bullet data entry contains a stage bullet ID used to retrieve additional information from the stage bullet registry.
+This registry also references a graphic ID to query even more data from the bullet graphic registry.
+After all required data is gathered, the bullet entity is spawned with its components configured from the gathered data.
+\\\\
+\noindent The core mechanics are that, for each frame, the input was processed to control the player system.
 Meanwhile, the collision system will check each ongoing colliding entity by computing if each entity with a collider component
 is colliding with another entity.
 Then, the corresponding function will be triggered to apply change to the state such as the player taking damage and making change to the player’s health UI\@.
@@ -189,6 +197,10 @@ implementation process and in future works.
 
 % Adjustments from proposal to implementation
 
-Largely, the proposed design did not undergo major changes in the implementation process.
+In engine side, largely, the proposed design did not undergo major changes in the implementation process.
 As the design is modular, as the engine's execution is optimized, modules that serve the same purpose were being swapped out
 with more efficient ones that serve the same function.
+
+Meanwhile, in the gameplay side, the bullet hell system architecture has been mostly restructured.
+to improve scalability, maintainability, and alignment with the overall game design.
+
