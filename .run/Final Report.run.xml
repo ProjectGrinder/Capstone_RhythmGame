@@ -12,7 +12,7 @@
       <before-run-command />
       <main-file>$PROJECT_DIR$/papers/final_report/main.tex</main-file>
       <output-path>$PROJECT_DIR$/papers/final_report</output-path>
-      <auxil-path>$PROJECT_DIR$/auxil</auxil-path>
+      <auxil-path>$PROJECT_DIR$/papers/final_report</auxil-path>
       <working-directory>{mainFileParent}</working-directory>
       <compile-twice>true</compile-twice>
       <output-format>PDF</output-format>
