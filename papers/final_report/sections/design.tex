@@ -29,9 +29,9 @@ a SceneManager, which will also execute the registered systems during the main g
 \vspace{0.5cm}
 
 \noindent Figure~\ref{fig:engine} shows the outline of the engine.
-The SceneManager takes ownership and executes user-level systems during runtime by receiving inputs from the operating system,
+The Scene Manager takes ownership and executes user-level systems during runtime by receiving inputs from the operating system,
 passing logs, audio, and render-object references to different specialized components.
-Those components will then pass information to the operating system to pass information to the device outputs as appropriate.
+The components will then pass information to the operating system, and continues to the device outputs as appropriate.
 For modularity, the communications are passed through the Windows/Lifetime Manager, which acts as an adapter for the operating system.
 \\\\
 For the actual implementation of these compile-time optimizations, we take advantage of C++'s concept of templates.
