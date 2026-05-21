@@ -99,7 +99,6 @@ The engine is also built with modular subsystems (rendering, physics, audio, etc
 to improve performance.
 Unreal Engine 5 introduces a new framework similar to ECS called MassEntity~\cite{Unreal_MassEntity}, which aims to 
 improve performance by optimizing memory layout for large-scale simulations.
-Currently, in 2025, the MassEntity system is still in development and not fully integrated into the engine.
 Also, the engine uses a visual scripting system called Blueprints, which can introduce additional 
 performance overhead.
 Moreover, Unreal Engine contains advanced features such as real-time ray tracing and high-fidelity graphics, 
@@ -107,12 +106,21 @@ which can be resource-intensive and may require high-end hardware to run smoothl
 \\\\
 Upon comparison, both engines have their strengths and weaknesses in terms of architecture and performance, 
 which can impact their suitability for different types of projects.
-Both engines utilize component-based architectures that promote modularity and flexibility.
 Unity's flexibility and modularity make it a good choice for smaller projects or those requiring rapid 
 developing cycles, but could suffer from performance issues in larger-scale applications.
+An academic study~\cite{DOTS_Study} on Unity's DOTS system showed that while it can provide significant
+performance improvements compared to traditional OOP-based designs, the results were worse when a system had to
+access objects outside of its own archetype due to difference in data and logic structure.
+Additionally, the DOTS system is not as widely adopted in the industry, and there is a lack of documentation
+and resources available for developers.
 Meanwhile, Unreal Engine's high performance and advanced features aim for high-quality
 3D projects, but the system is not built to support the general media applications due to its massive 
 performance costs.
+Currently, in 2026, the MassEntity system is still in development and not fully integrated into the engine as
+other features, tools, and documentation are still being worked on.
+There is a community project~\cite{MassSample} that experiments with the MassEntity system.
+However, the project is not affiliated with the official developers, and the provided documentation may not be
+accurate or up-to-date with the latest changes in the engine.
 
 \subsection{Gap Analysis}
 \label{subsec:gap-analysis}
