@@ -13,20 +13,23 @@ namespace Game::Render
     {
         for (auto &[id, comps] : query)
         {
-            const auto &[font, text, layer, order] = comps.get<Text>();
             const auto &material = comps.get<Material>();
+            if (!material.visible)
+                continue;
+
+            const auto &[font, text, color, layer, order] = comps.get<Text>();
             const auto &tra = comps.get<Transform>();
 
             const auto glyphs_data = font->info.info.as_font.data;
             const auto glyphs_count = font->info.info.as_font.count;
 
             // in local space, the "pen" starts at (0,0,0).
-            auto pen = Position(0,0,0);
+            auto pen = Math::Point(0,0,0);
 
             for (char c : text)
             {
                 int i = 0;
-                while (i < glyphs_count)
+                while (i < (int)glyphs_count)
                 {
                     if (glyphs_data[i].character == c)
                     {
@@ -35,7 +38,7 @@ namespace Game::Render
                     i++;
                 }
 
-                if (i == glyphs_count) {continue;} // cannot render, no glyph data
+                if (i == (int)glyphs_count) {continue;} // cannot render, no glyph data
                 const auto glyph = &glyphs_data[i];
                 const auto u0 = glyph->u0;
                 const auto v0 = glyph->v0;
@@ -65,8 +68,11 @@ namespace Game::Render
                 intent.common.sp = font;
                 intent.common.info.sp_id = ASSET_INDEX(font->id);
 
-                intent.special = System::Render::SpriteDrawDesc{
-                .points = {glyph_top_left, glyph_top_right, glyph_bottom_right, glyph_bottom_left},
+                const Math::Point scale_point(Math::Point(tra.scaleX, tra.scaleY,1));
+
+                intent.special.sprite = System::Render::SpriteDrawDesc{
+                .points = {glyph_top_left*scale_point, glyph_top_right*scale_point, glyph_bottom_right*scale_point, glyph_bottom_left*scale_point},
+                .color = color,
                 .u0 = u0,
                 .v0 = v0,
                 .u1 = u1,

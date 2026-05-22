@@ -1,17 +1,38 @@
 #pragma once
 #include <vector>
 
+#include "../audio/audio.h"
 #include "game/components/physics/base_collider.h"
-#include "game/components/render/sprite.h"
 
 namespace Game::Battle
 {
-    // TODO : Put it somewhere else I think.
     constexpr size_t MAX_BULLETS_GRAPHIC = 128;
     enum BulletType
     {
         Bullet, Booming, Laser
     };
+    // enum class BulletAttribute {
+    //     None       = 0,
+    //     Homing     = 1 << 0,
+    //     Bounce     = 1 << 1,
+    //     Spin       = 1 << 2
+    // };
+    // inline BulletAttribute operator|(BulletAttribute a, BulletAttribute b) {
+    //     return static_cast<BulletAttribute>(
+    //         static_cast<int>(a) | static_cast<int>(b)
+    //     );
+    // }
+    //
+    // inline BulletAttribute operator&(BulletAttribute a, BulletAttribute b) {
+    //     return static_cast<BulletAttribute>(
+    //         static_cast<int>(a) & static_cast<int>(b)
+    //     );
+    // }
+    //
+    // inline bool hasAttribute(const BulletAttribute flags, const BulletAttribute flag) {
+    //     return (flags & flag) != BulletAttribute::None;
+    // }
+
     struct SpecialBulletData
     {
         BulletType type;
@@ -44,11 +65,36 @@ namespace Game::Battle
 
     struct GraphicData
     {
-        Render::Sprite sprite;
+        int src_rect[4];
+        float dest_rect[4];
         float r,g,b,a;
-        GraphicData() : sprite({}), r(1), g(1), b(1), a(1) {}
-        explicit GraphicData(const Render::Sprite &sprite, const float r = 1, const float g = 1, const float b = 1, const float a = 1) :
-            sprite(sprite), r(r), g(g), b(b), a(a) {}
+        int bullet_spawn_sound;
+        GraphicData() : src_rect{}, dest_rect{}, r(1), g(1), b(1), a(1), bullet_spawn_sound(1)
+        {}
+        explicit GraphicData(
+                const int src0, const int src1, const int src2, const int src3,
+                const float r = 1,
+                const float g = 1,
+                const float b = 1,
+                const float a = 1,
+                const int bullet_spawn_sound = 1) :
+            src_rect{src0,src1,src2,src3}, r(r), g(g), b(b), a(a), bullet_spawn_sound(bullet_spawn_sound)
+        {
+            dest_rect[0] = static_cast<float>(src0 - src2);
+            dest_rect[1] = static_cast<float>(src1 - src3);
+            dest_rect[2] = static_cast<float>(src2 - src0);
+            dest_rect[3] = static_cast<float>(src3 - src1);
+        }
+        explicit GraphicData(
+                const int src0, const int src1, const int src2, const int src3,
+                const float dest0, const float dest1, const float dest2, const float dest3,
+                const float r,
+                const float g,
+                const float b,
+                const float a,
+                const int bullet_spawn_sound = 1) :
+            src_rect{src0,src1,src2,src3}, dest_rect{dest0, dest1, dest2, dest3}, r(r), g(g), b(b), a(a), bullet_spawn_sound(bullet_spawn_sound)
+        {}
     };
 
     struct BulletGraphicMap
@@ -58,9 +104,8 @@ namespace Game::Battle
         SpecialBulletData special_bullet_data;
         float damage_mul;
         int pierce;
-        int lifetime;
 
-        BulletGraphicMap() : damage_mul(0), pierce(1), lifetime(5000)
+        BulletGraphicMap() :  damage_mul(1), pierce(1)
         {}
 
         explicit BulletGraphicMap(
@@ -68,15 +113,19 @@ namespace Game::Battle
                 const GraphicData &graphic_data = {},
                 const SpecialBulletData &special_bullet_data = {},
                 const float damage_mul = 1,
-                const int pierce = 1,
-                const int lifetime = 5000 ) :
-            collider_data(collider_data), graphic_data(graphic_data), special_bullet_data(special_bullet_data), damage_mul(damage_mul), pierce(pierce), lifetime(lifetime)
+                const int pierce = 1) :
+            collider_data(collider_data),
+            graphic_data(graphic_data),
+            special_bullet_data(special_bullet_data),
+            damage_mul(damage_mul),
+            pierce(pierce)
         {}
     };
 
     struct BulletRegistry
     {
         std::vector<BulletGraphicMap> bulletGraphicMaps;
+        BulletRegistry() {};
         explicit BulletRegistry(std::vector<BulletGraphicMap>& bulletGraphicMaps) : bulletGraphicMaps(std::move(bulletGraphicMaps))
         {}
     };
@@ -88,11 +137,13 @@ namespace Game::Battle
         float acc, wvel;
         uint16_t patternID;
         int delay_frame;
+        int lifetime;
         int graphicID;
         BulletData(
                 const float posX,
                 const float posY,
                 const int delay_frame,
+                const int lifetime,
                 const int graphicID) :
             posX(posX),
             posY(posY),
@@ -102,6 +153,7 @@ namespace Game::Battle
             wvel(0),
             patternID(0),
             delay_frame(delay_frame),
+            lifetime(lifetime),
             graphicID(graphicID)
         {}
         BulletData(
@@ -110,6 +162,7 @@ namespace Game::Battle
                 const float vel,
                 const float rot,
                 const int delay_frame,
+                const int lifetime,
                 const int graphicID) :
             posX(posX),
             posY(posY),
@@ -119,6 +172,7 @@ namespace Game::Battle
             wvel(0),
             patternID(0),
             delay_frame(delay_frame),
+            lifetime(lifetime),
             graphicID(graphicID)
         {}
         BulletData(
@@ -128,8 +182,9 @@ namespace Game::Battle
                 const float rot,
                 const uint16_t patternID,
                 const int delay_frame,
+                const int lifetime,
                 const int graphicID) :
-            posX(posX), posY(posY), vel(vel), rot(rot), acc(0), wvel(0), patternID(patternID), delay_frame(delay_frame), graphicID(graphicID)
+            posX(posX), posY(posY), vel(vel), rot(rot), acc(0), wvel(0), patternID(patternID), delay_frame(delay_frame), lifetime(lifetime), graphicID(graphicID)
         {}
         BulletData(
                 const float posX,
@@ -139,6 +194,7 @@ namespace Game::Battle
                 const float acc,
                 const float wvel,
                 const int delay_frame,
+                const int lifetime,
                 const int graphicID) :
             posX(posX),
             posY(posY),
@@ -148,6 +204,7 @@ namespace Game::Battle
             wvel(wvel),
             patternID(0),
             delay_frame(delay_frame),
+            lifetime(lifetime),
             graphicID(graphicID)
         {}
 
@@ -160,8 +217,9 @@ namespace Game::Battle
                 const float wvel,
                 const uint16_t patternID,
                 const int delay_frame,
+                const int lifetime,
                 const int graphicID) :
-            posX(posX), posY(posY), vel(vel), rot(rot), acc(acc), wvel(wvel), patternID(patternID), delay_frame(delay_frame), graphicID(graphicID)
+            posX(posX), posY(posY), vel(vel), rot(rot), acc(acc), wvel(wvel), patternID(patternID), delay_frame(delay_frame), lifetime(lifetime), graphicID(graphicID)
         {}
     };
 

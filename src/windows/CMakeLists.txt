@@ -1,6 +1,7 @@
 add_subdirectory(utils)
 add_subdirectory(directx)
 add_subdirectory(scenes)
+add_subdirectory(audio)
 
 # OS Level Code will be written in C
 file(GLOB
@@ -17,6 +18,7 @@ add_executable(windows_main
 target_link_libraries(windows_main
         PRIVATE
             ${LIBS}
+            os_audio
             directx
             os_scene
             user32

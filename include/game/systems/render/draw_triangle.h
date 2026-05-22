@@ -46,7 +46,7 @@ namespace Game::Render
 
             Helpers::fill_common(intent, material, tra, (uint8_t) tri.layer);
 
-            intent.special = System::Render::TriangleDrawDesc{{tri.points[0], tri.points[1], tri.points[2]}};
+            intent.special.triangle = System::Render::TriangleDrawDesc{{tri.points[0], tri.points[1], tri.points[2]}};
         }
     }
 } // namespace Game::Render

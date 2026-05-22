@@ -1,6 +1,7 @@
 #pragma once
 #include "game.h"
 #include "system.h"
+#include "scene/scene_decl.h"
 
 namespace Scene
 {
@@ -18,9 +19,9 @@ namespace Scene
             auto &comp = entry.get<test_component>();
             LOG_INFO("comp.number = %d", comp.number)
             comp.number += 1;
-            if (comp.number > 10)
+            if (comp.number > 1000)
             {
-                comp.number = 0;
+                queue_change_scene<Scene::DemoSceneChange>();
             }
         }
     }
@@ -50,6 +51,10 @@ namespace Scene
         // declare functions
         static void test();
         static std::shared_ptr<TaskManager> init();
-        static std::vector<ComponentTuple> exit();
+        static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data)
+        {
+            return (init());
+        }
+        static ResourceManager exit(std::shared_ptr<TaskManager> &manager);
     };
 } // namespace Scene

@@ -6,7 +6,7 @@
 namespace Game::BulletHell
 {
     template <typename T>
-        void bounce_pattern_system([[maybe_unused]] T &syscall, System::ECS::Query<Bounce, Physics::Position, Physics::Rotation>& query, System::ECS::Query<Battle::BattleState> &query2)
+        void bounce_pattern_system([[maybe_unused]] T &syscall, System::ECS::Query<Bounce, Render::Transform, Physics::Rotation>& query, System::ECS::Query<Battle::BattleState> &query2)
     {
         // TODO: Replace with real bound
         constexpr float stage_bound_x_min = 0;
@@ -24,22 +24,28 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query)
         {
-            const auto &pos = comps.get<Physics::Position>();
+            const auto &pos = comps.get<Render::Transform>().position;
             auto &rot = comps.get<Physics::Rotation>();
-            const auto &bounce_c = comps.get<Bounce>();
+            auto &bounce_c = comps.get<Bounce>();
 
             if ((bounce_c.reflect_side[0] && pos.x < stage_bound_x_min) || (bounce_c.reflect_side[1] && pos.x > stage_bound_x_max))
                 rot.angleZ = 180 - rot.angleZ;
 
             else if ((bounce_c.reflect_side[2] && pos.y < stage_bound_y_min) || (bounce_c.reflect_side[3] && pos.y > stage_bound_y_max))
                 rot.angleZ = 360 - rot.angleZ;
+
+            bounce_c.bounce_time--;
+            if (bounce_c.bounce_time < 0)
+            {
+                syscall.template remove_component<Bounce>(id);
+            }
         }
     }
 
     template <typename T>
     void homing_pattern_system([[maybe_unused]] T &syscall,
-        System::ECS::Query<Homing, Physics::Position, Physics::Rotation>& query,
-        System::ECS::Query<Player, Physics::Position> & query2,
+        System::ECS::Query<Homing, Render::Transform, Physics::Rotation>& query,
+        System::ECS::Query<Player, Render::Transform> & query2,
         System::ECS::Query<Battle::BattleState> &query3)
     {
         if (query2.begin() == query2.end())
@@ -53,10 +59,17 @@ namespace Game::BulletHell
 
         for (auto &[id, comps] : query)
         {
-            const auto &pos = comps.get<Physics::Position>();
+            const auto &pos = comps.get<Render::Transform>().position;
             auto &rot = comps.get<Physics::Rotation>();
-            const auto &homing_c = comps.get<Homing>();
-            const Physics::Position target_pos = query2.front().get<Physics::Position>();
+            auto &homing_c = comps.get<Homing>();
+            const Math::Point target_pos = query2.front().get<Render::Transform>().position;
+
+            homing_c.expire_time -= (int)get_delta_time();
+            if (homing_c.expire_time <= 0)
+            {
+                syscall.template remove_component<Homing>(id);
+                continue;
+            }
 
             float target_angle = Physics::get_direction(pos,target_pos);
             if (abs(target_angle - rot.angleZ) < homing_c.strength)

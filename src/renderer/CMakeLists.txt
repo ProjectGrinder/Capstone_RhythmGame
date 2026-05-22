@@ -1,6 +1,7 @@
 file(GLOB
     RENDERER_FILES
         "./*.cpp"
+        "./*.c"
 )
 
 add_library(renderer
@@ -8,6 +9,3 @@ add_library(renderer
         ${RENDERER_FILES}
 )
 
-target_link_libraries(
-        assets_manager
-)

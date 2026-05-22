@@ -1,85 +1,27 @@
 #pragma once
 #include <array>
 #include "utils/print_debug.h"
+#include "utils/physics_util.h"
 
 namespace Game::Render
 {
-    enum TweenType
-    {
-        Linear,
-        Ease_In,
-        Ease_Out,
-        Ease_InOut,
-    };
-
-    // TODO: Inputting partial field uses the previous key value or get entity default value.
-    //  Maybe Add RGBA, ShaderParam
-    //  In System, check for invalid then assign last field.
-    struct AnimationFrame
-    {
-        float posX = 0.f, posY = 0.f, posZ = 0.f;
-        float rotX = 0.f,rotY = 0.f, rotZ = 0.f;
-        float sclX = 0.f, sclY = 0.f, sclZ = 0.f;
-        char* texture = nullptr;
-        TweenType tweenType = Linear;
-        float tweenStrength = 1.0f;
-
-        AnimationFrame() = default;
-        explicit AnimationFrame(char* texture) : texture(texture){}
-    };
-
-    // Allow adding only
-    struct Animation
-    {
-        bool isInitialized = false;
-        bool is_loop;
-
-        unsigned int currentKey;
-        unsigned int keyN;
-        unsigned int keyFrameFrame[64];
-        AnimationFrame keyframes[64];
-
-        Animation() : is_loop(true), currentKey(0), keyN(0), keyFrameFrame{}, keyframes{}
-        {}
-
-        explicit Animation(const unsigned int keyN) :
-            is_loop(true), currentKey(0), keyN(keyN), keyFrameFrame{}, keyframes{}
-        {}
-        explicit Animation(const unsigned int keyN, const bool is_loop) :
-            is_loop(is_loop), currentKey(0), keyN(keyN), keyFrameFrame{}, keyframes{}
-        {}
-        void AddFrame(const unsigned int frame, const AnimationFrame &animationFrame)
-        {
-            isInitialized = false;
-            keyFrameFrame[currentKey] = frame;
-            keyframes[currentKey] = animationFrame;
-            currentKey++;
-        }
-    };
-
-    // TODO: Default state after animation.
     struct Animator
     {
-        int animCount;
-        std::array<Animation, 32> animations;
+        int anim_id;
+        // bool isLoop = false;
+        int current_frame = 0;
+        int current_time = 0;
 
-        unsigned int frame;
-        unsigned int currentKey;
-        unsigned int currentAnimation;
-        bool is_playing;
-        Animator() : animCount(0), frame(0), currentKey(0), currentAnimation(0), is_playing(false)
+        Animator(
+                const int anim_id = -1): anim_id(anim_id)
         {}
-        explicit Animator(const unsigned int currentAnimation) :
-            animCount(0), frame(0), currentKey(0), currentAnimation(currentAnimation), is_playing(false)
-        {}
-        void addAnimation(const Animation &animation)
-        {
-            if (animCount > 32)
-            {
-                LOG_ERROR("Animator Full");
-                return;
-            }
-            animations[animCount++] = animation;
-        }
+    };
+
+    struct Animation_Controller
+    {
+        int current_id = 0;
+        int to_id = 0;
+        bool has_exit_time;
+        int transition_time;
     };
 } // namespace Game::Render

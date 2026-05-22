@@ -19,7 +19,8 @@ namespace Scene
                 Game::Render::Material,
                 Game::Render::Text,
                 Game::Render::Transform,
-                Game::Render::Triangle>;
+                Game::Render::Triangle,
+                Game::Audio::Audio>;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<
@@ -34,6 +35,10 @@ namespace Scene
 
         // declare functions
         static std::shared_ptr<TaskManager> init();
-        static std::vector<ComponentTuple> exit();
+        static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data)
+        {
+            return (init());
+        }
+        static ResourceManager exit(std::shared_ptr<TaskManager> &manager);
     };
 } // namespace Scene

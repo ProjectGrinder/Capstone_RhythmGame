@@ -2,6 +2,7 @@
 #include <array>
 #include <bitset>
 #include <execution>
+#include <optional>
 #include <ranges>
 #include "ecs_types.h"
 #include "utils/print_debug.h"
@@ -36,10 +37,9 @@ namespace System::ECS
             }
         }
 
-        template<typename Resource>
-        bool _import_from_pool(SyscallResource<MaxResource, Resources...> &other)
+        template <typename Resource>
+        bool _import_from_pool(ResourcePool<MaxResource, Resource> &source_pool)
         {
-            auto &source_pool = other.template query<Resource>();
             if (source_pool.begin() == source_pool.end())
                 return false;
             auto &target_pool = this->query<Resource>();
@@ -59,17 +59,22 @@ namespace System::ECS
                     structural_change = true;
                 }
             }
-            return structural_change;
+            return (structural_change);
+        }
+
+        template<typename Resource>
+        bool _import_resource(SyscallResource<MaxResource, Resources...> &other)
+        {
+            return (_import_from_pool(other.template query<Resource>()));
         }
 
         template<size_t... I>
         bool _import_impl(SyscallResource<MaxResource, Resources...> &other, std::index_sequence<I...>)
         {
             bool changed = false;
-            ((changed |= _import_from_pool<std::tuple_element_t<I, std::tuple<Resources...>>>(other)), ...);
+            ((changed |= _import_resource<std::tuple_element_t<I, std::tuple<Resources...>>>(other)), ...);
             return (changed);
         }
-
 
         using _remove_tuple_t = std::tuple<decltype((void) sizeof(Resources), std::bitset<MaxResource>{})...>;
 
@@ -134,6 +139,16 @@ namespace System::ECS
         const ResourcePool<MaxResource, Resource> &query() const
         {
             return (std::get<ResourcePool<MaxResource, Resource>>(_pools));
+        }
+
+        template<typename Resource>
+        std::optional<std::reference_wrapper<ResourcePool<MaxResource, Resource>>> query_if_exists()
+        {
+            constexpr static bool exists = contains_type_v<Resource, Resources...>;
+            if constexpr (!exists)
+                return std::nullopt;
+            else
+                return std::ref(std::get<ResourcePool<MaxResource, Resource>>(_pools));
         }
 
         template<typename Resource>
@@ -215,7 +230,6 @@ namespace System::ECS
             return (false);
         }
 
-
         void remove_marked(
                 const _remove_tuple_t &component_bits,
                 const std::bitset<MaxResource> &entity_bits,
@@ -242,7 +256,6 @@ namespace System::ECS
                 mark_dirty();
         }
 
-
         uint64_t get_version() const
         {
             return _world_version;
@@ -266,11 +279,11 @@ namespace System::ECS
             return (contains_type_v<T, Resources...>);
         }
 
-
         const std::bitset<MaxResource> &get_bitset() const
         {
             return _occupied;
         }
+
     };
 
 } // namespace System::ECS

@@ -1,5 +1,7 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include "system/atomic.h"
 
 #define INLINEOPTIMIZE static inline __attribute__((always_inline)) __forceinline
 
@@ -8,6 +10,7 @@ typedef void *IntentStorageHandler;
 typedef void *CompositorHandler;
 typedef void *DirectXHandler;
 typedef void *Dx11AdapterHandler;
+typedef void *AudioHandler;
 
 typedef enum
 {
@@ -32,7 +35,7 @@ typedef struct
 {
     INT x;
     INT y;
-} Position;
+} GlobalPosition;
 
 typedef struct
 {
@@ -51,7 +54,7 @@ typedef struct
     HWND window_handler;
 
     DisplayType display_type;
-    char is_running;
+    atomic_int is_running;
 
     LONGLONG precision;
     LARGE_INTEGER perf_frequency;
@@ -65,4 +68,5 @@ typedef struct
     CompositorHandler compositor;
     Dx11AdapterHandler dx11_adapter;
     DirectXHandler directx;
+    AudioHandler audio;
 } SystemInfo;

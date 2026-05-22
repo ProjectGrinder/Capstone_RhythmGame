@@ -142,21 +142,6 @@ namespace System::Render
         typedef uint32_t assets_id;
     }
 
-    struct ComposedTextDesc
-    {
-        std::string_view text;
-        const AssetsRecord *font;
-    };
-
-    struct ComposedDrawCommon
-    {
-        const AssetsRecord *vs;
-        const AssetsRecord *ps;
-        const AssetsRecord *sp;
-        Color color;
-        uint64_t key;
-    };
-
     struct RenderItem
     {
         size_t params_size;
@@ -206,7 +191,7 @@ namespace System::Render
         Compositor();
 
         static Compositor &instance();
-        static void compose(const std::vector<DrawIntent> &intents, const Camera &camera);
+        static void compose(const std::vector<DrawIntent> &intents, size_t active_count, const Camera &camera);
 
         static std::vector<SortEntry> &get_sort_entries()
         {

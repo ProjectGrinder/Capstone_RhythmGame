@@ -1,8 +1,8 @@
 #pragma once
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
-#include <array>
 
 namespace Game::Battle
 {
@@ -35,7 +35,8 @@ namespace Game::Battle
         RhythmType note_type;
         NoteData() : is_hold(false), timing(0), timing_end(0), note_type(NORMAL)
         {}
-        explicit NoteData(const bool is_hold, const int timing, const int timing_end, const RhythmType note_type) : is_hold(is_hold), timing(timing), timing_end(timing_end), note_type(note_type)
+        explicit NoteData(const bool is_hold, const int timing, const int timing_end, const RhythmType note_type) :
+            is_hold(is_hold), timing(timing), timing_end(timing_end), note_type(note_type)
         {}
     };
 
@@ -56,7 +57,8 @@ namespace Game::Battle
         int difficulty;
         Difficulty() : instrument(NO_INSTRUMENT), difficulty(0)
         {}
-        explicit Difficulty(const Instrument instrument,const int difficulty) : instrument(instrument), difficulty(difficulty)
+        explicit Difficulty(const Instrument instrument, const int difficulty) :
+            instrument(instrument), difficulty(difficulty)
         {}
     };
 
@@ -68,7 +70,9 @@ namespace Game::Battle
         int miss_count;
         JudgementCount() : perfect_count(0), great_count(0), fine_count(0), miss_count(0)
         {}
-        explicit JudgementCount(const int perfect_count, const int great_count, const int fine_count, const int miss_count) : perfect_count(perfect_count), great_count(great_count), fine_count(fine_count), miss_count(miss_count)
+        explicit JudgementCount(
+                const int perfect_count, const int great_count, const int fine_count, const int miss_count) :
+            perfect_count(perfect_count), great_count(great_count), fine_count(fine_count), miss_count(miss_count)
         {}
     };
 
@@ -86,6 +90,28 @@ namespace Game::Battle
         explicit BpmInfo(const unsigned int idx) : idx(idx)
         {}
     };
+
+    struct AcceptLoss
+    {
+        int normal;
+        int accent;
+        int rain;
+        int hold;
+        int hold_end;
+        AcceptLoss() : normal(0), accent(0), rain(0), hold(0), hold_end(0)
+        {}
+        explicit AcceptLoss(const int normal, const int accent, const int rain, const int hold, const int hold_end) :
+            normal(normal), accent(accent), rain(rain), hold(hold), hold_end(hold_end)
+        {}
+    };
+
+    enum PlayerState
+    {
+        PLAY,
+        DEAD,
+        FINISH
+    };
+
     // use these structures
 
     struct BattleState
@@ -93,19 +119,39 @@ namespace Game::Battle
         int max_hp;
         int hp;
         int score;
-        int clock_time;
+        int combo;
+        int clock_time; // initialize clock with 3-second wait period
         int total_accept;
         int current_accept;
         int max_accept_gauge;
+        PlayerState player_state;
         Difficulty difficulty;
         JudgementCount judgement_count;
         CurrentPhase current_phase;
         BattleState() :
-            max_hp(0), hp(0), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(0), current_phase(RHYTHM)
+            max_hp(0),
+            hp(0),
+            score(0),
+            combo(0),
+            clock_time(-3000000),
+            total_accept(0),
+            current_accept(0),
+            max_accept_gauge(0),
+            player_state(PLAY),
+            current_phase(BULLET_HELL)
         {}
-        explicit BattleState(
-                const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :
-            max_hp(max_hp), hp(max_hp), score(0), clock_time(0), total_accept(0), current_accept(0), max_accept_gauge(max_accept_gauge), difficulty(difficulty), current_phase(BULLET_HELL)
+        explicit BattleState(const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :
+            max_hp(max_hp),
+            hp(max_hp),
+            score(0),
+            combo(0),
+            clock_time(-3000000),
+            total_accept(0),
+            current_accept(0),
+            max_accept_gauge(max_accept_gauge),
+            player_state(PLAY),
+            difficulty(difficulty),
+            current_phase(BULLET_HELL)
         {}
     };
 
@@ -114,7 +160,7 @@ namespace Game::Battle
         int graze;
         int iframe_time;
         int damage;
-        BulletHellState(): graze(0), iframe_time(3000), damage(1)
+        BulletHellState(const int damage = 1) : graze(0), iframe_time(0), damage(damage)
         {}
     };
 
@@ -123,11 +169,25 @@ namespace Game::Battle
         int heal_hp;
         int base_score;
         int total_notes;
-        float note_speed;
-        RhythmState() : heal_hp(0), base_score(0), total_notes(0), note_speed(0)
+        float base_speed;
+        float current_speed;
+        bool speed_change;
+        AcceptLoss accept_loss;
+        RhythmState() :
+            heal_hp(0), base_score(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false)
         {}
-        RhythmState(const int heal_hp, const int base_score, const int total_notes, const float note_speed) :
-            heal_hp(heal_hp), base_score(base_score), total_notes(total_notes), note_speed(note_speed)
+        RhythmState(
+                const int heal_hp,
+                const int base_score,
+                const int total_notes,
+                const float base_speed,
+                const float current_speed) :
+            heal_hp(heal_hp),
+            base_score(base_score),
+            total_notes(total_notes),
+            base_speed(base_speed),
+            current_speed(current_speed),
+            speed_change(false)
         {}
     };
 
@@ -144,17 +204,22 @@ namespace Game::Battle
         float main_bpm;
         BpmInfo bpm_info;
         std::vector<Difficulty> difficulties;
-        LevelData() : main_bpm(0)
-        {}
+        int duration;
         explicit LevelData(
                 std::string title,
                 std::string artist_name,
                 std::string genre_name,
                 const float main_bpm,
                 BpmInfo bpm_info,
-                std::vector<Difficulty> difficulties) :
-            title(std::move(title)), artist_name(std::move(artist_name)), genre_name(std::move(genre_name)), main_bpm(main_bpm),
-            bpm_info(std::move(bpm_info)), difficulties(std::move(difficulties))
+                std::vector<Difficulty> difficulties,
+                const int duration) :
+            title(std::move(title)),
+            artist_name(std::move(artist_name)),
+            genre_name(std::move(genre_name)),
+            main_bpm(main_bpm),
+            bpm_info(std::move(bpm_info)),
+            difficulties(std::move(difficulties)),
+            duration(duration)
         {}
     };
-}
+} // namespace Game::Battle

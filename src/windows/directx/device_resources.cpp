@@ -91,6 +91,7 @@ HRESULT Windows::DeviceResources::create_window_resources(HWND hwnd)
 
     desc.SampleDesc.Quality = 0;
     desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+    desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
     desc.OutputWindow = hwnd;
 
     Microsoft::WRL::ComPtr<IDXGIDevice3> dxgi_device;
@@ -183,7 +184,7 @@ HRESULT Windows::DeviceResources::go_full_screen()
 
     release_back_buffer();
 
-    hr = _swap_chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+    hr = _swap_chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING);
 
     hr = configure_back_buffer();
     return (hr);
@@ -197,7 +198,7 @@ HRESULT Windows::DeviceResources::go_windowed()
 
     release_back_buffer();
 
-    hr = _swap_chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+    hr = _swap_chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING);
 
     hr = configure_back_buffer();
     return (hr);
@@ -274,5 +275,5 @@ ID3D11DepthStencilView *Windows::DeviceResources::get_depth_stencil()
 
 void Windows::DeviceResources::present()
 {
-    _swap_chain->Present(0, 0);
+    _swap_chain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
 }

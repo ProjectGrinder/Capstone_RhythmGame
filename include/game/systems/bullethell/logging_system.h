@@ -5,7 +5,7 @@
 namespace Game::BulletHell
 {
     template <typename T>
-    void logging_system([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState, Battle::BulletHellState, Battle::BulletLoader> &query, System::ECS::Query<Player, Position> &query2, System::ECS::Query<Bullet, Delay, Position, Rotation, Physics::Scale, Velocity> &query3)
+    void logging_system([[maybe_unused]] T &syscall, System::ECS::Query<Battle::BattleState, Battle::BulletHellState, Battle::BulletLoader> &query, System::ECS::Query<Player, Render::Transform> &query2, System::ECS::Query<Bullet, Delay, Render::Transform, Rotation, Velocity> &query3)
     {
         if (query.begin() == query.end())
             return;
@@ -24,7 +24,7 @@ namespace Game::BulletHell
         LOG_INFO("Time : %d.%d%d", battle_state.clock_time/1000000, battle_state.clock_time/10000 - (battle_state.clock_time/1000000)*100);
 
         LOG_INFO("Hp : %d, iFrame : %d, Graze : %d, Bullet Pointer : %d", battle_state.hp, query.front().get<Battle::BulletHellState>().iframe_time, query.front().get<Battle::BulletHellState>().graze, query.front().get<Battle::BulletLoader>().pointer);//bullet_loader.pointer);
-        const auto player_pos = query2.front().get<Position>();
+        const auto player_pos = query2.front().get<Render::Transform>().position;
         LOG_INFO("Player Pos : (%d,%d)", static_cast<int>(player_pos.x), static_cast<int>(player_pos.y));
 
         LOG_INFO("%d bullets on screen : ", query3.size());
@@ -36,7 +36,7 @@ namespace Game::BulletHell
             }
             else
             LOG_INFO(
-                "Bullet of ID<%d> at pos<%d,%d> of size<%d,%d> at speed<%d>, at rot<%d>", id, static_cast<int>(round(comps.get<Position>().x)), static_cast<int>(round(comps.get<Position>().y)), static_cast<int>(round(comps.get<Physics::Scale>().scaleX)), static_cast<int>(round(comps.get<Physics::Scale>().scaleY)), static_cast<int>(round(comps.get<Velocity>().vx)), static_cast<int>(round(comps.get<Rotation>().angleZ))
+                "Bullet of ID<%d> at pos<%d,%d> of size<%d,%d> at speed<%d>, at rot<%d>", id, static_cast<int>(round(comps.get<Render::Transform>().position.x)), static_cast<int>(round(comps.get<Render::Transform>().position.y)), static_cast<int>(round(comps.get<Render::Transform>().scaleX)), static_cast<int>(round(comps.get<Render::Transform>().scaleY)), static_cast<int>(round(comps.get<Velocity>().vx)), static_cast<int>(round(comps.get<Rotation>().angleZ))
             );
         }
         LOG_INFO("----------------------------------");

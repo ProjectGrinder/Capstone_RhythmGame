@@ -17,8 +17,11 @@ namespace System::Render
         RenderingEnvironment _environment;
         std::vector<D3D11_INPUT_ELEMENT_DESC> _input_layout_desc_scratch;
 
+
         ComPtr<ID3D11Buffer> _global_vb;
         ComPtr<ID3D11Buffer> _global_ib;
+        ComPtr<ID3D11BlendState> _alpha_blend_state;
+        ComPtr<ID3D11DepthStencilState> _depth_stencil_state;
 
     public:
         explicit Dx11Adapter(Windows::DeviceResources &resources);

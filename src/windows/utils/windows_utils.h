@@ -35,13 +35,8 @@ FORCEINLINE size_t strlen(_In_ const char *str)
 }
 */
 
+#include "system/asset_manager.h"
 #pragma warning(disable : 4200)
-typedef struct
-{
-    size_t size;
-    size_t alloc;
-    char data[];
-} FileContent;
 
 DWORD file_read(_Out_ FileContent **content, const char *name);
 void file_free(FileContent **file);
