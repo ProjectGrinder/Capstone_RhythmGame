@@ -6,7 +6,7 @@ namespace Scene
 {
     Game::Render::Sprite assign_sprite(int type);
 
-    struct DemoGame
+    struct Level1
     {
         template<typename T>
         static void return_to_menu(
@@ -28,9 +28,9 @@ namespace Scene
             }
         }
 
-        static DemoGame instance();
+        static Level1 instance();
 
-        constexpr static auto name = "DemoGame";
+        constexpr static auto name = "Level1";
         constexpr static size_t MaxResource = 10000;
 
         // declare scene parameters

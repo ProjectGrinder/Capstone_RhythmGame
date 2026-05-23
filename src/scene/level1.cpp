@@ -5,7 +5,7 @@
 
 #include "game.h"
 
-void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
+void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
 {
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
 
@@ -62,7 +62,7 @@ Game::Battle::PatternContainer create_pattern_container2()
     return { PatternContainer(demo_pattern_container) };
 }
 
-Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
+Game::Battle::BulletLoader Scene::Level1::create_bullet_test()
 {
     using namespace Game::Battle;
     using namespace Game::Physics;
@@ -361,44 +361,6 @@ inline Game::Battle::LevelData create_level1_chartdata()
     );
 }
 
-Game::Battle::ChartData Scene::DemoGame::create_note_test()
-{
-    Game::Battle::ChartData chart;
-
-    for (int lane = 0; lane < 4; ++lane)
-    {
-        chart.lanes[lane].lane_number = lane;
-        chart.lanes[lane].notes.clear();
-        chart.lanes[lane].current_note = 0;
-    }
-
-    // chart.lanes[0].notes.emplace_back(false, 5000 + 7500, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[1].notes.emplace_back(false, 5000 + 8000, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[2].notes.emplace_back(false, 5000 + 8500, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[3].notes.emplace_back(false, 5000 + 9000, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[0].notes.emplace_back(false, 5000 + 9500, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[1].notes.emplace_back(false, 5000 + 10000, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[2].notes.emplace_back(false, 5000 + 10500, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[3].notes.emplace_back(false, 5000 + 11000, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[0].notes.emplace_back(true, 5000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[3].notes.emplace_back(true, 5000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
-    //
-    // for (int i=0;i<80;i++)
-    // {
-    //     chart.lanes[1].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::NORMAL);
-    //     if (i>12)
-    //     {
-    //         if (i%8==0)
-    //             chart.lanes[0].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::ACCENT);
-    //         if (i%8==4)
-    //             chart.lanes[3].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::ACCENT);
-    //     }
-    //     if (i==60) chart.lanes[2].notes.emplace_back(true, 30000 + i*100, 25000 + 80*100, Game::Battle::RhythmType::ACCENT);
-    // }
-
-    return (chart);
-}
-
 Game::Render::Sprite Scene::assign_sprite(const int type)
 {
     if (type == 1)
@@ -415,7 +377,7 @@ Game::Render::Sprite Scene::assign_sprite(const int type)
         .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
 }
 
-void Scene::DemoGame::load_chart(
+void Scene::Level1::load_chart(
     std::shared_ptr<TaskManager> &tm,
     Game::Battle::ChartData &chart,
     Game::Rhythm::NoteField &field)
@@ -496,13 +458,13 @@ void Scene::DemoGame::load_chart(
     LOG_INFO("Finished loading chart")
 }
 
-Scene::DemoGame Scene::DemoGame::instance()
+Scene::Level1 Scene::Level1::instance()
 {
-    static DemoGame instance;
+    static Level1 instance;
     return (instance);
 }
 
-std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
+std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
 {
     auto tm = std::make_shared<TaskManager>();
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
@@ -659,8 +621,8 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     return (tm);
 }
 
-Scene::DemoGame::ResourceManager Scene::DemoGame::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
+Scene::Level1::ResourceManager Scene::Level1::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
-    LOG_INFO("Exiting DemoGame Scene.");
+    LOG_INFO("Exiting Level1 Scene.");
     return ResourceManager();
 }

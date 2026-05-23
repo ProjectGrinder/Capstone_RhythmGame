@@ -9,8 +9,8 @@
 // define scene templates
 #include "scene/demo.h"
 #include "scene/demo_bullethell.h"
-#include "scene/demo_game.h"
 #include "scene/demo_render.h"
 #include "scene/demo_rhythm.h"
+#include "scene/level1.h"
 
 #include "scene/scene_manager.h"

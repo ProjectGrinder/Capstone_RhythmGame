@@ -47,8 +47,8 @@ namespace Game::Battle
         constexpr auto Z = 0x5A;
         constexpr auto X = 0x58;
 
+        constexpr auto S = 0x53;
         constexpr auto D = 0x44;
-        constexpr auto F = 0x46;
         constexpr auto L = 0x4C;
         constexpr auto SEMICOLON = 0xBA;
 
@@ -75,7 +75,7 @@ namespace Game::Battle
             //     break;
             // }
 
-            if (get_key_state(D))
+            if (get_key_state(S))
             {
                 rhythm_input.front().get<Rhythm::KeyInput>().key1_hold = true;
                 if (!rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed &&
@@ -101,7 +101,7 @@ namespace Game::Battle
                 }
             }
 
-            if (get_key_state(F))
+            if (get_key_state(D))
             {
                 rhythm_input.front().get<Rhythm::KeyInput>().key2_hold = true;
                 if (!rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed &&
