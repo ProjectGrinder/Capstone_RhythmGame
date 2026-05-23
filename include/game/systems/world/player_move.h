@@ -29,7 +29,7 @@ namespace Game::Overview
 
             if (global_state.movementLocked) continue;
 
-            const float velocity_factor = (input.shift ? player_stat.run_speed : player_stat.walk_speed);
+            const float velocity_factor = (input.shift_held ? player_stat.run_speed : player_stat.walk_speed);
 
             const float x = input.axis_x;
 

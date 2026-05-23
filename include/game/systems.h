@@ -53,14 +53,13 @@
 
 
 // Overview Part
-#include "systems/overview/detect_overlap.h"
-#include "systems/overview/dialogue_system.h"
-#include "systems/overview/event_system.h"
-#include "systems/overview/player_move.h"
-#include "systems/overview/input_system.h"
-#include "systems/overview/level_page_system.h"
-#include "systems/overview/logging_system.h"
-#include "systems/overview/scene_load_system.h"
+#include "systems/world/detect_overlap.h"
+#include "systems/world/dialogue_system.h"
+#include "systems/world/event_system.h"
+#include "systems/world/level_page_system.h"
+#include "systems/world/logging_system.h"
+#include "systems/world/player_move.h"
+#include "systems/world/scene_load_system.h"
 
 // Test
 #include "systems/test/fps_counter.h"

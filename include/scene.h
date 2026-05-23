@@ -12,6 +12,6 @@
 #include "scene/demo_game.h"
 #include "scene/demo_render.h"
 #include "scene/demo_rhythm.h"
-#include "scene/demo_overworld.h"
+#include "scene/demo_world.h"
 
 #include "scene/scene_manager.h"

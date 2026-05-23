@@ -7,7 +7,7 @@ namespace Game::Overview
     template <typename T>
     void logging_system([[maybe_unused]] T &syscall,
         System::ECS::Query<Battle::BattleState> &global_query,
-        System::ECS::Query<Player, Position, Velocity> &player_query,
+        System::ECS::Query<Player, Render::Transform, Velocity> &player_query,
         System::ECS::Query<Interactable, EventState> &interact_query,
         System::ECS::Query<DialogueBox> &dialog_query)
     {
@@ -21,7 +21,7 @@ namespace Game::Overview
         LOG_INFO("----------------------------------");
 
         // const auto &bullet_loader = query.front().get<Battle::BulletLoader>();
-        const auto player_pos = player_query.front().get<Position>();
+        const auto player_pos = player_query.front().get<Render::Transform>().position;
         const auto player_vel = player_query.front().get<Velocity>();
         LOG_INFO("Player Pos : (%d,%d), Vel : (%d,%d)", static_cast<int>(player_pos.x), static_cast<int>(player_pos.y), static_cast<int>(player_vel.vx), static_cast<int>(player_vel.vy));
         if (!player_query.front().get<Player>().on_ground) LOG_INFO("Is on Air");

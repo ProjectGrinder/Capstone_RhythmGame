@@ -2,6 +2,7 @@
 #include <cmath>
 #include <random>
 #include "maths/point.h"
+#include "system/ecs/ecs_types.h"
 
 
 // TODO : Please find a better place for this

@@ -1,3 +1,3 @@
 #pragma once
 
-#include "game/scene/scene_meta.h"
+#include "components/world/scene_meta.h"

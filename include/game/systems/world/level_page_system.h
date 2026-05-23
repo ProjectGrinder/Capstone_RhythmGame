@@ -46,7 +46,7 @@ namespace Game::Overview
                             // TODO : Change scene
                         }
 
-                        if (input.up_pressed || input.down_pressed)
+                        if (input.axis_y!=0)
                         {
                             level_node.sel = static_cast<LevelNode::Selection>((static_cast<int>(level_node.sel)+1)%static_cast<int>(LevelNode::Selection::Count));
                         }

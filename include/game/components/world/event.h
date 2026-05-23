@@ -1,4 +1,5 @@
 #pragma once
+#include <variant>
 
 namespace Game::Overview
 {
@@ -79,8 +80,7 @@ namespace Game::Overview
             LockInputEvent,
             UnlockInputEvent,
             PanCameraEvent,
-            ChangeNextEvent
-        >;
+            ChangeNextEvent>;
 
     struct EventSequence
     {

@@ -6,32 +6,32 @@ namespace Game::Overview
     void detect_overlap_interactable([[maybe_unused]] T &syscall,
                         System::ECS::Query<GlobalState> &global_query,
                         System::ECS::Query<Input> &input_query,
-                         System::ECS::Query<Interactable, EventState, Physics::Position, Physics::Scale, Physics::CircularCollider> &interactable_query,
-                         System::ECS::Query<Player,Physics::Position, Physics::Scale, Physics::CircularCollider> &player_query)
+                         System::ECS::Query<Interactable, EventState, Render::Transform, Physics::CircularCollider> &interactable_query,
+                         System::ECS::Query<Player,Render::Transform, Physics::CircularCollider> &player_query)
     {
         if (input_query.begin() == input_query.end())
             return;
 
         const auto &global_state = global_query.front().components.get<GlobalState>();
-        const auto &input = input_query.front().components.get<BulletHell::Input>();
+        const auto &input = input_query.front().components.get<Input>();
 
         for (auto &[pid, player_comps] : player_query)
         {
-            const auto &player_pos = player_comps.get<Physics::Position>();
+            const auto &player_pos = player_comps.get<Render::Transform>().position;
 
             for (auto &[id, comps] : interactable_query)
             {
                 comps.get<Interactable>().in_range = false;
-                const float dx = comps.get<Physics::Position>().x - player_pos.x;
-                const float dy = comps.get<Physics::Position>().y - player_pos.y;
+                const float dx = comps.get<Render::Transform>().position.x - player_pos.x;
+                const float dy = comps.get<Render::Transform>().position.y - player_pos.y;
                 const float distance_squared = dx * dx + dy * dy;
 
-                const float trigger_radius = comps.get<Physics::CircularCollider>().radius_x * comps.get<Physics::Scale>().scaleX;
+                const float trigger_radius = comps.get<Physics::CircularCollider>().radius_x * comps.get<Render::Transform>().scaleX;
 
                 if (distance_squared <= trigger_radius*trigger_radius)
                 {
                     comps.get<Interactable>().in_range = true;
-                    if (input.up_pressed && !global_state.interactionLocked) comps.get<EventState>().event_occupied = true;
+                    if (input.axis_y>0 && !global_state.interactionLocked) comps.get<EventState>().event_occupied = true;
                 }
             }
         }
@@ -39,15 +39,17 @@ namespace Game::Overview
 
     template<typename T>
     void detect_overlap_block([[maybe_unused]] T &syscall,
-                         System::ECS::Query<Block, Physics::Position, Physics::Scale, Physics::RectangularCollider> &block_query,
-                         System::ECS::Query<Player,Physics::Position, Physics::Scale, Velocity, Physics::CircularCollider> &player_query)
+                         System::ECS::Query<Block, Render::Transform, Physics::RectangularCollider> &block_query,
+                         System::ECS::Query<Player,Render::Transform, Velocity, Physics::CircularCollider> &player_query)
     {
         for (auto &[pid, player_comps] : player_query)
         {
+            auto &player_tr = player_comps.get<Render::Transform>();
             auto &player_c = player_comps.get<Player>();
-            auto &player_pos = player_comps.get<Physics::Position>();
+            auto &player_pos = player_tr.position;
             const auto &player_col = player_comps.get<Physics::CircularCollider>();
             auto &player_velos = player_comps.get<Velocity>();
+
             constexpr auto ground_offset = 0.1f;
 
             player_c.on_ground  = false;
@@ -55,11 +57,13 @@ namespace Game::Overview
             // AABB check
             for (auto &[id, comps] : block_query)
             {
-                const auto &pos = comps.get<Physics::Position>();
+                const auto &tr =  comps.get<Render::Transform>();
+                const auto &pos = tr.position;
                 const auto &col = comps.get<Physics::RectangularCollider>();
 
-                if (player_pos.x + player_col.radius_x > pos.x - col.size_x && player_pos.x - player_col.radius_x < pos.x + col.size_x &&
-                    player_pos.y + player_col.radius_y > pos.y - col.size_y && player_pos.y - player_col.radius_y < pos.y + col.size_y)
+
+                if (player_pos.x + player_col.radius_x * player_tr.scaleX > pos.x - col.size_x * tr.scaleX && player_pos.x - player_col.radius_x * player_tr.scaleX < pos.x + col.size_x * tr.scaleX &&
+                    player_pos.y + player_col.radius_y * player_tr.scaleY > pos.y - col.size_y * tr.scaleY && player_pos.y - player_col.radius_y * player_tr.scaleY < pos.y + col.size_y * tr.scaleY)
                 {
                     float dx = player_pos.x - pos.x;
                     float px = (col.size_x + player_col.radius_x) - abs(dx);

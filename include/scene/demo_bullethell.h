@@ -19,6 +19,7 @@ namespace Scene
         constexpr static size_t MaxResource = 10000;
         // declare scene parameters
         using ComponentTuple = std::tuple<
+            Game::Input,
             Game::Battle::BattleState,
             Game::Battle::BulletHellState,
             Game::Battle::BulletRegistry,
@@ -31,8 +32,6 @@ namespace Scene
             Game::Battle::UIComponent,
             Game::BulletHell::Bullet,
             Game::BulletHell::BulletClearer,
-            Game::BulletHell::Input,
-            Game::Rhythm::KeyInput,
             Game::BulletHell::Player,
             Game::BulletHell::PlayerHitbox,
             Game::BulletHell::Pattern,
@@ -68,7 +67,7 @@ namespace Scene
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             Game::BulletHell::load_bullets<Syscall>,
-            Game::Battle::input_system<Syscall>,
+            Game::input_system<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
             Game::BulletHell::acceleration_system<Syscall>,

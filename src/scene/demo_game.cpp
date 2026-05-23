@@ -516,19 +516,19 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     Game::Battle::BulletLoader,
     Game::Battle::PatternContainer,
     Game::Render::AnimationDataRegistry,
-    Game::Audio::SoundRegistry,
-    Game::Rhythm::KeyInput, Game::BulletHell::Input>
+    Game::Audio::SoundRegistry>
     (
         Game::Battle::BattleState(200, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
         Game::Battle::RhythmState(1, 500, 279, 5.0f, 5.0f),
-        read_bullet_data_from_file("ShotData.txt"),
+        read_bullet_data_from_file("dsl/ShotData.th0"),
         create_bullet_test(),
         create_pattern_container2(),
         init_anim_data(),
-        Game::Audio::init_sounds(),
-        Game::Rhythm::KeyInput(),
-        Game::BulletHell::Input());
+        Game::Audio::init_sounds());
+
+    // InputManager
+    tm->create_entity<Game::Input>(Game::Input());
 
     auto hit_sound = load_audio("audio/fishdam1", "player_hit");
     AudioCache *out = nullptr;

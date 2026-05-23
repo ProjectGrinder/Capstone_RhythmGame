@@ -7,7 +7,7 @@ namespace Game::Overview
     template<typename T>
     void spawn_scene_object(T &syscall, const SceneObject& scene_data)
     {
-        const System::ECS::pid object = syscall.create_entity(Position(scene_data.posX,scene_data.posY), Rotation(), Physics::Scale());
+        const System::ECS::pid object = syscall.create_entity(Render::Transform(scene_data.posX,scene_data.posY));
 
         if ((scene_data.status_bit & 2) > 0)
         {

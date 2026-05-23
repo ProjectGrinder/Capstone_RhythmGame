@@ -1,7 +1,6 @@
 #pragma once
 
 #include "game/components.h"
-#include "utils/print_debug.h"
 
 namespace Game::Rhythm
 {
@@ -91,7 +90,7 @@ namespace Game::Rhythm
         [[maybe_unused]] T &syscall,
         System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<Battle::RhythmState> &rhythm_query,
-        System::ECS::Query<KeyInput> &input_query,
+        System::ECS::Query<Input> &input_query,
         System::ECS::Query<Lane> &lane_query,
         [[maybe_unused]] System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
         [[maybe_unused]] System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
@@ -106,7 +105,7 @@ namespace Game::Rhythm
         if (input_query.begin() == input_query.end())
             return;
 
-        const auto key_input = input_query.front().get<KeyInput>();
+        const auto key_input = input_query.front().get<Input>();
 
         for (auto &[id, comp] : lane_query)
         {
@@ -115,10 +114,10 @@ namespace Game::Rhythm
                 const auto current_timing = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
                 const auto time_end = comp.get<Lane>().hold_end_time;
                 int time_diff = current_timing - time_end;
-                if ((comp.get<Lane>().lane_number == 0 && key_input.key1_hold == false)
-                    || (comp.get<Lane>().lane_number == 1 && key_input.key2_hold == false)
-                    || (comp.get<Lane>().lane_number == 2 && key_input.key3_hold == false)
-                    || (comp.get<Lane>().lane_number == 3 && key_input.key4_hold == false))
+                if ((comp.get<Lane>().lane_number == 0 && key_input.key1_held == false)
+                    || (comp.get<Lane>().lane_number == 1 && key_input.key2_held == false)
+                    || (comp.get<Lane>().lane_number == 2 && key_input.key3_held == false)
+                    || (comp.get<Lane>().lane_number == 3 && key_input.key4_held == false))
                 {
                     handle_hold_note_release(time_diff, &comp, battle_query, note_query, hold_query, rhythm_query, judge_query);
                 }

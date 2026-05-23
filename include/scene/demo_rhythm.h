@@ -20,12 +20,11 @@ namespace Scene
         // declare scene parameters
         constexpr static size_t MaxResource = 2000;
         using ComponentTuple = std::tuple<
+            Game::Input,
             Game::Battle::BattleState,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
             Game::Battle::LevelData, // structure required to satisfy HandleBPM
-            Game::BulletHell::Input, // structure required to satisfy InputSystem
-            Game::Rhythm::KeyInput,
             Game::Rhythm::JudgeText,
             Game::Rhythm::Combo,
             Game::Rhythm::Lane,
@@ -45,7 +44,7 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
-            Game::Battle::input_system<Syscall>,
+            Game::input_system<Syscall>,
             Game::Rhythm::handle_bpm<Syscall>,
             Game::Rhythm::handle_tap_note<Syscall>,
             Game::Rhythm::handle_rain_note<Syscall>,

@@ -35,6 +35,7 @@ namespace Scene
 
         // declare scene parameters
         using ComponentTuple = std::tuple<
+            Game::Input,
             Game::Battle::BattleState,
             Game::Battle::BulletHellState,
             Game::Battle::BulletRegistry,
@@ -48,7 +49,6 @@ namespace Scene
             Game::Battle::UIComponent,
             Game::BulletHell::Bullet,
             Game::BulletHell::BulletClearer,
-            Game::BulletHell::Input,
             Game::BulletHell::Player,
             Game::BulletHell::PlayerHitbox,
             Game::BulletHell::Pattern,
@@ -81,7 +81,6 @@ namespace Scene
             Game::Rhythm::JudgeText,
             Game::Rhythm::Combo,
             Game::Rhythm::NoteField,
-            Game::Rhythm::KeyInput,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
@@ -92,7 +91,7 @@ namespace Scene
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             return_to_menu<Syscall>,
-            Game::Battle::input_system<Syscall>,
+            Game::input_system<Syscall>,
             Game::Battle::phase_change<Syscall>,
             Game::Battle::update_global_clock<Syscall>,
             Game::Battle::check_player_state<Syscall>,
