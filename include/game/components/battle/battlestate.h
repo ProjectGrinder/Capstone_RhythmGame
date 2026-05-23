@@ -8,9 +8,12 @@ namespace Game::Battle
 {
 
     // intermediate structures
-    enum Instrument
+    enum DifficultyType
     {
-        NO_INSTRUMENT,
+        LIGHT, // easy
+        SPARK, // normal
+        BLAZE, // hard
+        ASTRA // extra (optional)
     };
 
     enum CurrentPhase
@@ -53,13 +56,14 @@ namespace Game::Battle
 
     struct Difficulty
     {
-        Instrument instrument;
-        int difficulty;
-        Difficulty() : instrument(NO_INSTRUMENT), difficulty(0)
+        DifficultyType difficulty;
+        int level;
+        Difficulty() : difficulty(LIGHT), level(1)
         {}
-        explicit Difficulty(const Instrument instrument, const int difficulty) :
-            instrument(instrument), difficulty(difficulty)
+        explicit Difficulty(const DifficultyType difficulty, const int level) :
+            difficulty(difficulty), level(level)
         {}
+        // max level 10
     };
 
     struct JudgementCount

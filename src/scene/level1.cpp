@@ -464,6 +464,21 @@ Scene::Level1 Scene::Level1::instance()
     return (instance);
 }
 
+Game::Battle::Difficulty Scene::Level1::set_difficulty(const int level)
+{
+    switch (level)
+    {
+    case 0:
+        return Game::Battle::Difficulty(Game::Battle::LIGHT, 1);
+    case 1:
+        return Game::Battle::Difficulty(Game::Battle::SPARK, 3);
+    case 2:
+        return Game::Battle::Difficulty(Game::Battle::BLAZE, 5);
+    default:
+        return Game::Battle::Difficulty(Game::Battle::LIGHT, 1);
+    }
+}
+
 std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
 {
     auto tm = std::make_shared<TaskManager>();
@@ -481,7 +496,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     Game::Audio::SoundRegistry,
     Game::Rhythm::KeyInput, Game::BulletHell::Input>
     (
-        Game::Battle::BattleState(200, 100, Game::Battle::Difficulty()),
+        Game::Battle::BattleState(200, 100, set_difficulty(2)),
         Game::Battle::BulletHellState(10),
         Game::Battle::RhythmState(1, 500, 279, 4.0f, 4.0f),
         read_bullet_data_from_file("ShotData.txt"),
