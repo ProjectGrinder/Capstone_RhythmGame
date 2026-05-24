@@ -12,8 +12,7 @@ namespace Game::Rhythm
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Material, Sprite> &note_query,
             System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
-            System::ECS::Query<Battle::BattleState> &battle_query,
-            System::ECS::Query<Battle::RhythmState> &rhythm_query,
+            System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
             System::ECS::Query<JudgeText> &judge_query)
     {
         if (battle_query.begin() == battle_query.end())
@@ -25,7 +24,7 @@ namespace Game::Rhythm
         }
 
         const auto &current_timing = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
-        const auto &accept_loss = rhythm_query.front().get<Battle::RhythmState>().accept_loss;
+        const auto &accept_loss = battle_query.front().get<Battle::RhythmState>().accept_loss;
         constexpr auto miss_range = 100;
 
         for (auto &[id, comp]: note_query)

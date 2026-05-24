@@ -9,8 +9,7 @@ namespace Game::Rhythm
     template <typename T>
     void handle_rain_note(
             [[maybe_unused]] T &syscall,
-            System::ECS::Query<Battle::BattleState> &battle_query,
-            System::ECS::Query<Battle::RhythmState> &rhythm_query,
+            System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
             System::ECS::Query<KeyInput> &input_query,
             System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
             System::ECS::Query<JudgeText> &judge_query,
@@ -47,14 +46,8 @@ namespace Game::Rhythm
                     judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
                     judge_query.front().get<JudgeText>().change = true;
 
-                    const int max_hp = battle_query.front().get<Battle::BattleState>().max_hp;
-                    if (battle_query.front().get<Battle::BattleState>().hp < max_hp)
-                    {
-                        battle_query.front().get<Battle::BattleState>().hp += rhythm_query.front().get<Battle::RhythmState>().heal_hp;
-
-                        if (battle_query.front().get<Battle::BattleState>().hp > max_hp)
-                            battle_query.front().get<Battle::BattleState>().hp = max_hp;
-                    }
+                    battle_query.front().get<Battle::BattleState>().hp += battle_query.front().get<Battle::RhythmState>().heal_hp;
+                    battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
 
                     auto sounds = sound_query.front().get<Audio::SoundRegistry>().audios;
                     Audio::audio_play(sounds["sound_rain_note"]);

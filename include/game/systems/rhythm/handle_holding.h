@@ -10,10 +10,9 @@ namespace Game::Rhythm
     inline void handle_hold_note_release(
         const int &time_diff,
         System::ECS::Query<Lane>::StoredTuple *lane,
-        System::ECS::Query<Battle::BattleState> &battle_query,
+        System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
         System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
         System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
-        System::ECS::Query<Battle::RhythmState> &rhythm_query,
         System::ECS::Query<JudgeText> &judge_query)
     {
         constexpr auto perfect_judge = -100;
@@ -25,22 +24,17 @@ namespace Game::Rhythm
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
             judge_query.front().get<JudgeText>().change = true;
+            battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
 
             // heal only perfect hold end
-            const int max_hp = battle_query.front().get<Battle::BattleState>().max_hp;
-            if (battle_query.front().get<Battle::BattleState>().hp < max_hp)
-            {
-                battle_query.front().get<Battle::BattleState>().hp += rhythm_query.front().get<Battle::RhythmState>().heal_hp;
-
-                if (battle_query.front().get<Battle::BattleState>().hp > max_hp)
-                    battle_query.front().get<Battle::BattleState>().hp = max_hp;
-            }
+            battle_query.front().get<Battle::BattleState>().hp += battle_query.front().get<Battle::RhythmState>().heal_hp;
         }
         else if (time_diff > great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
             judge_query.front().get<JudgeText>().judge = JudgeText::GREAT;
             judge_query.front().get<JudgeText>().change = true;
+            battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
         }
         // else if (time_diff > fine_judge)
         // {
@@ -50,7 +44,7 @@ namespace Game::Rhythm
         else
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
-            battle_query.front().get<Battle::BattleState>().current_accept -= rhythm_query.front().get<Battle::RhythmState>().accept_loss.hold_end;
+            battle_query.front().get<Battle::BattleState>().current_accept -= battle_query.front().get<Battle::RhythmState>().accept_loss.hold_end;
             judge_query.front().get<JudgeText>().judge = JudgeText::MISS;
             judge_query.front().get<JudgeText>().change = true;
 
@@ -83,8 +77,7 @@ namespace Game::Rhythm
     template<typename T>
     void handle_holding(
         [[maybe_unused]] T &syscall,
-        System::ECS::Query<Battle::BattleState> &battle_query,
-        System::ECS::Query<Battle::RhythmState> &rhythm_query,
+        System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
         System::ECS::Query<KeyInput> &input_query,
         System::ECS::Query<Lane> &lane_query,
         [[maybe_unused]] System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
@@ -114,12 +107,12 @@ namespace Game::Rhythm
                     || (comp.get<Lane>().lane_number == 2 && key_input.key3_hold == false)
                     || (comp.get<Lane>().lane_number == 3 && key_input.key4_hold == false))
                 {
-                    handle_hold_note_release(time_diff, &comp, battle_query, note_query, hold_query, rhythm_query, judge_query);
+                    handle_hold_note_release(time_diff, &comp, battle_query, note_query, hold_query, judge_query);
                 }
 
                 if (time_diff >= 0)
                 {
-                    handle_hold_note_release(time_diff, &comp, battle_query, note_query, hold_query, rhythm_query, judge_query);
+                    handle_hold_note_release(time_diff, &comp, battle_query, note_query, hold_query, judge_query);
                 }
             }
         }

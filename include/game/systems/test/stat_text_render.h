@@ -25,8 +25,32 @@ namespace Game::Test
         // if (query.begin() == query.end())
         //     return;
 
-        const auto hp = state_query.front().get<Battle::BattleState>().hp;
+        auto hp = state_query.front().get<Battle::BattleState>().hp;
         const auto max_hp = state_query.front().get<Battle::BattleState>().max_hp;
+        if (hp < 0)
+        {
+            hp = 0;
+            state_query.front().get<Battle::BattleState>().hp = 0;
+        }
+        else if (hp > max_hp)
+        {
+            hp = max_hp;
+            state_query.front().get<Battle::BattleState>().hp = max_hp;
+        }
+
+        auto current_accept = state_query.front().get<Battle::BattleState>().current_accept;
+        const auto max_accept = state_query.front().get<Battle::BattleState>().max_accept_gauge;
+        if (current_accept < 0)
+        {
+            current_accept = 0;
+            state_query.front().get<Battle::BattleState>().current_accept = 0;
+        }
+        else if (current_accept > max_accept)
+        {
+            current_accept = max_accept;
+            state_query.front().get<Battle::BattleState>().current_accept = max_accept;
+        }
+
 
         // query.front().get<Render::Text>().text = "Bullet Count : " + std::to_string(bullet_query.size());
 

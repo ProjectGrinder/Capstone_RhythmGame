@@ -139,7 +139,7 @@ namespace Scene
             Game::Battle::ChartData &chart,
             Game::Rhythm::NoteField &field);
 
-        static Game::Battle::Difficulty set_difficulty(int level);
+        // static Game::Battle::Difficulty set_difficulty(int level);
 
         static std::shared_ptr<TaskManager> init();
 
