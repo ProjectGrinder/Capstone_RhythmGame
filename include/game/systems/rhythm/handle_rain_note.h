@@ -42,12 +42,16 @@ namespace Game::Rhythm
 
                 if (time_diff < catch_range && time_diff > -1 * catch_range)
                 {
+                    const auto max_accept = battle_query.front().get<Battle::BattleState>().max_accept_gauge;
+
                     battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
                     judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
                     judge_query.front().get<JudgeText>().change = true;
 
                     battle_query.front().get<Battle::BattleState>().hp += battle_query.front().get<Battle::RhythmState>().heal_hp;
                     battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
+                    if (battle_query.front().get<Battle::BattleState>().current_accept > max_accept)
+                        battle_query.front().get<Battle::BattleState>().current_accept = max_accept;
 
                     auto sounds = sound_query.front().get<Audio::SoundRegistry>().audios;
                     Audio::audio_play(sounds["sound_rain_note"]);

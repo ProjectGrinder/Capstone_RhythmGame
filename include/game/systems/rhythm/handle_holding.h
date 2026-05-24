@@ -19,6 +19,7 @@ namespace Game::Rhythm
         constexpr auto great_judge = -250;
         // constexpr auto fine_judge = -100;
 
+        const auto max_accept = battle_query.front().get<Battle::BattleState>().max_accept_gauge;
         const auto apn = battle_query.front().get<Battle::RhythmState>().apn;
 
         if (time_diff > perfect_judge)
@@ -27,6 +28,8 @@ namespace Game::Rhythm
             judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
             judge_query.front().get<JudgeText>().change = true;
             battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
+            if (battle_query.front().get<Battle::BattleState>().current_accept > max_accept)
+                battle_query.front().get<Battle::BattleState>().current_accept = max_accept;
 
             // heal only perfect hold end
             battle_query.front().get<Battle::BattleState>().hp += battle_query.front().get<Battle::RhythmState>().heal_hp;
@@ -37,6 +40,8 @@ namespace Game::Rhythm
             judge_query.front().get<JudgeText>().judge = JudgeText::GREAT;
             judge_query.front().get<JudgeText>().change = true;
             battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
+            if (battle_query.front().get<Battle::BattleState>().current_accept > max_accept)
+                battle_query.front().get<Battle::BattleState>().current_accept = max_accept;
             battle_query.front().get<Battle::RhythmState>().accuracy -= apn / 4;
         }
         // else if (time_diff > fine_judge)
@@ -48,6 +53,9 @@ namespace Game::Rhythm
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
             battle_query.front().get<Battle::BattleState>().current_accept -= battle_query.front().get<Battle::RhythmState>().accept_loss.hold_end;
+            if (battle_query.front().get<Battle::BattleState>().current_accept < 0)
+                battle_query.front().get<Battle::BattleState>().current_accept = 0;
+
             judge_query.front().get<JudgeText>().judge = JudgeText::MISS;
             judge_query.front().get<JudgeText>().change = true;
             battle_query.front().get<Battle::RhythmState>().accuracy -= apn;

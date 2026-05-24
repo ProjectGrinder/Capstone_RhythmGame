@@ -93,6 +93,8 @@ namespace Game::Rhythm
                 judge_query.front().get<JudgeText>().judge = JudgeText::MISS;
                 judge_query.front().get<JudgeText>().change = true;
                 battle_query.front().get<Battle::RhythmState>().accuracy -= apn;
+                if (battle_query.front().get<Battle::BattleState>().current_accept < 0)
+                    battle_query.front().get<Battle::BattleState>().current_accept = 0;
             }
             else if (comp.get<NoteType>().type == -1 && current_timing - note_time >= 0) // for hold end notes (stop rendering when time diff is 0)
             {

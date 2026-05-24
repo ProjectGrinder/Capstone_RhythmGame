@@ -37,6 +37,7 @@
 #include "game/systems/phase_change_effect.h"
 #include "game/systems/global_clock.h"
 #include "game/systems/check_player_state.h"
+#include "systems/handle_ui.h"
 // Main Menu Part
 
 // Rendering Part
@@ -50,8 +51,7 @@
 #include "systems/render/set_camera.h"
 
 // Test
+#include "systems/test/draw_collider.h"
 #include "systems/test/fps_counter.h"
 #include "systems/test/spin_camera.h"
 #include "systems/test/spin_sprite.h"
-#include "systems/test/stat_text_render.h"
-#include "systems/test/draw_collider.h"

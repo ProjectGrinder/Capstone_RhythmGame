@@ -27,13 +27,11 @@ namespace Game::Rhythm
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
-            battle_query.front().get<Battle::BattleState>().hp += heal_amount;
         }
         else if (time_diff > -1 * great_judge && time_diff < great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
             judge_query.front().get<JudgeText>().judge = JudgeText::GREAT;
-            battle_query.front().get<Battle::BattleState>().hp += heal_amount;
             battle_query.front().get<Battle::RhythmState>().accuracy -= apn / 4;
         }
         else if (time_diff > -1 * fine_judge && time_diff < fine_judge)
@@ -41,11 +39,22 @@ namespace Game::Rhythm
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
             judge_query.front().get<JudgeText>().judge = JudgeText::FINE;
             accept = accept / 2;
+            heal_amount = 0;
             battle_query.front().get<Battle::RhythmState>().accuracy -= apn / 2;
         }
         else return;
 
+        const auto max_accept = battle_query.front().get<Battle::BattleState>().max_accept_gauge;
+        const auto max_hp = battle_query.front().get<Battle::BattleState>().max_hp;
+
+        battle_query.front().get<Battle::BattleState>().hp += heal_amount;
+        if (battle_query.front().get<Battle::BattleState>().hp > max_hp)
+            battle_query.front().get<Battle::BattleState>().hp = max_hp;
+
         battle_query.front().get<Battle::BattleState>().current_accept += accept;
+        if (battle_query.front().get<Battle::BattleState>().current_accept > max_accept)
+            battle_query.front().get<Battle::BattleState>().current_accept = max_accept;
+
         judge_query.front().get<JudgeText>().change = true;
 
         if (comp->get<HoldStart>().is_hold == true)
@@ -78,8 +87,16 @@ namespace Game::Rhythm
         }
         else return;
 
+        const auto max_accept = battle_query.front().get<Battle::BattleState>().max_accept_gauge;
+        const auto max_hp = battle_query.front().get<Battle::BattleState>().max_hp;
+
         battle_query.front().get<Battle::BattleState>().hp += battle_query.front().get<Battle::RhythmState>().heal_hp;
+        if (battle_query.front().get<Battle::BattleState>().hp > max_hp)
+            battle_query.front().get<Battle::BattleState>().hp = max_hp;
+
         battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain;
+        if (battle_query.front().get<Battle::BattleState>().current_accept > max_accept)
+            battle_query.front().get<Battle::BattleState>().current_accept = max_accept;
 
         if (comp->get<HoldStart>().is_hold == true)
         {
