@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Game::Overview
+namespace Game::World
 {
     template<typename T>
     void detect_overlap_interactable([[maybe_unused]] T &syscall,

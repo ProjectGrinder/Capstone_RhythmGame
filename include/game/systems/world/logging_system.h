@@ -2,7 +2,7 @@
 
 #include "game/components.h"
 
-namespace Game::Overview
+namespace Game::World
 {
     template <typename T>
     void logging_system([[maybe_unused]] T &syscall,

@@ -2,7 +2,7 @@
 #include "game/components.h"
 
 // TODO : Render stuffs
-namespace Game::Overview
+namespace Game::World
 {
     template<typename T>
     void spawn_scene_object(T &syscall, const SceneObject& scene_data)

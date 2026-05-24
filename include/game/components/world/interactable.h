@@ -1,7 +1,7 @@
 #pragma once
 #include "event_object.h"
 
-namespace Game::Overview
+namespace Game::World
 {
     struct Interactable
     {

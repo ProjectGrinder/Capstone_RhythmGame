@@ -2,7 +2,7 @@
 #include <string>
 
 #include "dialogue_system.h"
-namespace Game::Overview
+namespace Game::World
 {
     template<typename T>
     void dialogue_system(

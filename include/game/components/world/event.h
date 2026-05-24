@@ -1,7 +1,7 @@
 #pragma once
 #include <variant>
 
-namespace Game::Overview
+namespace Game::World
 {
     struct SceneChangeEvent
     {

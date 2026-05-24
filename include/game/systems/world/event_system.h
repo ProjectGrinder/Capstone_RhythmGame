@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Game::Overview
+namespace Game::World
 {
     template<typename T>
     void event_system(

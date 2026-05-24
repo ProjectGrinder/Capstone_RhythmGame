@@ -31,9 +31,9 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
     load_sprite("img/level1_bg.dds", "level1_bg", 3840, 2160);
 }
 
-Game::Overview::DialogueRegistry init_dialogue_registry()
+Game::World::DialogueRegistry init_dialogue_registry()
 {
-    using namespace Game::Overview;
+    using namespace Game::World;
     std::vector<std::string> text_register = {
         "This is a place holder text to test the system",
         "This is not a place for you to be gooning",
@@ -44,9 +44,9 @@ Game::Overview::DialogueRegistry init_dialogue_registry()
     return {DialogueRegistry(text_register)};
 }
 
-Game::Overview::EventRegister init_event_registry()
+Game::World::EventRegister init_event_registry()
 {
-    using namespace Game::Overview;
+    using namespace Game::World;
     EventRegister event_sequences = {
         {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), ChangeNextEvent(1), UnlockInputEvent()},
         {LockInputEvent(0b100), DialogueEvent(3), UnlockInputEvent(), ChangeNextEvent(2)},
@@ -55,9 +55,9 @@ Game::Overview::EventRegister init_event_registry()
     return { EventRegister(event_sequences) };
 }
 
-Game::Overview::SceneRegistry init_scene_registry()
+Game::World::SceneRegistry init_scene_registry()
 {
-    using namespace Game::Overview;
+    using namespace Game::World;
     const SceneRegistry scene_registry = {
         {
             SceneObject(0,-10, 2, {}, {}),
@@ -113,27 +113,27 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
 {
     auto tm = std::make_shared<TaskManager>();
     // Create and configure BattleState
-    tm->create_entity<Game::Overview::DialogueRegistry,
-    Game::Overview::EventRegister,
-    Game::Overview::SceneRegistry,
-    Game::Overview::GlobalState,
-    Game::Overview::SaveState,
-    Game::Overview::PlayerStat,
+    tm->create_entity<Game::World::DialogueRegistry,
+    Game::World::EventRegister,
+    Game::World::SceneRegistry,
+    Game::World::GlobalState,
+    Game::World::SaveState,
+    Game::World::PlayerStat,
     Game::Battle::BattleState>
     (
         init_dialogue_registry(),
         init_event_registry(),
         init_scene_registry(),
-        Game::Overview::GlobalState(),
-        Game::Overview::SaveState(),
-        Game::Overview::PlayerStat(),
+        Game::World::GlobalState(),
+        Game::World::SaveState(),
+        Game::World::PlayerStat(),
         Game::Battle::BattleState()
         );
 
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());
 
-    tm->create_entity<Game::Overview::Player,
+    tm->create_entity<Game::World::Player,
     Game::Render::Transform,
     Velocity,
     Acceleration,
