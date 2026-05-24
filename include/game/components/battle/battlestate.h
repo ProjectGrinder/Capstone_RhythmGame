@@ -123,7 +123,6 @@ namespace Game::Battle
         int max_hp;
         int hp;
         int clock_time; // initialize clock with 3-second wait period
-        int total_accept;
         int current_accept;
         int max_accept_gauge;
         PlayerState player_state;
@@ -134,7 +133,6 @@ namespace Game::Battle
             max_hp(0),
             hp(0),
             clock_time(-3000000),
-            total_accept(0),
             current_accept(0),
             max_accept_gauge(0),
             player_state(PLAY),
@@ -144,7 +142,6 @@ namespace Game::Battle
             max_hp(max_hp),
             hp(max_hp),
             clock_time(-3000000),
-            total_accept(0),
             current_accept(0),
             max_accept_gauge(max_accept_gauge),
             player_state(PLAY),
@@ -165,24 +162,31 @@ namespace Game::Battle
     struct RhythmState
     {
         int heal_hp;
+        int accept_gain;
         int total_notes;
         float base_speed;
         float current_speed;
         bool speed_change;
+        float accuracy;
+        float apn; // accuracy per note
         AcceptLoss accept_loss;
         RhythmState() :
-            heal_hp(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false)
+            heal_hp(0), accept_gain(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false), accuracy(100.00f), apn(0.00f)
         {}
         RhythmState(
                 const int heal_hp,
+                const int accept_gain,
                 const int total_notes,
                 const float base_speed,
                 const float current_speed) :
             heal_hp(heal_hp),
+            accept_gain(accept_gain),
             total_notes(total_notes),
             base_speed(base_speed),
             current_speed(current_speed),
-            speed_change(false)
+            speed_change(false),
+            accuracy(100.00f),
+            apn(0.00f)
         {}
     };
 

@@ -6,6 +6,7 @@
 namespace Scene
 {
     Game::Rhythm::NoteField create_field();
+    Game::Render::Sprite assign_sprite(int type);
 
     // Use these methods for the demo level
     Game::Battle::ChartData create_level1_chart();

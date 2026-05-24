@@ -340,6 +340,26 @@ Game::Battle::BulletLoader Scene::Level1::create_bullet_test()
     return (loader);
 }
 
+std::vector diff_list = {
+    Game::Battle::Difficulty(Game::Battle::LIGHT, 1),
+    Game::Battle::Difficulty(Game::Battle::SPARK, 3),
+    Game::Battle::Difficulty(Game::Battle::BLAZE, 5),
+};
+
+std::array total_note_list = {100, 150, 279}; // store total notes here
+
+inline Game::Battle::RhythmState create_rhythm_state(const int level)
+{
+    Game::Battle::RhythmState state(1, 10, total_note_list[level], 4.0f, 4.0f);
+    state.accept_loss.normal = 50;
+    state.accept_loss.accent = 50;
+    state.accept_loss.rain = 20;
+    state.accept_loss.hold = 50;
+    state.accept_loss.hold_end = 20;
+    state.apn = 100.00f / static_cast<float>(state.total_notes);
+    return (state);
+}
+
 inline Game::Battle::LevelData create_level1_chartdata()
 {
     Game::Battle::BpmInfo bpm;
@@ -357,24 +377,8 @@ inline Game::Battle::LevelData create_level1_chartdata()
     "Digital Jpop",
     134.00f,
     bpm,
-    std::vector<Game::Battle::Difficulty>(), 142000
+    diff_list, 142000
     );
-}
-
-Game::Render::Sprite Scene::assign_sprite(const int type)
-{
-    if (type == 1)
-    {
-        return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("accent")),
-            .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
-    }
-    if (type == 2)
-    {
-        return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("rain")),
-            .pos = {{-75, 7.5, 0}, {75, 7.5, 0}, {75, -7.5, 0}, {-75, -7.5, 0}}, .layer = 5};
-    }
-    return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")),
-        .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
 }
 
 void Scene::Level1::load_chart(
@@ -464,20 +468,20 @@ Scene::Level1 Scene::Level1::instance()
     return (instance);
 }
 
-Game::Battle::Difficulty Scene::Level1::set_difficulty(const int level)
-{
-    switch (level)
-    {
-    case 0:
-        return Game::Battle::Difficulty(Game::Battle::LIGHT, 1);
-    case 1:
-        return Game::Battle::Difficulty(Game::Battle::SPARK, 3);
-    case 2:
-        return Game::Battle::Difficulty(Game::Battle::BLAZE, 5);
-    default:
-        return Game::Battle::Difficulty(Game::Battle::LIGHT, 1);
-    }
-}
+// Game::Battle::Difficulty Scene::Level1::set_difficulty(const int level)
+// {
+//     switch (level)
+//     {
+//     case 0:
+//         return Game::Battle::Difficulty(Game::Battle::LIGHT, 1);
+//     case 1:
+//         return Game::Battle::Difficulty(Game::Battle::SPARK, 3);
+//     case 2:
+//         return Game::Battle::Difficulty(Game::Battle::BLAZE, 5);
+//     default:
+//         return Game::Battle::Difficulty(Game::Battle::LIGHT, 1);
+//     }
+// }
 
 std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
 {
@@ -485,6 +489,8 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
 
     init_graphics(tm);
+
+    constexpr int level = 2;
 
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
@@ -496,9 +502,9 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     Game::Audio::SoundRegistry,
     Game::Rhythm::KeyInput, Game::BulletHell::Input>
     (
-        Game::Battle::BattleState(200, 100, set_difficulty(2)),
+        Game::Battle::BattleState(200, total_note_list[level]*5, diff_list[level]),
         Game::Battle::BulletHellState(10),
-        Game::Battle::RhythmState(1, 279, 4.0f, 4.0f),
+        create_rhythm_state(level),
         read_bullet_data_from_file("ShotData.txt"),
         create_bullet_test(),
         create_pattern_container2(),
@@ -506,6 +512,12 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
         Game::Audio::init_sounds(),
         Game::Rhythm::KeyInput(),
         Game::BulletHell::Input());
+
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16400, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(50149, 1500, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(80000, 1500, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 1000, Game::Battle::RHYTHM));
 
     auto hit_sound = load_audio("audio/fishdam1", "player_hit");
     AudioCache *out = nullptr;
@@ -572,12 +584,6 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}
         );
-
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16400, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(50149, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(80000, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 1000, Game::Battle::RHYTHM));
 
     const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 

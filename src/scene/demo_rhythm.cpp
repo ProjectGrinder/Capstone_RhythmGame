@@ -320,12 +320,13 @@ inline Game::Battle::BattleState create_battle_state()
 
 inline Game::Battle::RhythmState create_rhythm_state()
 {
-    Game::Battle::RhythmState state(1, 60, 6.0f, 6.0f);
+    Game::Battle::RhythmState state(1, 10, 60, 6.0f, 6.0f);
     state.accept_loss.normal = 5;
     state.accept_loss.accent = 5;
     state.accept_loss.rain = 2;
     state.accept_loss.hold = 5;
     state.accept_loss.hold_end = 2;
+    state.apn = 100.00f / static_cast<float>(state.total_notes);
     return (state);
 }
 
@@ -383,20 +384,20 @@ Math::Point Scene::field_to_point(const int lane, const Game::Rhythm::NoteField 
     return Math::Point{0, 0, 0};
 }
 
-inline Game::Render::Sprite assign_sprite(const int type)
+Game::Render::Sprite Scene::assign_sprite(const int type)
 {
     if (type == 1)
     {
-        return Game::Render::Sprite{.sp = sp_accent,
-            .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 1};
+        return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("accent")),
+            .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
     }
     if (type == 2)
     {
-        return Game::Render::Sprite{.sp = sp_rain,
-            .pos = {{-75, 7.5, 0}, {75, 7.5, 0}, {75, -7.5, 0}, {-75, -7.5, 0}}, .layer = 2};
+        return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("rain")),
+            .pos = {{-75, 7.5, 0}, {75, 7.5, 0}, {75, -7.5, 0}, {-75, -7.5, 0}}, .layer = 5};
     }
-    return Game::Render::Sprite{.sp = sp_normal,
-        .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 1};
+    return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")),
+        .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
 }
 
 void Scene::DemoRhythm::load_chart(
