@@ -62,7 +62,8 @@ namespace Scene
             Game::Test::FpsCounter,
             Game::Test::BulletCounter,
             Game::Test::GrazeText,
-            Game::Test::LifeText
+            Game::Test::LifeText,
+            Game::Test::AccuracyText
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;

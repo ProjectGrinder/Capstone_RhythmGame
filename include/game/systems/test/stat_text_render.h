@@ -12,6 +12,7 @@ namespace Game::Test
     };
 
     struct GrazeText{};
+    struct AccuracyText{};
 
     template<typename T>
     void stat_text_render([[maybe_unused]] T &syscall,
@@ -19,8 +20,9 @@ namespace Game::Test
         // System::ECS::Query<Render::Text, LifeText> &query2,
         // System::ECS::Query<Render::Text, GrazeText> &query3,
         System::ECS::Query<Battle::UIComponent, Render::Sprite> &ui_query,
+        System::ECS::Query<AccuracyText, Render::Text> &acc_query,
         //System::ECS::Query<BulletHell::Bullet> &bullet_query,
-        System::ECS::Query<Battle::BattleState, Battle::BulletHellState> &state_query)
+        System::ECS::Query<Battle::BattleState, Battle::BulletHellState, Battle::RhythmState> &state_query)
     {
         // if (query.begin() == query.end())
         //     return;
@@ -63,10 +65,12 @@ namespace Game::Test
             if (comps.get<Battle::UIComponent>().type == Battle::HpBar)
             {
                 comps.get<Render::Sprite>().pos[1] = {hp_remain_dest_x,10,0};
-
                 comps.get<Render::Sprite>().pos[2] = {hp_remain_dest_x,-10,0};
             }
         }
+
+        int accuracy = static_cast<int>(state_query.front().get<Battle::RhythmState>().accuracy);
+        acc_query.front().get<Render::Text>().text = std::to_string(accuracy) + "%";
 
         // query3.front().get<Render::Text>().text = "Graze : " + std::to_string(state_query.front().get<Battle::BulletHellState>().graze);
 

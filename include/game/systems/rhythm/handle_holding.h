@@ -19,6 +19,8 @@ namespace Game::Rhythm
         constexpr auto great_judge = -250;
         // constexpr auto fine_judge = -100;
 
+        const auto apn = battle_query.front().get<Battle::RhythmState>().apn;
+
         if (time_diff > perfect_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
@@ -35,6 +37,7 @@ namespace Game::Rhythm
             judge_query.front().get<JudgeText>().judge = JudgeText::GREAT;
             judge_query.front().get<JudgeText>().change = true;
             battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
+            battle_query.front().get<Battle::RhythmState>().accuracy -= apn / 4;
         }
         // else if (time_diff > fine_judge)
         // {
@@ -47,6 +50,7 @@ namespace Game::Rhythm
             battle_query.front().get<Battle::BattleState>().current_accept -= battle_query.front().get<Battle::RhythmState>().accept_loss.hold_end;
             judge_query.front().get<JudgeText>().judge = JudgeText::MISS;
             judge_query.front().get<JudgeText>().change = true;
+            battle_query.front().get<Battle::RhythmState>().accuracy -= apn;
 
             for (auto &[id2, comp2] : hold_query)
             {

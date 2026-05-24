@@ -84,7 +84,8 @@ namespace Scene
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
-            Game::Audio::SoundRegistry
+            Game::Audio::SoundRegistry,
+            Game::Test::AccuracyText
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -129,7 +130,6 @@ namespace Scene
             Game::Render::anim_transition_system<Syscall>,
             Game::Render::animation_system<Syscall>,
             Game::Test::stat_text_render<Syscall>
-
             >;
 
         static Game::Battle::BulletLoader create_bullet_test();

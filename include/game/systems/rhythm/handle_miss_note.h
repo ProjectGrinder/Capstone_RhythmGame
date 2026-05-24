@@ -35,6 +35,8 @@ namespace Game::Rhythm
             auto &note_time = comp.get<Timing>().timing;
             auto &type = comp.get<NoteType>().type;
 
+            auto apn = battle_query.front().get<Battle::RhythmState>().apn;
+
             if (current_timing - note_time >= miss_range && type != -1)
             {
                 if (comp.get<HoldStart>().is_hold == false) // tap note miss
@@ -58,6 +60,7 @@ namespace Game::Rhythm
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 2;
                     battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.hold;
+                    battle_query.front().get<Battle::RhythmState>().accuracy -= apn; // deduct twice
                     // LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comp.get<Timing>().lane);
                     int end_time = 0;
                     for (auto &[id2, comp2]: hold_query)
@@ -89,6 +92,7 @@ namespace Game::Rhythm
                 comp.get<Material>().visible = false;
                 judge_query.front().get<JudgeText>().judge = JudgeText::MISS;
                 judge_query.front().get<JudgeText>().change = true;
+                battle_query.front().get<Battle::RhythmState>().accuracy -= apn;
             }
             else if (comp.get<NoteType>().type == -1 && current_timing - note_time >= 0) // for hold end notes (stop rendering when time diff is 0)
             {
