@@ -79,14 +79,12 @@ namespace Scene
             Game::Rhythm::Timing,
             Game::Rhythm::HoldStart,
             Game::Rhythm::JudgeText,
-            Game::Rhythm::Combo,
             Game::Rhythm::NoteField,
             Game::Rhythm::KeyInput,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
-            Game::Audio::SoundRegistry,
-            Game::Battle::Score
+            Game::Audio::SoundRegistry
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -123,13 +121,11 @@ namespace Scene
             Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::update_judge_text<Syscall>,
-            Game::Rhythm::update_combo<Syscall>,
             Game::Rhythm::update_notes<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::flickering_system<Syscall>,
             Game::Render::draw_sprite<Syscall>,
             Game::Render::draw_text<Syscall>,
-            Game::Battle::update_score<Syscall>,
             Game::Render::anim_transition_system<Syscall>,
             Game::Render::animation_system<Syscall>,
             Game::Test::stat_text_render<Syscall>

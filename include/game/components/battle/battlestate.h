@@ -122,8 +122,6 @@ namespace Game::Battle
     {
         int max_hp;
         int hp;
-        int score;
-        int combo;
         int clock_time; // initialize clock with 3-second wait period
         int total_accept;
         int current_accept;
@@ -135,8 +133,6 @@ namespace Game::Battle
         BattleState() :
             max_hp(0),
             hp(0),
-            score(0),
-            combo(0),
             clock_time(-3000000),
             total_accept(0),
             current_accept(0),
@@ -147,8 +143,6 @@ namespace Game::Battle
         explicit BattleState(const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :
             max_hp(max_hp),
             hp(max_hp),
-            score(0),
-            combo(0),
             clock_time(-3000000),
             total_accept(0),
             current_accept(0),
@@ -171,23 +165,20 @@ namespace Game::Battle
     struct RhythmState
     {
         int heal_hp;
-        int base_score;
         int total_notes;
         float base_speed;
         float current_speed;
         bool speed_change;
         AcceptLoss accept_loss;
         RhythmState() :
-            heal_hp(0), base_score(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false)
+            heal_hp(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false)
         {}
         RhythmState(
                 const int heal_hp,
-                const int base_score,
                 const int total_notes,
                 const float base_speed,
                 const float current_speed) :
             heal_hp(heal_hp),
-            base_score(base_score),
             total_notes(total_notes),
             base_speed(base_speed),
             current_speed(current_speed),

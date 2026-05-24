@@ -90,7 +90,6 @@ namespace Game::Rhythm
                 comp.get<Material>().visible = false;
                 judge_query.front().get<JudgeText>().judge = JudgeText::MISS;
                 judge_query.front().get<JudgeText>().change = true;
-                battle_query.front().get<Battle::BattleState>().combo = 0;
             }
             else if (comp.get<NoteType>().type == -1 && current_timing - note_time >= 0) // for hold end notes (stop rendering when time diff is 0)
             {

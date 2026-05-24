@@ -320,7 +320,7 @@ inline Game::Battle::BattleState create_battle_state()
 
 inline Game::Battle::RhythmState create_rhythm_state()
 {
-    Game::Battle::RhythmState state(1, 100, 60, 6.0f, 6.0f);
+    Game::Battle::RhythmState state(1, 60, 6.0f, 6.0f);
     state.accept_loss.normal = 5;
     state.accept_loss.accent = 5;
     state.accept_loss.rain = 2;
@@ -527,16 +527,6 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
         Game::Render::Text{.font = fn, .text = "", .layer = 5},
         Game::Render::Material(sprite_vs, sprite_ps),
         Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 2 / 3, 0}, 0, 0, 0});
-
-    tm->create_entity<Game::Rhythm::Combo,
-    Game::Render::Text,
-    Game::Render::Material,
-    Game::Render::Transform>
-    (
-        Game::Rhythm::Combo(),
-        Game::Render::Text{.font = fn, .text = "", .layer = 5},
-        Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 3 / 4, 0}, 0, 0, 0});
 
     auto chart = create_demo_chart();
     auto field = create_field();

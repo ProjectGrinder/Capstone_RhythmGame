@@ -498,7 +498,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     (
         Game::Battle::BattleState(200, 100, set_difficulty(2)),
         Game::Battle::BulletHellState(10),
-        Game::Battle::RhythmState(1, 500, 279, 4.0f, 4.0f),
+        Game::Battle::RhythmState(1, 279, 4.0f, 4.0f),
         read_bullet_data_from_file("ShotData.txt"),
         create_bullet_test(),
         create_pattern_container2(),
@@ -612,16 +612,6 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
         Game::Render::Text{.font = font, .text = "SCORE", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
-    tm->create_entity<Game::Battle::Score,
-    Game::Render::Text,
-    Game::Render::Material,
-    Game::Render::Transform>
-    (
-        Game::Battle::Score(),
-        Game::Render::Text{.font = font, .text = "0", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
-        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 4/5 - 50, 0}, 0, 0, 0}
-        );
 
     tm->create_entity<Game::Battle::UIComponent,
     Game::Render::Text,

@@ -44,10 +44,8 @@ namespace Game::Rhythm
                 if (time_diff < catch_range && time_diff > -1 * catch_range)
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-                    battle_query.front().get<Battle::BattleState>().score += rhythm_query.front().get<Battle::RhythmState>().base_score / 2;
                     judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
                     judge_query.front().get<JudgeText>().change = true;
-                    battle_query.front().get<Battle::BattleState>().combo += 1;
 
                     const int max_hp = battle_query.front().get<Battle::BattleState>().max_hp;
                     if (battle_query.front().get<Battle::BattleState>().hp < max_hp)

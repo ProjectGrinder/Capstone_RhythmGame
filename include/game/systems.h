@@ -30,7 +30,6 @@
 #include "game/systems/rhythm/handle_rain_note.h"
 #include "game/systems/rhythm/handle_tap_note.h"
 #include "game/systems/rhythm/set_holding_time.h"
-#include "game/systems/rhythm/update_combo.h"
 #include "game/systems/rhythm/update_judge_text.h"
 #include "game/systems/rhythm/update_notes.h"
 // General Battle Part
@@ -38,7 +37,6 @@
 #include "game/systems/phase_change_effect.h"
 #include "game/systems/global_clock.h"
 #include "game/systems/check_player_state.h"
-#include "game/systems/update_score.h"
 // Main Menu Part
 
 // Rendering Part

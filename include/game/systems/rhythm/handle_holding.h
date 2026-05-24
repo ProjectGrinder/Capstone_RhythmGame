@@ -16,7 +16,6 @@ namespace Game::Rhythm
         System::ECS::Query<Battle::RhythmState> &rhythm_query,
         System::ECS::Query<JudgeText> &judge_query)
     {
-        const auto base_score = rhythm_query.front().get<Battle::RhythmState>().base_score;
         constexpr auto perfect_judge = -100;
         constexpr auto great_judge = -250;
         // constexpr auto fine_judge = -100;
@@ -24,10 +23,8 @@ namespace Game::Rhythm
         if (time_diff > perfect_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-            battle_query.front().get<Battle::BattleState>().score += base_score / 2;
             judge_query.front().get<JudgeText>().judge = JudgeText::PERFECT;
             judge_query.front().get<JudgeText>().change = true;
-            battle_query.front().get<Battle::BattleState>().combo += 1;
 
             // heal only perfect hold end
             const int max_hp = battle_query.front().get<Battle::BattleState>().max_hp;
@@ -42,10 +39,8 @@ namespace Game::Rhythm
         else if (time_diff > great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
-            battle_query.front().get<Battle::BattleState>().score += base_score / 4;
             judge_query.front().get<JudgeText>().judge = JudgeText::GREAT;
             judge_query.front().get<JudgeText>().change = true;
-            battle_query.front().get<Battle::BattleState>().combo += 1;
         }
         // else if (time_diff > fine_judge)
         // {
@@ -58,7 +53,6 @@ namespace Game::Rhythm
             battle_query.front().get<Battle::BattleState>().current_accept -= rhythm_query.front().get<Battle::RhythmState>().accept_loss.hold_end;
             judge_query.front().get<JudgeText>().judge = JudgeText::MISS;
             judge_query.front().get<JudgeText>().change = true;
-            battle_query.front().get<Battle::BattleState>().combo = 0;
 
             for (auto &[id2, comp2] : hold_query)
             {
