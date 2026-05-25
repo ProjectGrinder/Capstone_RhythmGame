@@ -7,7 +7,9 @@ namespace Game
         float axis_x;
         float axis_y;
         bool up_pressed;
+        bool up_held;
         bool down_pressed;
+        bool down_held;
         bool shift_pressed;
         bool shift_held;
         bool z_pressed;

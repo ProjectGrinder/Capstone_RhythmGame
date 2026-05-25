@@ -31,8 +31,10 @@ namespace Game
 
         auto &input_c = input.front().get<Input>();
 
-        input_c.up_pressed = get_key_state(UP) && input_c.axis_y<=0;
-        input_c.down_pressed = get_key_state(DOWN) && input_c.axis_y>=0;
+        input_c.up_pressed = get_key_state(UP) && !input_c.up_held;
+        input_c.up_held = get_key_state(UP);
+        input_c.down_pressed = get_key_state(DOWN) && !input_c.down_held;
+        input_c.down_held = get_key_state(DOWN);
 
         input_c.axis_x = static_cast<float>(get_key_state(RIGHT) - get_key_state(LEFT));
 

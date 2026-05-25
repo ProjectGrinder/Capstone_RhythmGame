@@ -34,7 +34,7 @@ namespace Game::World
                 // No ID query access so this.
                 for (auto &[id2, comps2] : query2)
                 {
-                    if ((input.axis_y>0 || input.z_pressed) && dialogue.dialogue_box_id == id2)
+                    if ((input.up_pressed || input.z_pressed) && dialogue.dialogue_box_id == id2)
                     {
                         auto &dialogue_box = comps2.get<DialogueBox>();
                         if (!dialogue_box.is_typing)
