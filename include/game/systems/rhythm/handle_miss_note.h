@@ -90,7 +90,7 @@ namespace Game::Rhythm
                 }
                 comp.get<NoteStatus>().state = -1;
                 comp.get<Material>().visible = false;
-                judge_query.front().get<JudgeText>().judge = JudgeText::MISS;
+                judge_query.front().get<JudgeText>().judge = MISS;
                 judge_query.front().get<JudgeText>().change = true;
                 battle_query.front().get<Battle::RhythmState>().accuracy -= apn;
                 if (battle_query.front().get<Battle::BattleState>().current_accept < 0)

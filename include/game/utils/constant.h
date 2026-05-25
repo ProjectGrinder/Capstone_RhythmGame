@@ -9,6 +9,7 @@ namespace Game
     constexpr Math::Point init_player_pos = {0,-240};
 
     constexpr float NOTE_WIDTH = 150.0f;
+    constexpr float NOTE_HEIGHT = 30.0f;
     const float JUDGE_LEVEL = HALF_HEIGHT * -2 / 3;
     // x-value of 4 lanes
     constexpr float LANE1 = -1 * (NOTE_WIDTH * 1.65f);

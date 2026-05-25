@@ -4,8 +4,6 @@
 
 namespace Scene
 {
-    Game::Render::Sprite assign_sprite(int type);
-
     struct Level1
     {
         template<typename T>
@@ -84,6 +82,7 @@ namespace Scene
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
+            Game::Rhythm::NoteEffect,
             Game::Audio::SoundRegistry,
             Game::Battle::TransitionText
             >;
@@ -123,6 +122,7 @@ namespace Scene
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::update_judge_text<Syscall>,
             Game::Rhythm::update_notes<Syscall>,
+            Game::Rhythm::handle_note_effect<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::flickering_system<Syscall>,
             Game::Render::draw_sprite<Syscall>,

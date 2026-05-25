@@ -1,20 +1,18 @@
 #pragma once
 
-#include <string>
-#include <utility>
-
 namespace Game::Rhythm
 {
+    enum Judge
+    {
+        NONE,
+        MISS,
+        FINE,
+        GREAT,
+        PERFECT
+    };
+
     struct JudgeText
     {
-        enum Judge
-        {
-            NONE,
-            MISS,
-            FINE,
-            GREAT,
-            PERFECT
-        };
         Judge judge;
         bool change;
         int timer;

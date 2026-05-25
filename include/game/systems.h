@@ -24,6 +24,7 @@
 #include "game/systems/bullethell/logging_system.h" // Only for demo
 
 // Rhythm Part
+#include "game/systems/rhythm/create_note_effect.h"
 #include "game/systems/rhythm/handle_bpm.h"
 #include "game/systems/rhythm/handle_holding.h"
 #include "game/systems/rhythm/handle_miss_note.h"

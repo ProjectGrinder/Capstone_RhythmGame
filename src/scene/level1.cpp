@@ -38,6 +38,7 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
     load_sprite("img/rhythm/base_hold.dds", "hold", 100, 960);
     load_sprite("img/rhythm/base_hold_disabled.dds", "hold_disabled", 100, 960);
+    load_sprite("img/rhythm/note_border.dds", "effect", 150, 30);
 
     load_sprite("img/return.dds", "return", 1280, 720);
 
