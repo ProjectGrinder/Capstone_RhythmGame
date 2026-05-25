@@ -6,7 +6,7 @@ namespace Game::World
 {
     template <typename T>
     void logging_system([[maybe_unused]] T &syscall,
-        System::ECS::Query<Battle::BattleState> &global_query,
+        System::ECS::Query<GlobalState> &global_query,
         System::ECS::Query<Player, Render::Transform, Velocity> &player_query,
         System::ECS::Query<Interactable, EventState> &interact_query,
         System::ECS::Query<DialogueBox> &dialog_query)
@@ -14,9 +14,12 @@ namespace Game::World
         if (global_query.begin() == global_query.end())
             return;
 
-        auto &battle_state = global_query.front().get<Battle::BattleState>();
+        if (player_query.begin() == player_query.end())
+            return;
 
-        if (battle_state.clock_time/1000 % 250 > 2) return;
+        auto &global_state = global_query.front().get<GlobalState>();
+
+        if (global_state.clock_time/1000 % 250 > 2) return;
 
         LOG_INFO("----------------------------------");
 

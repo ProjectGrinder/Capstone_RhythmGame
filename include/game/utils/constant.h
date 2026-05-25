@@ -22,9 +22,10 @@ namespace Game
     // };
 
     const Math::Point BOX_RG_POS[4] = {
-        {-BOX_SIZE-HALF_HEIGHT/8,BOX_SIZE+HALF_HEIGHT*9/8,0},
-        {BOX_SIZE+HALF_HEIGHT/8,BOX_SIZE+HALF_HEIGHT*9/8,0},
-        {BOX_SIZE+HALF_HEIGHT/8,-BOX_SIZE-HALF_HEIGHT/4,0},
-        {-BOX_SIZE-HALF_HEIGHT/8,-BOX_SIZE-HALF_HEIGHT/4,0}
-    };
+            {-BOX_SIZE - HALF_HEIGHT / 8, BOX_SIZE + HALF_HEIGHT * 9 / 8, 0},
+            {BOX_SIZE + HALF_HEIGHT / 8, BOX_SIZE + HALF_HEIGHT * 9 / 8, 0},
+            {BOX_SIZE + HALF_HEIGHT / 8, -BOX_SIZE - HALF_HEIGHT / 4, 0},
+            {-BOX_SIZE - HALF_HEIGHT / 8, -BOX_SIZE - HALF_HEIGHT / 4, 0}};
+
+    constexpr float CAMERA_SPEED = 0.005f;
 }

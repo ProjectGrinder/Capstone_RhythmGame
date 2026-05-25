@@ -61,7 +61,8 @@ namespace Scene
             Game::Test::FpsCounter,
             Game::Test::BulletCounter,
             Game::Test::GrazeText,
-            Game::Test::LifeText
+            Game::Test::LifeText,
+            Game::World::GlobalState
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -85,7 +86,6 @@ namespace Scene
             Game::BulletHell::homing_pattern_system<Syscall>,
             // Game::BulletHell::logging_system<Syscall>,
             // Game::Test::draw_collider<Syscall>,
-            Game::Battle::update_global_clock<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::anim_transition_system<Syscall>,
             Game::Render::animation_system<Syscall>,
@@ -93,7 +93,8 @@ namespace Scene
             Game::Render::draw_text<Syscall>,
             Game::Test::stat_text_render<Syscall>,
             Game::Test::fps_counter<Syscall>,
-            Game::Render::flickering_system<Syscall>
+            Game::Render::flickering_system<Syscall>,
+            Game::update_global_clock<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init();

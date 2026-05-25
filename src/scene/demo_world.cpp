@@ -19,16 +19,15 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
     load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 
     load_sprite("img/test.dds", "test", 500, 500);
-    load_sprite("img/tripleT.dds", "npc", 420, 420);
+
     load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
+
+    load_sprite("img/Square.dds", "Platform", 64, 64);
+    load_sprite("img/tripleT.dds", "Npc", 420, 420);
 
     load_sprite("img/Square.dds", "Square", 64, 64);
     load_sprite("img/Square64px.dds", "Square64px", 64, 64);
     load_sprite("img/ring16px.dds", "ring16px", 72, 72);
-
-    load_sprite("img/return.dds", "return", 1280, 720);
-
-    load_sprite("img/level1_bg.dds", "level1_bg", 3840, 2160);
 }
 
 Game::World::DialogueRegistry init_dialogue_registry()
@@ -60,36 +59,35 @@ Game::World::SceneRegistry init_scene_registry()
     using namespace Game::World;
     const SceneRegistry scene_registry = {
         {
-            SceneObject(0,-10, 2, {}, {}),
-            SceneObject(-1,-10, 2, {}, {}),
-            SceneObject(1,-10, 2, {}, {}),
-            SceneObject(-2,-10, 2, {}, {}),
-            SceneObject(2,-10, 2, {}, {}),
-            SceneObject(-3,-10, 2, {}, {}),
-            SceneObject(3,-10, 2, {}, {}),
-            SceneObject(-4,-10, 2, {}, {}),
-            SceneObject(4,-10, 2, {}, {}),
-            SceneObject(5,-10, 2, {}, {}),
-            SceneObject(6,-7.5, 2, {}, {}),
-            SceneObject(7,-7.5, 2, {}, {}),
-            SceneObject(8,-7.5, 2, {}, {}),
-            SceneObject(9,-7.5, 2, {}, {}),
-            SceneObject(10,-7.5, 2, {}, {}),
-            SceneObject(-5,-10, 2, {}, {}),
-            SceneObject(-5,-9, 2, {}, {}),
-            SceneObject(-5,-8, 2, {}, {}),
-            SceneObject(-5,-7, 2, {}, {}),
-            SceneObject(-5,-6, 2, {}, {}),
-            SceneObject(-5,-5, 2, {}, {}),
-            SceneObject(-5,-4, 2, {}, {}),
-            SceneObject(10,-6.5, 2, {}, {}),
-            SceneObject(10,-5.5, 2, {}, {}),
-            SceneObject(10,-4.5, 2, {}, {}),
-            SceneObject(10,-3.5, 2, {}, {}),
-            SceneObject(10,-2.5, 2, {}, {}),
-            SceneObject(10,-1.5, 2, {}, {}),
-            SceneObject(8,-7.5, 1, 0, {}, {}),
-            SceneObject(0,-8.5, 1, 2, {}, {}),
+            SceneObject(0,-100,1,1,2, {Platform}, {}),
+            SceneObject(-64,-100,1,1, 2, {Platform}, {}),
+            SceneObject(64,-100,1,1, 2, {Platform}, {}),
+            SceneObject(-128,-100,1,1, 2, {Platform}, {}),
+            SceneObject(128,-100,1,1, 2, {Platform}, {}),
+            SceneObject(-192,-100,1,1, 2, {Platform}, {}),
+            SceneObject(192,-100,1,1, 2, {Platform}, {}),
+            SceneObject(-256,-100,1,1, 2, {Platform}, {}),
+            SceneObject(256,-100,1,1, 2, {Platform}, {}),
+            SceneObject(64*5,-100,1,1, 2, {Platform}, {}),
+            SceneObject(64*6,-50,1,1, 2, {Platform}, {}),
+            SceneObject(64*7,-50,1,1, 2, {Platform}, {}),
+            SceneObject(64*8,-50,1,1, 2, {Platform}, {}),
+            SceneObject(64*9,-50,1,1, 2, {Platform}, {}),
+            SceneObject(64*10,-50,1,1, 2, {Platform}, {}),
+            SceneObject(64*-5,-100,1,1, 2, {Platform}, {}),
+            SceneObject(64*-5,-50,1,1, 2, {Platform}, {}),
+            SceneObject(64*-5,0,1,1, 2, {Platform}, {}),
+            SceneObject(64*-5,64,1,1, 2, {Platform}, {}),
+            SceneObject(64*-5,128,1,1, 2, {Platform}, {}),
+            SceneObject(64*-5,196,1,1, 2, {Platform}, {}),
+            SceneObject(64*10,64*-6.5,1,1, 2, {Platform}, {}),
+            SceneObject(64*10,64*-5.5,1,1, 2, {Platform}, {}),
+            SceneObject(64*10,64*-4.5,1,1, 2, {Platform}, {}),
+            SceneObject(64*10,64*-3.5,1,1, 2, {Platform}, {}),
+            SceneObject(64*10,64*-2.5,1,1, 2, {Platform}, {}),
+            SceneObject(64*10,64*-1.5,1,1, 2, {Platform}, {}),
+            SceneObject(64*8,64*-7.5,0.1f,0.1f, 1, 0, {Npc}, {}),
+            SceneObject(64*0,64*-8.5,0.1f,0.1f, 1, 2, {Npc}, {}),
         }
     };
     return scene_registry;
@@ -103,43 +101,52 @@ Scene::DemoWorld Scene::DemoWorld::instance()
     return (instance);
 }
 
-Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
-{
-    LOG_INFO("Exiting DemoGame Scene.");
-    return ResourceManager();
-}
+
 
 std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
 {
     auto tm = std::make_shared<TaskManager>();
+    tm->create_entity(Game::Render::Camera2D{.offset = {5,5}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
+    init_graphics(tm);
+
     // Create and configure BattleState
     tm->create_entity<Game::World::DialogueRegistry,
     Game::World::EventRegister,
     Game::World::SceneRegistry,
     Game::World::GlobalState,
-    Game::World::SaveState,
-    Game::World::PlayerStat,
-    Game::Battle::BattleState>
+    Game::World::PlayerStat>
     (
         init_dialogue_registry(),
         init_event_registry(),
         init_scene_registry(),
         Game::World::GlobalState(),
-        Game::World::SaveState(),
-        Game::World::PlayerStat(),
-        Game::Battle::BattleState()
+        Game::World::PlayerStat()
         );
 
+    // SaveState
+    tm->create_entity<Game::World::SaveState>(Game::World::SaveState());
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());
 
-    tm->create_entity<Game::World::Player,
+    tm->create_entity<Game::World::Player, Rotation,
     Game::Render::Transform,
     Velocity,
     Acceleration,
-    AngularVelocity, Game::Physics::CircularCollider>(
-        {}, {}, {}, Acceleration(0,0,10,10), {}, {}
+    AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material>(
+        {},{}, {}, {}, Acceleration(0,0,1000,1000,-1000,-1000), {}, Game::Physics::CircularCollider(20.f,32.f),
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Player_Sprite")),
+            .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 1,
+            .u0 = 0.f, .v0 = 0.f, .u1 = 200.f/800.f, .v1 = 250.f/1500.f},
+        Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))}
     );
     tm->run_all();
     return (tm);
+}
+
+Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
+{
+    LOG_INFO("Exiting DemoGame Scene.");
+    free_assets(get_assets_id("Platform"));
+    free_assets(get_assets_id("Npc"));
+    return ResourceManager();
 }

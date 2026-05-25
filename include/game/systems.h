@@ -52,7 +52,8 @@
 #include "systems/render/set_camera.h"
 
 
-// Overview Part
+// World Part
+#include "systems/world/camera_follow.h"
 #include "systems/world/detect_overlap.h"
 #include "systems/world/dialogue_system.h"
 #include "systems/world/event_system.h"

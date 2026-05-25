@@ -60,9 +60,12 @@ namespace Game::World
 
     struct PanCameraEvent
     {
-        float x,y;
+        System::ECS::pid dialogue_box_id;
+        float duration;
+        int order;
         PanCameraEvent() = default;
-        explicit PanCameraEvent(const float x, const float y) : x(x), y(y) {}
+        explicit PanCameraEvent(const System::ECS::pid id, const float _duration, const int _order = 0)
+        : dialogue_box_id(id), duration(_duration), order(_order) {}
     };
 
     struct ChangeNextEvent

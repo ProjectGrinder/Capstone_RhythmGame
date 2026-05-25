@@ -25,21 +25,44 @@ namespace Game::World
         {
             syscall.add_components(object, EventState(scene_data.event_id));
         }
+        const GraphicData &scene_graphic = scene_data.graphic_data;
+        const auto asset_ptr = get_assets_record_ptr(get_assets_id(graphic_type_string[scene_graphic.type]));
+        const Math::Point asset_size = {
+                (float) asset_ptr->info.info.as_sprite.width, (float) asset_ptr->info.info.as_sprite.width};
+        int src_rect[4] = {scene_graphic.src_rect[0],scene_graphic.src_rect[1],scene_graphic.src_rect[2],scene_graphic.src_rect[3]};
+        float dest_rect[4] = {scene_graphic.dest_rect[0],scene_graphic.dest_rect[1],scene_graphic.dest_rect[2],scene_graphic.dest_rect[3]};
+        if (src_rect[0]==0 && src_rect[1]==0 && src_rect[2]==0 && src_rect[3]==0)
+        {
+            src_rect[2] = (int)asset_size.x;
+            src_rect[3] = (int)asset_size.y;
+            dest_rect[0] = static_cast<float>(src_rect[0] - src_rect[2]);
+            dest_rect[1] = static_cast<float>(src_rect[1] - src_rect[3]);
+            dest_rect[2] = static_cast<float>(src_rect[2] - src_rect[0]);
+            dest_rect[3] = static_cast<float>(src_rect[3] - src_rect[1]);
+        }
 
-        // const Battle::GraphicData bullet_graphic = bullet_info.graphic_data;
-        // syscall.add_components(bullet, Render::Sprite(bullet_graphic.sprite), Render::Material(nullptr,nullptr, 0));
-
-
+        syscall.add_components(object, Render::Sprite{
+                    .sp = asset_ptr,
+                    .pos = {{dest_rect[0], dest_rect[3], 0}, {dest_rect[2], dest_rect[3], 0}, {dest_rect[2], dest_rect[1], 0}, {dest_rect[0], dest_rect[1], 0}},
+                    .layer = scene_graphic.layer,
+                    .u0 = static_cast<float>(src_rect[0])/asset_size.x,
+                    .v0 = static_cast<float>(src_rect[1])/asset_size.y,
+                    .u1 = static_cast<float>(src_rect[2])/asset_size.x,
+                    .v1 = static_cast<float>(src_rect[3])/asset_size.y}
+                    , Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")),get_assets_record_ptr(get_assets_id("sprite_ps")), {scene_graphic.r, scene_graphic.g, scene_graphic.b, scene_graphic.a}));
     }
 
     template<typename T>
-    void load_scene_objects([[maybe_unused]] T &syscall, System::ECS::Query<SceneRegistry> &query)
+    void load_scene_objects([[maybe_unused]] T &syscall, System::ECS::Query<SceneRegistry> &query, System::ECS::Query<SaveState> &save_query)
     {
         if (query.begin() == query.end())
             return;
 
+        if (save_query.begin() == save_query.end()) return;
+
         auto &[initialized, scene_objects] = query.front().get<SceneRegistry>();
         if (initialized) return;
+        // const auto &save_state = save_query.front().get<SaveState>();
         for (auto &scene_object : scene_objects)
         {
             spawn_scene_object(syscall, scene_object);

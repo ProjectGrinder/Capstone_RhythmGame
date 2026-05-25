@@ -23,7 +23,7 @@ namespace Game::World
         for (auto &[id, comps] : query2)
         {
             if (!comps.get<Player>().on_ground)
-                comps.get<Acceleration>().ay = -0.098f;
+                comps.get<Acceleration>().ay = -player_stat.gravity;
             else
                 comps.get<Acceleration>().ay = 0;
 

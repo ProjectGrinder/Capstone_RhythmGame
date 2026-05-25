@@ -85,15 +85,16 @@ namespace Scene
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
             Game::Audio::SoundRegistry,
-            Game::Battle::Score
+            Game::Battle::Score,
+            Game::World::GlobalState
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             return_to_menu<Syscall>,
+            Game::update_global_clock<Syscall>,
             Game::input_system<Syscall>,
             Game::Battle::phase_change<Syscall>,
-            Game::Battle::update_global_clock<Syscall>,
             Game::Battle::check_player_state<Syscall>,
             Game::Battle::phase_border_change<Syscall>,
             Game::Battle::phase_player_change<Syscall>,

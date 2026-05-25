@@ -17,6 +17,7 @@ namespace Scene
             Game::World::EventRegister,
             Game::World::SceneRegistry,
             Game::World::Block,
+            Game::World::CameraAttractor,
             Game::World::DialogueBox,
             Game::World::EventState,
             Game::World::GlobalState,
@@ -49,19 +50,25 @@ namespace Scene
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
+            Game::update_global_clock<Syscall>,
             Game::World::load_scene_objects<Syscall>,
             Game::input_system<Syscall>,
             Game::World::player_move<Syscall>,
             Game::BulletHell::acceleration_system<Syscall>,
             Game::BulletHell::rotation_system<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
+            Game::World::camera_follow<Syscall>,
             Game::World::event_system<Syscall>,
-            Game::World::detect_overlap_block<Syscall>,
+            // Game::World::detect_overlap_block<Syscall>,
             Game::World::detect_overlap_interactable<Syscall>,
             Game::World::dialogue_system<Syscall>,
             Game::World::dialogue_box_system<Syscall>,
             Game::World::lock_event_system<Syscall>,
-            Game::World::logging_system<Syscall>
+            Game::World::logging_system<Syscall>,
+            Game::Render::set_camera<Syscall>,
+            Game::Render::draw_sprite<Syscall>,
+            Game::Render::draw_text<Syscall>,
+            Game::Test::draw_collider<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init();

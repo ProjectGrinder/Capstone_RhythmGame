@@ -54,7 +54,7 @@ namespace Game::World
         if (query1.begin() == query1.end())
             return;
 
-        auto &[movementLocked, interactionLocked, menuLocked] = query1.front().components.get<GlobalState>();
+        auto &[_,movementLocked, interactionLocked, menuLocked] = query1.front().components.get<GlobalState>();
 
         for (auto &[id, comps] : lock_query)
         {
@@ -92,6 +92,25 @@ namespace Game::World
 
             event_state.has_event = false;
             syscall.template remove_component<UnlockInputEvent>(id);
+        }
+    }
+
+    template<typename T>
+    void pan_camera_event_system(
+            [[maybe_unused]] T &syscall,
+            System::ECS::Query<EventState, PanCameraEvent> &pan_query
+            )
+    {
+
+        for (auto &[id, comps] : pan_query)
+        {
+            auto &event_state = comps.get<EventState>();
+            const auto &pan_event = comps.get<PanCameraEvent>();
+
+            syscall.add_component(id, CameraAttractor(pan_event.duration, pan_event.order));
+
+            event_state.has_event = false;
+            syscall.template remove_component<PanCameraEvent>(id);
         }
     }
 

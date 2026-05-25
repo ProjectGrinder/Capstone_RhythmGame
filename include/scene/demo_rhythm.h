@@ -39,7 +39,8 @@ namespace Scene
             Game::Render::Material,
             Game::Render::Text,
             Game::Render::Transform,
-            Game::Audio::SoundRegistry
+            Game::Audio::SoundRegistry,
+            Game::World::GlobalState
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -57,7 +58,7 @@ namespace Scene
             Game::Render::set_camera<Syscall>,
             Game::Render::draw_sprite<Syscall>,
             Game::Render::draw_text<Syscall>,
-            Game::Battle::update_global_clock<Syscall>
+            Game::update_global_clock<Syscall>
             >;
 
         static void load_chart(
