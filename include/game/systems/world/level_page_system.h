@@ -1,7 +1,19 @@
 #pragma once
-#include <string>
 namespace Game::World
 {
+    template<typename T>
+    void create_level_page(T &syscall, LevelNode& level_node, Battle::LevelData& data)
+    {
+        syscall.template create_entity<Render::Sprite, Render::Material, Render::Transform>
+        (
+            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-64, 64, 0}, {64, 64, 0}, {64, -64, 0}, {-64, -64, 0}}, .layer = 50},
+            Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+            Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0},
+            Render::Resize{{10, 16}, 500}
+            );
+    }
+
+
     template<typename T>
     void level_node_system(
             [[maybe_unused]] T &syscall,

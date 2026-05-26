@@ -38,7 +38,6 @@ namespace Game::World
         }
 
         // Cam follow
-        camera_pos.x += (camera_target.x - camera_pos.x) * CAMERA_SPEED * (float)get_delta_time();
-        camera_pos.y += (camera_target.y - camera_pos.y) * CAMERA_SPEED * (float)get_delta_time();
+        camera_pos = Physics::lerp(camera_pos, camera_target, CAMERA_SPEED * (float)get_delta_time());
     }
 } // namespace Game::Overview

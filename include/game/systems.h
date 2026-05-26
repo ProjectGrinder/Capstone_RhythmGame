@@ -45,6 +45,7 @@
 #include "systems/render/animation_system.h"
 #include "systems/bullethell/shaking_system.h"
 #include "systems/render/flickering_system.h"
+#include "systems/render/resize_system.h"
 // Render Intent
 #include "systems/render/draw_sprite.h"
 #include "systems/render/draw_text.h"
