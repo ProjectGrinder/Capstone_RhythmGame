@@ -60,7 +60,7 @@ namespace Game::Rhythm
         (
             NoteEffect(),
             Render::Sprite{
-            .sp = get_assets_record_ptr(get_assets_id("Square")),
+            .sp = get_assets_record_ptr(get_assets_id("note_border")),
             .pos = {{x_pos, JUDGE_LEVEL, 0},{x_pos, JUDGE_LEVEL, 0},{x_pos, JUDGE_LEVEL, 0},{x_pos, JUDGE_LEVEL, 0}},
             .color = color,
             .layer = 10},
@@ -100,7 +100,7 @@ namespace Game::Rhythm
             }
             else
             {
-                constexpr float fade_time = 400.00f;
+                constexpr float fade_time = 300.00f;
                 comp.get<Sprite>().color.a -= delta_time / fade_time;
                 if (comp.get<Sprite>().color.a <= 0)
                     syscall.remove_entity(id);
