@@ -67,8 +67,8 @@ namespace Scene
             // Game::World::logging_system<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::draw_sprite<Syscall>,
-            Game::Render::draw_text<Syscall>,
-            Game::Test::draw_collider<Syscall>
+            Game::Render::draw_text<Syscall>
+            // Game::Test::draw_collider<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init();

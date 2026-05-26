@@ -47,7 +47,7 @@ Game::World::EventRegister init_event_registry()
 {
     using namespace Game::World;
     EventRegister event_sequences = {
-        {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), ChangeNextEvent(1), UnlockInputEvent()},
+        {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), UnlockInputEvent(), ChangeNextEvent(1)},
         {LockInputEvent(0b100), DialogueEvent(3), UnlockInputEvent(), ChangeNextEvent(2)},
         {LockInputEvent(0b100), DialogueEvent(4), UnlockInputEvent()}
     };
@@ -59,33 +59,14 @@ Game::World::SceneRegistry init_scene_registry()
     using namespace Game::World;
     const SceneRegistry scene_registry = {
         {
-            SceneObject(0,64*-1,1,1,2, {Platform}, {}),
-            SceneObject(-64,64*-1,1,1, 2, {Platform}, {}),
-            SceneObject(64,64*-1,1,1, 2, {Platform}, {}),
-            SceneObject(-128,64*-1,1,1, 2, {Platform}, {}),
-            SceneObject(128,64*-1,1,1, 2, {Platform}, {}),
-            SceneObject(-192,64*-1,1,1, 2, {Platform}, {}),
-            SceneObject(192,64*-1,1,1, 2, {Platform}, {}),
-            SceneObject(-256,64*-1,1,1, 2, {Platform}, {}),
-            SceneObject(256,64*-1,1,1, 2, {Platform}, {}),
-            SceneObject(64*5,64*-1,1,1, 2, {Platform}, {}),
-            SceneObject(64*6,64*0,1,1, 2, {Platform}, {}),
-            SceneObject(64*7,64*0,1,1, 2, {Platform}, {}),
-            SceneObject(64*8,64*0,1,1, 2, {Platform}, {}),
-            SceneObject(64*9,64*0,1,1, 2, {Platform}, {}),
-            SceneObject(64*10,64*0,1,1, 2, {Platform}, {}),
-            SceneObject(64*-5,64*-1,1,1, 2, {Platform}, {}),
-            SceneObject(64*-5,64*0,1,1, 2, {Platform}, {}),
-            SceneObject(64*-5,64,1,1, 2, {Platform}, {}),
-            SceneObject(64*-5,128,1,1, 2, {Platform}, {}),
-            SceneObject(64*-5,196,1,1, 2, {Platform}, {}),
-            SceneObject(64*10,64*6.5,1,1, 2, {Platform}, {}),
-            SceneObject(64*10,64*5.5,1,1, 2, {Platform}, {}),
-            SceneObject(64*10,64*4.5,1,1, 2, {Platform}, {}),
-            SceneObject(64*10,64*3.5,1,1, 2, {Platform}, {}),
-            SceneObject(64*10,64*2.5,1,1, 2, {Platform}, {}),
-            SceneObject(64*10,64*1.5,1,1, 2, {Platform}, {}),
-            SceneObject(64*8,64*2,0.2f,0.2f, 1, 0, {Npc}, {}),
+            SceneObject(0,64*-1,100,1,2, {Platform}, {}),
+            SceneObject(-6400,64*6,1,12, 2, {Platform}, {}),
+            SceneObject(3600,64*0,50,1, 2, {Platform}, {}),
+            SceneObject(7200,64*1,25,1, 2, {Platform}, {}),
+            SceneObject(720,64*2,2,0.5, 2, {Platform}, {}),
+            SceneObject(1080,64*3,2,0.5, 2, {Platform}, {}),
+            SceneObject(6400,64*6,1,12, 2, {Platform}, {}),
+            SceneObject(1080,64*4.5,0.2f,0.2f, 1, 0, {Npc}, {}),
             SceneObject(64*0,64*1,0.2f,0.2f, 1, 2, {Npc}, {}),
         }
     };
