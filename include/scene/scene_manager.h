@@ -3,13 +3,13 @@
 #include <variant>
 
 #include "scene/demo.h"
-#include "scene/demo_game.h"
 #include "scene/demo_menu.h"
 #include "scene/demo_render.h"
 #include "scene/demo_rhythm.h"
 #include "scene/demo_scene_change.h"
-#include "scene/demo_world.h"
+#include "scene/level1.h"
 #include "scene/scene_decl.h"
+#include "scene/demo_world.h"
 #include "utils/print_debug.h"
 #include "utils/scene_utils.h"
 
@@ -19,7 +19,7 @@ namespace Scene::Config
     // starting scene
     using StartingScene = DemoWorld;
 
-    using SceneTuple = std::tuple<DemoMenu, DemoGame, DemoWorld>;
+    using SceneTuple = std::tuple<DemoMenu, Level1, DemoWorld>;
     using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;
     using TaskManagerVariant = Utils::make_task_manager_variant_t<SceneTuple>;
 

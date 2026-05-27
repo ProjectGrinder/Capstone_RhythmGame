@@ -3,7 +3,7 @@
 #include "scene.h"
 #include "game.h"
 
-void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
+void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
 {
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
 
@@ -36,6 +36,7 @@ void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
     load_sprite("img/rhythm/base_disabled.dds", "disabled", 200, 40);
     load_sprite("img/rhythm/base_hold.dds", "hold", 100, 960);
     load_sprite("img/rhythm/base_hold_disabled.dds", "hold_disabled", 100, 960);
+    load_sprite("img/rhythm/note_border.dds", "note_border", 200, 40);
 
     load_sprite("img/return.dds", "return", 1280, 720);
 
@@ -60,7 +61,7 @@ Game::Battle::PatternContainer create_pattern_container2()
     return { PatternContainer(demo_pattern_container) };
 }
 
-Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
+Game::Battle::BulletLoader Scene::Level1::create_bullet_test()
 {
     using namespace Game::Battle;
     using namespace Game::Physics;
@@ -338,6 +339,26 @@ Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
     return (loader);
 }
 
+std::vector diff_list = {
+    Game::Battle::Difficulty(Game::Battle::LIGHT, 1),
+    Game::Battle::Difficulty(Game::Battle::SPARK, 3),
+    Game::Battle::Difficulty(Game::Battle::BLAZE, 5),
+};
+
+std::array total_note_list = {100, 150, 279}; // store total notes here
+
+inline Game::Battle::RhythmState create_rhythm_state(const int level)
+{
+    Game::Battle::RhythmState state(1, 10, total_note_list[level], 4.0f, 4.0f);
+    state.accept_loss.normal = 50;
+    state.accept_loss.accent = 50;
+    state.accept_loss.rain = 20;
+    state.accept_loss.hold = 50;
+    state.accept_loss.hold_end = 20;
+    state.apn = 100.00f / static_cast<float>(state.total_notes);
+    return (state);
+}
+
 inline Game::Battle::LevelData create_level1_chartdata()
 {
     Game::Battle::BpmInfo bpm;
@@ -355,65 +376,11 @@ inline Game::Battle::LevelData create_level1_chartdata()
     "Digital Jpop",
     134.00f,
     bpm,
-    std::vector<Game::Battle::Difficulty>(), 142000
+    diff_list, 142000
     );
 }
 
-Game::Battle::ChartData Scene::DemoGame::create_note_test()
-{
-    Game::Battle::ChartData chart;
-
-    for (int lane = 0; lane < 4; ++lane)
-    {
-        chart.lanes[lane].lane_number = lane;
-        chart.lanes[lane].notes.clear();
-        chart.lanes[lane].current_note = 0;
-    }
-
-    // chart.lanes[0].notes.emplace_back(false, 5000 + 7500, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[1].notes.emplace_back(false, 5000 + 8000, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[2].notes.emplace_back(false, 5000 + 8500, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[3].notes.emplace_back(false, 5000 + 9000, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[0].notes.emplace_back(false, 5000 + 9500, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[1].notes.emplace_back(false, 5000 + 10000, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[2].notes.emplace_back(false, 5000 + 10500, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[3].notes.emplace_back(false, 5000 + 11000, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[0].notes.emplace_back(true, 5000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[3].notes.emplace_back(true, 5000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
-    //
-    // for (int i=0;i<80;i++)
-    // {
-    //     chart.lanes[1].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::NORMAL);
-    //     if (i>12)
-    //     {
-    //         if (i%8==0)
-    //             chart.lanes[0].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::ACCENT);
-    //         if (i%8==4)
-    //             chart.lanes[3].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::ACCENT);
-    //     }
-    //     if (i==60) chart.lanes[2].notes.emplace_back(true, 30000 + i*100, 25000 + 80*100, Game::Battle::RhythmType::ACCENT);
-    // }
-
-    return (chart);
-}
-
-Game::Render::Sprite Scene::assign_sprite(const int type)
-{
-    if (type == 1)
-    {
-        return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("accent")),
-            .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
-    }
-    if (type == 2)
-    {
-        return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("rain")),
-            .pos = {{-75, 7.5, 0}, {75, 7.5, 0}, {75, -7.5, 0}, {-75, -7.5, 0}}, .layer = 5};
-    }
-    return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")),
-        .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
-}
-
-void Scene::DemoGame::load_chart(
+void Scene::Level1::load_chart(
     std::shared_ptr<TaskManager> &tm,
     Game::Battle::ChartData &chart,
     Game::Rhythm::NoteField &field)
@@ -494,18 +461,35 @@ void Scene::DemoGame::load_chart(
     LOG_INFO("Finished loading chart")
 }
 
-Scene::DemoGame Scene::DemoGame::instance()
+Scene::Level1 Scene::Level1::instance()
 {
-    static DemoGame instance;
+    static Level1 instance;
     return (instance);
 }
 
-std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
+// Game::Battle::Difficulty Scene::Level1::set_difficulty(const int level)
+// {
+//     switch (level)
+//     {
+//     case 0:
+//         return Game::Battle::Difficulty(Game::Battle::LIGHT, 1);
+//     case 1:
+//         return Game::Battle::Difficulty(Game::Battle::SPARK, 3);
+//     case 2:
+//         return Game::Battle::Difficulty(Game::Battle::BLAZE, 5);
+//     default:
+//         return Game::Battle::Difficulty(Game::Battle::LIGHT, 1);
+//     }
+// }
+
+std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
 {
     auto tm = std::make_shared<TaskManager>();
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
 
     init_graphics(tm);
+
+    constexpr int level = 2;
 
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
@@ -516,9 +500,9 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     Game::Render::AnimationDataRegistry,
     Game::Audio::SoundRegistry>
     (
-        Game::Battle::BattleState(200, 100, Game::Battle::Difficulty()),
+        Game::Battle::BattleState(200, total_note_list[level]*5, diff_list[level]),
         Game::Battle::BulletHellState(10),
-        Game::Battle::RhythmState(1, 500, 279, 5.0f, 5.0f),
+        create_rhythm_state(level),
         read_bullet_data_from_file("dsl/ShotData.th0"),
         create_bullet_test(),
         create_pattern_container2(),
@@ -527,6 +511,13 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
 
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());
+
+    // Transition Data
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16400, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(50149, 1500, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(80000, 1500, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 1000, Game::Battle::RHYTHM));
 
     // Background
     tm->create_entity<Game::Render::Sprite,
@@ -585,16 +576,10 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::JudgementLine>
     (
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-450, 10, 0}, {450, 10, 0}, {450, -10, 0}, {-450, -10, 0}},.color = {1,1,1,0}, .layer = 2},
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-400, 10, 0}, {400, 10, 0}, {400, -10, 0}, {-400, -10, 0}},.color = {1,1,1,0}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}
         );
-
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16400, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(50149, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(80000, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 1000, Game::Battle::RHYTHM));
 
     const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 
@@ -626,26 +611,26 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     Game::Render::Material,
     Game::Render::Transform>
     (
-        Game::Render::Text{.font = font, .text = "SCORE", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
+        Game::Render::Text{.font = font, .text = "ACCURACY", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
-    tm->create_entity<Game::Battle::Score,
-    Game::Render::Text,
-    Game::Render::Material,
-    Game::Render::Transform>
-    (
-        Game::Battle::Score(),
-        Game::Render::Text{.font = font, .text = "0", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
-        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 4/5 - 50, 0}, 0, 0, 0}
-        );
 
     tm->create_entity<Game::Battle::UIComponent,
     Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform>
     (
-        Game::Battle::UIComponent{Game::Battle::PhaseChangeText},
+        Game::Battle::UIComponent(Game::Battle::AccuracyText),
+        Game::Render::Text{.font = font, .text = "100%", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 3/4, 0}, 0, 0, 0});
+
+    tm->create_entity<Game::Battle::TransitionText,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Battle::TransitionText(),
         Game::Render::Text{.font = font, .text = "", .layer = 105},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{0, Game::HALF_HEIGHT * 4/5, 0, 0, 0, 2.5f,2.5f,1});
@@ -653,8 +638,8 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     return (tm);
 }
 
-Scene::DemoGame::ResourceManager Scene::DemoGame::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
+Scene::Level1::ResourceManager Scene::Level1::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
-    LOG_INFO("Exiting DemoGame Scene.");
+    LOG_INFO("Exiting Level1 Scene.");
     return ResourceManager();
 }

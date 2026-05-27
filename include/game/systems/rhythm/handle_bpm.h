@@ -8,13 +8,9 @@ namespace Game::Rhythm
     void handle_bpm(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::LevelData> &level_query,
-            System::ECS::Query<Battle::RhythmState> &rhythm_query,
-            System::ECS::Query<Battle::BattleState> &battle_query)
+            System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query)
     {
         if (level_query.begin() == level_query.end())
-            return;
-
-        if (rhythm_query.begin() == rhythm_query.end())
             return;
 
         if (battle_query.begin() == battle_query.end())
@@ -35,9 +31,8 @@ namespace Game::Rhythm
         {
             return;
         }
-
-        auto &battle_state = battle_query.front().get<Battle::BattleState>();
-        auto clock = battle_state.clock_time / 1000;
+        
+        auto clock = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
 
         if (clock >= bpm_list.at(idx).timing)
         {
@@ -45,11 +40,11 @@ namespace Game::Rhythm
             // LOG_INFO("Artist: %s", level_data.artist_name.c_str());
             // LOG_INFO("Genre: %s", level_data.genre_name.c_str());
             // LOG_INFO("BPM: %d", static_cast<int>(bpm_list.at(idx).bpm));
-            rhythm_query.front().get<Battle::RhythmState>().current_speed =
-                rhythm_query.front().get<Battle::RhythmState>().base_speed * (bpm_list.at(idx).bpm / level_data.main_bpm);
+            battle_query.front().get<Battle::RhythmState>().current_speed =
+                battle_query.front().get<Battle::RhythmState>().base_speed * (bpm_list.at(idx).bpm / level_data.main_bpm);
             if (bpm_list.at(idx).bpm != level_data.main_bpm || idx == 0)
             {
-                rhythm_query.front().get<Battle::RhythmState>().speed_change = true;
+                battle_query.front().get<Battle::RhythmState>().speed_change = true;
             }
             ++idx;
         }

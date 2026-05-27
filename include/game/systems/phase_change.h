@@ -3,13 +3,15 @@
 
 namespace Game::Battle
 {
+    struct TransitionText {};
+
     template<typename T>
     void phase_change(
         [[maybe_unused]] T &syscall,
         System::ECS::Query<TransitionData> &transition_query,
         System::ECS::Query<BattleState> &battle_query,
         System::ECS::Query<Audio::SoundRegistry> &sound_query,
-        System::ECS::Query<UIComponent, Render::Text, Render::Material, Render::Transform> &transition_text_query)
+        System::ECS::Query<TransitionText, Render::Text, Render::Material, Render::Transform> &transition_text_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;

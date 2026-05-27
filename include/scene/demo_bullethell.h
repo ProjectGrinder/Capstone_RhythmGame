@@ -62,7 +62,8 @@ namespace Scene
             Game::Test::BulletCounter,
             Game::Test::GrazeText,
             Game::Test::LifeText,
-            Game::World::GlobalState
+            Game::World::GlobalState,
+            Game::Battle::TransitionText
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -91,7 +92,8 @@ namespace Scene
             Game::Render::animation_system<Syscall>,
             Game::Render::draw_sprite<Syscall>,
             Game::Render::draw_text<Syscall>,
-            Game::Test::stat_text_render<Syscall>,
+            Game::Battle::handle_sprite_ui<Syscall>,
+            Game::Battle::handle_text_ui<Syscall>,
             Game::Test::fps_counter<Syscall>,
             Game::Render::flickering_system<Syscall>,
             Game::update_global_clock<Syscall>

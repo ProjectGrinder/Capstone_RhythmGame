@@ -14,7 +14,7 @@ namespace Scene
             if (get_key_state(ENTER))
             {
                 LOG_INFO("Enter pressed");
-                Scene::queue_change_scene<DemoGame>();
+                Scene::queue_change_scene<Level1>();
             }
         }
 

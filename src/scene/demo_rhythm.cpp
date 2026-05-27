@@ -320,27 +320,28 @@ inline Game::Battle::BattleState create_battle_state()
 
 inline Game::Battle::RhythmState create_rhythm_state()
 {
-    Game::Battle::RhythmState state(1, 100, 60, 6.0f, 6.0f);
+    Game::Battle::RhythmState state(1, 10, 60, 6.0f, 6.0f);
     state.accept_loss.normal = 5;
     state.accept_loss.accent = 5;
     state.accept_loss.rain = 2;
     state.accept_loss.hold = 5;
     state.accept_loss.hold_end = 2;
+    state.apn = 100.00f / static_cast<float>(state.total_notes);
     return (state);
 }
 
 Game::Rhythm::NoteField Scene::create_field()
 {
-    constexpr float note_width = 150.0f;
+    // constexpr float note_width = 150.0f;
     constexpr float padding = 20.0f;
     // position based on window size
     const float spawn_level = Game::HALF_HEIGHT + padding;
-    const float judge_level = Game::HALF_HEIGHT * -2 / 3;
-    constexpr float lane1_spawn = -1 * (note_width * 1.65f);
-    constexpr float lane2_spawn = -1 * (note_width * 0.55f);
-    constexpr float lane3_spawn = note_width * 0.55f;
-    constexpr float lane4_spawn = note_width * 1.65f;
-    constexpr float move_time = 4000.00f; // default speed 1
+    const float judge_level = Game::JUDGE_LEVEL;
+    constexpr float lane1_spawn = Game::LANE1;
+    constexpr float lane2_spawn = Game::LANE2;
+    constexpr float lane3_spawn = Game::LANE3;
+    constexpr float lane4_spawn = Game::LANE4;
+    constexpr float move_time = Game::NOTE_TIME;
     return Game::Rhythm::NoteField(
         spawn_level,
         judge_level,
@@ -383,20 +384,20 @@ Math::Point Scene::field_to_point(const int lane, const Game::Rhythm::NoteField 
     return Math::Point{0, 0, 0};
 }
 
-inline Game::Render::Sprite assign_sprite(const int type)
+Game::Render::Sprite Scene::assign_sprite(const int type)
 {
     if (type == 1)
     {
-        return Game::Render::Sprite{.sp = sp_accent,
-            .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 1};
+        return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("accent")),
+            .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
     }
     if (type == 2)
     {
-        return Game::Render::Sprite{.sp = sp_rain,
-            .pos = {{-75, 7.5, 0}, {75, 7.5, 0}, {75, -7.5, 0}, {-75, -7.5, 0}}, .layer = 2};
+        return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("rain")),
+            .pos = {{-75, 7.5, 0}, {75, 7.5, 0}, {75, -7.5, 0}, {-75, -7.5, 0}}, .layer = 5};
     }
-    return Game::Render::Sprite{.sp = sp_normal,
-        .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 1};
+    return Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")),
+        .pos = {{-75, 15, 0}, {75, 15, 0}, {75, -15, 0}, {-75, -15, 0}}, .layer = 4};
 }
 
 void Scene::DemoRhythm::load_chart(
@@ -526,16 +527,6 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
         Game::Render::Text{.font = fn, .text = "", .layer = 5},
         Game::Render::Material(sprite_vs, sprite_ps),
         Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 2 / 3, 0}, 0, 0, 0});
-
-    tm->create_entity<Game::Rhythm::Combo,
-    Game::Render::Text,
-    Game::Render::Material,
-    Game::Render::Transform>
-    (
-        Game::Rhythm::Combo(),
-        Game::Render::Text{.font = fn, .text = "", .layer = 5},
-        Game::Render::Material(sprite_vs, sprite_ps),
-        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 3 / 4, 0}, 0, 0, 0});
 
     auto chart = create_demo_chart();
     auto field = create_field();

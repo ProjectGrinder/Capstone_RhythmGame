@@ -4,9 +4,7 @@
 
 namespace Scene
 {
-    Game::Render::Sprite assign_sprite(int type);
-
-    struct DemoGame
+    struct Level1
     {
         template<typename T>
         static void return_to_menu(
@@ -28,9 +26,9 @@ namespace Scene
             }
         }
 
-        static DemoGame instance();
+        static Level1 instance();
 
-        constexpr static auto name = "DemoGame";
+        constexpr static auto name = "Level1";
         constexpr static size_t MaxResource = 10000;
 
         // declare scene parameters
@@ -79,13 +77,13 @@ namespace Scene
             Game::Rhythm::Timing,
             Game::Rhythm::HoldStart,
             Game::Rhythm::JudgeText,
-            Game::Rhythm::Combo,
             Game::Rhythm::NoteField,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
+            Game::Rhythm::NoteEffect,
             Game::Audio::SoundRegistry,
-            Game::Battle::Score,
+            Game::Battle::TransitionText,
             Game::World::GlobalState
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
@@ -123,26 +121,26 @@ namespace Scene
             Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::update_judge_text<Syscall>,
-            Game::Rhythm::update_combo<Syscall>,
             Game::Rhythm::update_notes<Syscall>,
+            Game::Rhythm::handle_note_effect<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::flickering_system<Syscall>,
             Game::Render::draw_sprite<Syscall>,
             Game::Render::draw_text<Syscall>,
-            Game::Battle::update_score<Syscall>,
             Game::Render::anim_transition_system<Syscall>,
             Game::Render::animation_system<Syscall>,
-            Game::Test::stat_text_render<Syscall>
-
+            Game::Battle::handle_sprite_ui<Syscall>,
+            Game::Battle::handle_text_ui<Syscall>
             >;
 
         static Game::Battle::BulletLoader create_bullet_test();
-        static Game::Battle::ChartData create_note_test();
 
         static void load_chart(
             std::shared_ptr<TaskManager> &tm,
             Game::Battle::ChartData &chart,
             Game::Rhythm::NoteField &field);
+
+        // static Game::Battle::Difficulty set_difficulty(int level);
 
         static std::shared_ptr<TaskManager> init();
 

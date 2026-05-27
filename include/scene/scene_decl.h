@@ -6,7 +6,7 @@ namespace Scene
 
     struct Demo;
     struct DemoSceneChange;
-    struct DemoGame;
+    struct Level1;
     struct DemoMenu;
 
     template <typename T>

@@ -6,6 +6,7 @@
 namespace Scene
 {
     Game::Rhythm::NoteField create_field();
+    Game::Render::Sprite assign_sprite(int type);
 
     // Use these methods for the demo level
     Game::Battle::ChartData create_level1_chart();
@@ -26,7 +27,6 @@ namespace Scene
             Game::Battle::ChartData,
             Game::Battle::LevelData, // structure required to satisfy HandleBPM
             Game::Rhythm::JudgeText,
-            Game::Rhythm::Combo,
             Game::Rhythm::Lane,
             Game::Rhythm::Timing,
             Game::Rhythm::HoldStart,
@@ -40,6 +40,7 @@ namespace Scene
             Game::Render::Text,
             Game::Render::Transform,
             Game::Audio::SoundRegistry,
+            Game::Rhythm::NoteEffect,
             Game::World::GlobalState
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
@@ -53,7 +54,6 @@ namespace Scene
             Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::update_judge_text<Syscall>,
-            Game::Rhythm::update_combo<Syscall>,
             Game::Rhythm::update_notes<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::draw_sprite<Syscall>,

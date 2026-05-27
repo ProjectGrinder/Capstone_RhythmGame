@@ -38,22 +38,22 @@ namespace Game::Rhythm
 
         switch (comp.get<JudgeText>().judge)
         {
-        case JudgeText::PERFECT :
+        case PERFECT :
             comp.get<Render::Text>().text = "PERFECT";
             comp.get<Render::Text>().color = {1, 1, 0, 1}; //yellow
             break;
 
-        case JudgeText::GREAT :
+        case GREAT :
             comp.get<Render::Text>().text = "GREAT";
             comp.get<Render::Text>().color = {0, 1, 0.5, 1}; //green
             break;
 
-        case JudgeText::FINE :
+        case FINE :
             comp.get<Render::Text>().text = "FINE";
             comp.get<Render::Text>().color = {0.5, 1, 1, 1}; //light-blue
             break;
 
-        case JudgeText::MISS :
+        case MISS :
             comp.get<Render::Text>().text = "MISS";
             comp.get<Render::Text>().color = {1, 0, 0, 1}; //red
             break;
