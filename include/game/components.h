@@ -36,7 +36,6 @@
 #include "components/render/transform.h"
 #include "components/render/triangle.h"
 #include "components/render/resize.h"
-#include "components/rhythm/combo.h"
 #include "components/rhythm/holdconnect.h"
 #include "components/rhythm/holdstart.h"
 #include "components/rhythm/judgement_line.h"
