@@ -1,4 +1,5 @@
 #pragma once
+#include "utils/constant.h"
 namespace Game::World
 {
     template<typename T>
@@ -6,11 +7,16 @@ namespace Game::World
     {
         syscall.template create_entity<Render::Sprite, Render::Material, Render::Transform>
         (
-            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-64, 64, 0}, {64, 64, 0}, {64, -64, 0}, {-64, -64, 0}}, .layer = 50},
+            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-HALF_WIDTH/2, HALF_HEIGHT*3/4, 0}, {HALF_WIDTH/2, HALF_HEIGHT*3/4, 0}, {HALF_WIDTH/2, -HALF_HEIGHT*3/4, 0}, {-HALF_WIDTH/2, -HALF_HEIGHT*3/4, 0}}, .layer = 50},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0},
-            Render::Resize{{10, 16}, 500}
+            Render::Transform{0, 0, 0, 0, 0, 0,0, 1},
+            Render::Resize{{1, 1}, 500}
             );
+        syscall.template create_entity<Render::Text, Render::Material, Render::Transform>
+        (
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = data.title, .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+            Render::Transform{Math::Point{0, 100, 0}, 0, 0, 0});
     }
 
 
@@ -50,7 +56,7 @@ namespace Game::World
                         if (input.x_pressed || input.escape_pressed || (input.z_pressed && level_node.sel == LevelNode::Selection::Cancel))
                         {
                             syscall.template remove_component<LevelNodeEvent>(id);
-                            level_node.is_destroyed = true;
+                            // Destroy Tab
                         }
 
                         if (input.z_pressed && level_node.sel == LevelNode::Selection::Confirm)

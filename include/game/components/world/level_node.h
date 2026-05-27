@@ -12,7 +12,8 @@ namespace Game::World
         };
         uint16_t id;
         Selection sel = Selection::Confirm;
-        bool is_destroyed = false;
+        System::ECS::pid level_node_box_pid = INVALID_PID;
+        std::vector<System::ECS::pid> level_node_texts_pid;
         LevelNode() = default;
         explicit LevelNode(const uint16_t id) : id(id) {}
     };

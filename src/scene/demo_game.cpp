@@ -1,8 +1,6 @@
 #pragma once
 
 #include "scene.h"
-#include "system.h"
-
 #include "game.h"
 
 void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
@@ -529,10 +527,6 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
 
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());
-
-    auto hit_sound = load_audio("audio/fishdam1", "player_hit");
-    AudioCache *out = nullptr;
-    load_audio_if_not_exist((AssetsRecord *) hit_sound, &out);
 
     // Background
     tm->create_entity<Game::Render::Sprite,
