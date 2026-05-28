@@ -4,6 +4,7 @@
 #include "system.h"
 
 #include "game.h"
+#include "game/utils/Bullethell_DSL/bullet_script.h"
 
 void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
 {
@@ -44,302 +45,6 @@ void init_graphics(const std::shared_ptr<Scene::DemoGame::TaskManager>& tm)
     load_sprite("img/level1_bg.dds", "level1_bg", 3840, 2160);
 }
 
-Game::Battle::PatternContainer create_pattern_container2()
-{
-    int t_beat = 447;
-    using namespace Game::Battle;
-    const std::vector<PatternStep> demo_step = {
-        PatternStep(t_beat/2, OP_SET, 0b1110, 300, -90 ,0),
-        PatternStep(t_beat/2, OP_SET, 0b0010, -5000),
-
-};
-    const std::vector<PatternSequence> demo_pattern = {
-        PatternSequence(false, 0),
-        // PatternSequence(false, 4),
-
-    };
-    auto demo_pattern_container = PatternContainer(demo_step,demo_pattern);
-    return { PatternContainer(demo_pattern_container) };
-}
-
-Game::Battle::BulletLoader Scene::DemoGame::create_bullet_test()
-{
-    using namespace Game::Battle;
-    using namespace Game::Physics;
-
-    BulletLoader loader;
-
-    int t_beat = 447;
-    float b_offset = 0;
-    constexpr float time_per_beat = 60000.f / 134.f;
-    auto beat_time = [](const float beat)
-    {
-        return static_cast<int>(std::round(beat * time_per_beat));
-    };
-
-    const auto box_left = -Game::BOX_SIZE + Game::HALF_WIDTH / 32;
-    const auto box_right = Game::BOX_SIZE - Game::HALF_WIDTH / 32;
-    const auto box_up = Game::BOX_SIZE + Game::HALF_HEIGHT / 32 - Game::HALF_HEIGHT/ 3;
-    const auto box_down = -Game::BOX_SIZE-Game::HALF_HEIGHT/32-Game::HALF_HEIGHT/3;
-
-    for (int i=0; i < 16; i++ , b_offset+=0.5f)
-    {
-        int i8 = i%8;
-        float d = (i8 / 4 == 1) ? (float)(8 - i8 -1) : (float)i8;
-        loader.CreateBullet(beat_time(b_offset),BulletData(box_left + (box_right-box_left)*d/4 + rand_float(-50,50), box_up, 400, 90, -1000,0, 1,0,5000,12));
-        loader.CreateBullet(beat_time(b_offset + 0.25f),BulletData(box_right - (box_right-box_left)*d/4 + rand_float(-50,50), box_up+100, 400, 90, -1000,0, 1,0,5000,13));
-    }
-    for (int i=0; i < 15; i++, b_offset+=2.f)
-    {
-        float randX;
-        if (i%2==0) randX = box_left + rand_float(50,200);
-        else randX = box_right - rand_float(50,200);
-        float randAcc = -rand_float(1000,5000);
-        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
-        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
-        for (int j=0; j < 8; j++)
-        {
-            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
-        }
-    }
-
-
-    b_offset = 116;
-    for (int i=0; i < 3; i++, b_offset+=2.0f)
-    {
-        float randX;
-        if (i%2==0) randX = box_left + rand_float(50,200);
-        else randX = box_right - rand_float(50,200);
-        float randAcc = -rand_float(1000,5000);
-        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
-        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
-
-        if (i==2)
-        {
-            loader.CreateBullet(beat_time(b_offset+0.f), BulletData(box_left+100 , box_down+250, 0, 0,t_beat*2,t_beat*3,172));
-            loader.CreateBullet(beat_time(b_offset+0.5f), BulletData(box_right-100 , box_down+250, 0, 0,t_beat*2,t_beat*3,172));
-            loader.CreateBullet(beat_time(b_offset+1.f), BulletData(box_left+100 , box_down+500, 0, 0,t_beat*2,t_beat*3,172));
-        }
-
-        for (int j=0; j < 8; j++)
-        {
-            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
-        }
-
-        if (i==2)
-        {
-            loader.CreateBullet(beat_time(b_offset+1.5f), BulletData(box_right-100 , box_down+500, 0, 0,t_beat*2,t_beat*3,172));
-        }
-    }
-
-    b_offset+=2.f;
-
-    for (int i=0; i < 4; i++, b_offset+=2.0f)
-    {
-        float randX;
-        if (i%2==0) randX = box_left + rand_float(50,200);
-        else randX = box_right - rand_float(50,200);
-        float randAcc = -rand_float(1000,5000);
-        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
-        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
-
-        if (i==2)
-        {
-            loader.CreateBullet(beat_time(b_offset+0.f), BulletData(Game::HALF_WIDTH, box_down + 100, 0, 180, t_beat*2,t_beat*3, 164));
-            loader.CreateBullet(beat_time(b_offset+0.33f), BulletData(-Game::HALF_WIDTH, box_down + 200, 0, 0, t_beat*2,t_beat*3, 164));
-            loader.CreateBullet(beat_time(b_offset+0.67f), BulletData(Game::HALF_WIDTH, box_down + 300, 0, 180, t_beat*2,t_beat*3, 164));
-        }
-
-        for (int j=0; j < 8; j++)
-        {
-            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
-        }
-
-        if (i==2)
-        {
-            loader.CreateBullet(beat_time(b_offset+1.f), BulletData(-Game::HALF_WIDTH, box_down + 400, 0, 0, t_beat*2,t_beat*3, 164));
-            loader.CreateBullet(beat_time(b_offset+1.33f), BulletData(Game::HALF_WIDTH, box_down + 500, 0, 180, t_beat*2,t_beat*3, 164));
-            loader.CreateBullet(beat_time(b_offset+1.67f), BulletData(-Game::HALF_WIDTH, box_down + 600, 0, 0, t_beat*2,t_beat*3, 164));
-        }
-    }
-
-    b_offset+=2.f;
-
-    for (int i=0; i < 3; i++, b_offset+=2.0f)
-    {
-        float randX;
-        if (i%2==0) randX = box_left + rand_float(50,200);
-        else randX = box_right - rand_float(50,200);
-        float randAcc = -rand_float(1000,5000);
-        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
-        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
-
-        if (i==1 || i==2)
-        {
-            for (int tof = 0; tof < 8; tof++)
-            {
-                loader.CreateBullet(beat_time(b_offset) + 40*tof,BulletData(0 , box_up, 500, static_cast<float>(-155 + tof*15),0,5000,100));
-            }
-        }
-
-        for (int j=0; j < 8; j++)
-        {
-            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
-        }
-
-        if (i==1 || i==2)
-        {
-            for (int tof = 0; tof < 8; tof++)
-            {
-                loader.CreateBullet(beat_time(b_offset+1) + 40*tof,BulletData(0 , box_up, 500, static_cast<float>(-15 - tof*15),0,5000,100));
-            }
-        }
-    }
-
-    b_offset+=2.f;
-
-    for (int i=0; i < 2; i++, b_offset+=2.0f)
-    {
-        float randX;
-        if (i%2==0) randX = box_left + rand_float(50,200);
-        else randX = box_right - rand_float(50,200);
-        float randAcc = -rand_float(1000,5000);
-        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
-        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
-        for (int j=0; j < 8; j++)
-        {
-            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
-        }
-    }
-
-    b_offset = 180;
-    loader.CreateBullet(beat_time(b_offset),BulletData(box_left + (box_right-box_left)/2, box_down + (box_up-box_down)/2, 0, 0, t_beat*2,t_beat*3, 176));
-    for (int i=0;i<480;i++, b_offset+=0.125f)
-    {
-        loader.CreateBullet(beat_time(b_offset),BulletData(box_left + (box_right-box_left)/2, box_down + (box_up-box_down)/2, 300, (float)i*42.f,0,5000,53));
-        if (i>=192 && i%16==0)
-        {
-            const float x = i % 32 == 0 ? box_left + 100 : box_right - 100;
-            const float y = (i%64/32)==0? box_down+250 : box_down+500;
-            loader.CreateBullet(beat_time(b_offset), BulletData(x , y, 0, 0,t_beat*2,t_beat*3,172));
-        }
-        if (i>=256 && i%8==4)
-        {
-            loader.CreateBullet(beat_time(b_offset),BulletData(rand_float(box_left,box_right), box_up, 400, 90, -1000,0, 1,0,5000,144));
-        }
-    }
-
-    b_offset = 244;
-    for (int i=0; i < 3; i++, b_offset+=2.0f)
-    {
-        float randX;
-        if (i%2==0) randX = box_left + rand_float(50,200);
-        else randX = box_right - rand_float(50,200);
-        float randAcc = -rand_float(1000,5000);
-        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
-        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
-
-        if (i==2)
-        {
-            loader.CreateBullet(beat_time(b_offset+0.f), BulletData(box_left+100 , box_down+250, 0, 0,t_beat*2,t_beat*3,172));
-            loader.CreateBullet(beat_time(b_offset+0.5f), BulletData(box_right-100 , box_down+250, 0, 0,t_beat*2,t_beat*3,172));
-            loader.CreateBullet(beat_time(b_offset+1.f), BulletData(box_left+100 , box_down+500, 0, 0,t_beat*2,t_beat*3,172));
-        }
-
-        for (int j=0; j < 8; j++)
-        {
-            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
-        }
-
-        if (i==2)
-        {
-            loader.CreateBullet(beat_time(b_offset+1.5f), BulletData(box_right-100 , box_down+500, 0, 0,t_beat*2,t_beat*3,172));
-        }
-    }
-
-    b_offset+=2.f;
-
-    for (int i=0; i < 4; i++, b_offset+=2.0f)
-    {
-        float randX;
-        if (i%2==0) randX = box_left + rand_float(50,200);
-        else randX = box_right - rand_float(50,200);
-        float randAcc = -rand_float(1000,5000);
-        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
-        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
-
-        if (i==2)
-        {
-            loader.CreateBullet(beat_time(b_offset+0.f), BulletData(Game::HALF_WIDTH, box_down + 100, 0, 180, t_beat*2,t_beat*3, 164));
-            loader.CreateBullet(beat_time(b_offset+0.33f), BulletData(-Game::HALF_WIDTH, box_down + 200, 0, 0, t_beat*2,t_beat*3, 164));
-            loader.CreateBullet(beat_time(b_offset+0.67f), BulletData(Game::HALF_WIDTH, box_down + 300, 0, 180, t_beat*2,t_beat*3, 164));
-        }
-
-        for (int j=0; j < 8; j++)
-        {
-            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
-        }
-
-        if (i==2)
-        {
-            loader.CreateBullet(beat_time(b_offset+1.f), BulletData(-Game::HALF_WIDTH, box_down + 400, 0, 0, t_beat*2,t_beat*3, 164));
-            loader.CreateBullet(beat_time(b_offset+1.33f), BulletData(Game::HALF_WIDTH, box_down + 500, 0, 180, t_beat*2,t_beat*3, 164));
-            loader.CreateBullet(beat_time(b_offset+1.67f), BulletData(-Game::HALF_WIDTH, box_down + 600, 0, 0, t_beat*2,t_beat*3, 164));
-        }
-    }
-
-    b_offset+=2.f;
-
-    for (int i=0; i < 3; i++, b_offset+=2.0f)
-    {
-        float randX;
-        if (i%2==0) randX = box_left + rand_float(50,200);
-        else randX = box_right - rand_float(50,200);
-        float randAcc = -rand_float(1000,5000);
-        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
-        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
-
-        if (i==1 || i==2)
-        {
-            for (int tof = 0; tof < 8; tof++)
-            {
-                loader.CreateBullet(beat_time(b_offset) + 40*tof,BulletData(0 , box_up, 500, static_cast<float>(-155 + tof*15),0,5000,100));
-            }
-        }
-
-        for (int j=0; j < 8; j++)
-        {
-            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
-        }
-
-        if (i==1 || i==2)
-        {
-            for (int tof = 0; tof < 8; tof++)
-            {
-                loader.CreateBullet(beat_time(b_offset+1) + 40*tof,BulletData(0 , box_up, 500, static_cast<float>(-15 - tof*15),0,5000,100));
-            }
-        }
-    }
-
-    b_offset+=2.f;
-
-    for (int i=0; i < 2; i++, b_offset+=2.0f)
-    {
-        float randX;
-        if (i%2==0) randX = box_left + rand_float(50,200);
-        else randX = box_right - rand_float(50,200);
-        float randAcc = -rand_float(1000,5000);
-        loader.CreateBullet(beat_time(b_offset),BulletData(randX , -Game::HALF_HEIGHT, 10000, 90, randAcc,0,0,t_beat,25));
-        float bomb_y = -Game::HALF_HEIGHT/4 + randAcc/20;
-        for (int j=0; j < 8; j++)
-        {
-            loader.CreateBullet(beat_time(b_offset+1),BulletData(randX , bomb_y, 400, (float)j*45, 0,0,0,5000,1));
-        }
-    }
-
-    return (loader);
-}
-
 inline Game::Battle::LevelData create_level1_chartdata()
 {
     Game::Battle::BpmInfo bpm;
@@ -359,44 +64,6 @@ inline Game::Battle::LevelData create_level1_chartdata()
     bpm,
     std::vector<Game::Battle::Difficulty>(), 142000
     );
-}
-
-Game::Battle::ChartData Scene::DemoGame::create_note_test()
-{
-    Game::Battle::ChartData chart;
-
-    for (int lane = 0; lane < 4; ++lane)
-    {
-        chart.lanes[lane].lane_number = lane;
-        chart.lanes[lane].notes.clear();
-        chart.lanes[lane].current_note = 0;
-    }
-
-    // chart.lanes[0].notes.emplace_back(false, 5000 + 7500, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[1].notes.emplace_back(false, 5000 + 8000, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[2].notes.emplace_back(false, 5000 + 8500, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[3].notes.emplace_back(false, 5000 + 9000, 0, Game::Battle::RhythmType::NORMAL);
-    // chart.lanes[0].notes.emplace_back(false, 5000 + 9500, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[1].notes.emplace_back(false, 5000 + 10000, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[2].notes.emplace_back(false, 5000 + 10500, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[3].notes.emplace_back(false, 5000 + 11000, 0, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[0].notes.emplace_back(true, 5000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
-    // chart.lanes[3].notes.emplace_back(true, 5000 + 12000, 8000 + 13000, Game::Battle::RhythmType::ACCENT);
-    //
-    // for (int i=0;i<80;i++)
-    // {
-    //     chart.lanes[1].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::NORMAL);
-    //     if (i>12)
-    //     {
-    //         if (i%8==0)
-    //             chart.lanes[0].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::ACCENT);
-    //         if (i%8==4)
-    //             chart.lanes[3].notes.emplace_back(false, 30000 + i*100, 0, Game::Battle::RhythmType::ACCENT);
-    //     }
-    //     if (i==60) chart.lanes[2].notes.emplace_back(true, 30000 + i*100, 25000 + 80*100, Game::Battle::RhythmType::ACCENT);
-    // }
-
-    return (chart);
 }
 
 Game::Render::Sprite Scene::assign_sprite(const int type)
@@ -508,6 +175,7 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
 
     init_graphics(tm);
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Demo.th0"};
 
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
@@ -521,10 +189,10 @@ std::shared_ptr<Scene::DemoGame::TaskManager> Scene::DemoGame::init()
     (
         Game::Battle::BattleState(200, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
-        Game::Battle::RhythmState(1, 500, 279, 5.0f, 5.0f),
-        read_bullet_data_from_file("ShotData.txt"),
-        create_bullet_test(),
-        create_pattern_container2(),
+        Game::Battle::RhythmState(1, 500, 247, 4.0f, 4.0f),
+        std::move(script.bullet_registry),
+        std::move(script.bullet_loader),
+        std::move(script.pattern_container),
         init_anim_data(),
         Game::Audio::init_sounds(),
         Game::Rhythm::KeyInput(),
