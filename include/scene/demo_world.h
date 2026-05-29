@@ -13,6 +13,8 @@ namespace Scene
         // declare scene parameters
         using ComponentTuple = std::tuple<
             Game::Input,
+            Game::BulletHell::Particle,
+            Game::World::LevelRegistry,
             Game::World::DialogueRegistry,
             Game::World::EventRegister,
             Game::World::SceneRegistry,
@@ -23,7 +25,6 @@ namespace Scene
             Game::World::GlobalState,
             Game::World::SaveState,
             Game::World::Interactable,
-            Game::World::LevelNode,
             Game::World::Player,
             Game::World::PlayerStat,
             Game::World::DialogueEvent,
@@ -45,6 +46,7 @@ namespace Scene
             Game::Render::Material,
             Game::Render::Text,
             Game::Render::Camera2D,
+            Game::Render::Resize,
             Game::Battle::BattleState
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
@@ -54,6 +56,7 @@ namespace Scene
             Game::World::load_scene_objects<Syscall>,
             Game::input_system<Syscall>,
             Game::World::player_move<Syscall>,
+            Game::BulletHell::particle_system<Syscall>,
             Game::BulletHell::acceleration_system<Syscall>,
             Game::BulletHell::rotation_system<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
@@ -63,11 +66,13 @@ namespace Scene
             Game::World::dialogue_system<Syscall>,
             Game::World::dialogue_box_system<Syscall>,
             Game::World::lock_event_system<Syscall>,
+            Game::World::level_node_system<Syscall>,
             Game::World::event_system<Syscall>,
             // Game::World::logging_system<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::draw_sprite<Syscall>,
-            Game::Render::draw_text<Syscall>
+            Game::Render::draw_text<Syscall>,
+            Game::Render::resize_system<Syscall>
             // Game::Test::draw_collider<Syscall>
             >;
 

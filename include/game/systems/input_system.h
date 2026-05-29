@@ -31,6 +31,10 @@ namespace Game
 
         auto &input_c = input.front().get<Input>();
 
+        input_c.left_pressed = get_key_state(LEFT) && !input_c.left_held;
+        input_c.left_held = get_key_state(LEFT);
+        input_c.right_pressed = get_key_state(RIGHT) && !input_c.right_held;
+        input_c.right_held = get_key_state(RIGHT);
         input_c.up_pressed = get_key_state(UP) && !input_c.up_held;
         input_c.up_held = get_key_state(UP);
         input_c.down_pressed = get_key_state(DOWN) && !input_c.down_held;

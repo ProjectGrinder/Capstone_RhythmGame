@@ -22,8 +22,12 @@ namespace Game::World
 
     struct LevelNodeEvent
     {
-        System::ECS::pid level_node_id =  INVALID_PID;
         uint16_t id;
+        uint8_t selection = 1;
+        uint8_t diff = 0;
+        System::ECS::pid level_node_box_pid = INVALID_PID;
+        std::vector<System::ECS::pid> level_node_texts_pid;
+        System::ECS::pid select_rect_pid = INVALID_PID;
         LevelNodeEvent() = default;
         explicit LevelNodeEvent(const uint16_t id) : id(id) {}
     };

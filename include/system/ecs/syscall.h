@@ -88,6 +88,12 @@ namespace System::ECS
         {}
 
         template<typename Component>
+        Component& query(pid id)
+        {
+            return _rm.template query<Component>().get(id);
+        }
+
+        template<typename Component>
         void add_component(pid id, Component &&component)
         {
             using T = std::remove_cvref_t<Component>;

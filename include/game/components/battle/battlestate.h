@@ -60,7 +60,7 @@ namespace Game::Battle
         int level;
         Difficulty() : difficulty(LIGHT), level(1)
         {}
-        explicit Difficulty(const DifficultyType difficulty, const int level) :
+        Difficulty(const DifficultyType difficulty, const int level) :
             difficulty(difficulty), level(level)
         {}
         // max level 10
@@ -88,10 +88,9 @@ namespace Game::Battle
             float bpm;
         };
         std::vector<InfoPair> bpm_list;
-        unsigned int idx;
-        BpmInfo() : idx(0)
-        {}
-        explicit BpmInfo(const unsigned int idx) : idx(idx)
+        unsigned int idx = 0;
+        BpmInfo() = default;
+        BpmInfo(const std::vector<InfoPair> &bpm_list) : bpm_list(bpm_list)
         {}
     };
 

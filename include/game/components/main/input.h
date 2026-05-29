@@ -6,6 +6,10 @@ namespace Game
     {
         float axis_x;
         float axis_y;
+        bool left_pressed;
+        bool left_held;
+        bool right_pressed;
+        bool right_held;
         bool up_pressed;
         bool up_held;
         bool down_pressed;

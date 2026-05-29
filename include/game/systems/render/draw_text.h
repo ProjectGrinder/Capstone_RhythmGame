@@ -75,7 +75,7 @@ namespace Game::Render
 
             Transform new_transform = tra;
 
-            if (align == Center) new_transform.position.x += pen.x/2; // Should + with center text font size
+            if (align == Center) new_transform.position.x -= pen.x/2; // Should + with center text font size
             if (align == Right) new_transform.position.x -= pen.x;
 
             for (const auto [glyph_top_left, glyph_top_right, glyph_bottom_left, glyph_bottom_right, u0, u1, v0, v1] : graph_data)

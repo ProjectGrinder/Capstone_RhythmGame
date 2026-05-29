@@ -23,11 +23,13 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
     load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
 
     load_sprite("img/Square.dds", "Platform", 64, 64);
-    load_sprite("img/tripleT.dds", "Npc", 420, 420);
+    load_sprite("img/test.dds", "Npc", 420, 420);
 
     load_sprite("img/Square.dds", "Square", 64, 64);
     load_sprite("img/Square64px.dds", "Square64px", 64, 64);
     load_sprite("img/ring16px.dds", "ring16px", 72, 72);
+
+    load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 }
 
 Game::World::DialogueRegistry init_dialogue_registry()
@@ -48,8 +50,8 @@ Game::World::EventRegister init_event_registry()
     using namespace Game::World;
     EventRegister event_sequences = {
         {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), UnlockInputEvent(), ChangeNextEvent(1)},
-        {LockInputEvent(0b100), DialogueEvent(3), UnlockInputEvent(), ChangeNextEvent(2)},
-        {LockInputEvent(0b100), DialogueEvent(4), UnlockInputEvent()}
+        {LockInputEvent(0b100), DialogueEvent(3), UnlockInputEvent()},
+        {LockInputEvent(0b100), DialogueEvent(4), LevelNodeEvent(0), UnlockInputEvent()}
     };
     return { EventRegister(event_sequences) };
 }
@@ -107,6 +109,12 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
     tm->create_entity<Game::World::SaveState>(Game::World::SaveState());
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());
+    // LevelRegistry
+    // TODO : Move this to init at the start of the game
+    tm->create_entity<Game::World::LevelRegistry>({{
+        Game::Battle::LevelData("A World Without You", "Nakuya", "Digital Jpop", 134.00f,
+        Game::Battle::BpmInfo({{0,134}}), {{Game::Battle::LIGHT,1},{Game::Battle::SPARK,3},{Game::Battle::BLAZE,5}}, 142000)
+    }});
 
     tm->create_entity<Game::World::Player, Rotation,
     Game::Render::Transform,
@@ -125,8 +133,52 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
 
 Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
+    // Fuck me
     LOG_INFO("Exiting DemoGame Scene.");
     free_assets(get_assets_id("Platform"));
     free_assets(get_assets_id("Npc"));
+
+    // ResourceManager rm;
+    //
+    // // Should have something like. Permanent Container that run this for every frame (Set something permanent)
+    // System::ECS::ResourceManager<
+    //         1000,
+    //         Game::Input,
+    //         Game::World::DialogueRegistry,
+    //         Game::World::EventRegister,
+    //         Game::World::SceneRegistry,
+    //         Game::World::Block,
+    //         Game::World::CameraAttractor,
+    //         Game::World::DialogueBox,
+    //         Game::World::EventState,
+    //         Game::World::GlobalState,
+    //         Game::World::SaveState,
+    //         Game::World::Interactable,
+    //         Game::World::Player,
+    //         Game::World::PlayerStat,
+    //         Game::World::DialogueEvent,
+    //         Game::World::CutSceneEvent,
+    //         Game::World::LockInputEvent,
+    //         Game::World::UnlockInputEvent,
+    //         Game::World::PanCameraEvent,
+    //         Game::World::SceneChangeEvent,
+    //         Game::World::LevelNodeEvent,
+    //         Game::World::ChangeNextEvent,
+    //         Acceleration,
+    //         Game::Physics::CircularCollider,
+    //         Game::Physics::RectangularCollider,
+    //         AngularVelocity,
+    //         Rotation,
+    //         Velocity,
+    //         Game::Render::Transform,
+    //         Game::Render::Sprite,
+    //         Game::Render::Material,
+    //         Game::Render::Text,
+    //         Game::Render::Camera2D,
+    //         Game::Battle::BattleState> // I have to add this just because I have to send this INFO???
+    //         *current = manager->get_rm();
+    // System::ECS::ResourcePool<1000, Game::World::SaveState> &pool = current->query<Game::World::SaveState>();
+
+
     return ResourceManager();
 }

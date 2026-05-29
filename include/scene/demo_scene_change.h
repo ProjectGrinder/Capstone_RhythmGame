@@ -1,6 +1,4 @@
 #pragma once
-#include "game.h"
-#include "system.h"
 #include "scene/scene_decl.h"
 
 namespace Scene
