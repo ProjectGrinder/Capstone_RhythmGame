@@ -549,7 +549,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     Game::Render::Transform, Game::Battle::Backdrop>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-Game::HALF_WIDTH, Game::HALF_HEIGHT, 0}, {Game::HALF_WIDTH, Game::HALF_HEIGHT, 0}, {Game::HALF_WIDTH, -Game::HALF_HEIGHT, 0}, {-Game::HALF_WIDTH, -Game::HALF_HEIGHT, 0}},
-            .color = {0, 0, 0, 0.4}, .layer = 1},
+            .color = {0, 0, 0, 0.4f}, .layer = 1},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         {0,-Game::HALF_HEIGHT*1/3},{});
 
