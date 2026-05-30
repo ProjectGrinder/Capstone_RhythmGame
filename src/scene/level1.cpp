@@ -544,6 +544,14 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square64px")), .pos = {{-Game::HALF_WIDTH, Game::HALF_HEIGHT, 0}, {Game::HALF_WIDTH, Game::HALF_HEIGHT, 0}, {Game::HALF_WIDTH, -Game::HALF_HEIGHT, 0}, {-Game::HALF_WIDTH, -Game::HALF_HEIGHT, 0}},.layer = 4},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         {0,-Game::HALF_HEIGHT*1/3},{});
+    tm->create_entity<Game::Render::Sprite,
+    Game::Render::Material,
+    Game::Render::Transform, Game::Battle::Backdrop>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-Game::HALF_WIDTH, Game::HALF_HEIGHT, 0}, {Game::HALF_WIDTH, Game::HALF_HEIGHT, 0}, {Game::HALF_WIDTH, -Game::HALF_HEIGHT, 0}, {-Game::HALF_WIDTH, -Game::HALF_HEIGHT, 0}},
+            .color = {0, 0, 0, 0.4}, .layer = 1},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        {0,-Game::HALF_HEIGHT*1/3},{});
 
     tm->create_entity<Game::BulletHell::Player,
     Game::Render::Transform,
@@ -553,7 +561,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
         {}, Game::Render::Transform(0,-240), {}, {}, {},
         Game::Physics::CircularCollider(12),
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Player_Sprite")),
-            .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 1,
+            .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 2,
             .u0 = 0.f, .v0 = 0.f, .u1 = 200.f/800.f, .v1 = 250.f/1500.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
         Game::Render::Animator{0}, Game::Render::Animation_Controller()

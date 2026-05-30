@@ -38,6 +38,7 @@ namespace Scene
             Game::Battle::BulletRegistry,
             Game::Battle::BulletLoader,
             Game::Battle::Border,
+            Game::Battle::Backdrop,
             Game::Battle::PatternContainer,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
