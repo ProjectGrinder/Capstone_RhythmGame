@@ -46,10 +46,11 @@ namespace Game::Rhythm
                 if (time_diff < catch_range && time_diff > -1 * catch_range)
                 {
                     const auto max_accept = battle_query.front().get<Battle::BattleState>().max_accept_gauge;
+                    const auto apn = battle_query.front().get<Battle::RhythmState>().apn;
 
                     battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
                     set_judge(PERFECT, judge_query);
-
+                    battle_query.front().get<Battle::RhythmState>().accuracy += apn;
                     create_note_effect(syscall, lane, PERFECT);
 
                     battle_query.front().get<Battle::BattleState>().hp += battle_query.front().get<Battle::RhythmState>().heal_hp;

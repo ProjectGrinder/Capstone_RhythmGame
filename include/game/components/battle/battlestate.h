@@ -169,9 +169,10 @@ namespace Game::Battle
         bool speed_change;
         float accuracy;
         float apn; // accuracy per note
+        std::string accuracy_text;
         AcceptLoss accept_loss;
         RhythmState() :
-            heal_hp(0), accept_gain(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false), accuracy(100.00f), apn(0.00f)
+            heal_hp(0), accept_gain(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false), accuracy(0.00f), apn(0.00f)
         {}
         RhythmState(
                 const int heal_hp,
@@ -185,7 +186,7 @@ namespace Game::Battle
             base_speed(base_speed),
             current_speed(current_speed),
             speed_change(false),
-            accuracy(100.00f),
+            accuracy(0.00f),
             apn(0.00f)
         {}
     };

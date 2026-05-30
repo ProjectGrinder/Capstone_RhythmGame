@@ -25,18 +25,19 @@ namespace Game::Rhythm
         // const auto timing = battle_query.front().get<Battle::BattleState>().clock_time;
         int heal_amount = battle_query.front().get<Battle::RhythmState>().heal_hp;
         int accept = battle_query.front().get<Battle::RhythmState>().accept_gain;
-        auto apn = battle_query.front().get<Battle::RhythmState>().apn;
+        const auto apn = battle_query.front().get<Battle::RhythmState>().apn;
         if (time_diff > -1 * perfect_judge && time_diff < perfect_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             set_judge(PERFECT, judge_query);
+            battle_query.front().get<Battle::RhythmState>().accuracy += apn;
             create_note_effect(syscall, lane->get<Lane>().lane_number, PERFECT);
         }
         else if (time_diff > -1 * great_judge && time_diff < great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
             set_judge(GREAT, judge_query);
-            battle_query.front().get<Battle::RhythmState>().accuracy -= apn / 4;
+            battle_query.front().get<Battle::RhythmState>().accuracy += apn * 3/4;
             create_note_effect(syscall, lane->get<Lane>().lane_number, GREAT);
         }
         else if (time_diff > -1 * fine_judge && time_diff < fine_judge)
@@ -45,7 +46,7 @@ namespace Game::Rhythm
             set_judge(FINE, judge_query);
             accept = accept / 2;
             heal_amount = 0;
-            battle_query.front().get<Battle::RhythmState>().accuracy -= apn / 2;
+            battle_query.front().get<Battle::RhythmState>().accuracy += apn / 2;
             create_note_effect(syscall, lane->get<Lane>().lane_number, FINE);
         }
         else return;
@@ -84,11 +85,13 @@ namespace Game::Rhythm
     {
 
         constexpr auto hit_judge = 100;
+        const auto apn = battle_query.front().get<Battle::RhythmState>().apn;
 
         if (time_diff > -1 * hit_judge && time_diff < hit_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             set_judge(PERFECT, judge_query);
+            battle_query.front().get<Battle::RhythmState>().accuracy += apn;
             create_note_effect(syscall, lane->get<Lane>().lane_number, PERFECT);
         }
         else return;

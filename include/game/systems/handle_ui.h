@@ -23,8 +23,32 @@ namespace Game::Battle
             if (comp.get<UIComponent>().type == Battle::AccuracyText)
             {
                 // TODO: make this into 2-place decimal
-                const int accuracy = static_cast<int>(state_query.front().get<RhythmState>().accuracy);
-                comp.get<Render::Text>().text = std::to_string(accuracy) + "%";
+                int accuracy = static_cast<int>(state_query.front().get<RhythmState>().accuracy);
+                if (accuracy > 10000)
+                    accuracy = 10000;
+
+                std::string acc_text = std::to_string(accuracy);
+                std::string final_text;
+
+                if (acc_text.empty())
+                    return;
+
+                if (acc_text.length() == 1)
+                {
+                    final_text = "0.0" + acc_text.append("%");
+                }
+                else if (acc_text.length() == 2)
+                {
+                    final_text = "0." + acc_text.append("%");
+                }
+                else
+                {
+                    std::string number = acc_text.substr(0, acc_text.length() - 2);
+                    std::string decimal = acc_text.substr(acc_text.length() - 2);
+                    final_text = number.append("." + decimal.append("%"));
+                }
+                comp.get<Render::Text>().text = final_text;
+                state_query.front().get<Battle::RhythmState>().accuracy_text = final_text;
             }
         }
     }

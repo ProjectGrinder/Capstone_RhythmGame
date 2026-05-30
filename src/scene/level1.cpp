@@ -358,7 +358,9 @@ inline Game::Battle::RhythmState create_rhythm_state(const int level)
     state.accept_loss.rain = 20;
     state.accept_loss.hold = 50;
     state.accept_loss.hold_end = 20;
-    state.apn = 100.00f / static_cast<float>(state.total_notes);
+
+    constexpr float full_accuracy = 10000.00f; // represent full 100.00%
+    state.apn = full_accuracy / static_cast<float>(state.total_notes);
     return (state);
 }
 
