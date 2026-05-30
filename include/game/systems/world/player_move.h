@@ -27,7 +27,11 @@ namespace Game::World
             else
                 comps.get<Acceleration>().ay = 0;
 
-            if (global_state.movementLocked) continue;
+            if (global_state.movementLocked)
+            {
+                comps.get<Velocity>().vx = 0;
+                continue;
+            }
 
             const float velocity_factor = (input.shift_held ? player_stat.run_speed : player_stat.walk_speed);
 

@@ -484,12 +484,26 @@ Scene::Level1 Scene::Level1::instance()
 
 std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
 {
+    ResourceManager rm;
+    const System::ECS::pid level_id = rm.reserve_process();
+    rm.add_resource(level_id, create_level1_chartdata());
+
+    const System::ECS::pid battle_id = rm.reserve_process();
+    rm.add_resource(battle_id, Game::Battle::BattleState(0,75,diff_list[0]));
+
+    return init(rm);
+}
+
+std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]] ResourceManager &data)
+{
     auto tm = std::make_shared<TaskManager>();
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
+    tm->create_entity<Game::World::SaveState>(std::move(data.query<Game::World::SaveState>().front()));
 
     init_graphics(tm);
 
-    constexpr int level = 2;
+    const Game::Battle::BattleState bt_state = data.query<Game::Battle::BattleState>().front();
+    const int level = bt_state.difficulty.difficulty;
 
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
@@ -500,7 +514,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     Game::Render::AnimationDataRegistry,
     Game::Audio::SoundRegistry>
     (
-        Game::Battle::BattleState(200, total_note_list[level]*5, diff_list[level]),
+        Game::Battle::BattleState{bt_state.max_hp, bt_state.max_accept_gauge, bt_state.difficulty},
         Game::Battle::BulletHellState(10),
         create_rhythm_state(level),
         read_bullet_data_from_file("dsl/ShotData.th0"),
@@ -564,7 +578,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
 
     tm->create_entity<Game::Rhythm::NoteField>(create_field());
-    tm->create_entity<Game::Battle::LevelData>(create_level1_chartdata());
+    tm->create_entity<Game::Battle::LevelData>(std::move(data.query<Game::Battle::LevelData>().front()));
 
     auto chart = create_level1_chart();
     auto field = create_field();

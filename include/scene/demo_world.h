@@ -47,7 +47,8 @@ namespace Scene
             Game::Render::Text,
             Game::Render::Camera2D,
             Game::Render::Resize,
-            Game::Battle::BattleState
+            Game::Battle::BattleState,
+            Game::Battle::LevelData
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;

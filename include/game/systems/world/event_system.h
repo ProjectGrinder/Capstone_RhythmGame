@@ -54,7 +54,7 @@ namespace Game::World
         if (query1.begin() == query1.end())
             return;
 
-        auto &[_,movementLocked, interactionLocked, menuLocked] = query1.front().components.get<GlobalState>();
+        auto &global = query1.front().components.get<GlobalState>();
 
         for (auto &[id, comps] : lock_query)
         {
@@ -62,13 +62,13 @@ namespace Game::World
             const auto &lock_input = comps.get<LockInputEvent>();
 
             if ((lock_input.lockBit & 4) > 0)
-                movementLocked = true;
+                global.movementLocked = true;
 
             if ((lock_input.lockBit & 2) > 0)
-                interactionLocked = true;
+                global.interactionLocked = true;
 
             if ((lock_input.lockBit & 1) > 0)
-                menuLocked = true;
+                global.menuLocked = true;
 
             LOG_INFO("Entity ID : %d",id);
 
@@ -82,13 +82,13 @@ namespace Game::World
             const auto &unlock_input = comps.get<UnlockInputEvent>();
 
             if ((unlock_input.lockBit & 4) > 0)
-                movementLocked = false;
+                global.movementLocked = false;
 
             if ((unlock_input.lockBit & 2) > 0)
-                interactionLocked = false;
+                global.interactionLocked = false;
 
             if ((unlock_input.lockBit & 1) > 0)
-                menuLocked = false;
+                global.menuLocked = false;
 
             event_state.has_event = false;
             syscall.template remove_component<UnlockInputEvent>(id);

@@ -194,6 +194,7 @@ namespace Game::Battle
         std::array<LaneInfo, 4> lanes;
     };
 
+    // TODO : Should include max_acceptance_gauge
     struct LevelData
     {
         std::string title;

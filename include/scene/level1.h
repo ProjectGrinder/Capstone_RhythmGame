@@ -84,7 +84,8 @@ namespace Scene
             Game::Rhythm::NoteEffect,
             Game::Audio::SoundRegistry,
             Game::Battle::TransitionText,
-            Game::World::GlobalState
+            Game::World::GlobalState,
+            Game::World::SaveState
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -143,11 +144,7 @@ namespace Scene
         // static Game::Battle::Difficulty set_difficulty(int level);
 
         static std::shared_ptr<TaskManager> init();
-
-        static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data)
-        {
-            return (init());
-        }
+        static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data);
         static ResourceManager exit(std::shared_ptr<TaskManager> &manager);
     };
 }

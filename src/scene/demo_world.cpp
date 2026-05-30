@@ -51,7 +51,7 @@ Game::World::EventRegister init_event_registry()
     EventRegister event_sequences = {
         {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), UnlockInputEvent(), ChangeNextEvent(1)},
         {LockInputEvent(0b100), DialogueEvent(3), UnlockInputEvent()},
-        {LockInputEvent(0b100), DialogueEvent(4), LevelNodeEvent(0), UnlockInputEvent()}
+        {LockInputEvent(0b100), LevelNodeEvent(0), UnlockInputEvent()}
     };
     return { EventRegister(event_sequences) };
 }
@@ -135,50 +135,35 @@ Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::s
 {
     // Fuck me
     LOG_INFO("Exiting DemoGame Scene.");
+
     free_assets(get_assets_id("Platform"));
     free_assets(get_assets_id("Npc"));
 
-    // ResourceManager rm;
-    //
-    // // Should have something like. Permanent Container that run this for every frame (Set something permanent)
-    // System::ECS::ResourceManager<
-    //         1000,
-    //         Game::Input,
-    //         Game::World::DialogueRegistry,
-    //         Game::World::EventRegister,
-    //         Game::World::SceneRegistry,
-    //         Game::World::Block,
-    //         Game::World::CameraAttractor,
-    //         Game::World::DialogueBox,
-    //         Game::World::EventState,
-    //         Game::World::GlobalState,
-    //         Game::World::SaveState,
-    //         Game::World::Interactable,
-    //         Game::World::Player,
-    //         Game::World::PlayerStat,
-    //         Game::World::DialogueEvent,
-    //         Game::World::CutSceneEvent,
-    //         Game::World::LockInputEvent,
-    //         Game::World::UnlockInputEvent,
-    //         Game::World::PanCameraEvent,
-    //         Game::World::SceneChangeEvent,
-    //         Game::World::LevelNodeEvent,
-    //         Game::World::ChangeNextEvent,
-    //         Acceleration,
-    //         Game::Physics::CircularCollider,
-    //         Game::Physics::RectangularCollider,
-    //         AngularVelocity,
-    //         Rotation,
-    //         Velocity,
-    //         Game::Render::Transform,
-    //         Game::Render::Sprite,
-    //         Game::Render::Material,
-    //         Game::Render::Text,
-    //         Game::Render::Camera2D,
-    //         Game::Battle::BattleState> // I have to add this just because I have to send this INFO???
-    //         *current = manager->get_rm();
-    // System::ECS::ResourcePool<1000, Game::World::SaveState> &pool = current->query<Game::World::SaveState>();
+    ResourceManager rm;
+    // Selected Level
+    if ( manager->get_rm()->query<Game::World::GlobalState>().begin() ==  manager->get_rm()->query<Game::World::GlobalState>().end()) LOG_ERROR("No global");
+    const Game::World::GlobalState global = manager->get_rm()->query<Game::World::GlobalState>().front();
+    const System::ECS::pid level_id = rm.reserve_process();
+    System::ECS::ResourcePool<1000, Game::World::LevelRegistry> &level_registry = manager->get_rm()->query<Game::World::LevelRegistry>();
+    if (level_registry.begin() == level_registry.end()) LOG_ERROR("Please dont happen");
+    const Game::Battle::LevelData level_data = level_registry.front().level_datas[global.level_selected];
+    rm.add_resource(level_id, Game::Battle::LevelData{
+        level_data.title,
+        level_data.artist_name,
+        level_data.genre_name,
+        level_data.main_bpm,
+        level_data.bpm_info,
+        level_data.difficulties,
+        level_data.duration
+    });
 
+    const System::ECS::pid battle_id = rm.reserve_process();
+    rm.add_resource(battle_id, Game::Battle::BattleState(200,75,level_data.difficulties[global.diff_selected]));
 
-    return ResourceManager();
+    // Should have something like. Permanent Container that run this for every frame (Set something permanent)
+    System::ECS::ResourcePool<1000, Game::World::SaveState> &save_state =  manager->get_rm()->query<Game::World::SaveState>();
+    for (auto [id, save]: save_state)
+        rm.add_resource(id, std::move(save));
+
+    return rm;
 }

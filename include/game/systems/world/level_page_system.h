@@ -100,6 +100,7 @@ namespace Game::World
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Input> &input_query,
             System::ECS::Query<LevelRegistry> &level_reg_query,
+            System::ECS::Query<GlobalState> &global_query,
             System::ECS::Query<EventState, LevelNodeEvent> &query1)
     {
         if (input_query.begin() == input_query.end())
@@ -107,20 +108,31 @@ namespace Game::World
 
         const auto &input = input_query.front().components.get<Input>();
         const auto &level_registry = level_reg_query.front().components.get<LevelRegistry>();
+        auto &global = global_query.front().components.get<GlobalState>();
 
         for (auto &[id, comps] : query1)
         {
             auto &level_node = comps.get<LevelNodeEvent>();
             const auto &level_data = level_registry.level_datas[level_node.id];
 
-            if (level_node.level_node_box_pid == INVALID_PID) create_level_page(syscall, level_node, level_data);
+            if (level_node.level_node_box_pid == INVALID_PID)
+            {
+                global.level_selected = level_node.id;
+                create_level_page(syscall, level_node, level_data);
+            }
 
             auto &level_info = level_registry.level_datas[level_node.id];
             if (input.x_pressed || input.escape_pressed || (input.z_pressed && level_node.selection == 0))
+            {
                 destroy_level_node(syscall,id, level_node, comps.get<EventState>());
+                global.level_selected = -1;
+                global.diff_selected = -1;
+            }
+
 
             if (input.z_pressed && level_node.selection == 1)
             {
+                global.diff_selected = level_node.diff;
                 Scene::queue_change_scene<Scene::Level1>();
                 destroy_level_node(syscall,id, level_node, comps.get<EventState>());
             }
