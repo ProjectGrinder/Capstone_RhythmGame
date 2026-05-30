@@ -168,6 +168,9 @@ assets_id get_assets_id(const char *name)
     size_t i = 0;
     for (; i < record_index; ++i)
     {
+        if (id_map[i].id == (uint32_t) -1)
+            continue;
+
         if (strcmp(name, id_map[i].name) == 0)
             return id_map[i].id;
     }
