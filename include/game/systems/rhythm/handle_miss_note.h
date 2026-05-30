@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/components.h"
+#include "update_judge_text.h"
 
 namespace Game::Rhythm
 {
@@ -13,7 +14,7 @@ namespace Game::Rhythm
             System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Material, Sprite> &note_query,
             System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
             System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
-            System::ECS::Query<JudgeText> &judge_query)
+            System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -90,8 +91,7 @@ namespace Game::Rhythm
                 }
                 comp.get<NoteStatus>().state = -1;
                 comp.get<Material>().visible = false;
-                judge_query.front().get<JudgeText>().judge = MISS;
-                judge_query.front().get<JudgeText>().change = true;
+                set_judge(MISS, judge_query);
                 battle_query.front().get<Battle::RhythmState>().accuracy -= apn;
                 if (battle_query.front().get<Battle::BattleState>().current_accept < 0)
                     battle_query.front().get<Battle::BattleState>().current_accept = 0;

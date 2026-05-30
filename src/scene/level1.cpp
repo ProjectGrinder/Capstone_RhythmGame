@@ -39,6 +39,7 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_sprite("img/rhythm/base_hold.dds", "hold", 100, 960);
     load_sprite("img/rhythm/base_hold_disabled.dds", "hold_disabled", 100, 960);
     load_sprite("img/rhythm/note_border.dds", "note_border", 200, 40);
+    load_sprite("img/rhythm/judge_text.dds", "judge", 1280, 640);
 
     load_sprite("img/return.dds", "return", 1280, 720);
 
@@ -601,15 +602,21 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
            Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
 
     tm->create_entity<Game::Rhythm::JudgeText,
-    Game::Render::Text,
+    Game::Render::Sprite,
     Game::Render::Material,
     Game::Render::Transform>
     (
         Game::Rhythm::JudgeText(),
-        Game::Render::Text{.font = font, .text = "", .layer = 100},
+        Game::Render::Sprite{
+            .sp = get_assets_record_ptr(get_assets_id("judge")),
+            .pos = {{-120, 30, 0}, {120, 30, 0}, {120, -30, 0}, {-120, -30, 0}},
+            .layer = 100,
+            .u0 = 0.5,
+            .v0 = 0.5,
+            .u1 = 1,
+            .v1 = 0.75},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 2 / 3, 0}, 0, 0, 0}
-        );
+        Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 7/10, 0}, 0, 0, 0});
 
     tm->create_entity<
     Game::Render::Text,

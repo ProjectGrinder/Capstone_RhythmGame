@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/components.h"
+#include "update_judge_text.h"
 #include "utils/print_debug.h"
 
 namespace Game::Rhythm
@@ -15,7 +16,7 @@ namespace Game::Rhythm
         System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
         System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
         System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
-        System::ECS::Query<JudgeText> &judge_query)
+        System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query)
     {
         constexpr auto perfect_judge = -100;
         constexpr auto great_judge = -250;
@@ -28,8 +29,7 @@ namespace Game::Rhythm
         if (time_diff > perfect_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-            judge_query.front().get<JudgeText>().judge = PERFECT;
-            judge_query.front().get<JudgeText>().change = true;
+            set_judge(PERFECT, judge_query);
             create_note_effect(syscall, lane->get<Lane>().lane_number, PERFECT);
 
             battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
@@ -44,8 +44,7 @@ namespace Game::Rhythm
         else if (time_diff > great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
-            judge_query.front().get<JudgeText>().judge = GREAT;
-            judge_query.front().get<JudgeText>().change = true;
+            set_judge(GREAT, judge_query);
             create_note_effect(syscall, lane->get<Lane>().lane_number, GREAT);
 
             battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
@@ -65,8 +64,7 @@ namespace Game::Rhythm
             if (battle_query.front().get<Battle::BattleState>().current_accept < 0)
                 battle_query.front().get<Battle::BattleState>().current_accept = 0;
 
-            judge_query.front().get<JudgeText>().judge = MISS;
-            judge_query.front().get<JudgeText>().change = true;
+            set_judge(MISS, judge_query);
             battle_query.front().get<Battle::RhythmState>().accuracy -= apn;
 
             for (auto &[id2, comp2] : hold_query)
@@ -101,9 +99,9 @@ namespace Game::Rhythm
         System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
         System::ECS::Query<KeyInput> &input_query,
         System::ECS::Query<Lane> &lane_query,
-        [[maybe_unused]] System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
-        [[maybe_unused]] System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
-        System::ECS::Query<JudgeText> &judge_query)
+        System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Render::Sprite> &note_query,
+        System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
+        System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
