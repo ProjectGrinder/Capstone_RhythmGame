@@ -83,6 +83,7 @@ namespace Scene
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
+            Game::Rhythm::LaneLine,
             Game::Rhythm::NoteEffect,
             Game::Audio::SoundRegistry,
             Game::Battle::TransitionText
@@ -98,6 +99,7 @@ namespace Scene
             Game::Battle::phase_border_change<Syscall>,
             Game::Battle::phase_player_change<Syscall>,
             Game::Battle::phase_judgement_change<Syscall>,
+            Game::Battle::phase_split_line<Syscall>,
             Game::BulletHell::load_bullets<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::movement_system<Syscall>,

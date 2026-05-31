@@ -163,4 +163,45 @@ namespace Game::Battle
             }
         }
     }
+
+    template<typename T>
+    void phase_split_line(
+        [[maybe_unused]] T &syscall,
+        System::ECS::Query<BattleState> &battle_query,
+        System::ECS::Query<TransitionData> &transition_query,
+        System::ECS::Query<Rhythm::LaneLine, Render::Sprite> &line_query
+        )
+    {
+        if (battle_query.begin() == battle_query.end())
+            return;
+
+        if (line_query.begin() == line_query.end())
+            return;
+
+        auto &battle_state = battle_query.front().get<BattleState>();
+
+        for (auto &[id, comps] : line_query)
+        {
+            auto &line_spr = comps.get<Render::Sprite>();
+            auto &pos = line_spr.pos;
+
+            for (auto &[id2, comps2] : transition_query)
+            {
+                const auto &transition_data = comps2.get<TransitionData>();
+                const float duration = static_cast<float>(transition_data.duration) * 1 / 3;
+                const float t = (battle_state.clock_time/1000 - transition_data.timing_start - duration*(3-transition_data.state))/duration;
+                // Changing state
+                if (transition_data.state == 3 && transition_data.phase == BULLET_HELL)
+                {
+                    pos[0].y = HALF_HEIGHT*2*(1-t);
+                    pos[1].y = HALF_HEIGHT*2*(1-t);
+                }
+                else if (transition_data.state == 1 && transition_data.phase == RHYTHM)
+                {
+                    pos[0].y = HALF_HEIGHT*2*t;
+                    pos[1].y = HALF_HEIGHT*2*t;
+                }
+            }
+        }
+    }
 } // namespace Game::Battle
