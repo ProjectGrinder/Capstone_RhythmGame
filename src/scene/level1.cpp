@@ -378,7 +378,6 @@ inline Game::Battle::LevelData create_level1_chartdata()
     return Game::Battle::LevelData(
     "A World Without You",
     "Nakuya",
-    "Digital Jpop",
     134.00f,
     bpm,
     diff_list, 142000
