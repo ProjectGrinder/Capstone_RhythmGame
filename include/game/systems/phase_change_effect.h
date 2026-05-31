@@ -146,18 +146,18 @@ namespace Game::Battle
             // Changing state
             if (transition_data.state == 3 && transition_data.phase == BULLET_HELL)
             {
-                pos[0] = {-500*(1-t),5,0};
-                pos[1] = {500*(1-t),5,0};
-                pos[2] = {500*(1-t),-5,0};
-                pos[3] = {-500*(1-t),-5,0};
+                pos[0] = {-JUDGE_LINE_WIDTH*(1-t),JUDGE_LINE_HEIGHT,0};
+                pos[1] = {JUDGE_LINE_WIDTH*(1-t),JUDGE_LINE_HEIGHT,0};
+                pos[2] = {JUDGE_LINE_WIDTH*(1-t),-JUDGE_LINE_HEIGHT,0};
+                pos[3] = {-JUDGE_LINE_WIDTH*(1-t),-JUDGE_LINE_HEIGHT,0};
                 judgement_spr.color.a = (1-t);
             }
             else if (transition_data.state == 1 && transition_data.phase == RHYTHM)
             {
-                pos[0] = {-500*t,5,0};
-                pos[1] = {500*t,5,0};
-                pos[2] = {500*t,-5,0};
-                pos[3] = {-500*t,-5,0};
+                pos[0] = {-JUDGE_LINE_WIDTH*t,JUDGE_LINE_HEIGHT,0};
+                pos[1] = {JUDGE_LINE_WIDTH*t,JUDGE_LINE_HEIGHT,0};
+                pos[2] = {JUDGE_LINE_WIDTH*t,-JUDGE_LINE_HEIGHT,0};
+                pos[3] = {-JUDGE_LINE_WIDTH*t,-JUDGE_LINE_HEIGHT,0};
                 judgement_spr.color.a = t;
 
             }

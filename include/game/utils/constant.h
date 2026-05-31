@@ -38,4 +38,8 @@ namespace Game
         {BOX_SIZE+HALF_HEIGHT/12,-BOX_SIZE-HALF_HEIGHT/4,0},
         {-BOX_SIZE-HALF_HEIGHT/12,-BOX_SIZE-HALF_HEIGHT/4,0}
     };
+
+    // for judgement line (half)
+    constexpr float JUDGE_LINE_WIDTH = 350.00f;
+    constexpr float JUDGE_LINE_HEIGHT = 5.00f;
 }

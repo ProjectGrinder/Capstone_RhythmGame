@@ -586,12 +586,12 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
 
     load_chart(tm, chart, field);
 
-    // temp judgement line
+    // judgement line
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::JudgementLine>
     (
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("normal")), .pos = {{-400, 10, 0}, {400, 10, 0}, {400, -10, 0}, {-400, -10, 0}},.color = {1,1,1,0}, .layer = 2},
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-350, 5, 0}, {350, 5, 0}, {350, -5, 0}, {-350, -5, 0}},.color = {1,1,1,0}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}
         );
