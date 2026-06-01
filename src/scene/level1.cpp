@@ -306,21 +306,21 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::LaneLine>
     (
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.1f}, .layer = 2},
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{(field.lane1_spawn+field.lane2_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::LaneLine>
     (
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.1f}, .layer = 2},
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{(field.lane2_spawn+field.lane3_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::LaneLine>
     (
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.1f}, .layer = 2},
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{(field.lane3_spawn+field.lane4_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
 
