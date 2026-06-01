@@ -14,6 +14,7 @@ target_link_libraries(os_scene
         PRIVATE
         scene
         renderer
+        dsl_reader
         user32
         gdi32
         kernel32

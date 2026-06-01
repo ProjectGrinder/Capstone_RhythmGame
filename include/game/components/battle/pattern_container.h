@@ -1,11 +1,14 @@
 #pragma once
+#include <array>
 
 namespace Game::Battle
 {
     enum PatternOp : uint8_t
     {
         OP_SET,
-        OP_ADD
+        OP_ADD,
+        OP_MULT,
+        OP_PARAM
     };
     constexpr size_t MAX_PATTERNS = 128;
     constexpr size_t MAX_PATTERN_SEQUENCE = 16;
@@ -45,6 +48,7 @@ namespace Game::Battle
         std::vector<PatternSequence> pattern_sequences;
         std::vector<PatternStep> pattern_steps;
 
+        PatternContainer() = default;
         PatternContainer(
             std::vector<PatternStep> steps,
             std::vector<PatternSequence> seqs)

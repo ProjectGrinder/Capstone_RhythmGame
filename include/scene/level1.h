@@ -136,8 +136,6 @@ namespace Scene
             Game::Battle::handle_text_ui<Syscall>
             >;
 
-        static Game::Battle::BulletLoader create_bullet_test();
-
         static void load_chart(
             std::shared_ptr<TaskManager> &tm,
             Game::Battle::ChartData &chart,

@@ -16,7 +16,7 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = DemoMenu;
+    using StartingScene = DemoGame;
 
     using SceneTuple = std::tuple<DemoMenu, Level1>;
     using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;
