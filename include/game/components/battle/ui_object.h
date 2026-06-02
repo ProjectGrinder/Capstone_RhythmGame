@@ -7,7 +7,8 @@ namespace Game::Battle
         HpBar,
         HPBarMax,
         GrazeText,
-        AccuracyText
+        AccuracyText,
+        StatBox
     };
 
     struct UIComponent

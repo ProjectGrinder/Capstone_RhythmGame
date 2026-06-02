@@ -355,14 +355,25 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 7/10, 0}, 0, 0, 0});
 
-    tm->create_entity<
+    tm->create_entity<Game::Battle::UIComponent,
+        Game::Render::Sprite,
+        Game::Render::Material,
+        Game::Render::Transform>
+    (
+        Game::Battle::UIComponent(Game::Battle::StatBox),
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-100, 30, 0}, {100, 30, 0}, {100, -30, 0}, {-150, -30, 0}}, .color = {1,1,1}, .layer = 50},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3, Game::HALF_HEIGHT * 1/10, 0}, 0, 0, 0});
+
+    tm->create_entity<Game::Battle::UIComponent,
     Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform>
     (
-        Game::Render::Text{.font = font, .text = "ACCURACY", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
+        Game::Battle::UIComponent(Game::Battle::StatBox),
+        Game::Render::Text{.font = font, .text = "ACCURACY", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
+        Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 75, Game::HALF_HEIGHT * 3/20 + 10, 0}, 0, 0, 0});
 
     tm->create_entity<Game::Battle::UIComponent,
     Game::Render::Text,
@@ -370,9 +381,49 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     Game::Render::Transform>
     (
         Game::Battle::UIComponent(Game::Battle::AccuracyText),
-        Game::Render::Text{.font = font, .text = "100%", .color = Math::Color{0, 0, 0, 1}, .layer = 5},
+        Game::Render::Text{.font = font, .text = "0.00%", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{500, Game::HALF_HEIGHT * 3/4, 0}, 0, 0, 0});
+        Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 75, Game::HALF_HEIGHT * 1/10 - 15, 0}, 0, 0, 0});
+
+    tm->create_entity<Game::Battle::UIComponent,
+        Game::Render::Sprite,
+        Game::Render::Material,
+        Game::Render::Transform>
+    (
+        Game::Battle::UIComponent(Game::Battle::StatBox),
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-100, 30, 0}, {100, 30, 0}, {100, -30, 0}, {-150, -30, 0}}, .color = {1,1,1}, .layer = 50},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3, Game::HALF_HEIGHT * -1/5, 0}, 0, 0, 0});
+
+    tm->create_entity<Game::Battle::UIComponent,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Battle::UIComponent(Game::Battle::StatBox),
+        Game::Render::Text{.font = font, .text = "GRAZE", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 75, Game::HALF_HEIGHT * -3/20 + 10, 0}, 0, 0, 0});
+
+    tm->create_entity<Game::Battle::UIComponent,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Battle::UIComponent(Game::Battle::GrazeText),
+        Game::Render::Text{.font = font, .text = "0", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 75, Game::HALF_HEIGHT * -1/5 - 15, 0}, 0, 0, 0});
+
+    tm->create_entity<Game::Battle::UIComponent,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Battle::UIComponent(Game::Battle::StatBox),
+        Game::Render::Text{.font = font, .text = "/ 20", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 35, Game::HALF_HEIGHT * -1/5 - 15, 0}, 0, 0, 0});
 
     tm->create_entity<Game::Battle::TransitionText,
     Game::Render::Text,
