@@ -22,7 +22,6 @@ namespace Game::Battle
         {
             if (comp.get<UIComponent>().type == Battle::AccuracyText)
             {
-                // TODO: make this into 2-place decimal
                 int accuracy = static_cast<int>(state_query.front().get<RhythmState>().accuracy);
                 if (accuracy > 10000)
                     accuracy = 10000;
@@ -49,6 +48,21 @@ namespace Game::Battle
                 }
                 comp.get<Render::Text>().text = final_text;
                 state_query.front().get<Battle::RhythmState>().accuracy_text = final_text;
+                if (accuracy == 100)
+                {
+                    comp.get<Render::Text>().color = Math::Color{0.6f, 1, 0.6f};
+                }
+            }
+
+            if (comp.get<UIComponent>().type == Battle::GrazeText)
+            {
+                const int graze = (state_query.front().get<BulletHellState>().graze);
+
+                comp.get<Render::Text>().text = std::to_string(graze);
+                if (graze >= 20)
+                {
+                    comp.get<Render::Text>().color = Math::Color{0.6f, 1, 0.6f};
+                }
             }
         }
     }
