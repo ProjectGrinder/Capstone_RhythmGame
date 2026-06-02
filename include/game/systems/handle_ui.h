@@ -50,7 +50,7 @@ namespace Game::Battle
                 state_query.front().get<Battle::RhythmState>().accuracy_text = final_text;
                 if (accuracy == 100)
                 {
-                    comp.get<Render::Text>().color = Math::Color{0.6f, 1, 0.6f};
+                    comp.get<Render::Text>().color = Math::Color{0.3f, 1, 0.3f};
                 }
             }
 
@@ -59,9 +59,9 @@ namespace Game::Battle
                 const int graze = (state_query.front().get<BulletHellState>().graze);
 
                 comp.get<Render::Text>().text = std::to_string(graze);
-                if (graze >= 20)
+                if (graze >= 0)
                 {
-                    comp.get<Render::Text>().color = Math::Color{0.6f, 1, 0.6f};
+                    comp.get<Render::Text>().color = Math::Color{0.3f, 1, 0.3f};
                 }
             }
         }

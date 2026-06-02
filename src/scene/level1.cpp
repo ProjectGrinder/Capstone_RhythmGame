@@ -435,6 +435,45 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{0, Game::HALF_HEIGHT * 4/5, 0, 0, 0, 2.5f,2.5f,1});
 
+    // key for each lane
+    // not sure how to keybind it
+    tm->create_entity<Game::Rhythm::KeyText,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Rhythm::KeyText(),
+        Game::Render::Text{.font = font, .text = "S", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Game::LANE1, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1});
+    tm->create_entity<Game::Rhythm::KeyText,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Rhythm::KeyText(),
+        Game::Render::Text{.font = font, .text = "D", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Game::LANE2, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1});
+    tm->create_entity<Game::Rhythm::KeyText,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Rhythm::KeyText(),
+        Game::Render::Text{.font = font, .text = "L", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Game::LANE3, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1,1});
+    tm->create_entity<Game::Rhythm::KeyText,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Rhythm::KeyText(),
+        Game::Render::Text{.font = font, .text = ";", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1});
+
     return (tm);
 }
 

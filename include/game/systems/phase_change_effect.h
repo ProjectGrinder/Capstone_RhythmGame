@@ -175,9 +175,6 @@ namespace Game::Battle
         if (battle_query.begin() == battle_query.end())
             return;
 
-        if (line_query.begin() == line_query.end())
-            return;
-
         auto &battle_state = battle_query.front().get<BattleState>();
 
         for (auto &[id, comps] : line_query)
@@ -200,6 +197,42 @@ namespace Game::Battle
                 {
                     pos[0].y = HALF_HEIGHT*2*t;
                     pos[1].y = HALF_HEIGHT*2*t;
+                }
+            }
+        }
+    }
+
+    template<typename T>
+    void phase_lane_key_text(
+        [[maybe_unused]] T &syscall,
+        System::ECS::Query<BattleState> &battle_query,
+        System::ECS::Query<TransitionData> &transition_query,
+        System::ECS::Query<Rhythm::KeyText, Render::Text> &text_query
+        )
+    {
+        if (battle_query.begin() == battle_query.end())
+            return;
+
+        auto &battle_state = battle_query.front().get<BattleState>();
+
+        for (auto &[id, comps] : text_query)
+        {
+            auto &text = comps.get<Render::Text>();
+
+            for (auto &[id2, comps2] : transition_query)
+            {
+                constexpr float text_alpha = 0.7f;
+                const auto &transition_data = comps2.get<TransitionData>();
+                const float duration = static_cast<float>(transition_data.duration) * 1 / 3;
+                const float t = (battle_state.clock_time/1000 - transition_data.timing_start - duration*(3-transition_data.state))/duration * text_alpha;
+                // Changing state
+                if (transition_data.state == 3 && transition_data.phase == BULLET_HELL)
+                {
+                    text.color.a = text_alpha - t;
+                }
+                else if (transition_data.state == 1 && transition_data.phase == RHYTHM)
+                {
+                    text.color.a = t;
                 }
             }
         }
