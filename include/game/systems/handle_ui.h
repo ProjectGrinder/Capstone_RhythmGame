@@ -13,7 +13,8 @@ namespace Game::Battle
     void handle_text_ui(
         [[maybe_unused]] T &syscall,
         System::ECS::Query<BattleState, BulletHellState, RhythmState> &state_query,
-        System::ECS::Query<UIComponent, Render::Text> &ui_query)
+        System::ECS::Query<UIComponent, Render::Text> &ui_query,
+        System::ECS::Query<LevelData> &level_data)
     {
         if (state_query.begin() == state_query.end())
             return;
@@ -62,6 +63,39 @@ namespace Game::Battle
                 if (graze >= 0)
                 {
                     comp.get<Render::Text>().color = Math::Color{0.3f, 1, 0.3f};
+                }
+            }
+
+            if (comp.get<UIComponent>().type == Battle::LevelDiff)
+            {
+                if (level_data.begin() == level_data.end())
+                    continue;
+
+                const auto level = level_data.front().get<LevelData>().difficulty;
+                switch (level.difficulty)
+                {
+                    case LIGHT:
+                    comp.get<Render::Text>().text = "LIGHT " + std::to_string(level.level);
+                    comp.get<Render::Text>().color = Math::Color{0, 0.5f, 1};
+                    break;
+
+                    case SPARK:
+                    comp.get<Render::Text>().text = "SPARK " + std::to_string(level.level);
+                    comp.get<Render::Text>().color = Math::Color{1, 0.5f, 0};
+                    break;
+
+                    case BLAZE:
+                    comp.get<Render::Text>().text = "BLAZE " + std::to_string(level.level);
+                    comp.get<Render::Text>().color = Math::Color{1, 0, 0};
+                    break;
+
+                    case ASTRA:
+                    comp.get<Render::Text>().text = "ASTRA " + std::to_string(level.level);
+                    comp.get<Render::Text>().color = Math::Color{1, 0, 1};
+                    break;
+
+                    default:
+                    comp.get<Render::Text>().text = std::to_string(level.level);
                 }
             }
         }

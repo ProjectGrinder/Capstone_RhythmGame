@@ -68,7 +68,7 @@ inline Game::Battle::RhythmState create_rhythm_state(const int level)
     return (state);
 }
 
-inline Game::Battle::LevelData create_level1_chartdata()
+inline Game::Battle::LevelData create_level1_data(const int level)
 {
     Game::Battle::BpmInfo bpm;
     constexpr std::array timing_list = {17910, 66269, 123582};
@@ -84,7 +84,7 @@ inline Game::Battle::LevelData create_level1_chartdata()
     "Nakuya",
     134.00f,
     bpm,
-    diff_list, 142000
+    diff_list[level], 142000
     );
 }
 
@@ -284,7 +284,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
 
     tm->create_entity<Game::Rhythm::NoteField>(create_field());
-    tm->create_entity<Game::Battle::LevelData>(create_level1_chartdata());
+    tm->create_entity<Game::Battle::LevelData>(create_level1_data(level));
 
     auto chart = create_level1_chart();
     auto field = create_field();
@@ -354,6 +354,32 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
             .v1 = 0.75},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 7/10, 0}, 0, 0, 0});
+
+    tm->create_entity<
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Render::Text{.font = font, .text = "A World Without You", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 7/8, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
+    tm->create_entity<
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Render::Text{.font = font, .text = "Nakuya", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{-Game::HALF_WIDTH * 7/8, Game::HALF_HEIGHT * 11/15, 0, 0, 0, 0.8f, 0.8f, 0.8f});
+    tm->create_entity<Game::Battle::UIComponent,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Battle::UIComponent{Game::Battle::LevelDiff},
+        Game::Render::Text{.font = font, .text = "", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 7/8, Game::HALF_HEIGHT * 3/5, 0}, 0, 0, 0});
 
     tm->create_entity<Game::Battle::UIComponent,
         Game::Render::Sprite,

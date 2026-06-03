@@ -203,20 +203,20 @@ namespace Game::Battle
         std::string genre_name;
         float main_bpm;
         BpmInfo bpm_info;
-        std::vector<Difficulty> difficulties;
+        Difficulty difficulty;
         int duration;
         explicit LevelData(
                 std::string title,
                 std::string artist_name,
                 const float main_bpm,
                 BpmInfo bpm_info,
-                std::vector<Difficulty> difficulties,
+                const Difficulty difficulty,
                 const int duration) :
             title(std::move(title)),
             artist_name(std::move(artist_name)),
             main_bpm(main_bpm),
             bpm_info(std::move(bpm_info)),
-            difficulties(std::move(difficulties)),
+            difficulty(difficulty),
             duration(duration)
         {}
     };
