@@ -120,7 +120,7 @@ namespace Game::Battle
                     accept = max_accept;
 
                 const float accept_percent = static_cast<float>(accept)/static_cast<float>(max_accept);
-                const float end_bar_pos = BOX_RG_POS[1].x;
+                constexpr float end_bar_pos = 365.f;
                 const float remain_dest_x = -end_bar_pos + end_bar_pos*2*accept_percent;
 
                 comp.get<Render::Sprite>().pos[1].x = remain_dest_x;

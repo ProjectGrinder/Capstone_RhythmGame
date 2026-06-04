@@ -335,7 +335,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
 
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::AcceptBar},
-           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{Game::BOX_RG_POS[0].x, 20, 0}, {Game::BOX_RG_POS[1].x, 20, 0}, {Game::BOX_RG_POS[1].x, -20, 0}, {Game::BOX_RG_POS[0].x, -20, 0}}, .color = {0, 0.4f, 1}, .layer = 100},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-365, 20, 0}, {365, 20, 0}, {365, -20, 0}, {-365, -20, 0}}, .color = {0, 0.4f, 1}, .layer = 100},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
            Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 9/10, 0}, 0, 0, 0});
 
