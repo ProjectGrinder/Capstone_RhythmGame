@@ -6,6 +6,8 @@ namespace Game::Battle
     {
         HpBar,
         HPBarMax,
+        AcceptBar,
+        AcceptBarMax,
         GrazeText,
         AccuracyText,
         StatBox,

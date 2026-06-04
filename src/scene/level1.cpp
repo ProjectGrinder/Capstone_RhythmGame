@@ -32,6 +32,7 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_sprite("img/Square.dds", "Square", 64, 64);
     load_sprite("img/Square64px.dds", "Square64px", 64, 64);
     load_sprite("img/ring16px.dds", "ring16px", 72, 72);
+    load_sprite("img/gauge_bar.dds", "gauge", 960, 120);
 
     load_sprite("img/rhythm/base_accent.dds", "accent", 200, 40);
     load_sprite("img/rhythm/base_rain.dds", "rain", 200, 20);
@@ -327,14 +328,14 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 
     tm->create_entity(
-           Game::Battle::UIComponent{Game::Battle::HPBarMax},
-           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square64px")), .pos = {{-110, 12, 0}, {110, 12, 0}, {110, -12, 0}, {-110, -12, 0}}, .layer = 101},
+           Game::Battle::UIComponent{Game::Battle::AcceptBarMax},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("gauge")), .pos = {{-500, 20, 0}, {500, 20, 0}, {500, -20, 0}, {-500, -20, 0}}, .color = {0.7f, 0.7f, 0.7f}, .layer = 101},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
            Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 9/10, 0}, 0, 0, 0});
 
     tm->create_entity(
-           Game::Battle::UIComponent{Game::Battle::HpBar},
-           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-100, 10, 0}, {100, 10, 0}, {100, -10, 0}, {-100, -10, 0}}, .color = {0.2f,1,0.2f}, .layer = 100},
+           Game::Battle::UIComponent{Game::Battle::AcceptBar},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{Game::BOX_RG_POS[0].x, 20, 0}, {Game::BOX_RG_POS[1].x, 20, 0}, {Game::BOX_RG_POS[1].x, -20, 0}, {Game::BOX_RG_POS[0].x, -20, 0}}, .color = {0, 0.4f, 1}, .layer = 100},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
            Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 9/10, 0}, 0, 0, 0});
 

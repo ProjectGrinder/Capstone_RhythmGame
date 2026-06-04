@@ -112,16 +112,29 @@ namespace Game::Battle
 
         for (auto &[id, comp] : ui_query)
         {
-            if (comp.get<UIComponent>().type == Battle::HpBar)
+            if (comp.get<UIComponent>().type == Battle::AcceptBar)
             {
-                const auto hp = state_query.front().get<BattleState>().hp;
-                const auto max_hp = state_query.front().get<BattleState>().max_hp;
-                const float hp_remain_dest_x = -100.f + 200.f * static_cast<float>(hp)/static_cast<float>(max_hp);
+                auto accept = state_query.front().get<BattleState>().current_accept;
+                const auto max_accept = state_query.front().get<BattleState>().max_accept_gauge;
+                if (accept > max_accept)
+                    accept = max_accept;
 
-                comp.get<Render::Sprite>().pos[1] = {hp_remain_dest_x,10,0};
-                comp.get<Render::Sprite>().pos[2] = {hp_remain_dest_x,-10,0};
+                const float accept_percent = static_cast<float>(accept)/static_cast<float>(max_accept);
+                const float end_bar_pos = BOX_RG_POS[1].x;
+                const float remain_dest_x = -end_bar_pos + end_bar_pos*2*accept_percent;
+
+                comp.get<Render::Sprite>().pos[1].x = remain_dest_x;
+                comp.get<Render::Sprite>().pos[2].x = remain_dest_x;
+
+                if (accept_percent >= 0.7f)
+                {
+                    comp.get<Render::Sprite>().color = Math::Color{0, 0.9f, 1};
+                }
+                else
+                {
+                    comp.get<Render::Sprite>().color = Math::Color{0, 0.4f, 1};
+                }
             }
-            // TODO: add acceptance gauge
         }
     }
 
