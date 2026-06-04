@@ -9,6 +9,8 @@ namespace Game::Battle
         GrazeText,
         AccuracyText,
         StatBox,
+        SongTitle,
+        ArtistName,
         LevelDiff
     };
 

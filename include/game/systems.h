@@ -34,11 +34,11 @@
 #include "game/systems/rhythm/update_judge_text.h"
 #include "game/systems/rhythm/update_notes.h"
 // General Battle Part
-#include "game/systems/phase_change.h"
-#include "game/systems/phase_change_effect.h"
-#include "game/systems/global_clock.h"
-#include "game/systems/check_player_state.h"
-#include "systems/handle_ui.h"
+#include "game/systems/battle/global_clock.h"
+#include "systems/battle/check_player_state.h"
+#include "systems/battle/handle_ui.h"
+#include "systems/battle/phase_change.h"
+#include "systems/battle/phase_change_effect.h"
 // Main Menu Part
 
 // Rendering Part

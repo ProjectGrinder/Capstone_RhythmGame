@@ -355,19 +355,21 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 7/10, 0}, 0, 0, 0});
 
-    tm->create_entity<
+    tm->create_entity<Game::Battle::UIComponent,
     Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform>
     (
+        Game::Battle::UIComponent{Game::Battle::SongTitle},
         Game::Render::Text{.font = font, .text = "A World Without You", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 7/8, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
-    tm->create_entity<
+    tm->create_entity<Game::Battle::UIComponent,
     Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform>
     (
+        Game::Battle::UIComponent{Game::Battle::ArtistName},
         Game::Render::Text{.font = font, .text = "Nakuya", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{-Game::HALF_WIDTH * 7/8, Game::HALF_HEIGHT * 11/15, 0, 0, 0, 0.8f, 0.8f, 0.8f});
