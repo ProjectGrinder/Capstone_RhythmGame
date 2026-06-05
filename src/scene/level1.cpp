@@ -329,13 +329,19 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
 
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::AcceptBarMax},
-           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("gauge")), .pos = {{-500, 20, 0}, {500, 20, 0}, {500, -20, 0}, {-500, -20, 0}}, .color = {0.7f, 0.7f, 0.7f}, .layer = 101},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("gauge")), .pos = {{-500, 20, 0}, {500, 20, 0}, {500, -20, 0}, {-500, -20, 0}}, .color = {0.8f, 0.8f, 0.8f}, .layer = 101},
+           Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+           Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 9/10, 0}, 0, 0, 0});
+
+    tm->create_entity(
+           Game::Battle::UIComponent{Game::Battle::AcceptBarMax},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{144, 20, 0}, {148, 20, 0}, {148, -20, 0}, {144, -20, 0}}, .color = {0.9f, 0.9f, 0.9f}, .layer = 101},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
            Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 9/10, 0}, 0, 0, 0});
 
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::AcceptBar},
-           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-365, 20, 0}, {365, 20, 0}, {365, -20, 0}, {-365, -20, 0}}, .color = {0, 0.4f, 1}, .layer = 100},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-365, 20, 0}, {365, 20, 0}, {365, -20, 0}, {-365, -20, 0}}, .color = {0, 0.5f, 1}, .layer = 100},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
            Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 9/10, 0}, 0, 0, 0});
 

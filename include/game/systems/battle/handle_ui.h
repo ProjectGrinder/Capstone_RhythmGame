@@ -128,11 +128,11 @@ namespace Game::Battle
 
                 if (accept_percent >= 0.7f)
                 {
-                    comp.get<Render::Sprite>().color = Math::Color{0, 0.9f, 1};
+                    comp.get<Render::Sprite>().color = Math::Color{0, 0.8f, 0.9f};
                 }
                 else
                 {
-                    comp.get<Render::Sprite>().color = Math::Color{0, 0.4f, 1};
+                    comp.get<Render::Sprite>().color = Math::Color{0, 0.5f, 1};
                 }
             }
         }
