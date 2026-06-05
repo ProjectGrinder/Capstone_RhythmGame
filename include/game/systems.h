@@ -39,6 +39,7 @@
 #include "systems/battle/handle_ui.h"
 #include "systems/battle/phase_change.h"
 #include "systems/battle/phase_change_effect.h"
+#include "systems/battle/result_screen.h"
 // Main Menu Part
 
 // Rendering Part
