@@ -135,6 +135,18 @@ namespace Game::Battle
                     comp.get<Render::Sprite>().color = Math::Color{0, 0.5f, 1};
                 }
             }
+            if (comp.get<UIComponent>().type == Battle::HpBar)
+            {
+                const auto hp = state_query.front().get<BattleState>().hp;
+                const auto max_hp = state_query.front().get<BattleState>().max_hp;
+
+                const float hp_percent = static_cast<float>(hp)/static_cast<float>(max_hp);
+                constexpr float end_bar_pos = 150.f;
+                const float remain_dest_x = -end_bar_pos + end_bar_pos*2*hp_percent;
+
+                comp.get<Render::Sprite>().pos[1].x = remain_dest_x;
+                comp.get<Render::Sprite>().pos[2].x = remain_dest_x;
+            }
         }
     }
 

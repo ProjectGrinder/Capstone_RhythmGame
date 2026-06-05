@@ -1,5 +1,8 @@
 #pragma once
 #include "../../src/windows/windows_types.h"
+
+#define PI 3.1415927f
+
 namespace Game
 {
     extern "C" Window get_window_size();

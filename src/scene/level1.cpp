@@ -2,7 +2,6 @@
 
 #include "scene.h"
 #include "system.h"
-
 #include "game.h"
 #include "game/utils/Bullethell_DSL/bullet_script.h"
 
@@ -344,6 +343,18 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
            Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-365, 20, 0}, {365, 20, 0}, {365, -20, 0}, {-365, -20, 0}}, .color = {0, 0.5f, 1}, .layer = 100},
            Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
            Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 9/10, 0}, 0, 0, 0});
+
+    tm->create_entity(
+           Game::Battle::UIComponent{Game::Battle::HPBarMax},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("gauge")), .pos = {{-200, 25, 0}, {200, 25, 0}, {200, -25, 0}, {-200, -25, 0}}, .color = {1, 1, 1}, .layer = 101},
+           Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+           Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 4/5, 0, 0}, 0, 0, PI/2});
+
+    tm->create_entity(
+           Game::Battle::UIComponent{Game::Battle::HpBar},
+           Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-150, 25, 0}, {150, 25, 0}, {150, -25, 0}, {-150, -25, 0}}, .color = {0, 1, 0}, .layer = 100},
+           Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+           Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 4/5, 0, 0}, 0, 0, PI/2});
 
     tm->create_entity<Game::Rhythm::JudgeText,
     Game::Render::Sprite,
