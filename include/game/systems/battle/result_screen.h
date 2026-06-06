@@ -2,12 +2,12 @@
 
 namespace Game::Battle
 {
-    // enum Rank
-    // {
-    //     P,S,AA,A,BB,B,CC,C,D,F
-    // }; // double characters mean "+" (A+)
+    enum Rank
+    {
+        P,S,AA,A,BB,B,CC,C,D,F
+    }; // double characters mean "+" (A+)
 
-    inline Render::Sprite get_rank_sprite(
+    inline Rank calculate_rank(
         const int hit_count,
         const int graze,
         const float accuracy,
@@ -21,80 +21,44 @@ namespace Game::Battle
         if (accuracy_score < 0)
             accuracy_score = 0;
 
-        auto grade_spr = Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("rank")), .pos = {{-50, 50, 0}, {50, 50, 0}, {50, -50, 0}, {-50, -50, 0}}, .layer = 51};
-
         const float final_score = graze_score + accuracy_score - (static_cast<float>(hit_count) * 0.25f);
-        if (final_score >= 8) // P
+        if (final_score >= 8)
         {
-            grade_spr.u0 = 0;
-            grade_spr.v0 = 0;
-            grade_spr.u1 = 0.2f;
-            grade_spr.v1 = 0.5f;
+            return P;
         }
-        else if (final_score >= 7.5) // S
+        if (final_score >= 7.5)
         {
-            grade_spr.u0 = 0;
-            grade_spr.v0 = 0.5f;
-            grade_spr.u1 = 0.2f;
-            grade_spr.v1 = 1;
+            return S;
         }
-        else if (final_score >= 7) // A+
+        if (final_score >= 7)
         {
-            grade_spr.u0 = 0.2f;
-            grade_spr.v0 = 0;
-            grade_spr.u1 = 0.4f;
-            grade_spr.v1 = 0.5f;
+            return AA;
         }
-        else if (final_score >= 6.5) // A
+        if (final_score >= 6.5)
         {
-            grade_spr.u0 = 0.2f;
-            grade_spr.v0 = 0.5f;
-            grade_spr.u1 = 0.4f;
-            grade_spr.v1 = 1;
+            return A;
         }
-        else if (final_score >= 6) // B+
+        if (final_score >= 6)
         {
-            grade_spr.u0 = 0.4f;
-            grade_spr.v0 = 0;
-            grade_spr.u1 = 0.6f;
-            grade_spr.v1 = 0.5f;
+            return BB;
         }
-        else if (final_score >= 5) // B
+        if (final_score >= 5)
         {
-            grade_spr.u0 = 0.4f;
-            grade_spr.v0 = 0.5f;
-            grade_spr.u1 = 0.6f;
-            grade_spr.v1 = 1;
+            return B;
         }
-        else if (final_score >= 4) // C+
+        if (final_score >= 4)
         {
-            grade_spr.u0 = 0.6f;
-            grade_spr.v0 = 0;
-            grade_spr.u1 = 0.8f;
-            grade_spr.v1 = 0.5f;
+            return CC;
         }
-        else if (final_score >= 3) // C
+        if (final_score >= 3)
         {
-            grade_spr.u0 = 0.6f;
-            grade_spr.v0 = 0.5f;
-            grade_spr.u1 = 0.8f;
-            grade_spr.v1 = 1;
+            return C;
         }
-        else if (final_score <= 0 && player_state == FINISH) // F
+        if (final_score <= 0 && player_state == FINISH) // F
         {
-            grade_spr.u0 = 0.8f;
-            grade_spr.v0 = 0.5f;
-            grade_spr.u1 = 1;
-            grade_spr.v1 = 1;
+            return F;
         }
-        else // D
-        {
-            grade_spr.u0 = 0.8f;
-            grade_spr.v0 = 0;
-            grade_spr.u1 = 1;
-            grade_spr.v1 = 0.5f;
-        }
-        return grade_spr;
+        return D;
     }
     template<typename T>
     void create_result_ui(
@@ -136,7 +100,7 @@ namespace Game::Battle
             Render::Material,
             Render::Transform>
         (
-            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-240, 135, 0}, {240, 135, 0}, {240, -135, 0}, {-240, -135, 0}}, .layer = 50},
+            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-240, 135, 0}, {240, 135, 0}, {240, -175, 0}, {-240, -175, 0}}, .layer = 50},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{0, 0, 0}, 0, 0, 0});
         syscall.template create_entity<
@@ -220,20 +184,23 @@ namespace Game::Battle
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Miss " + std::to_string(battle_state.judgement_count.miss_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{0, -100, 0}, 0, 0, 0});
-        // syscall.template create_entity<
-        //     Render::Sprite,
-        //     Render::Material,
-        //     Render::Transform>
-        // (
-        //     Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("return")), .pos = {{-160, 90, 0}, {160, 90, 0}, {160, -90, 0}, {-160, -90, 0}}, .layer = 51},
-        //     Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        //     Render::Transform{Math::Point{0, -100, 0}, 0, 0, 0});
         syscall.template create_entity<
             Render::Sprite,
             Render::Material,
             Render::Transform>
         (
-            get_rank_sprite(4, bullet_state.graze, rhythm_state.accuracy, battle_state.player_state),
+            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("return")), .pos = {{-160, 90, 0}, {160, 90, 0}, {160, -90, 0}, {-160, -90, 0}}, .layer = 51},
+            Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+            Render::Transform{Math::Point{0, -150, 0}, 0, 0, 0});
+
+        const auto rank = calculate_rank(0, bullet_state.graze, rhythm_state.accuracy, battle_state.player_state);
+        syscall.template create_entity<
+            Render::Sprite,
+            Render::Material,
+            Render::Transform>
+        (
+            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("rank")), .pos = {{-50, 50, 0}, {50, 50, 0}, {50, -50, 0}, {-50, -50, 0}},
+                .layer = 51, .u0 = 0.1f*static_cast<float>(rank), .u1 = 0.1f*(static_cast<float>(rank)+1)},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{170, 70, 0}, 0, 0, 0});
     }

@@ -32,7 +32,7 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_sprite("img/Square64px.dds", "Square64px", 64, 64);
     load_sprite("img/ring16px.dds", "ring16px", 72, 72);
     load_sprite("img/gauge_bar.dds", "gauge", 960, 120);
-    load_sprite("img/letter_rank.dds", "rank", 1280, 512);
+    load_sprite("img/letter_rank.dds", "rank", 1280, 128);
 
     load_sprite("img/rhythm/base_accent.dds", "accent", 200, 40);
     load_sprite("img/rhythm/base_rain.dds", "rain", 200, 20);
