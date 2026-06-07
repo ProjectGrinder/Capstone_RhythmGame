@@ -12,7 +12,7 @@ namespace Game::Rhythm
         System::ECS::Query<Battle::BattleState> &battle_query,
         System::ECS::Query<KeyInput> &input_query,
         System::ECS::Query<Lane> &lane_query,
-        [[maybe_unused]] System::ECS::Query<HoldConnect, NoteStatus> &hold_query)
+        System::ECS::Query<HoldConnect, NoteStatus> &hold_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;

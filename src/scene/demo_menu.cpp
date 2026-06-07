@@ -66,7 +66,7 @@ std::shared_ptr<Scene::DemoMenu::TaskManager> Scene::DemoMenu::init()
     Game::Render::Material,
     Game::Render::Transform>
     (
-        Game::Render::Text{.font = font, .text = "MADE_IN:KAWA_ENGINE", .layer = 1},
+        Game::Render::Text{.font = font, .text = "Made in KAWA ENGINE", .layer = 1},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{-840, -480, 0}, 0, 0, 0});
 
@@ -74,7 +74,7 @@ std::shared_ptr<Scene::DemoMenu::TaskManager> Scene::DemoMenu::init()
     Game::Render::Material,
     Game::Render::Transform>
     (
-        Game::Render::Text{.font = font, .text = "DEVELOPED_BY:TEAM_TAKAYAMA", .layer = 1},
+        Game::Render::Text{.font = font, .text = "Developed by Team Takayama", .layer = 1},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{480, -480, 0}, 0, 0, 0});
 

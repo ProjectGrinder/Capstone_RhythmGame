@@ -96,8 +96,7 @@ namespace Game::Rhythm
     void update_notes(
         [[maybe_unused]] T &syscall,
         System::ECS::Query<Transform, Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
-        System::ECS::Query<Battle::BattleState> &battle_query,
-        System::ECS::Query<Battle::RhythmState> &rhythm_query,
+        System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
         System::ECS::Query<NoteField> &field_query,
         System::ECS::Query<HoldConnect, NoteStatus, Transform, Material, Sprite> &hold_query)
     {
@@ -110,22 +109,19 @@ namespace Game::Rhythm
         if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
             return;
 
-        if (rhythm_query.begin() == rhythm_query.end())
-            return;
-
         const auto frame_time = get_delta_time();
         const auto field = field_query.front().get<NoteField>();
-        const auto current_speed = rhythm_query.front().get<Battle::RhythmState>().current_speed;
+        const auto current_speed = battle_query.front().get<Battle::RhythmState>().current_speed;
         const auto height = field.spawn_level - field.judge_level;
         const float render_offset = field.move_time / current_speed; // speed 1 -> 5000 ms
         const auto clock_time = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
         constexpr float default_hold_height = 960.0f;
 
         // If speed change is detected, change note positions
-        if (rhythm_query.front().get<Battle::RhythmState>().speed_change)
+        if (battle_query.front().get<Battle::RhythmState>().speed_change)
         {
             handle_speed_change(render_offset, clock_time, note_query, hold_query, field, default_hold_height);
-            rhythm_query.front().get<Battle::RhythmState>().speed_change = false;
+            battle_query.front().get<Battle::RhythmState>().speed_change = false;
             return;
         }
         // Notes always move in constant speed

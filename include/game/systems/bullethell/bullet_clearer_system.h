@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../battle/global_clock.h"
 #include "game/components.h"
-#include "game/systems/global_clock.h"
 
 namespace Game::BulletHell
 {

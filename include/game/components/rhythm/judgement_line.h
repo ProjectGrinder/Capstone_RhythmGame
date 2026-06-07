@@ -2,6 +2,6 @@
 
 namespace Game::Rhythm
 {
-    struct JudgementLine //attached to combo text
-    {};
+    struct JudgementLine {};
+    struct LaneLine {};
 }

@@ -47,10 +47,10 @@ namespace Game::Battle
         constexpr auto Z = 0x5A;
         constexpr auto X = 0x58;
 
+        constexpr auto S = 0x53;
         constexpr auto D = 0x44;
-        constexpr auto F = 0x46;
-        constexpr auto J = 0x4A;
-        constexpr auto K = 0x4B;
+        constexpr auto L = 0x4C;
+        constexpr auto SEMICOLON = 0xBA;
 
         switch (query1.front().get<BattleState>().current_phase)
         {
@@ -75,7 +75,7 @@ namespace Game::Battle
             //     break;
             // }
 
-            if (get_key_state(D))
+            if (get_key_state(S))
             {
                 rhythm_input.front().get<Rhythm::KeyInput>().key1_hold = true;
                 if (!rhythm_input.front().get<Rhythm::KeyInput>().key1_pressed &&
@@ -101,7 +101,7 @@ namespace Game::Battle
                 }
             }
 
-            if (get_key_state(F))
+            if (get_key_state(D))
             {
                 rhythm_input.front().get<Rhythm::KeyInput>().key2_hold = true;
                 if (!rhythm_input.front().get<Rhythm::KeyInput>().key2_pressed &&
@@ -127,7 +127,7 @@ namespace Game::Battle
                 }
             }
 
-            if (get_key_state(J))
+            if (get_key_state(L))
             {
                 rhythm_input.front().get<Rhythm::KeyInput>().key3_hold = true;
                 if (!rhythm_input.front().get<Rhythm::KeyInput>().key3_pressed &&
@@ -153,7 +153,7 @@ namespace Game::Battle
                 }
             }
 
-            if (get_key_state(K))
+            if (get_key_state(SEMICOLON))
             {
                 rhythm_input.front().get<Rhythm::KeyInput>().key4_hold = true;
                 if (!rhythm_input.front().get<Rhythm::KeyInput>().key4_pressed &&

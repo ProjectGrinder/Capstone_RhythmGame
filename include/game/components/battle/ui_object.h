@@ -4,11 +4,16 @@ namespace Game::Battle
 {
     enum UIElements
     {
-        PhaseChangeText, // Text for now
         HpBar,
         HPBarMax,
+        AcceptBar,
+        AcceptBarMax,
         GrazeText,
-        ScoreText
+        AccuracyText,
+        StatBox,
+        SongTitle,
+        ArtistName,
+        LevelDiff
     };
 
     struct UIComponent

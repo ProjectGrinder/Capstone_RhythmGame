@@ -4,7 +4,6 @@
 #include "components/battle/bullet_data.h"
 #include "components/battle/border.h"
 #include "components/battle/pattern_container.h"
-#include "components/battle/score.h"
 #include "components/battle/transition_data.h"
 #include "components/battle/ui_object.h"
 
@@ -37,7 +36,6 @@
 #include "components/render/text.h"
 #include "components/render/transform.h"
 #include "components/render/triangle.h"
-#include "components/rhythm/combo.h"
 #include "components/rhythm/holdconnect.h"
 #include "components/rhythm/holdstart.h"
 #include "components/rhythm/judgement_line.h"
