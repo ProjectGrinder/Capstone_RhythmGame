@@ -16,7 +16,7 @@ namespace Game::Audio
             load_audio("audio/Anvil_hit.wav","sound_bullet_laser"),
             load_audio("audio/fishdam1.wav","sound_hit"),
             load_audio("audio/edm-clap-53.wav","base_note"),
-            load_audio("audio/VEC2 Percussion 32.wav","accent_fx"),
+            load_audio("audio/VEC1 Tamb 07.wav","accent_fx"),
             load_audio("audio/edm-hihat-12.wav","rain_note"),
             load_audio("audio/DemoSong.wav","DemoSong")
         };
