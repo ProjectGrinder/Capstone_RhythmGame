@@ -11,7 +11,7 @@ namespace Game::Rhythm
     void handle_rain_note(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
-            System::ECS::Query<KeyInput> &input_query,
+            System::ECS::Query<Input> &input_query,
             System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
             System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query,
             System::ECS::Query<Audio::SoundRegistry> &sound_query)
@@ -25,7 +25,7 @@ namespace Game::Rhythm
         if (input_query.begin() == input_query.end())
             return;
 
-        const auto key_input = input_query.front().get<KeyInput>();
+        const auto key_input = input_query.front().get<Input>();
 
         constexpr auto catch_range = 50;
 
@@ -36,10 +36,10 @@ namespace Game::Rhythm
 
             const int lane = comp.get<Timing>().lane;
 
-            if ((lane == 0 && key_input.key1_hold == true)
-            || (lane == 1 && key_input.key2_hold == true)
-            || (lane == 2 && key_input.key3_hold == true)
-            || (lane == 3 && key_input.key4_hold == true))
+            if ((lane == 0 && key_input.key1_held == true)
+            || (lane == 1 && key_input.key2_held == true)
+            || (lane == 2 && key_input.key3_held == true)
+            || (lane == 3 && key_input.key4_held == true))
             {
                 const auto time_diff = battle_query.front().get<Battle::BattleState>().clock_time / 1000 - comp.get<Timing>().timing;
 

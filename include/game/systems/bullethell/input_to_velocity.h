@@ -23,7 +23,7 @@ namespace Game::BulletHell
         for (auto &[id, comps] : query2)
         {
             const auto &input = query1.front().get<Input>();
-            float velocity_factor = (input.shift ? 200.f : 500.f);
+            float velocity_factor = (input.shift_held ? 200.f : 500.f);
 
             // Log timing
             if (input.z_pressed) LOG_INFO("Timing : %d", query3.front().get<Battle::BattleState>().clock_time/1000)

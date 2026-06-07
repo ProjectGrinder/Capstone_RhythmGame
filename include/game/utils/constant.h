@@ -45,4 +45,6 @@ namespace Game
     // for judgement line (half)
     constexpr float JUDGE_LINE_WIDTH = 350.00f;
     constexpr float JUDGE_LINE_HEIGHT = 5.00f;
+
+    constexpr float CAMERA_SPEED = 0.005f;
 }

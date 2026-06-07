@@ -13,8 +13,7 @@ namespace Game::Battle
     void handle_text_ui(
         [[maybe_unused]] T &syscall,
         System::ECS::Query<BattleState, BulletHellState, RhythmState> &state_query,
-        System::ECS::Query<UIComponent, Render::Text> &ui_query,
-        System::ECS::Query<LevelData> &level_data)
+        System::ECS::Query<UIComponent, Render::Text> &ui_query)
     {
         if (state_query.begin() == state_query.end())
             return;
@@ -66,12 +65,9 @@ namespace Game::Battle
                 }
             }
 
-            if (comp.get<UIComponent>().type == Battle::LevelDiff)
+            if (comp.get<UIComponent>().type ==LevelDiff)
             {
-                if (level_data.begin() == level_data.end())
-                    continue;
-
-                const auto level = level_data.front().get<LevelData>().difficulty;
+                const auto level = state_query.front().get<LevelData>().difficulty;
                 switch (level.difficulty)
                 {
                     case LIGHT:

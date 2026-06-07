@@ -124,7 +124,7 @@ namespace Game::Rhythm
         [[maybe_unused]] T &syscall,
         const int &lane_num, // assume that first lane is 0
         System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
-        System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
+        [[maybe_unused]] System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
         System::ECS::Query<Lane> &lane_query,
         System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query,
         const Audio::SoundRegistry &sound_registry)
@@ -164,7 +164,7 @@ namespace Game::Rhythm
     void handle_tap_note(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
-            System::ECS::Query<KeyInput> &input_query,
+            System::ECS::Query<Input> &input_query,
             System::ECS::Query<Lane> &lane_query,
             System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
             System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query,
@@ -183,7 +183,7 @@ namespace Game::Rhythm
         // If you need to adjust components or data structures you can ask what structures implement what data to
         // Midfield
 
-        const auto key_input = input_query.front().get<KeyInput>();
+        const auto key_input = input_query.front().get<Input>();
 
         if (key_input.key1_pressed == false && key_input.key2_pressed == false
             && key_input.key3_pressed == false && key_input.key4_pressed == false)

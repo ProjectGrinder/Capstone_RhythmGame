@@ -92,6 +92,15 @@ namespace System::ECS
             return (Iterator(this, _data.size()));
         }
 
+        auto &front()
+        {
+            return _data.front();
+        }
+        const auto &front() const
+        {
+            return _data.front();
+        }
+
         template<typename T>
             requires std::constructible_from<Resource, T &&>
         void add(pid id, T &&value)

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "game/components.h"
-#include "utils/print_debug.h"
 
 namespace Game::Rhythm
 {
@@ -10,7 +9,7 @@ namespace Game::Rhythm
     void set_holding_time(
         [[maybe_unused]] T &syscall,
         System::ECS::Query<Battle::BattleState> &battle_query,
-        System::ECS::Query<KeyInput> &input_query,
+        System::ECS::Query<Input> &input_query,
         System::ECS::Query<Lane> &lane_query,
         System::ECS::Query<HoldConnect, NoteStatus> &hold_query)
     {

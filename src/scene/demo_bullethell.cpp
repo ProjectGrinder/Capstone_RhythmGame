@@ -68,8 +68,7 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
     Game::Battle::BulletLoader,
     Game::Battle::PatternContainer,
     Game::Render::AnimationDataRegistry,
-    Game::Audio::SoundRegistry,
-    Game::Rhythm::KeyInput, Game::BulletHell::Input>
+    Game::Audio::SoundRegistry>
     (
         Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
@@ -77,10 +76,11 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
         init_anim_data(),
-        Game::Audio::init_sounds(),
-        Game::Rhythm::KeyInput(),
-        Game::BulletHell::Input()
+        Game::Audio::init_sounds()
         );
+
+    // InputManager
+    tm->create_entity<Game::Input>(Game::Input());
 
 
     auto hit_sound = load_audio("audio/fishdam1", "player_hit");

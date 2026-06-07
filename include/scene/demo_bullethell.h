@@ -19,6 +19,7 @@ namespace Scene
         constexpr static size_t MaxResource = 10000;
         // declare scene parameters
         using ComponentTuple = std::tuple<
+            Game::Input,
             Game::Battle::BattleState,
             Game::Battle::BulletHellState,
             Game::Battle::BulletRegistry,
@@ -31,8 +32,6 @@ namespace Scene
             Game::Battle::UIComponent,
             Game::BulletHell::Bullet,
             Game::BulletHell::BulletClearer,
-            Game::BulletHell::Input,
-            Game::Rhythm::KeyInput,
             Game::BulletHell::Player,
             Game::BulletHell::PlayerHitbox,
             Game::BulletHell::Pattern,
@@ -63,13 +62,14 @@ namespace Scene
             Game::Test::BulletCounter,
             Game::Test::GrazeText,
             Game::Test::LifeText,
+            Game::World::GlobalState,
             Game::Battle::TransitionText
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
             Game::BulletHell::load_bullets<Syscall>,
-            Game::Battle::input_system<Syscall>,
+            Game::input_system<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
             Game::BulletHell::acceleration_system<Syscall>,
@@ -87,7 +87,6 @@ namespace Scene
             Game::BulletHell::homing_pattern_system<Syscall>,
             // Game::BulletHell::logging_system<Syscall>,
             // Game::Test::draw_collider<Syscall>,
-            Game::Battle::update_global_clock<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::anim_transition_system<Syscall>,
             Game::Render::animation_system<Syscall>,
@@ -96,7 +95,8 @@ namespace Scene
             Game::Battle::handle_sprite_ui<Syscall>,
             Game::Battle::handle_text_ui<Syscall>,
             Game::Test::fps_counter<Syscall>,
-            Game::Render::flickering_system<Syscall>
+            Game::Render::flickering_system<Syscall>,
+            Game::update_global_clock<Syscall>
             >;
 
         static std::shared_ptr<TaskManager> init();

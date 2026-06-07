@@ -9,6 +9,7 @@
 #include "scene/demo_scene_change.h"
 #include "scene/level1.h"
 #include "scene/scene_decl.h"
+#include "scene/demo_world.h"
 #include "utils/print_debug.h"
 #include "utils/scene_utils.h"
 
@@ -16,9 +17,9 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = DemoMenu;
+    using StartingScene = DemoWorld;
 
-    using SceneTuple = std::tuple<DemoMenu, Level1>;
+    using SceneTuple = std::tuple<DemoMenu, Level1, DemoWorld>;
     using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;
     using TaskManagerVariant = Utils::make_task_manager_variant_t<SceneTuple>;
 

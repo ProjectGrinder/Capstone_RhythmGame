@@ -490,16 +490,15 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::RhythmState,
     Game::Battle::ChartData,
-    Game::Audio::SoundRegistry,
-    Game::Rhythm::KeyInput,
-    Game::BulletHell::Input>
+    Game::Audio::SoundRegistry>
     (
         create_battle_state(),
         create_rhythm_state(),
         create_demo_chart(),
-        Game::Audio::init_sounds(),
-        Game::Rhythm::KeyInput(),
-        Game::BulletHell::Input());
+        Game::Audio::init_sounds());
+
+    // InputManager
+    tm->create_entity<Game::Input>(Game::Input());
 
     // tm->create_entity<Game::Battle::LevelData>(create_level1_chartdata());
 

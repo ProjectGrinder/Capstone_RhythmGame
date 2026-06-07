@@ -46,11 +46,23 @@
 #include "systems/render/animation_system.h"
 #include "systems/bullethell/shaking_system.h"
 #include "systems/render/flickering_system.h"
+#include "systems/render/resize_system.h"
 // Render Intent
 #include "systems/render/draw_sprite.h"
 #include "systems/render/draw_text.h"
 #include "systems/render/draw_triangle.h"
 #include "systems/render/set_camera.h"
+
+
+// World Part
+#include "systems/world/camera_follow.h"
+#include "systems/world/detect_overlap.h"
+#include "systems/world/dialogue_system.h"
+#include "systems/world/event_system.h"
+#include "systems/world/level_page_system.h"
+#include "systems/world/logging_system.h"
+#include "systems/world/player_move.h"
+#include "systems/world/scene_load_system.h"
 
 // Test
 #include "systems/test/draw_collider.h"

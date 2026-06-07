@@ -60,8 +60,18 @@ namespace Game::Battle
         int level;
         Difficulty() : difficulty(LIGHT), level(1)
         {}
-        explicit Difficulty(const DifficultyType difficulty, const int level) :
+        Difficulty(const DifficultyType difficulty, const int level) :
             difficulty(difficulty), level(level)
+        {}
+        // max level 10
+    };
+
+    struct DifficultyList
+    {
+        std::vector<Difficulty> difficulties;
+        DifficultyList() = default;
+        DifficultyList(std::vector<Difficulty> difficulties) :
+            difficulties(std::move(difficulties))
         {}
         // max level 10
     };
@@ -88,10 +98,9 @@ namespace Game::Battle
             float bpm;
         };
         std::vector<InfoPair> bpm_list;
-        unsigned int idx;
-        BpmInfo() : idx(0)
-        {}
-        explicit BpmInfo(const unsigned int idx) : idx(idx)
+        unsigned int idx = 0;
+        BpmInfo() = default;
+        BpmInfo(const std::vector<InfoPair> &bpm_list) : bpm_list(bpm_list)
         {}
     };
 
@@ -196,6 +205,7 @@ namespace Game::Battle
         std::array<LaneInfo, 4> lanes;
     };
 
+    // TODO : Should include max_acceptance_gauge
     struct LevelData
     {
         std::string title;
@@ -203,20 +213,20 @@ namespace Game::Battle
         std::string genre_name;
         float main_bpm;
         BpmInfo bpm_info;
-        Difficulty difficulty;
+        DifficultyList difficulties;
         int duration;
         explicit LevelData(
                 std::string title,
                 std::string artist_name,
                 const float main_bpm,
                 BpmInfo bpm_info,
-                const Difficulty difficulty,
+                const DifficultyList difficulties,
                 const int duration) :
             title(std::move(title)),
             artist_name(std::move(artist_name)),
             main_bpm(main_bpm),
             bpm_info(std::move(bpm_info)),
-            difficulty(difficulty),
+            difficulties(difficulties),
             duration(duration)
         {}
     };
