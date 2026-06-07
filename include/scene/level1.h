@@ -39,6 +39,7 @@ namespace Scene
             Game::Battle::BulletRegistry,
             Game::Battle::BulletLoader,
             Game::Battle::Border,
+            Game::Battle::Backdrop,
             Game::Battle::PatternContainer,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
@@ -81,7 +82,9 @@ namespace Scene
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
+            Game::Rhythm::LaneLine,
             Game::Rhythm::NoteEffect,
+            Game::Rhythm::KeyText,
             Game::Audio::SoundRegistry,
             Game::Battle::TransitionText,
             Game::World::GlobalState,
@@ -98,6 +101,8 @@ namespace Scene
             Game::Battle::phase_border_change<Syscall>,
             Game::Battle::phase_player_change<Syscall>,
             Game::Battle::phase_judgement_change<Syscall>,
+            Game::Battle::phase_split_line<Syscall>,
+            Game::Battle::phase_lane_key_text<Syscall>,
             Game::BulletHell::load_bullets<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
@@ -133,8 +138,6 @@ namespace Scene
             Game::Battle::handle_sprite_ui<Syscall>,
             Game::Battle::handle_text_ui<Syscall>
             >;
-
-        static Game::Battle::BulletLoader create_bullet_test();
 
         static void load_chart(
             std::shared_ptr<TaskManager> &tm,

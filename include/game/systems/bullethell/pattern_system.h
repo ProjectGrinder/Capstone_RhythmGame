@@ -50,10 +50,7 @@ namespace Game::BulletHell
             }
 
             if (patt_c.delay > 0)
-            {
-                LOG_INFO("%d",patt_c.delay);
                 patt_c.delay -= static_cast<int>(get_delta_time());
-            }
 
             else
             {

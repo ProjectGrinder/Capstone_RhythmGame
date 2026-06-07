@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/components.h"
+#include "update_judge_text.h"
 #include "utils/print_debug.h"
 
 namespace Game::Rhythm
@@ -14,7 +15,7 @@ namespace Game::Rhythm
         System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
         System::ECS::Query<Lane>::StoredTuple *lane,
         System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
-        System::ECS::Query<JudgeText> &judge_query,
+        System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query,
         const Audio::SoundRegistry &sound_registry)
     {
         constexpr auto perfect_judge = 50;
@@ -24,27 +25,28 @@ namespace Game::Rhythm
         // const auto timing = battle_query.front().get<Battle::BattleState>().clock_time;
         int heal_amount = battle_query.front().get<Battle::RhythmState>().heal_hp;
         int accept = battle_query.front().get<Battle::RhythmState>().accept_gain;
-        auto apn = battle_query.front().get<Battle::RhythmState>().apn;
+        const auto apn = battle_query.front().get<Battle::RhythmState>().apn;
         if (time_diff > -1 * perfect_judge && time_diff < perfect_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-            judge_query.front().get<JudgeText>().judge = PERFECT;
+            set_judge(PERFECT, judge_query);
+            battle_query.front().get<Battle::RhythmState>().accuracy += apn;
             create_note_effect(syscall, lane->get<Lane>().lane_number, PERFECT);
         }
         else if (time_diff > -1 * great_judge && time_diff < great_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.great_count += 1;
-            judge_query.front().get<JudgeText>().judge = GREAT;
-            battle_query.front().get<Battle::RhythmState>().accuracy -= apn / 4;
+            set_judge(GREAT, judge_query);
+            battle_query.front().get<Battle::RhythmState>().accuracy += apn * 3/4;
             create_note_effect(syscall, lane->get<Lane>().lane_number, GREAT);
         }
         else if (time_diff > -1 * fine_judge && time_diff < fine_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.fine_count += 1;
-            judge_query.front().get<JudgeText>().judge = FINE;
+            set_judge(FINE, judge_query);
             accept = accept / 2;
             heal_amount = 0;
-            battle_query.front().get<Battle::RhythmState>().accuracy -= apn / 2;
+            battle_query.front().get<Battle::RhythmState>().accuracy += apn / 2;
             create_note_effect(syscall, lane->get<Lane>().lane_number, FINE);
         }
         else return;
@@ -59,8 +61,6 @@ namespace Game::Rhythm
         battle_query.front().get<Battle::BattleState>().current_accept += accept;
         if (battle_query.front().get<Battle::BattleState>().current_accept > max_accept)
             battle_query.front().get<Battle::BattleState>().current_accept = max_accept;
-
-        judge_query.front().get<JudgeText>().change = true;
 
         if (comp->get<HoldStart>().is_hold == true)
         {
@@ -80,17 +80,18 @@ namespace Game::Rhythm
         System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
         System::ECS::Query<Lane>::StoredTuple *lane,
         System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
-        System::ECS::Query<JudgeText> &judge_query,
+        System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query,
         const Audio::SoundRegistry &sound_registry)
     {
 
         constexpr auto hit_judge = 100;
+        const auto apn = battle_query.front().get<Battle::RhythmState>().apn;
 
         if (time_diff > -1 * hit_judge && time_diff < hit_judge)
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
-            judge_query.front().get<JudgeText>().judge = PERFECT;
-            judge_query.front().get<JudgeText>().change = true;
+            set_judge(PERFECT, judge_query);
+            battle_query.front().get<Battle::RhythmState>().accuracy += apn;
             create_note_effect(syscall, lane->get<Lane>().lane_number, PERFECT);
         }
         else return;
@@ -126,7 +127,7 @@ namespace Game::Rhythm
         [[maybe_unused]] System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
         [[maybe_unused]] System::ECS::Query<Input> &input_query,
         System::ECS::Query<Lane> &lane_query,
-        System::ECS::Query<JudgeText> &judge_query,
+        System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query,
         const Audio::SoundRegistry &sound_registry)
     {
         if (comp == nullptr) return;
@@ -165,9 +166,9 @@ namespace Game::Rhythm
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
             System::ECS::Query<Input> &input_query,
-            [[maybe_unused]] System::ECS::Query<Lane> &lane_query,
-            [[maybe_unused]] System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
-            System::ECS::Query<JudgeText> &judge_query,
+            System::ECS::Query<Lane> &lane_query,
+            System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
+            System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query,
             System::ECS::Query<Audio::SoundRegistry> &sound_query)
     {
         if (battle_query.begin() == battle_query.end())
@@ -237,19 +238,19 @@ namespace Game::Rhythm
         // Check if note is in hit range
         if (key_input.key1_pressed == true && note_comp1 != nullptr)
         {
-            handle_note_from_lane(syscall, 0, note_comp1, battle_query, input_query, lane_query, judge_query, sound_registry);
+            handle_note_from_lane(syscall, 0, note_comp1, battle_query, lane_query, judge_query, sound_registry);
         }
         if (key_input.key2_pressed == true && note_comp2 != nullptr)
         {
-            handle_note_from_lane(syscall, 1, note_comp2, battle_query, input_query, lane_query, judge_query, sound_registry);
+            handle_note_from_lane(syscall, 1, note_comp2, battle_query, lane_query, judge_query, sound_registry);
         }
         if (key_input.key3_pressed == true && note_comp3 != nullptr)
         {
-            handle_note_from_lane(syscall, 2, note_comp3, battle_query, input_query, lane_query, judge_query, sound_registry);
+            handle_note_from_lane(syscall, 2, note_comp3, battle_query, lane_query, judge_query, sound_registry);
         }
         if (key_input.key4_pressed == true && note_comp4 != nullptr)
         {
-            handle_note_from_lane(syscall, 3, note_comp4, battle_query, input_query, lane_query, judge_query, sound_registry);
+            handle_note_from_lane(syscall, 3, note_comp4, battle_query, lane_query, judge_query, sound_registry);
         }
     }
 } // namespace Game::Rhythm

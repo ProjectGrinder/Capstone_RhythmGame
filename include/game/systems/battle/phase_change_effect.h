@@ -7,7 +7,8 @@ namespace Game::Battle
         [[maybe_unused]] T &syscall,
         System::ECS::Query<BattleState> &battle_query,
         System::ECS::Query<TransitionData> &transition_query,
-        System::ECS::Query<Border, Render::Sprite> &border_query
+        System::ECS::Query<Border, Render::Sprite> &border_query,
+        System::ECS::Query<Backdrop, Render::Sprite> &backdrop_query
         )
     {
         if (battle_query.begin() == battle_query.end())
@@ -19,15 +20,20 @@ namespace Game::Battle
         auto &battle_state = battle_query.front().get<BattleState>();
         auto &border_spr = border_query.front().get<Render::Sprite>();
         const auto &border_c = border_query.front().get<Border>();
+        auto &back_spr = backdrop_query.front().get<Render::Sprite>();
+        const auto &back_c = backdrop_query.front().get<Backdrop>();
 
         if (battle_state.clock_time <= 0)
         {
             // Lerp quad
-            auto &pos = border_spr.pos;
-            auto quad_box = [&pos, &border_c](int i)
+            auto &border_pos = border_spr.pos;
+            auto &back_pos = back_spr.pos;
+            auto quad_box = [&border_pos, &back_pos, &border_c, &back_c](int i)
             {
-                pos[i].x += (BOX_BH_POS[i].x - pos[i].x) /border_c.init_reduce_smooth_factor;
-                pos[i].y += (BOX_BH_POS[i].y - pos[i].y) /border_c.init_reduce_smooth_factor;
+                border_pos[i].x += (BOX_BH_POS[i].x - border_pos[i].x) /border_c.init_reduce_smooth_factor;
+                border_pos[i].y += (BOX_BH_POS[i].y - border_pos[i].y) /border_c.init_reduce_smooth_factor;
+                back_pos[i].x += (BOX_BH_POS[i].x - back_pos[i].x) /back_c.init_reduce_smooth_factor;
+                back_pos[i].y += (BOX_BH_POS[i].y - back_pos[i].y) /back_c.init_reduce_smooth_factor;
             };
 
             for (int i=0;i<4;i++) quad_box(i);
@@ -36,13 +42,16 @@ namespace Game::Battle
         for (auto &[id, comps] : transition_query)
         {
             const auto &transition_data = comps.get<TransitionData>();
-            auto &pos = border_spr.pos;
+            auto &border_pos = border_spr.pos;
+            auto &back_pos = back_spr.pos;
             const float duration = static_cast<float>(transition_data.duration)/3;
-            auto lerp_box = [&pos, &transition_data, &battle_state, &duration](int i, const Math::Point* from, const Math::Point* to)
+            auto lerp_box = [&border_pos, &back_pos, &transition_data, &battle_state, &duration](int i, const Math::Point* from, const Math::Point* to)
             {
                 float t = static_cast<float>((battle_state.clock_time/1000 - transition_data.timing_start - duration)/duration);
-                pos[i].x = from[i].x + (to[i].x - from[i].x) * t;
-                pos[i].y = from[i].y + (to[i].y - from[i].y) * t;
+                border_pos[i].x = from[i].x + (to[i].x - from[i].x) * t;
+                border_pos[i].y = from[i].y + (to[i].y - from[i].y) * t;
+                back_pos[i].x = from[i].x + (to[i].x - from[i].x) * t;
+                back_pos[i].y = from[i].y + (to[i].y - from[i].y) * t;
             };
             // Changing state
             if (transition_data.state == 2)
@@ -137,20 +146,94 @@ namespace Game::Battle
             // Changing state
             if (transition_data.state == 3 && transition_data.phase == BULLET_HELL)
             {
-                pos[0] = {-500*(1-t),5,0};
-                pos[1] = {500*(1-t),5,0};
-                pos[2] = {500*(1-t),-5,0};
-                pos[3] = {-500*(1-t),-5,0};
+                pos[0] = {-JUDGE_LINE_WIDTH*(1-t),JUDGE_LINE_HEIGHT,0};
+                pos[1] = {JUDGE_LINE_WIDTH*(1-t),JUDGE_LINE_HEIGHT,0};
+                pos[2] = {JUDGE_LINE_WIDTH*(1-t),-JUDGE_LINE_HEIGHT,0};
+                pos[3] = {-JUDGE_LINE_WIDTH*(1-t),-JUDGE_LINE_HEIGHT,0};
                 judgement_spr.color.a = (1-t);
             }
             else if (transition_data.state == 1 && transition_data.phase == RHYTHM)
             {
-                pos[0] = {-500*t,5,0};
-                pos[1] = {500*t,5,0};
-                pos[2] = {500*t,-5,0};
-                pos[3] = {-500*t,-5,0};
+                pos[0] = {-JUDGE_LINE_WIDTH*t,JUDGE_LINE_HEIGHT,0};
+                pos[1] = {JUDGE_LINE_WIDTH*t,JUDGE_LINE_HEIGHT,0};
+                pos[2] = {JUDGE_LINE_WIDTH*t,-JUDGE_LINE_HEIGHT,0};
+                pos[3] = {-JUDGE_LINE_WIDTH*t,-JUDGE_LINE_HEIGHT,0};
                 judgement_spr.color.a = t;
 
+            }
+        }
+    }
+
+    template<typename T>
+    void phase_split_line(
+        [[maybe_unused]] T &syscall,
+        System::ECS::Query<BattleState> &battle_query,
+        System::ECS::Query<TransitionData> &transition_query,
+        System::ECS::Query<Rhythm::LaneLine, Render::Sprite> &line_query
+        )
+    {
+        if (battle_query.begin() == battle_query.end())
+            return;
+
+        auto &battle_state = battle_query.front().get<BattleState>();
+
+        for (auto &[id, comps] : line_query)
+        {
+            auto &line_spr = comps.get<Render::Sprite>();
+            auto &pos = line_spr.pos;
+
+            for (auto &[id2, comps2] : transition_query)
+            {
+                const auto &transition_data = comps2.get<TransitionData>();
+                const float duration = static_cast<float>(transition_data.duration) * 1 / 3;
+                const float t = (battle_state.clock_time/1000 - transition_data.timing_start - duration*(3-transition_data.state))/duration;
+                // Changing state
+                if (transition_data.state == 3 && transition_data.phase == BULLET_HELL)
+                {
+                    pos[0].y = HALF_HEIGHT*2*(1-t);
+                    pos[1].y = HALF_HEIGHT*2*(1-t);
+                }
+                else if (transition_data.state == 1 && transition_data.phase == RHYTHM)
+                {
+                    pos[0].y = HALF_HEIGHT*2*t;
+                    pos[1].y = HALF_HEIGHT*2*t;
+                }
+            }
+        }
+    }
+
+    template<typename T>
+    void phase_lane_key_text(
+        [[maybe_unused]] T &syscall,
+        System::ECS::Query<BattleState> &battle_query,
+        System::ECS::Query<TransitionData> &transition_query,
+        System::ECS::Query<Rhythm::KeyText, Render::Text> &text_query
+        )
+    {
+        if (battle_query.begin() == battle_query.end())
+            return;
+
+        auto &battle_state = battle_query.front().get<BattleState>();
+
+        for (auto &[id, comps] : text_query)
+        {
+            auto &text = comps.get<Render::Text>();
+
+            for (auto &[id2, comps2] : transition_query)
+            {
+                constexpr float text_alpha = 0.7f;
+                const auto &transition_data = comps2.get<TransitionData>();
+                const float duration = static_cast<float>(transition_data.duration) * 1 / 3;
+                const float t = (battle_state.clock_time/1000 - transition_data.timing_start - duration*(3-transition_data.state))/duration * text_alpha;
+                // Changing state
+                if (transition_data.state == 3 && transition_data.phase == BULLET_HELL)
+                {
+                    text.color.a = text_alpha - t;
+                }
+                else if (transition_data.state == 1 && transition_data.phase == RHYTHM)
+                {
+                    text.color.a = t;
+                }
             }
         }
     }

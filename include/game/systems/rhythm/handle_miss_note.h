@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/components.h"
+#include "update_judge_text.h"
 
 namespace Game::Rhythm
 {
@@ -13,7 +14,7 @@ namespace Game::Rhythm
             System::ECS::Query<Timing, HoldStart, NoteType, NoteStatus, Material, Sprite> &note_query,
             System::ECS::Query<HoldConnect, NoteStatus, Sprite> &hold_query,
             System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
-            System::ECS::Query<JudgeText> &judge_query)
+            System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query)
     {
         if (battle_query.begin() == battle_query.end())
             return;
@@ -26,6 +27,7 @@ namespace Game::Rhythm
         const auto &current_timing = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
         const auto &accept_loss = battle_query.front().get<Battle::RhythmState>().accept_loss;
         constexpr auto miss_range = 100;
+        constexpr auto rain_miss_range = 50;
 
         for (auto &[id, comp]: note_query)
         {
@@ -35,18 +37,26 @@ namespace Game::Rhythm
             auto &note_time = comp.get<Timing>().timing;
             auto &type = comp.get<NoteType>().type;
 
-            auto apn = battle_query.front().get<Battle::RhythmState>().apn;
-
-            if (current_timing - note_time >= miss_range && type != -1)
+            if (type == 2 && current_timing - note_time >= rain_miss_range)
+            {
+                battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
+                battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.rain;
+                comp.get<NoteStatus>().state = -1;
+                comp.get<Material>().visible = false;
+                set_judge(MISS, judge_query);
+                if (battle_query.front().get<Battle::BattleState>().current_accept < 0)
+                    battle_query.front().get<Battle::BattleState>().current_accept = 0;
+            }
+            else if (current_timing - note_time >= miss_range && type != -1)
             {
                 if (comp.get<HoldStart>().is_hold == false) // tap note miss
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 1;
-                    if (type == 2)
-                    {
-                        battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.rain;
-                    }
-                    else if (type == 1)
+                    // if (type == 2)
+                    // {
+                    //     battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.rain;
+                    // }
+                    if (type == 1)
                     {
                         battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.accent;
                     }
@@ -60,7 +70,6 @@ namespace Game::Rhythm
                 {
                     battle_query.front().get<Battle::BattleState>().judgement_count.miss_count += 2;
                     battle_query.front().get<Battle::BattleState>().current_accept -= accept_loss.hold;
-                    battle_query.front().get<Battle::RhythmState>().accuracy -= apn; // deduct twice
                     // LOG_INFO("Timing %d Lane %d: Hold Miss", note_time, comp.get<Timing>().lane);
                     int end_time = 0;
                     for (auto &[id2, comp2]: hold_query)
@@ -90,9 +99,7 @@ namespace Game::Rhythm
                 }
                 comp.get<NoteStatus>().state = -1;
                 comp.get<Material>().visible = false;
-                judge_query.front().get<JudgeText>().judge = MISS;
-                judge_query.front().get<JudgeText>().change = true;
-                battle_query.front().get<Battle::RhythmState>().accuracy -= apn;
+                set_judge(MISS, judge_query);
                 if (battle_query.front().get<Battle::BattleState>().current_accept < 0)
                     battle_query.front().get<Battle::BattleState>().current_accept = 0;
             }

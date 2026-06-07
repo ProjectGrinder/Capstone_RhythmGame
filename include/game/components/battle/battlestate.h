@@ -168,9 +168,10 @@ namespace Game::Battle
         bool speed_change;
         float accuracy;
         float apn; // accuracy per note
+        std::string accuracy_text;
         AcceptLoss accept_loss;
         RhythmState() :
-            heal_hp(0), accept_gain(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false), accuracy(100.00f), apn(0.00f)
+            heal_hp(0), accept_gain(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false), accuracy(0.00f), apn(0.00f)
         {}
         RhythmState(
                 const int heal_hp,
@@ -184,7 +185,7 @@ namespace Game::Battle
             base_speed(base_speed),
             current_speed(current_speed),
             speed_change(false),
-            accuracy(100.00f),
+            accuracy(0.00f),
             apn(0.00f)
         {}
     };
@@ -202,22 +203,20 @@ namespace Game::Battle
         std::string genre_name;
         float main_bpm;
         BpmInfo bpm_info;
-        std::vector<Difficulty> difficulties;
+        Difficulty difficulty;
         int duration;
         explicit LevelData(
                 std::string title,
                 std::string artist_name,
-                std::string genre_name,
                 const float main_bpm,
                 BpmInfo bpm_info,
-                std::vector<Difficulty> difficulties,
+                const Difficulty difficulty,
                 const int duration) :
             title(std::move(title)),
             artist_name(std::move(artist_name)),
-            genre_name(std::move(genre_name)),
             main_bpm(main_bpm),
             bpm_info(std::move(bpm_info)),
-            difficulties(std::move(difficulties)),
+            difficulty(difficulty),
             duration(duration)
         {}
     };

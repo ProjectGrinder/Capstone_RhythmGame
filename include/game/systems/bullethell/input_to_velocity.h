@@ -1,5 +1,5 @@
 #pragma once
-#include "game/systems/global_clock.h"
+#include "../battle/global_clock.h"
 #include "utils/constant.h"
 
 namespace Game::BulletHell

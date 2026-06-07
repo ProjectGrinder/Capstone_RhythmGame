@@ -6,8 +6,14 @@ namespace Game::Battle
     {
         HpBar,
         HPBarMax,
+        AcceptBar,
+        AcceptBarMax,
         GrazeText,
-        AccuracyText
+        AccuracyText,
+        StatBox,
+        SongTitle,
+        ArtistName,
+        LevelDiff
     };
 
     struct UIComponent

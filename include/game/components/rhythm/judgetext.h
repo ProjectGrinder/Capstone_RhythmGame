@@ -4,20 +4,16 @@ namespace Game::Rhythm
 {
     enum Judge
     {
-        NONE,
-        MISS,
-        FINE,
+        PERFECT,
         GREAT,
-        PERFECT
+        FINE,
+        MISS
     };
 
     struct JudgeText
     {
-        Judge judge;
-        bool change;
-        int timer;
-        JudgeText() : judge(NONE), change(false), timer(0) {}
-        explicit JudgeText(const Judge judge) : judge(judge), change(false), timer(0)
-        {}
+        float pulse_time = 100.00f;
+        float stay_time = 800.00f;
+        bool change = false;
     };
 } // namespace Game::Rhythm
