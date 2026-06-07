@@ -22,10 +22,10 @@ namespace Game
         constexpr auto Z = 0x5A;
         constexpr auto X = 0x58;
 
-        constexpr auto S = 0x53;
-        constexpr auto D = 0x44;
-        constexpr auto L = 0x4C;
-        constexpr auto SEMICOLON = 0xBA;
+        constexpr auto KEY1 = 0x53; // S
+        constexpr auto KEY2 = 0x44; // D
+        constexpr auto KEY3 = 0x4C; // L
+        constexpr auto KEY4 = 0xBA; // ;
         constexpr auto TAB = 0x09;
         constexpr auto ESC = 0x1B;
 
@@ -50,17 +50,17 @@ namespace Game
         input_c.z_pressed = get_key_state(Z) && !input_c.z_held;
         input_c.z_held = get_key_state(Z);
 
-        input_c.key1_pressed = get_key_state(S) && !input_c.key1_held;
-        input_c.key1_held = get_key_state(S);
+        input_c.key1_pressed = get_key_state(KEY1) && !input_c.key1_held;
+        input_c.key1_held = get_key_state(KEY1);
 
-        input_c.key2_pressed = get_key_state(D) && !input_c.key2_held;
-        input_c.key2_held = get_key_state(D);
+        input_c.key2_pressed = get_key_state(KEY2) && !input_c.key2_held;
+        input_c.key2_held = get_key_state(KEY2);
 
-        input_c.key3_pressed = get_key_state(L) && !input_c.key3_held;
-        input_c.key3_held = get_key_state(L);
+        input_c.key3_pressed = get_key_state(KEY3) && !input_c.key3_held;
+        input_c.key3_held = get_key_state(KEY3);
 
-        input_c.key4_pressed = get_key_state(SEMICOLON) && !input_c.key4_held;
-        input_c.key4_held = get_key_state(SEMICOLON);
+        input_c.key4_pressed = get_key_state(KEY4) && !input_c.key4_held;
+        input_c.key4_held = get_key_state(KEY4);
 
         input_c.x_pressed = get_key_state(X) && !input_c.x_held;
         input_c.x_held = get_key_state(X);
