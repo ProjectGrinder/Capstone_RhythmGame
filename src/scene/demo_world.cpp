@@ -32,6 +32,27 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
     load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 }
 
+inline Game::Battle::LevelData create_level1_data()
+{
+    Game::Battle::BpmInfo bpm;
+    constexpr std::array timing_list = {17910, 66269, 123582};
+    for (int m : timing_list)
+    {
+        Game::Battle::BpmInfo::InfoPair info{};
+        info.bpm = 134.00f;
+        info.timing = m;
+        bpm.bpm_list.emplace_back(info);
+    }
+    return Game::Battle::LevelData(
+    "A World Without You",
+    "Nakuya",
+    134.00f,
+    bpm,
+{{Game::Battle::Difficulty(Game::Battle::LIGHT, 1), Game::Battle::Difficulty(Game::Battle::SPARK, 3), Game::Battle::Difficulty(Game::Battle::BLAZE, 5),}},
+142000
+    );
+}
+
 Game::World::DialogueRegistry init_dialogue_registry()
 {
     using namespace Game::World;
@@ -112,8 +133,7 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
     // LevelRegistry
     // TODO : Move this to init at the start of the game
     tm->create_entity<Game::World::LevelRegistry>({{
-        Game::Battle::LevelData("A World Without You", "Nakuya", "Digital Jpop", 134.00f,
-        Game::Battle::BpmInfo({{0,134}}), {{Game::Battle::LIGHT,1},{Game::Battle::SPARK,3},{Game::Battle::BLAZE,5}}, 142000)
+        create_level1_data()
     }});
 
     tm->create_entity<Game::World::Player, Rotation,
@@ -150,7 +170,6 @@ Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::s
     rm.add_resource(level_id, Game::Battle::LevelData{
         level_data.title,
         level_data.artist_name,
-        level_data.genre_name,
         level_data.main_bpm,
         level_data.bpm_info,
         level_data.difficulties,
@@ -158,7 +177,7 @@ Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::s
     });
 
     const System::ECS::pid battle_id = rm.reserve_process();
-    rm.add_resource(battle_id, Game::Battle::BattleState(200,75,level_data.difficulties[global.diff_selected]));
+    rm.add_resource(battle_id, Game::Battle::BattleState(200,75,level_data.difficulties.difficulties[global.diff_selected]));
 
     // Should have something like. Permanent Container that run this for every frame (Set something permanent)
     System::ECS::ResourcePool<1000, Game::World::SaveState> &save_state =  manager->get_rm()->query<Game::World::SaveState>();

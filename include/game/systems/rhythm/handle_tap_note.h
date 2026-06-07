@@ -125,7 +125,6 @@ namespace Game::Rhythm
         const int &lane_num, // assume that first lane is 0
         System::ECS::Query<Material, Timing, HoldStart, NoteType, NoteStatus>::StoredTuple *comp,
         [[maybe_unused]] System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
-        [[maybe_unused]] System::ECS::Query<Input> &input_query,
         System::ECS::Query<Lane> &lane_query,
         System::ECS::Query<JudgeText, Render::Sprite, Render::Material> &judge_query,
         const Audio::SoundRegistry &sound_registry)

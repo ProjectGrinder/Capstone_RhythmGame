@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene.h"
-#include "system.h"
 #include "game.h"
 #include "game/utils/Bullethell_DSL/bullet_script.h"
 
@@ -47,11 +46,6 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
 
     load_sprite("img/level1_bg.dds", "level1_bg", 3840, 2160);
 }
-std::vector diff_list = {
-    Game::Battle::Difficulty(Game::Battle::LIGHT, 1),
-    Game::Battle::Difficulty(Game::Battle::SPARK, 3),
-    Game::Battle::Difficulty(Game::Battle::BLAZE, 5),
-};
 
 std::array total_note_list = {100, 150, 279}; // store total notes here
 
@@ -67,26 +61,6 @@ inline Game::Battle::RhythmState create_rhythm_state(const int level)
     constexpr float full_accuracy = 10000.00f; // represent full 100.00%
     state.apn = full_accuracy / static_cast<float>(state.total_notes);
     return (state);
-}
-
-inline Game::Battle::LevelData create_level1_data(const int level)
-{
-    Game::Battle::BpmInfo bpm;
-    constexpr std::array timing_list = {17910, 66269, 123582};
-    for (int m : timing_list)
-    {
-        Game::Battle::BpmInfo::InfoPair info{};
-        info.bpm = 134.00f;
-        info.timing = m;
-        bpm.bpm_list.emplace_back(info);
-    }
-    return Game::Battle::LevelData(
-    "A World Without You",
-    "Nakuya",
-    134.00f,
-    bpm,
-    diff_list[level], 142000
-    );
 }
 
 void Scene::Level1::load_chart(
@@ -176,26 +150,37 @@ Scene::Level1 Scene::Level1::instance()
     return (instance);
 }
 
-// Game::Battle::Difficulty Scene::Level1::set_difficulty(const int level)
-// {
-//     switch (level)
-//     {
-//     case 0:
-//         return Game::Battle::Difficulty(Game::Battle::LIGHT, 1);
-//     case 1:
-//         return Game::Battle::Difficulty(Game::Battle::SPARK, 3);
-//     case 2:
-//         return Game::Battle::Difficulty(Game::Battle::BLAZE, 5);
-//     default:
-//         return Game::Battle::Difficulty(Game::Battle::LIGHT, 1);
-//     }
-// }
+std::vector diff_list = {
+    Game::Battle::Difficulty(Game::Battle::LIGHT, 1),
+    Game::Battle::Difficulty(Game::Battle::SPARK, 3),
+    Game::Battle::Difficulty(Game::Battle::BLAZE, 5),
+};
+
+inline Game::Battle::LevelData create_level1_data()
+{
+    Game::Battle::BpmInfo bpm;
+    constexpr std::array timing_list = {17910, 66269, 123582};
+    for (int m : timing_list)
+    {
+        Game::Battle::BpmInfo::InfoPair info{};
+        info.bpm = 134.00f;
+        info.timing = m;
+        bpm.bpm_list.emplace_back(info);
+    }
+    return Game::Battle::LevelData(
+    "A World Without You",
+    "Nakuya",
+    134.00f,
+    bpm,
+    diff_list, 142000
+    );
+}
 
 std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
 {
     ResourceManager rm;
     const System::ECS::pid level_id = rm.reserve_process();
-    rm.add_resource(level_id, create_level1_chartdata());
+    rm.add_resource(level_id, create_level1_data());
 
     const System::ECS::pid battle_id = rm.reserve_process();
     rm.add_resource(battle_id, Game::Battle::BattleState(0,75,diff_list[0]));

@@ -41,6 +41,7 @@
 #include "components/rhythm/holdstart.h"
 #include "components/rhythm/judgement_line.h"
 #include "components/rhythm/judgetext.h"
+#include "components/rhythm/keytext.h"
 #include "components/rhythm/lane.h"
 #include "components/rhythm/notefield.h"
 #include "components/rhythm/notestatus.h"

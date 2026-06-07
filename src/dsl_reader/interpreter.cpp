@@ -268,9 +268,6 @@ Value BulletHellCompiler::eval_expr(const Expr& expr, Scope& scope, const size_t
         {
             return eval_function(e, scope, line);
         }
-
-        throw std::runtime_error("DSL line " + std::to_string(line) + " error : Invalid Expression");
-
     }, expr.expr);
 }
 

@@ -66,6 +66,16 @@ namespace Game::Battle
         // max level 10
     };
 
+    struct DifficultyList
+    {
+        std::vector<Difficulty> difficulties;
+        DifficultyList() = default;
+        DifficultyList(std::vector<Difficulty> difficulties) :
+            difficulties(std::move(difficulties))
+        {}
+        // max level 10
+    };
+
     struct JudgementCount
     {
         int perfect_count;
@@ -203,20 +213,20 @@ namespace Game::Battle
         std::string genre_name;
         float main_bpm;
         BpmInfo bpm_info;
-        Difficulty difficulty;
+        DifficultyList difficulties;
         int duration;
         explicit LevelData(
                 std::string title,
                 std::string artist_name,
                 const float main_bpm,
                 BpmInfo bpm_info,
-                const Difficulty difficulty,
+                const DifficultyList difficulties,
                 const int duration) :
             title(std::move(title)),
             artist_name(std::move(artist_name)),
             main_bpm(main_bpm),
             bpm_info(std::move(bpm_info)),
-            difficulty(difficulty),
+            difficulties(difficulties),
             duration(duration)
         {}
     };
