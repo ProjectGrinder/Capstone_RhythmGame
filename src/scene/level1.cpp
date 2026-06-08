@@ -193,7 +193,10 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
 {
     auto tm = std::make_shared<TaskManager>();
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
-    // tm->create_entity<Game::World::SaveState>(std::move(data.query<Game::World::SaveState>().front()));
+    if (data.query<Game::World::SaveState>().begin() != data.query<Game::World::SaveState>().end())
+    {
+        tm->create_entity<Game::World::SaveState>(std::move(data.query<Game::World::SaveState>().front()));
+    }
 
     init_graphics(tm);
     Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Level-01-B.th0"};
