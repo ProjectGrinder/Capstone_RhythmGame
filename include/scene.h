@@ -13,5 +13,6 @@
 #include "scene/demo_rhythm.h"
 #include "scene/level1.h"
 #include "scene/demo_world.h"
+#include "scene/demo_menu.h"
 
 #include "scene/scene_manager.h"
