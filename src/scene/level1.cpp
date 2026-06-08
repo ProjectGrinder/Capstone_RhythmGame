@@ -183,7 +183,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     rm.add_resource(level_id, create_level1_data());
 
     const System::ECS::pid battle_id = rm.reserve_process();
-    rm.add_resource(battle_id, Game::Battle::BattleState(0,75,diff_list[0]));
+    rm.add_resource(battle_id, Game::Battle::BattleState(100,total_note_list[0]*5,diff_list[0]));
 
     return init(rm);
 }
@@ -195,7 +195,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     tm->create_entity<Game::World::SaveState>(std::move(data.query<Game::World::SaveState>().front()));
 
     init_graphics(tm);
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Demo.th0"};
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Level-01-B.th0"};
 
     const Game::Battle::BattleState bt_state = data.query<Game::Battle::BattleState>().front();
     const int level = bt_state.difficulty.difficulty;
