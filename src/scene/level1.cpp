@@ -46,6 +46,8 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_sprite("img/return.dds", "return", 1280, 720);
 
     load_sprite("img/level1_bg.dds", "level1_bg", 3840, 2160);
+
+    load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 }
 
 std::array total_note_list = {100, 150, 279}; // store total notes here
@@ -74,11 +76,9 @@ void Scene::Level1::load_chart(
     using NoteType = Game::Rhythm::NoteType;
     using NoteStatus = Game::Rhythm::NoteStatus;
 
-    auto &[lanes] = chart;
-
     // repeat for each lane
     LOG_INFO("Loading chart...");
-    for (auto &lane: lanes)
+    for (auto &lane: chart.lanes)
     {
         while (lane.current_note < lane.notes.size())
         {
@@ -142,6 +142,15 @@ void Scene::Level1::load_chart(
             ++lane.current_note;
         }
     }
+    tm->create_entity<Game::Battle::UIComponent,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Battle::UIComponent{Game::Battle::LevelDiff},
+        write_difficulty(chart.difficulty),
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 7/8, Game::HALF_HEIGHT * 3/5, 0}, 0, 0, 0});
     LOG_INFO("Finished loading chart")
 }
 
@@ -325,8 +334,6 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{(field.lane3_spawn+field.lane4_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
 
-    const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
-
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::AcceptBarMax},
            Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("gauge")), .pos = {{-500, 20, 0}, {500, 20, 0}, {500, -20, 0}, {-500, -20, 0}}, .color = {0.8f, 0.8f, 0.8f}, .layer = 101},
@@ -380,7 +387,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Battle::UIComponent{Game::Battle::SongTitle},
-        Game::Render::Text{.font = font, .text = "A World Without You", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "A World Without You", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 7/8, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
     tm->create_entity<Game::Battle::UIComponent,
@@ -389,18 +396,9 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Battle::UIComponent{Game::Battle::ArtistName},
-        Game::Render::Text{.font = font, .text = "Nakuya", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Nakuya", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{-Game::HALF_WIDTH * 7/8, Game::HALF_HEIGHT * 11/15, 0, 0, 0, 0.8f, 0.8f, 0.8f});
-    tm->create_entity<Game::Battle::UIComponent,
-    Game::Render::Text,
-    Game::Render::Material,
-    Game::Render::Transform>
-    (
-        Game::Battle::UIComponent{Game::Battle::LevelDiff},
-        Game::Render::Text{.font = font, .text = "", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
-        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 7/8, Game::HALF_HEIGHT * 3/5, 0}, 0, 0, 0});
 
     tm->create_entity<Game::Battle::UIComponent,
         Game::Render::Sprite,
@@ -418,7 +416,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Battle::UIComponent(Game::Battle::StatBox),
-        Game::Render::Text{.font = font, .text = "ACCURACY", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "ACCURACY", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 75, Game::HALF_HEIGHT * 3/20 + 10, 0}, 0, 0, 0});
 
@@ -428,7 +426,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Battle::UIComponent(Game::Battle::AccuracyText),
-        Game::Render::Text{.font = font, .text = "0.00%", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "0.00%", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 75, Game::HALF_HEIGHT * 1/10 - 15, 0}, 0, 0, 0});
 
@@ -448,7 +446,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Battle::UIComponent(Game::Battle::StatBox),
-        Game::Render::Text{.font = font, .text = "GRAZE", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "GRAZE", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 75, Game::HALF_HEIGHT * -3/20 + 10, 0}, 0, 0, 0});
 
@@ -458,7 +456,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Battle::UIComponent(Game::Battle::GrazeText),
-        Game::Render::Text{.font = font, .text = "0", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "0", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 75, Game::HALF_HEIGHT * -1/5 - 15, 0}, 0, 0, 0});
 
@@ -468,7 +466,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Battle::UIComponent(Game::Battle::StatBox),
-        Game::Render::Text{.font = font, .text = "/ 20", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "/ 20", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 35, Game::HALF_HEIGHT * -1/5 - 15, 0}, 0, 0, 0});
 
@@ -478,7 +476,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Battle::TransitionText(),
-        Game::Render::Text{.font = font, .text = "", .layer = 105},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "", .layer = 105},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{0, Game::HALF_HEIGHT * 4/5, 0, 0, 0, 2.5f,2.5f,1});
 
@@ -490,7 +488,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Rhythm::KeyText(),
-        Game::Render::Text{.font = font, .text = "S", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "S", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE1, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1});
     tm->create_entity<Game::Rhythm::KeyText,
@@ -499,7 +497,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Rhythm::KeyText(),
-        Game::Render::Text{.font = font, .text = "D", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "D", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE2, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1});
     tm->create_entity<Game::Rhythm::KeyText,
@@ -508,7 +506,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Rhythm::KeyText(),
-        Game::Render::Text{.font = font, .text = "L", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "L", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE3, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1,1});
     tm->create_entity<Game::Rhythm::KeyText,
@@ -517,7 +515,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform>
     (
         Game::Rhythm::KeyText(),
-        Game::Render::Text{.font = font, .text = ";", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = ";", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1});
 

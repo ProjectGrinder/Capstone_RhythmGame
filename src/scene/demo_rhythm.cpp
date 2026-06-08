@@ -91,6 +91,39 @@ Game::Rhythm::NoteField Scene::create_field()
         move_time);
 }
 
+Game::Render::Text Scene::write_difficulty(const Game::Battle::Difficulty difficulty)
+{
+    // font must be loaded first!
+    Game::Render::Text text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "", .color = Math::Color{0, 0, 0, 1}, .layer = 51};
+
+    switch (difficulty.difficulty)
+    {
+    case Game::Battle::LIGHT:
+        text.text = "LIGHT " + std::to_string(difficulty.level);
+        text.color = Math::Color{0, 0.5f, 1};
+        break;
+
+    case Game::Battle::SPARK:
+        text.text = "SPARK " + std::to_string(difficulty.level);
+        text.color = Math::Color{1, 0.5f, 0};
+        break;
+
+    case Game::Battle::BLAZE:
+        text.text = "BLAZE " + std::to_string(difficulty.level);
+        text.color = Math::Color{1, 0, 0};
+        break;
+
+    case Game::Battle::ASTRA:
+        text.text = "ASTRA " + std::to_string(difficulty.level);
+        text.color = Math::Color{1, 0, 1};
+        break;
+
+    default:
+        text.text = std::to_string(difficulty.level);
+    }
+    return (text);
+}
+
 auto sp_accent = load_sprite("img/rhythm/base_accent.dds", "accent", 200, 40);
 auto sp_rain = load_sprite("img/rhythm/base_rain.dds", "rain", 200, 20);
 auto sp_normal = load_sprite("img/rhythm/base_normal.dds", "normal", 200, 40);
@@ -144,11 +177,10 @@ void Scene::DemoRhythm::load_chart(
     Game::Battle::ChartData &chart,
     Game::Rhythm::NoteField &field)
 {
-    auto &[lanes] = chart;
 
     // repeat for each lane
     LOG_INFO("Loading chart...");
-    for (auto &lane: lanes)
+    for (auto &lane: chart.lanes)
     {
         while (lane.current_note < lane.notes.size())
         {
