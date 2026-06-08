@@ -5,13 +5,13 @@
 namespace Game
 {
     // extern "C" Window get_window_size();
-    constexpr float HALF_HEIGHT = 960.f;
-    constexpr float HALF_WIDTH = 540.f;
-    constexpr float BOX_SIZE = 90.f;
+    constexpr float HALF_HEIGHT = 540.f;
+    constexpr float HALF_WIDTH = 960.f;
+    constexpr float BOX_SIZE = HALF_WIDTH / 3;
     constexpr Math::Point init_player_pos = {0,-240};
 
-    constexpr float NOTE_WIDTH = 150.0f;
-    constexpr float NOTE_HEIGHT = 30.0f;
+    constexpr float NOTE_WIDTH = HALF_WIDTH / 960 * 150;
+    constexpr float NOTE_HEIGHT = HALF_HEIGHT / 540 * 30;
     constexpr float JUDGE_LEVEL = HALF_HEIGHT * -2 / 3;
     // x-value of 4 lanes
     constexpr float LANE1 = -1 * (NOTE_WIDTH * 1.65f);
