@@ -9,7 +9,7 @@ namespace Scene
     Game::Render::Sprite assign_sprite(int type);
 
     // Use these methods for the demo level
-    Game::Battle::ChartData create_level1_chart();
+    // Game::Battle::ChartData create_level1_chart();
 
     Math::Point field_to_point(int lane, const Game::Rhythm::NoteField &field);
 

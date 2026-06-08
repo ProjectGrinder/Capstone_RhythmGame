@@ -3,6 +3,7 @@
 #include "scene.h"
 #include "game.h"
 #include "game/utils/Bullethell_DSL/bullet_script.h"
+#include "game/utils/rhythm_chart/level_01.h"
 
 void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
 {
@@ -192,7 +193,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
 {
     auto tm = std::make_shared<TaskManager>();
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
-    tm->create_entity<Game::World::SaveState>(std::move(data.query<Game::World::SaveState>().front()));
+    // tm->create_entity<Game::World::SaveState>(std::move(data.query<Game::World::SaveState>().front()));
 
     init_graphics(tm);
     Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Level-01-B.th0"};
@@ -283,7 +284,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     tm->create_entity<Game::Rhythm::NoteField>(create_field());
     tm->create_entity<Game::Battle::LevelData>(std::move(data.query<Game::Battle::LevelData>().front()));
 
-    auto chart = create_level1_chart();
+    auto chart = level_01_blaze();
     auto field = create_field();
 
     load_chart(tm, chart, field);
