@@ -259,3 +259,46 @@ inline Game::Battle::ChartData level_01_blaze()
 
     return (chart);
 }
+
+inline Game::Battle::ChartData level_01_light()
+{
+    Game::Battle::ChartData chart;
+
+    for (int lane = 0; lane < 4; ++lane)
+    {
+        chart.lanes[lane].lane_number = lane;
+        chart.lanes[lane].notes.clear();
+        chart.lanes[lane].current_note = 0;
+    }
+
+    return (chart);
+}
+
+inline Game::Battle::ChartData level_01_spark() // will do later
+{
+    Game::Battle::ChartData chart;
+
+    for (int lane = 0; lane < 4; ++lane)
+    {
+        chart.lanes[lane].lane_number = lane;
+        chart.lanes[lane].notes.clear();
+        chart.lanes[lane].current_note = 0;
+    }
+
+    return (chart);
+}
+
+inline Game::Battle::ChartData load_level_01_chart(const int level)
+{
+    switch (level)
+    {
+    case 0:
+        return level_01_light();
+    case 1:
+        return level_01_spark();
+    case 2:
+        return level_01_blaze();
+    default:
+        return level_01_light();
+    }
+}

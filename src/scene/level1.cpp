@@ -287,7 +287,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     tm->create_entity<Game::Rhythm::NoteField>(create_field());
     tm->create_entity<Game::Battle::LevelData>(std::move(data.query<Game::Battle::LevelData>().front()));
 
-    auto chart = level_01_blaze();
+    auto chart = load_level_01_chart(level);
     auto field = create_field();
 
     load_chart(tm, chart, field);
