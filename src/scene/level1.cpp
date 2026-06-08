@@ -184,7 +184,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     rm.add_resource(level_id, create_level1_data());
 
     const System::ECS::pid battle_id = rm.reserve_process();
-    rm.add_resource(battle_id, Game::Battle::BattleState(100,total_note_list[0]*5,diff_list[0]));
+    rm.add_resource(battle_id, Game::Battle::BattleState(100,total_note_list[2]*5,diff_list[2]));
 
     return init(rm);
 }

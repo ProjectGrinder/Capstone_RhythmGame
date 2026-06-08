@@ -48,7 +48,7 @@ namespace Game::Battle
                 }
                 comp.get<Render::Text>().text = final_text;
                 state_query.front().get<Battle::RhythmState>().accuracy_text = final_text;
-                if (accuracy == 100)
+                if (accuracy == 10000)
                 {
                     comp.get<Render::Text>().color = Math::Color{0.3f, 1, 0.3f};
                 }
