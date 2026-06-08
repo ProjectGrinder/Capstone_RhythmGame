@@ -1,6 +1,5 @@
 #include "scene.h"
 #include "utils/print_debug.h"
-#include "../../src/windows/windows_types.h"
 
 using Timing = Game::Rhythm::Timing;
 using HoldStart = Game::Rhythm::HoldStart;
