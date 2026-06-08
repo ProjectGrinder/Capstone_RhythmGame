@@ -1,25 +1,19 @@
 #pragma once
 
-#include <string>
-#include <utility>
-
 namespace Game::Rhythm
 {
+    enum Judge
+    {
+        PERFECT,
+        GREAT,
+        FINE,
+        MISS
+    };
+
     struct JudgeText
     {
-        enum Judge
-        {
-            NONE,
-            MISS,
-            FINE,
-            GREAT,
-            PERFECT
-        };
-        Judge judge;
-        bool change;
-        int timer;
-        JudgeText() : judge(NONE), change(false), timer(0) {}
-        explicit JudgeText(const Judge judge) : judge(judge), change(false), timer(0)
-        {}
+        float pulse_time = 100.00f;
+        float stay_time = 800.00f;
+        bool change = false;
     };
 } // namespace Game::Rhythm

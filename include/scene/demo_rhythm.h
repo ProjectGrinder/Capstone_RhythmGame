@@ -6,6 +6,10 @@
 namespace Scene
 {
     Game::Rhythm::NoteField create_field();
+    Game::Render::Sprite assign_sprite(int type);
+
+    // Use these methods for the demo level
+    Game::Battle::ChartData create_level1_chart();
 
     Math::Point field_to_point(int lane, const Game::Rhythm::NoteField &field);
 
@@ -17,14 +21,12 @@ namespace Scene
         // declare scene parameters
         constexpr static size_t MaxResource = 2000;
         using ComponentTuple = std::tuple<
+            Game::Input,
             Game::Battle::BattleState,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,
             Game::Battle::LevelData, // structure required to satisfy HandleBPM
-            Game::BulletHell::Input, // structure required to satisfy InputSystem
-            Game::Rhythm::KeyInput,
             Game::Rhythm::JudgeText,
-            Game::Rhythm::Combo,
             Game::Rhythm::Lane,
             Game::Rhythm::Timing,
             Game::Rhythm::HoldStart,
@@ -37,12 +39,14 @@ namespace Scene
             Game::Render::Material,
             Game::Render::Text,
             Game::Render::Transform,
-            Game::Audio::SoundRegistry
+            Game::Audio::SoundRegistry,
+            Game::Rhythm::NoteEffect,
+            Game::World::GlobalState
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
         using TaskManager = System::ECS::TaskManager<ResourceManager, Syscall,
-            Game::Battle::input_system<Syscall>,
+            Game::input_system<Syscall>,
             Game::Rhythm::handle_bpm<Syscall>,
             Game::Rhythm::handle_tap_note<Syscall>,
             Game::Rhythm::handle_rain_note<Syscall>,
@@ -50,12 +54,11 @@ namespace Scene
             Game::Rhythm::handle_holding<Syscall>,
             Game::Rhythm::handle_miss_note<Syscall>,
             Game::Rhythm::update_judge_text<Syscall>,
-            Game::Rhythm::update_combo<Syscall>,
             Game::Rhythm::update_notes<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::draw_sprite<Syscall>,
             Game::Render::draw_text<Syscall>,
-            Game::Battle::update_global_clock<Syscall>
+            Game::update_global_clock<Syscall>
             >;
 
         static void load_chart(

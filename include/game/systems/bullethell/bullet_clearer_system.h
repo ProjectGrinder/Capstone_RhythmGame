@@ -1,14 +1,14 @@
 #pragma once
 
+#include "../battle/global_clock.h"
 #include "game/components.h"
-#include "game/systems/global_clock.h"
 
 namespace Game::BulletHell
 {
     template<typename T>
     void bullet_clearer_system(
             [[maybe_unused]] T &syscall,
-            System::ECS::Query<BulletClearer, Render::Material, Render::Transform, Particle> &query,
+            System::ECS::Query<BulletClearer, Render::Sprite, Render::Transform, Particle> &query,
             System::ECS::Query<Bullet, Render::Transform> &bullet_query,
             System::ECS::Query<Battle::BattleState> &query2)
     {
@@ -19,13 +19,13 @@ namespace Game::BulletHell
         {
             auto &bullet_clearer = comps.get<BulletClearer>();
             auto &tra = comps.get<Render::Transform>();
-            auto &material = comps.get<Render::Material>();
+            auto &sprite = comps.get<Render::Sprite>();
 
-            if (bullet_clearer.lifetime == UNASSIGNED) bullet_clearer.lifetime = comps.get<Particle>().lifetime;
+            if (bullet_clearer.lifetime == -1) bullet_clearer.lifetime = comps.get<Particle>().lifetime;
 
             // Growing
             tra.scaleX = tra.scaleY = Physics::clamp(static_cast<float>(tra.scaleX + bullet_clearer.speed * get_delta_time()),0.f,bullet_clearer.max_size);
-            material.color.a = static_cast<float>(comps.get<Particle>().lifetime/bullet_clearer.lifetime);
+            sprite.color.a = static_cast<float>(comps.get<Particle>().lifetime/bullet_clearer.lifetime);
 
             //Check Bullet in Range
             for (auto &[id2, comps2] : bullet_query)

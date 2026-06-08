@@ -4,10 +4,11 @@ namespace Game::BulletHell
 {
     struct Homing
     {
-        float expire_time;
+
+        int expire_time;
         float strength;
-        Homing() : expire_time(0.0f), strength(0.0f) {}
-        explicit Homing(const float expire_time, const float strength = 1.0f) :expire_time(expire_time), strength(strength)
+        int start_time;
+        explicit Homing(const int expire_time = 5000, const float strength = 1.0f, const int start_time = 0) : expire_time(expire_time), strength(strength), start_time(start_time)
         {}
 
     };

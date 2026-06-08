@@ -1,6 +1,7 @@
 #pragma once
 
 typedef volatile size_t atomic_size_t;
+typedef volatile int atomic_int;
 
 #if defined(_MSC_VER)
     #include <intrin.h>

@@ -15,11 +15,12 @@ namespace Game::Render
             flicker.flicker_delay -= static_cast<int>(get_delta_time());
             if (flicker.time < 0)
             {
+                sprite.color.a = flicker.init_alpha;
                 syscall.template remove_component<Flicker>(id);
             }
             else
             {
-                if (flicker.init_alpha == UNASSIGNED)
+                if (flicker.init_alpha == -1)
                 {
                     flicker.init_alpha = sprite.color.a;
                 }

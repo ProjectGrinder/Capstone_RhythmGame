@@ -1,12 +1,13 @@
 #pragma once
 #include <vector>
 
-#include "../audio/audio.h"
+#include "../audio/audio_component.h"
+#include "game/components/bullethell/pattern.h"
 #include "game/components/physics/base_collider.h"
+#include "maths/point.h"
 
 namespace Game::Battle
 {
-    // TODO : Put it somewhere else I think.
     constexpr size_t MAX_BULLETS_GRAPHIC = 128;
     enum BulletType
     {
@@ -66,14 +67,14 @@ namespace Game::Battle
 
     struct GraphicData
     {
-        float src_rect[4];
+        int src_rect[4];
         float dest_rect[4];
         float r,g,b,a;
         int bullet_spawn_sound;
         GraphicData() : src_rect{}, dest_rect{}, r(1), g(1), b(1), a(1), bullet_spawn_sound(1)
         {}
         explicit GraphicData(
-                const float src0, const float src1, const float src2, const float src3,
+                const int src0, const int src1, const int src2, const int src3,
                 const float r = 1,
                 const float g = 1,
                 const float b = 1,
@@ -81,13 +82,13 @@ namespace Game::Battle
                 const int bullet_spawn_sound = 1) :
             src_rect{src0,src1,src2,src3}, r(r), g(g), b(b), a(a), bullet_spawn_sound(bullet_spawn_sound)
         {
-            dest_rect[0] = src0 - src2;
-            dest_rect[1] = src1 - src3;
-            dest_rect[2] = src2 - src0;
-            dest_rect[3] = src3 - src1;
+            dest_rect[0] = static_cast<float>(src0 - src2);
+            dest_rect[1] = static_cast<float>(src1 - src3);
+            dest_rect[2] = static_cast<float>(src2 - src0);
+            dest_rect[3] = static_cast<float>(src3 - src1);
         }
         explicit GraphicData(
-                const float src0, const float src1, const float src2, const float src3,
+                const int src0, const int src1, const int src2, const int src3,
                 const float dest0, const float dest1, const float dest2, const float dest3,
                 const float r,
                 const float g,
@@ -98,123 +99,107 @@ namespace Game::Battle
         {}
     };
 
+    struct BulletMovementData
+    {
+        float posX, posY;
+        float vel, rot;
+        float acc, wvel;
+
+        BulletMovementData(const float posX = 0,
+            const float posY = 0,
+            const float vel = 0,
+            const float rot = 0,
+            const float acc = 0,
+            const float wvel = 0):
+        posX(posX), posY(posY), vel(vel), rot(rot), acc(acc), wvel(wvel){}
+    };
+
+    struct BulletTimingData
+    {
+        int delay_frame;
+        int lifetime;
+
+        BulletTimingData(const int delay_frame = 0, const int lifetime = 5000): delay_frame(delay_frame), lifetime(lifetime){}
+    };
+
     struct BulletGraphicMap
     {
         ColliderData collider_data;
         GraphicData graphic_data;
-        SpecialBulletData special_bullet_data;
-        float damage_mul;
-        int pierce;
-        int lifetime;
 
-        BulletGraphicMap() :  damage_mul(0), pierce(1), lifetime(5000)
+        BulletGraphicMap()
         {}
 
         explicit BulletGraphicMap(
                 const ColliderData &collider_data,
-                const GraphicData &graphic_data = {},
-                const SpecialBulletData &special_bullet_data = {},
-                const float damage_mul = 1,
-                const int pierce = 1,
-                const int lifetime = 5000) :
+                const GraphicData &graphic_data = {}) :
             collider_data(collider_data),
-            graphic_data(graphic_data),
+            graphic_data(graphic_data)
+        {}
+    };
+
+    struct StageBulletData
+    {
+        int graphicID;
+        SpecialBulletData special_bullet_data;
+        BulletTimingData bullet_timing_data;
+        Math::Point size;
+        float damage_mul;
+        int pierce;
+
+        explicit StageBulletData(
+                const int graphicID = 0,
+                const SpecialBulletData &special_bullet_data = {},
+                const BulletTimingData &bullet_timing_data = {},
+                const Math::Point size = Math::Point(1, 1),
+                const float damage_mul = 1,
+                const int pierce = 1) :
             special_bullet_data(special_bullet_data),
+            graphicID(graphicID),
+            bullet_timing_data(bullet_timing_data),
+            size(size),
             damage_mul(damage_mul),
-            pierce(pierce),
-            lifetime(lifetime)
+            pierce(pierce)
         {}
     };
 
     struct BulletRegistry
     {
-        std::string bullet_data_filepath;
         std::vector<BulletGraphicMap> bulletGraphicMaps;
+        std::vector<StageBulletData> bulletStageMaps;
+        BulletRegistry() {};
         explicit BulletRegistry(std::vector<BulletGraphicMap>& bulletGraphicMaps) : bulletGraphicMaps(std::move(bulletGraphicMaps))
+        {}
+        explicit BulletRegistry(std::vector<BulletGraphicMap>& bulletGraphicMaps, std::vector<StageBulletData>& bulletStageMaps) :
+            bulletGraphicMaps(std::move(bulletGraphicMaps)), bulletStageMaps(std::move(bulletStageMaps))
         {}
     };
 
     struct BulletData
     {
-        float posX, posY;
-        float vel, rot;
-        float acc, wvel;
-        uint16_t patternID;
-        int delay_frame;
-        int graphicID;
-        BulletData(
-                const float posX,
-                const float posY,
-                const int delay_frame,
-                const int graphicID) :
-            posX(posX),
-            posY(posY),
-            vel(0),
-            rot(0),
-            acc(0),
-            wvel(0),
-            patternID(0),
-            delay_frame(delay_frame),
-            graphicID(graphicID)
-        {}
-        BulletData(
-                const float posX,
-                const float posY,
-                const float vel,
-                const float rot,
-                const int delay_frame,
-                const int graphicID) :
-            posX(posX),
-            posY(posY),
-            vel(vel),
-            rot(rot),
-            acc(0),
-            wvel(0),
-            patternID(0),
-            delay_frame(delay_frame),
-            graphicID(graphicID)
-        {}
-        BulletData(
-                const float posX,
-                const float posY,
-                const float vel,
-                const float rot,
-                const uint16_t patternID,
-                const int delay_frame,
-                const int graphicID) :
-            posX(posX), posY(posY), vel(vel), rot(rot), acc(0), wvel(0), patternID(patternID), delay_frame(delay_frame), graphicID(graphicID)
-        {}
-        BulletData(
-                const float posX,
-                const float posY,
-                const float vel,
-                const float rot,
-                const float acc,
-                const float wvel,
-                const int delay_frame,
-                const int graphicID) :
-            posX(posX),
-            posY(posY),
-            vel(vel),
-            rot(rot),
-            acc(acc),
-            wvel(wvel),
-            patternID(0),
-            delay_frame(delay_frame),
-            graphicID(graphicID)
-        {}
+        BulletMovementData movement_data;
+        BulletHell::Pattern pattern;
+        int bullet_id;
+
+        BulletData() = default;
 
         BulletData(
-                const float posX,
-                const float posY,
-                const float vel,
-                const float rot,
-                const float acc,
-                const float wvel,
-                const uint16_t patternID,
-                const int delay_frame,
-                const int graphicID) :
-            posX(posX), posY(posY), vel(vel), rot(rot), acc(acc), wvel(wvel), patternID(patternID), delay_frame(delay_frame), graphicID(graphicID)
+                const int bullet_id,
+                const float posX = 0,
+                const float posY = 0,
+                const float speed = 0,
+                const float rot = 0,
+                const float acc = 0,
+                const float vwel = 0,
+                const uint16_t pattern_id = 0,
+                const float p0 = 0,
+                const float p1 = 0,
+                const float p2 = 0,
+                const float p3 = 0
+                ) :
+            movement_data({posX,posY, speed, rot,acc,vwel}),
+            pattern({pattern_id,p0,p1,p2,p3}),
+            bullet_id(bullet_id)
         {}
     };
 
@@ -227,6 +212,7 @@ namespace Game::Battle
     struct BulletLoader
     {
         // this should be global.
+        bool initialized = false;
         int current_frame;
         int pointer;
 

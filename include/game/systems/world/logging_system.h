@@ -1,0 +1,44 @@
+#pragma once
+
+#include "game/components.h"
+
+namespace Game::World
+{
+    template <typename T>
+    void logging_system([[maybe_unused]] T &syscall,
+        System::ECS::Query<GlobalState> &global_query,
+        System::ECS::Query<Player, Render::Transform, Velocity> &player_query,
+        System::ECS::Query<Interactable, EventState> &interact_query,
+        System::ECS::Query<DialogueBox> &dialog_query)
+    {
+        if (global_query.begin() == global_query.end())
+            return;
+
+        if (player_query.begin() == player_query.end())
+            return;
+
+        auto &global_state = global_query.front().get<GlobalState>();
+
+        if (global_state.clock_time/1000 % 250 > 2) return;
+
+        LOG_INFO("----------------------------------");
+
+        // const auto &bullet_loader = query.front().get<Battle::BulletLoader>();
+        const auto player_pos = player_query.front().get<Render::Transform>().position;
+        const auto player_vel = player_query.front().get<Velocity>();
+        LOG_INFO("Player Pos : (%d,%d), Vel : (%d,%d)", static_cast<int>(player_pos.x), static_cast<int>(player_pos.y), static_cast<int>(player_vel.vx), static_cast<int>(player_vel.vy));
+        if (!player_query.front().get<Player>().on_ground) LOG_INFO("Is on Air");
+        for (auto &[id, comps] : interact_query)
+        {
+            if (comps.get<EventState>().event_occupied) continue;
+            if (comps.get<Interactable>().in_range) LOG_INFO("Entity %d is in range. Press UP to interact.", id);
+        }
+
+        for (auto &[id, comps] : dialog_query)
+        {
+            // LOG_INFO("Dialog box ID : %d", id);
+            LOG_INFO(comps.get<DialogueBox>().current_text.c_str());
+        }
+        LOG_INFO("----------------------------------");
+    }
+}

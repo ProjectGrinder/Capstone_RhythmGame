@@ -8,17 +8,25 @@
 
 namespace Game::Render
 {
+    struct GraphData
+    {
+        Math::Point glyph_top_left, glyph_top_right, glyph_bottom_left, glyph_bottom_right;
+        float u0, u1, v0, v1;
+    };
+
     template<typename T>
     void draw_text([[maybe_unused]] T &syscall, System::ECS::Query<Text, Material, Transform> &query)
     {
         for (auto &[id, comps] : query)
         {
+            std::vector<GraphData> graph_data;
             const auto &material = comps.get<Material>();
             if (!material.visible)
                 continue;
 
-            const auto &[font, text, color, layer, order] = comps.get<Text>();
+            const auto &[font, text, color, layer, order, align] = comps.get<Text>();
             const auto &tra = comps.get<Transform>();
+            const Math::Point scale_point(Math::Point(tra.scaleX, tra.scaleY,1));
 
             const auto glyphs_data = font->info.info.as_font.data;
             const auto glyphs_count = font->info.info.as_font.count;
@@ -26,7 +34,7 @@ namespace Game::Render
             // in local space, the "pen" starts at (0,0,0).
             auto pen = Math::Point(0,0,0);
 
-            for (char c : text)
+            for (const char c : text)
             {
                 int i = 0;
                 while (i < (int)glyphs_count)
@@ -60,25 +68,35 @@ namespace Game::Render
                 const auto glyph_top_left = Math::Point{glyph_left, glyph_top, 0};
                 const auto glyph_top_right = Math::Point{glyph_right, glyph_top, 0};
 
+                graph_data.emplace_back(glyph_top_left, glyph_top_right, glyph_bottom_left, glyph_bottom_right, u0, u1, v0, v1);
+
+                pen.x += advance;
+            }
+
+            Transform new_transform = tra;
+
+            if (align == Center) new_transform.position.x -= pen.x/2; // Should + with center text font size
+            if (align == Right) new_transform.position.x -= pen.x;
+
+            for (const auto [glyph_top_left, glyph_top_right, glyph_bottom_left, glyph_bottom_right, u0, u1, v0, v1] : graph_data)
+            {
                 auto &intent = System::Render::IntentStorage::allocate_packed();
                 intent.kind = System::Render::DrawKind::KIND_SPRITE;
 
-                Helpers::fill_common(intent, material, tra, (uint8_t) layer);
+                Helpers::fill_common(intent, material, new_transform, (uint8_t) layer);
 
                 intent.common.sp = font;
                 intent.common.info.sp_id = ASSET_INDEX(font->id);
 
                 intent.special.sprite = System::Render::SpriteDrawDesc{
-                .points = {glyph_top_left, glyph_top_right, glyph_bottom_right, glyph_bottom_left},
-                .color = color,
-                .u0 = u0,
-                .v0 = v0,
-                .u1 = u1,
-                .v1 = v1,
-                .flipX = false,
-                .flipY = false};
-
-                pen.x += advance;
+                    .points = {glyph_top_left*scale_point, glyph_top_right*scale_point, glyph_bottom_right*scale_point, glyph_bottom_left*scale_point},
+                    .color = color,
+                    .u0 = u0,
+                    .v0 = v0,
+                    .u1 = u1,
+                    .v1 = v1,
+                    .flipX = false,
+                    .flipY = false};
             }
         }
     }
