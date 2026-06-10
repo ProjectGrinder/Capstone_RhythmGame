@@ -47,4 +47,7 @@ namespace Game
     constexpr float JUDGE_LINE_HEIGHT = 5.00f;
 
     constexpr float CAMERA_SPEED = 0.005f;
+
+    constexpr int IFRAME_TIME = 1500;
+    constexpr float GRAZE_HITBOX_SIZE = 3000.f;
 }

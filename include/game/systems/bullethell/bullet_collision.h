@@ -1,11 +1,9 @@
 #pragma once
 
 #include <cmath>
-
-
-#include "audio.h"
 #include "game/components.h"
 #include "game/utils/audio_util.h"
+#include "game/utils/constant.h"
 
 // Help. Bullet has 2 Collider types. So, I use 2 query each with different narrow check. Everything else is the same.
 // Therefore, this code's suck.
@@ -74,7 +72,7 @@ namespace Game::BulletHell
 		    if (!bullet.is_damageable)
 		        continue;
 
-		    if (distance_squared - collision_distance*collision_distance <= 2)
+		    if (distance_squared - collision_distance*collision_distance <= GRAZE_HITBOX_SIZE)
 		    {
 		        if (!bullet.is_grazed)
 		        {
@@ -113,9 +111,9 @@ namespace Game::BulletHell
             if (battle_state.hp < 0)
                 battle_state.hp = 0;
 
-		    // TODO : Make this const
 		    // Activate Player iFrame
-		    state.iframe_time = 3000;
+		    state.iframe_time = IFRAME_TIME;
+		    state.hit_count++;
 		    syscall.add_component(player_query.front().id, Render::Flicker(3000));
 
 		    // Deactivate the bullet
@@ -151,7 +149,8 @@ namespace Game::BulletHell
 
 	        if (distance_squared > collision_distance * collision_distance)
 	        {
-	            if (distance_squared <= 1.5 * collision_distance * collision_distance)
+	            LOG_INFO("%d",(int)(distance_squared - collision_distance*collision_distance));
+	            if (distance_squared - collision_distance*collision_distance <= GRAZE_HITBOX_SIZE)
 	            {
 	                if (!bullet.is_grazed)
 	                {
@@ -187,9 +186,9 @@ namespace Game::BulletHell
 	        if (battle_state.hp < 0)
 	            battle_state.hp = 0;
 
-	        // TODO : Make this const
 	        // Activate Player iFrame
-	        state.iframe_time = 3000;
+	        state.iframe_time = IFRAME_TIME;
+	        state.hit_count++;
 	        syscall.add_component(player_query.front().id, Render::Flicker(3000));
 
 	        // Deactivate the bullet

@@ -25,12 +25,12 @@ namespace Game::BulletHell
                     {
                         auto spr = syscall.template query<Render::Sprite>(id);
                         spr.color = {spr.color.r, spr.color.g, spr.color.b, Physics::lerp_at_frame(spr.color.a,0.f,comp.destroy_frame)};
-                    }catch (const std::exception& _){}
+                    }catch ([[maybe_unused]]const std::exception& _){}
                     try
                     {
                         auto txt = syscall.template query<Render::Text>(id);
                         txt.color = {txt.color.r, txt.color.g, txt.color.b, Physics::lerp_at_frame(txt.color.a,0.f,comp.destroy_frame)};
-                    }catch (const std::exception& _){}
+                    }catch ([[maybe_unused]]const std::exception& _){}
 
                     break;
 
@@ -42,7 +42,7 @@ namespace Game::BulletHell
                         tr.scaleX = Physics::lerp_at_frame(tr.scaleX, 0.f, comp.destroy_frame);
                         tr.scaleY = Physics::lerp_at_frame(tr.scaleY, 0.f, comp.destroy_frame);
                         tr.scaleZ = Physics::lerp_at_frame(tr.scaleZ, 0.f, comp.destroy_frame);
-                    }catch (const std::exception& _){}
+                    }catch ([[maybe_unused]]const std::exception& _){}
                     break;
                 default:
                     syscall.remove_entity(id);

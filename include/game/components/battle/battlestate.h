@@ -161,10 +161,11 @@ namespace Game::Battle
 
     struct BulletHellState
     {
+        int hit_count;
         int graze;
         int iframe_time;
         int damage;
-        BulletHellState(const int damage = 1) : graze(0), iframe_time(0), damage(damage)
+        BulletHellState(const int damage = 1) : hit_count(0), graze(0), iframe_time(0), damage(damage)
         {}
     };
 
