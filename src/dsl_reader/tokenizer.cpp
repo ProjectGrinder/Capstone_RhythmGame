@@ -1,4 +1,4 @@
-#include "game/utils/Bullethell_DSL/tokenizer.h"
+#include "../../include/game/utils/DSL/bullethell/tokenizer.h"
 
 #include <stdexcept>
 

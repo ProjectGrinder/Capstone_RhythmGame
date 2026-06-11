@@ -1,8 +1,8 @@
 #pragma once
 
-#include "scene.h"
+#include "../../include/game/utils/DSL/bullethell/bullet_script.h"
 #include "game.h"
-#include "game/utils/Bullethell_DSL/bullet_script.h"
+#include "scene.h"
 
 void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
 {
@@ -26,6 +26,7 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_sprite("img/test.dds", "test", 500, 500);
     load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
     load_sprite("img/bullethell/Hitbox.dds", "Hitbox", 12, 12);
+    load_sprite("img/bullethell/BossSprite.dds","BH_Boss_Sprite",3840,1800);
 
     load_sprite("img/Square.dds", "Square", 64, 64);
     load_sprite("img/Square64px.dds", "Square64px", 64, 64);
@@ -258,21 +259,31 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::Transform,
     Rotation,
     Velocity,
-    AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material, Game::Render::Animator, Game::Render::Animation_Controller>(
+    AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material, Game::Render::Animator, Game::Render::Animation_Controller, Game::Battle::BattleObject>(
         {}, Game::Render::Transform(0,-240), {}, {}, {},
         Game::Physics::CircularCollider(12),
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Player_Sprite")),
             .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 2,
             .u0 = 0.f, .v0 = 0.f, .u1 = 200.f/800.f, .v1 = 250.f/1500.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
-        Game::Render::Animator{0}, Game::Render::Animation_Controller()
+        Game::Render::Animator{"Player_Idle_Front"}, Game::Render::Animation_Controller(), {Game::Battle::BULLET_HELL, 1}
     );
 
-    tm->create_entity<Game::BulletHell::PlayerHitbox, Game::Render::Transform, Game::Render::Sprite, Game::Render::Material>(
+    tm->create_entity<Game::BulletHell::PlayerHitbox, Game::Render::Transform, Game::Render::Sprite, Game::Render::Material, Game::Battle::BattleObject>(
         Game::BulletHell::PlayerHitbox(7.5f), Game::Render::Transform(0,-240),
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Hitbox")),
             .pos = {{-12, 12, 0}, {12, 12, 0}, {12, -12, 0}, {-12, -12, 0}}, .color = {1,1,1,0}, .layer = 10},
-            Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))}
+            Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))}, {Game::Battle::BULLET_HELL, 0}
+    );
+
+    tm->create_entity<Game::Render::Transform,
+    Game::Render::Sprite, Game::Render::Material, Game::Render::Animator, Game::Render::Animation_Controller, Game::Render::AnimationSequence, Game::Battle::BattleObject>(
+        Game::Render::Transform(0,240,0,0,0,0.5f,0.5f,1.f),
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Boss_Sprite")),
+            .pos = {{-240, 300, 0}, {240, 300, 0}, {240, -300, 0}, {-240, -300, 0}}, .layer = 3,
+            .u0 = 0.f, .v0 = 0.f, .u1 = 1.f/8.f, .v1 = 1.f/3.f},
+        Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
+        Game::Render::Animator{"Boss_Idle"}, Game::Render::Animation_Controller(true), init_boss_anim_seq(), {Game::Battle::BULLET_HELL,1}
     );
 
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
@@ -291,35 +302,35 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     // judgement line
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
-    Game::Render::Transform, Game::Rhythm::JudgementLine>
+    Game::Render::Transform, Game::Rhythm::JudgementLine, Game::Battle::BattleObject>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-350, 5, 0}, {350, 5, 0}, {350, -5, 0}, {-350, -5, 0}},.color = {1,1,1,0}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}
+        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM, 1}
         );
 
     // lane lines
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
-    Game::Render::Transform, Game::Rhythm::LaneLine>
+    Game::Render::Transform, Game::Rhythm::LaneLine, Game::Battle::BattleObject>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(field.lane1_spawn+field.lane2_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
+        Game::Render::Transform{Math::Point{(field.lane1_spawn+field.lane2_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,1});
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
-    Game::Render::Transform, Game::Rhythm::LaneLine>
+    Game::Render::Transform, Game::Rhythm::LaneLine, Game::Battle::BattleObject>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(field.lane2_spawn+field.lane3_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
+        Game::Render::Transform{Math::Point{(field.lane2_spawn+field.lane3_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,1});
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
-    Game::Render::Transform, Game::Rhythm::LaneLine>
+    Game::Render::Transform, Game::Rhythm::LaneLine, Game::Battle::BattleObject>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(field.lane3_spawn+field.lane4_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
+        Game::Render::Transform{Math::Point{(field.lane3_spawn+field.lane4_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,1});
 
     const auto font = load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 
@@ -480,42 +491,34 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
 
     // key for each lane
     // not sure how to keybind it
-    tm->create_entity<Game::Rhythm::KeyText,
-    Game::Render::Text,
+    tm->create_entity<Game::Render::Text,
     Game::Render::Material,
-    Game::Render::Transform>
+    Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Rhythm::KeyText(),
         Game::Render::Text{.font = font, .text = "S", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Game::LANE1, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1});
-    tm->create_entity<Game::Rhythm::KeyText,
-    Game::Render::Text,
+        Game::Render::Transform{Game::LANE1, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1}, {Game::Battle::RHYTHM,0.7f});
+    tm->create_entity<Game::Render::Text,
     Game::Render::Material,
-    Game::Render::Transform>
+    Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Rhythm::KeyText(),
         Game::Render::Text{.font = font, .text = "D", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Game::LANE2, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1});
-    tm->create_entity<Game::Rhythm::KeyText,
-    Game::Render::Text,
+        Game::Render::Transform{Game::LANE2, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1}, {Game::Battle::RHYTHM,0.7f});
+    tm->create_entity<Game::Render::Text,
     Game::Render::Material,
-    Game::Render::Transform>
+    Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Rhythm::KeyText(),
         Game::Render::Text{.font = font, .text = "L", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Game::LANE3, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1,1});
-    tm->create_entity<Game::Rhythm::KeyText,
-    Game::Render::Text,
+        Game::Render::Transform{Game::LANE3, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1,1}, {Game::Battle::RHYTHM,0.7f});
+    tm->create_entity<Game::Render::Text,
     Game::Render::Material,
-    Game::Render::Transform>
+    Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Rhythm::KeyText(),
         Game::Render::Text{.font = font, .text = ";", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1});
+        Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1}, {Game::Battle::RHYTHM,0.7f});
 
     return (tm);
 }

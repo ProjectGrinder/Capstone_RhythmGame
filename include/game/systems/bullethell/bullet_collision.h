@@ -114,7 +114,7 @@ namespace Game::BulletHell
 		    // Activate Player iFrame
 		    state.iframe_time = IFRAME_TIME;
 		    state.hit_count++;
-		    syscall.add_component(player_query.front().id, Render::Flicker(3000));
+		    syscall.add_component(player_query.front().id, Render::Flicker(1,IFRAME_TIME));
 
 		    // Deactivate the bullet
 		    bullet.pierce --;
@@ -149,7 +149,6 @@ namespace Game::BulletHell
 
 	        if (distance_squared > collision_distance * collision_distance)
 	        {
-	            LOG_INFO("%d",(int)(distance_squared - collision_distance*collision_distance));
 	            if (distance_squared - collision_distance*collision_distance <= GRAZE_HITBOX_SIZE)
 	            {
 	                if (!bullet.is_grazed)
@@ -189,7 +188,7 @@ namespace Game::BulletHell
 	        // Activate Player iFrame
 	        state.iframe_time = IFRAME_TIME;
 	        state.hit_count++;
-	        syscall.add_component(player_query.front().id, Render::Flicker(3000));
+	        syscall.add_component(player_query.front().id, Render::Flicker(1,IFRAME_TIME));
 
 	        // Deactivate the bullet
 	        bullet.pierce--;

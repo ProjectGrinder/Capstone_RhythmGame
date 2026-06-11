@@ -1,6 +1,6 @@
 #include <utility>
 
-#include "game/utils/Bullethell_DSL/interpreter.h"
+#include "../../include/game/utils/DSL/bullethell/interpreter.h"
 
 #include "game/utils/constant.h"
 #include "game/utils/physics_util.h"

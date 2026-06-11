@@ -1,4 +1,4 @@
-#include "game/utils/Bullethell_DSL/bullet_script.h"
+#include "../../include/game/utils/DSL/bullethell/bullet_script.h"
 #include "scene.h"
 #include "system.h"
 
@@ -35,15 +35,43 @@ Game::Render::AnimationDataRegistry Scene::init_anim_data()
     using namespace Game::Render;
     AnimationDataRegistry anim_datas{
         {
-            {{0.25f,0.167f},0,3,10},
-            {{0.25f,0.167f},1,3,10},
-            {{0.25f,0.167f},2,3,10},
-            {{0.25f,0.167f},3,4,10},
-            {{0.25f,0.167f},4,4,10},
-            {{0.25f,0.167f},5,4,10},
+            {"Player_Idle_Front",{{0.25f,0.167f},0,3,10}},
+            {"Player_Idle_Left",{{0.25f, 0.167f}, 1, 3, 10}},
+            {"Player_Idle_Back",{{0.25f, 0.167f}, 2, 3, 10}},
+            {"Player_Move_Front",{{0.25f,0.167f},3,4,10}},
+            {"Player_Move_Left",{{0.25f,0.167f},4,4,10}},
+            {"Player_Move_Back",{{0.25f,0.167f},5,4,10}},
+            {"Boss_Idle",{{0.125f,0.33f},0,4,9}},
+            {"Boss_Cast1",{{0.125f, 0.33f}, 1, 7, 9, true, 3}},
+            {"Boss_Cast2",{{0.125f, 0.33f}, 2, 8, 9, false}},
         }
     };
     return anim_datas;
+}
+
+Game::Render::AnimationSequence Scene::init_boss_anim_seq()
+{
+    using namespace Game::Render;
+    const float time_per_beat = 60000.f/ 134;
+    auto TTB = [&time_per_beat](const float beat)->int { return (int)std::round(beat * time_per_beat)+3000; };
+    AnimationSequence anim_seq{{
+        // I don't understand why.
+        {TTB(0), "Boss_Idle"},
+    {TTB(3), "Boss_Cast1"},
+    {TTB(5.5f), "Boss_Idle"},
+    {TTB(83), "Boss_Cast1"},
+    {TTB(87), "Boss_Idle"},
+    {TTB(89), "Boss_Cast2"},
+    {TTB(92), "Boss_Idle"},
+    {TTB(105), "Boss_Cast1"},
+    {TTB(146), "Boss_Cast2"},
+    {TTB(150), "Boss_Idle"},
+    {TTB(164), "Boss_Cast1"},
+    {TTB(170), "Boss_Idle"},
+    {TTB(172), "Boss_Cast2"},
+    {TTB(175), "Boss_Cast1"},
+    }};
+    return anim_seq;
 }
 
 Scene::DemoBulletHell Scene::DemoBulletHell::instance()
@@ -97,17 +125,36 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
             .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 1,
             .u0 = 0.f, .v0 = 0.f, .u1 = 200.f/800.f, .v1 = 250.f/1500.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
-        Game::Render::Animator{0}, Game::Render::Animation_Controller()
+        Game::Render::Animator{"Player_Idle_Fronts"}, Game::Render::Animation_Controller()
     );
 
-    tm->create_entity<Game::BulletHell::PlayerHitbox, Game::Render::Transform, Game::Render::Sprite, Game::Render::Material>(
-        Game::BulletHell::PlayerHitbox(7.5f), Game::Render::Transform(0,-240),
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Hitbox")),
-            .pos = {{-12, 12, 0}, {12, 12, 0}, {12, -12, 0}, {-12, -12, 0}}, .color = {1,1,1,0}, .layer = 10},
-            Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))}
+    tm->create_entity<
+            Game::BulletHell::PlayerHitbox,
+            Game::Render::Transform,
+            Game::Render::Sprite,
+            Game::Render::Material>(
+            Game::BulletHell::PlayerHitbox(7.5f),
+            Game::Render::Transform(0, -240),
+            Game::Render::Sprite{
+                    .sp = get_assets_record_ptr(get_assets_id("Hitbox")),
+                    .pos = {{-12, 12, 0}, {12, 12, 0}, {12, -12, 0}, {-12, -12, 0}},
+                    .color = {1, 1, 1, 0},
+                    .layer = 10},
+            Game::Render::Material{
+                    get_assets_record_ptr(get_assets_id("sprite_vs")),
+                    get_assets_record_ptr(get_assets_id("sprite_ps"))});
+
+    tm->create_entity<Game::Render::Transform,
+    Game::Render::Sprite, Game::Render::Material, Game::Render::Animator, Game::Render::Animation_Controller, Game::Render::AnimationSequence, Game::Battle::BattleObject>(
+        Game::Render::Transform(0,-240),
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Player_Sprite")),
+            .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 1,
+            .u0 = 0.f, .v0 = 0.f, .u1 = 200.f/800.f, .v1 = 250.f/1500.f},
+        Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
+        Game::Render::Animator{"Boss_Idle"}, Game::Render::Animation_Controller(true), init_boss_anim_seq(), {Game::Battle::RHYTHM}
     );
 
-    auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
+    const auto font = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
     tm->create_entity(
            Game::Test::FpsCounter{},
            Game::Render::Text{.font = font, .text = "0"},

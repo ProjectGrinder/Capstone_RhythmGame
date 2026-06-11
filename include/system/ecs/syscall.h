@@ -88,6 +88,14 @@ namespace System::ECS
         {}
 
         template<typename Component>
+        Component* try_query(pid id)
+        {
+            auto& pool = _rm.template query<Component>();
+            if (!pool.has(id)) return nullptr;
+            return &pool.get(id);
+        }
+
+        template<typename Component>
         Component& query(pid id)
         {
             return _rm.template query<Component>().get(id);

@@ -22,6 +22,7 @@ namespace Scene
         constexpr static size_t MaxResource = 2000;
         using ComponentTuple = std::tuple<
             Game::Input,
+            Game::Battle::BattleObject,
             Game::Battle::BattleState,
             Game::Battle::RhythmState,
             Game::Battle::ChartData,

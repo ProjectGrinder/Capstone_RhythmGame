@@ -21,29 +21,17 @@ namespace Game::BulletHell
                     syscall.remove_entity(id);
                     break;
                 case Fade:
-                    try
-                    {
-                        auto spr = syscall.template query<Render::Sprite>(id);
-                        spr.color = {spr.color.r, spr.color.g, spr.color.b, Physics::lerp_at_frame(spr.color.a,0.f,comp.destroy_frame)};
-                    }catch ([[maybe_unused]]const std::exception& _){}
-                    try
-                    {
-                        auto txt = syscall.template query<Render::Text>(id);
-                        txt.color = {txt.color.r, txt.color.g, txt.color.b, Physics::lerp_at_frame(txt.color.a,0.f,comp.destroy_frame)};
-                    }catch ([[maybe_unused]]const std::exception& _){}
-
+                    if (auto* spr = syscall.template try_query<Render::Sprite>(id)) spr->color = {spr->color.r, spr->color.g, spr->color.b, Physics::lerp_at_frame(spr->color.a,0.f,comp.destroy_frame)};
+                    else if (auto* txt = syscall.template try_query<Render::Text>(id)) txt->color = {txt->color.r, txt->color.g, txt->color.b, Physics::lerp_at_frame(txt->color.a,0.f,comp.destroy_frame)};
                     break;
 
                 case Shrink:
-                    try
+                    if (auto* tr = syscall.template try_query<Render::Transform>(id))
                     {
-                        auto tr = syscall.template query<Render::Transform>(id);
-                        LOG_INFO("%d", (int)(tr.scaleX*1000));
-                        tr.scaleX = Physics::lerp_at_frame(tr.scaleX, 0.f, comp.destroy_frame);
-                        tr.scaleY = Physics::lerp_at_frame(tr.scaleY, 0.f, comp.destroy_frame);
-                        tr.scaleZ = Physics::lerp_at_frame(tr.scaleZ, 0.f, comp.destroy_frame);
-                    }catch ([[maybe_unused]]const std::exception& _){}
-                    break;
+                        tr->scaleX = Physics::lerp_at_frame(tr->scaleX, 0.f, comp.destroy_frame);
+                        tr->scaleY = Physics::lerp_at_frame(tr->scaleY, 0.f, comp.destroy_frame);
+                        tr->scaleZ = Physics::lerp_at_frame(tr->scaleZ, 0.f, comp.destroy_frame);
+                    }
                 default:
                     syscall.remove_entity(id);
                     break;
