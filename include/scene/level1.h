@@ -140,11 +140,9 @@ namespace Scene
             >;
 
         static void load_chart(
-            std::shared_ptr<TaskManager> &tm,
-            Game::Battle::ChartData &chart,
-            Game::Rhythm::NoteField &field);
-
-        // static Game::Battle::Difficulty set_difficulty(int level);
+            const std::shared_ptr<TaskManager> &tm,
+            Game::Battle::ChartData chart,
+            const Game::Rhythm::NoteField &field);
 
         static std::shared_ptr<TaskManager> init();
         static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data);

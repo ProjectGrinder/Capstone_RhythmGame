@@ -50,212 +50,8 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 }
 
-std::array total_note_list = {87, 150, 270}; // store total notes here
-std::array speed_list = {2.5f, 3.0f, 4.0f}; // in case of preset speed
-
-inline Game::Battle::RhythmState create_rhythm_state(const int level)
+void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
 {
-    Game::Battle::RhythmState state(1, 10, total_note_list[level], speed_list[level], speed_list[level]);
-    state.accept_loss.normal = 50;
-    state.accept_loss.accent = 50;
-    state.accept_loss.rain = 20;
-    state.accept_loss.hold = 50;
-    state.accept_loss.hold_end = 20;
-
-    constexpr float full_accuracy = 10000.00f; // represent full 100.00%
-    state.apn = full_accuracy / static_cast<float>(state.total_notes);
-    return (state);
-}
-
-void Scene::Level1::load_chart(
-    std::shared_ptr<TaskManager> &tm,
-    Game::Battle::ChartData &chart,
-    Game::Rhythm::NoteField &field)
-{
-    using Timing = Game::Rhythm::Timing;
-    using HoldStart = Game::Rhythm::HoldStart;
-    using NoteType = Game::Rhythm::NoteType;
-    using NoteStatus = Game::Rhythm::NoteStatus;
-
-    // repeat for each lane
-    LOG_INFO("Loading chart...");
-    for (auto &lane: chart.lanes)
-    {
-        while (lane.current_note < lane.notes.size())
-        {
-            auto &note = lane.notes.at(lane.current_note);
-            auto pos = field_to_point(lane.lane_number, field);
-
-            if (note.is_hold)
-            {
-                if (note.timing < note.timing_end)
-                {
-                    if (note.note_type != 2)
-                    {
-                        tm->create_entity<
-                        Timing, HoldStart, NoteType, NoteStatus,
-                        Game::Render::Sprite,
-                        Game::Render::Material,
-                        Game::Render::Transform>(
-                                Timing{lane.lane_number, note.timing},
-                                HoldStart{true},
-                                NoteType{note.note_type},
-                                NoteStatus{0},
-                                assign_sprite(note.note_type),
-                                Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-                                Game::Render::Transform{pos, 0, 0, 0});
-                        tm->create_entity<
-                        Timing, HoldStart, NoteType, NoteStatus,
-                        Game::Render::Sprite,
-                        Game::Render::Material,
-                        Game::Render::Transform>(
-                                Timing{lane.lane_number, note.timing_end},
-                                HoldStart{false},
-                                NoteType{-1},
-                                NoteStatus{0},
-                                assign_sprite(-1),
-                                Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-                                Game::Render::Transform{pos, 0, 0, 0});
-                        tm->create_entity<
-                            Game::Rhythm::HoldConnect, NoteStatus,
-                            Game::Render::Sprite,
-                            Game::Render::Material,
-                            Game::Render::Transform>(
-                                Game::Rhythm::HoldConnect{lane.lane_number, note.timing, note.timing_end},
-                                NoteStatus{0},
-                                Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("hold")), .pos = {{-25, 0, 0}, {25, 0, 0}, {25, 0, 0}, {-25, 0, 0}},
-                                .layer = 3, .u0 = 0.0f, .v0 = 0.0f, .u1 = 1.0f, .v1 = 0.0f},
-                                Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-                                Game::Render::Transform{pos, 0, 0, 0});
-                    }
-                    else
-                    {
-                        LOG_INFO("Create hold note error: Hold note cannot have rain type")
-                    }
-                }
-                else
-                {
-                    LOG_INFO("Create hold note error: Timing end must be more than initial timing")
-                }
-            }
-            else
-            {
-                tm->create_entity<
-                Timing, HoldStart, NoteType, NoteStatus,
-                Game::Render::Sprite,
-                Game::Render::Material,
-                Game::Render::Transform>(
-                        Timing{lane.lane_number, note.timing},
-                        HoldStart{false},
-                        NoteType{note.note_type},
-                        NoteStatus{0},
-                        assign_sprite(note.note_type),
-                        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-                        Game::Render::Transform{pos, 0, 0, 0});
-            }
-
-            ++lane.current_note;
-        }
-    }
-    tm->create_entity<Game::Battle::UIComponent,
-    Game::Render::Text,
-    Game::Render::Material,
-    Game::Render::Transform>
-    (
-        Game::Battle::UIComponent{Game::Battle::LevelDiff},
-        write_difficulty(chart.difficulty),
-        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 37/40 - 10, Game::HALF_HEIGHT * 3/5, 0}, 0, 0, 0});
-    LOG_INFO("Finished loading chart")
-}
-
-Scene::Level1 Scene::Level1::instance()
-{
-    static Level1 instance;
-    return (instance);
-}
-
-std::vector diff_list = {
-    Game::Battle::Difficulty(Game::Battle::LIGHT, 1),
-    Game::Battle::Difficulty(Game::Battle::SPARK, 3),
-    Game::Battle::Difficulty(Game::Battle::BLAZE, 5),
-};
-
-inline Game::Battle::LevelData create_level1_data()
-{
-    Game::Battle::BpmInfo bpm;
-    constexpr std::array timing_list = {17910, 66269, 123582};
-    for (int m : timing_list)
-    {
-        Game::Battle::BpmInfo::InfoPair info{};
-        info.bpm = 134.00f;
-        info.timing = m;
-        bpm.bpm_list.emplace_back(info);
-    }
-    return Game::Battle::LevelData(
-    "A World Without You",
-    "Nakuya",
-    134.00f,
-    bpm,
-    diff_list, 142000
-    );
-}
-
-std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
-{
-    ResourceManager rm;
-    const System::ECS::pid level_id = rm.reserve_process();
-    rm.add_resource(level_id, create_level1_data());
-
-    const System::ECS::pid battle_id = rm.reserve_process();
-    rm.add_resource(battle_id, Game::Battle::BattleState(100,total_note_list[0]*5,diff_list[0]));
-
-    return init(rm);
-}
-
-std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]] ResourceManager &data)
-{
-    auto tm = std::make_shared<TaskManager>();
-    tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
-    if (data.query<Game::World::SaveState>().begin() != data.query<Game::World::SaveState>().end())
-    {
-        tm->create_entity<Game::World::SaveState>(std::move(data.query<Game::World::SaveState>().front()));
-    }
-
-    init_graphics(tm);
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Level-01-L.th0"};
-
-    const Game::Battle::BattleState bt_state = data.query<Game::Battle::BattleState>().front();
-    const int level = bt_state.difficulty.difficulty;
-
-    tm->create_entity<Game::Battle::BattleState,
-    Game::Battle::BulletHellState,
-    Game::Battle::RhythmState,
-    Game::Battle::BulletRegistry,
-    Game::Battle::BulletLoader,
-    Game::Battle::PatternContainer,
-    Game::Render::AnimationDataRegistry,
-    Game::Audio::SoundRegistry>
-    (
-        Game::Battle::BattleState{bt_state.max_hp, bt_state.max_accept_gauge, bt_state.difficulty},
-        Game::Battle::BulletHellState(10),
-        create_rhythm_state(level),
-        std::move(script.bullet_registry),
-        std::move(script.bullet_loader),
-        std::move(script.pattern_container),
-        init_anim_data(),
-        Game::Audio::init_sounds());
-
-    // InputManager
-    tm->create_entity<Game::Input>(Game::Input());
-
-    // Transition Data
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16400, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(50149, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(80000, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 1000, Game::Battle::RHYTHM));
-
     // Background
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
@@ -303,19 +99,6 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
             Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))}
     );
 
-    tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
-    tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));
-    tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
-    tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
-
-    tm->create_entity<Game::Rhythm::NoteField>(create_field());
-    tm->create_entity<Game::Battle::LevelData>(std::move(data.query<Game::Battle::LevelData>().front()));
-
-    auto chart = load_level_01_chart(0);
-    auto field = create_field();
-
-    load_chart(tm, chart, field);
-
     // judgement line
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
@@ -323,7 +106,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-350, 5, 0}, {350, 5, 0}, {350, -5, 0}, {-350, -5, 0}},.color = {1,1,1,0}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{0, field.judge_level, 0}, 0, 0, 0}, {}
+        Game::Render::Transform{Math::Point{0, Game::JUDGE_LEVEL, 0}, 0, 0, 0}, {}
         );
 
     // lane lines
@@ -333,21 +116,21 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(field.lane1_spawn+field.lane2_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
+        Game::Render::Transform{Math::Point{(Game::LANE1+Game::LANE2)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::LaneLine>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(field.lane2_spawn+field.lane3_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
+        Game::Render::Transform{Math::Point{(Game::LANE2+Game::LANE3)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::LaneLine>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(field.lane3_spawn+field.lane4_spawn)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
+        Game::Render::Transform{Math::Point{(Game::LANE3+Game::LANE4)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {});
 
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::AcceptBarMax},
@@ -542,6 +325,225 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
         Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = ";", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1});
+}
+
+std::array total_note_list = {87, 150, 270}; // store total notes here
+std::array speed_list = {2.5f, 3.0f, 4.0f}; // in case of preset speed
+
+inline Game::Battle::RhythmState create_rhythm_state(const int level)
+{
+    Game::Battle::RhythmState state(1, 10, total_note_list[level], speed_list[level], speed_list[level]);
+    state.accept_loss.normal = 50;
+    state.accept_loss.accent = 50;
+    state.accept_loss.rain = 20;
+    state.accept_loss.hold = 50;
+    state.accept_loss.hold_end = 20;
+
+    constexpr float full_accuracy = 10000.00f; // represent full 100.00%
+    state.apn = full_accuracy / static_cast<float>(state.total_notes);
+    return (state);
+}
+
+void Scene::Level1::load_chart(
+    const std::shared_ptr<TaskManager> &tm,
+    Game::Battle::ChartData chart,
+    const Game::Rhythm::NoteField &field)
+{
+    using Timing = Game::Rhythm::Timing;
+    using HoldStart = Game::Rhythm::HoldStart;
+    using NoteType = Game::Rhythm::NoteType;
+    using NoteStatus = Game::Rhythm::NoteStatus;
+
+    // repeat for each lane
+    LOG_INFO("Loading chart...");
+    for (auto &lane: chart.lanes)
+    {
+        while (lane.current_note < lane.notes.size())
+        {
+            const auto &note = lane.notes.at(lane.current_note);
+            const auto pos = field_to_point(lane.lane_number, field);
+
+            if (note.is_hold)
+            {
+                if (note.timing < note.timing_end)
+                {
+                    if (note.note_type != 2)
+                    {
+                        tm->create_entity<
+                        Timing, HoldStart, NoteType, NoteStatus,
+                        Game::Render::Sprite,
+                        Game::Render::Material,
+                        Game::Render::Transform>(
+                                Timing{lane.lane_number, note.timing},
+                                HoldStart{true},
+                                NoteType{note.note_type},
+                                NoteStatus{0},
+                                assign_sprite(note.note_type),
+                                Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+                                Game::Render::Transform{pos, 0, 0, 0});
+                        tm->create_entity<
+                        Timing, HoldStart, NoteType, NoteStatus,
+                        Game::Render::Sprite,
+                        Game::Render::Material,
+                        Game::Render::Transform>(
+                                Timing{lane.lane_number, note.timing_end},
+                                HoldStart{false},
+                                NoteType{-1},
+                                NoteStatus{0},
+                                assign_sprite(-1),
+                                Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+                                Game::Render::Transform{pos, 0, 0, 0});
+                        tm->create_entity<
+                            Game::Rhythm::HoldConnect, NoteStatus,
+                            Game::Render::Sprite,
+                            Game::Render::Material,
+                            Game::Render::Transform>(
+                                Game::Rhythm::HoldConnect{lane.lane_number, note.timing, note.timing_end},
+                                NoteStatus{0},
+                                Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("hold")), .pos = {{-25, 0, 0}, {25, 0, 0}, {25, 0, 0}, {-25, 0, 0}},
+                                .layer = 3, .u0 = 0.0f, .v0 = 0.0f, .u1 = 1.0f, .v1 = 0.0f},
+                                Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+                                Game::Render::Transform{pos, 0, 0, 0});
+                    }
+                    else
+                    {
+                        LOG_INFO("Create hold note error: Hold note cannot have rain type")
+                    }
+                }
+                else
+                {
+                    LOG_INFO("Create hold note error: Timing end must be more than initial timing")
+                }
+            }
+            else
+            {
+                tm->create_entity<
+                Timing, HoldStart, NoteType, NoteStatus,
+                Game::Render::Sprite,
+                Game::Render::Material,
+                Game::Render::Transform>(
+                        Timing{lane.lane_number, note.timing},
+                        HoldStart{false},
+                        NoteType{note.note_type},
+                        NoteStatus{0},
+                        assign_sprite(note.note_type),
+                        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+                        Game::Render::Transform{pos, 0, 0, 0});
+            }
+
+            ++lane.current_note;
+        }
+    }
+    tm->create_entity<Game::Battle::UIComponent,
+    Game::Render::Text,
+    Game::Render::Material,
+    Game::Render::Transform>
+    (
+        Game::Battle::UIComponent{Game::Battle::LevelDiff},
+        write_difficulty(chart.difficulty),
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 37/40 - 10, Game::HALF_HEIGHT * 3/5, 0}, 0, 0, 0});
+    LOG_INFO("Finished loading chart")
+}
+
+Scene::Level1 Scene::Level1::instance()
+{
+    static Level1 instance;
+    return (instance);
+}
+
+std::vector diff_list = {
+    Game::Battle::Difficulty(Game::Battle::LIGHT, 1),
+    Game::Battle::Difficulty(Game::Battle::SPARK, 3),
+    Game::Battle::Difficulty(Game::Battle::BLAZE, 5),
+};
+
+inline Game::Battle::LevelData create_level1_data()
+{
+    Game::Battle::BpmInfo bpm;
+    constexpr std::array timing_list = {17910, 66269, 123582};
+    for (int m : timing_list)
+    {
+        Game::Battle::BpmInfo::InfoPair info{};
+        info.bpm = 134.00f;
+        info.timing = m;
+        bpm.bpm_list.emplace_back(info);
+    }
+    return Game::Battle::LevelData(
+    "A World Without You",
+    "Nakuya",
+    134.00f,
+    bpm,
+    diff_list, 142000
+    );
+}
+
+std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
+{
+    ResourceManager rm;
+    const System::ECS::pid level_id = rm.reserve_process();
+    rm.add_resource(level_id, create_level1_data());
+
+    const System::ECS::pid battle_id = rm.reserve_process();
+    rm.add_resource(battle_id, Game::Battle::BattleState(100,total_note_list[0]*5,diff_list[0]));
+
+    return init(rm);
+}
+
+std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]] ResourceManager &data)
+{
+    auto tm = std::make_shared<TaskManager>();
+    tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
+    if (data.query<Game::World::SaveState>().begin() != data.query<Game::World::SaveState>().end())
+    {
+        tm->create_entity<Game::World::SaveState>(std::move(data.query<Game::World::SaveState>().front()));
+    }
+
+    init_graphics(tm);
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Level-01-L.th0"};
+
+    const Game::Battle::BattleState bt_state = data.query<Game::Battle::BattleState>().front();
+    const int level = bt_state.difficulty.difficulty;
+
+    tm->create_entity<Game::Battle::BattleState,
+    Game::Battle::BulletHellState,
+    Game::Battle::RhythmState,
+    Game::Battle::BulletRegistry,
+    Game::Battle::BulletLoader,
+    Game::Battle::PatternContainer,
+    Game::Render::AnimationDataRegistry,
+    Game::Audio::SoundRegistry>
+    (
+        Game::Battle::BattleState{bt_state.max_hp, bt_state.max_accept_gauge, bt_state.difficulty},
+        Game::Battle::BulletHellState(10),
+        create_rhythm_state(level),
+        std::move(script.bullet_registry),
+        std::move(script.bullet_loader),
+        std::move(script.pattern_container),
+        init_anim_data(),
+        Game::Audio::init_sounds());
+
+    // InputManager
+    tm->create_entity<Game::Input>(Game::Input());
+
+    // Transition Data
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16400, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(50149, 1500, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 1500, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(80000, 1500, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 1000, Game::Battle::RHYTHM));
+
+    tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
+    tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));
+    tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
+    tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
+
+    tm->create_entity<Game::Rhythm::NoteField>(create_field());
+    tm->create_entity<Game::Battle::LevelData>(std::move(data.query<Game::Battle::LevelData>().front()));
+
+    load_chart(tm, load_level_01_chart(0), create_field());
+
+    init_battle_components(tm);
 
     return (tm);
 }
