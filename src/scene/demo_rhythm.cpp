@@ -69,28 +69,6 @@ inline Game::Battle::RhythmState create_rhythm_state()
     return (state);
 }
 
-Game::Rhythm::NoteField Scene::create_field()
-{
-    // constexpr float note_width = 150.0f;
-    constexpr float padding = 20.0f;
-    // position based on window size
-    const float spawn_level = Game::HALF_HEIGHT + padding;
-    const float judge_level = Game::JUDGE_LEVEL;
-    constexpr float lane1_spawn = Game::LANE1;
-    constexpr float lane2_spawn = Game::LANE2;
-    constexpr float lane3_spawn = Game::LANE3;
-    constexpr float lane4_spawn = Game::LANE4;
-    constexpr float move_time = Game::NOTE_TIME;
-    return Game::Rhythm::NoteField(
-        spawn_level,
-        judge_level,
-        lane1_spawn,
-        lane2_spawn,
-        lane3_spawn,
-        lane4_spawn,
-        move_time);
-}
-
 Game::Render::Text Scene::write_difficulty(const Game::Battle::Difficulty difficulty)
 {
     // font must be loaded first!
@@ -143,17 +121,21 @@ auto sprite_vs = load_vertex_shader("shaders/vs/sprite.cso", "sprite_vs", sprite
 auto sprite_ps = load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 auto fn = load_font("fonts/Klub04TT-Normal.dds", "Klub04TT-Normal", "fonts/Klub04TT-Normal.txt");
 
-Math::Point Scene::field_to_point(const int lane, const Game::Rhythm::NoteField &field)
+Math::Point Scene::lane_to_point(const int lane)
 {
-    if (lane == 0)
-        return Math::Point{field.lane1_spawn, field.spawn_level, 0};
-    if (lane == 1)
-        return Math::Point{field.lane2_spawn, field.spawn_level, 0};
-    if (lane == 2)
-        return Math::Point{field.lane3_spawn, field.spawn_level, 0};
-    if (lane == 3)
-        return Math::Point{field.lane4_spawn, field.spawn_level, 0};
-    return Math::Point{0, 0, 0};
+    switch (lane)
+    {
+    case 0:
+        return Math::Point{Game::LANE1, Game::SPAWN_LEVEL, 0};
+    case 1:
+            return Math::Point{Game::LANE2, Game::SPAWN_LEVEL, 0};
+    case 2:
+            return Math::Point{Game::LANE3, Game::SPAWN_LEVEL, 0};
+    case 3:
+            return Math::Point{Game::LANE4, Game::SPAWN_LEVEL, 0};
+    default:
+        return Math::Point{0, 0, 0};
+    }
 }
 
 Game::Render::Sprite Scene::assign_sprite(const int type)
@@ -174,8 +156,7 @@ Game::Render::Sprite Scene::assign_sprite(const int type)
 
 void Scene::DemoRhythm::load_chart(
     std::shared_ptr<TaskManager> &tm,
-    Game::Battle::ChartData &chart,
-    Game::Rhythm::NoteField &field)
+    Game::Battle::ChartData &chart)
 {
 
     // repeat for each lane
@@ -185,7 +166,7 @@ void Scene::DemoRhythm::load_chart(
         while (lane.current_note < lane.notes.size())
         {
             auto &note = lane.notes.at(lane.current_note);
-            auto pos = field_to_point(lane.lane_number, field);
+            auto pos = lane_to_point(lane.lane_number);
 
             if (note.is_hold)
             {
@@ -279,7 +260,7 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
 
-    tm->create_entity<Game::Rhythm::NoteField>(create_field());
+    // tm->create_entity<Game::Rhythm::NoteField>(create_field());
 
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
@@ -300,9 +281,8 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
         Game::Render::Transform{Math::Point{0, Game::HALF_HEIGHT * 2 / 3, 0}, 0, 0, 0});
 
     auto chart = create_demo_chart();
-    auto field = create_field();
 
-    load_chart(tm, chart, field);
+    load_chart(tm, chart);
 
     tm->run_all();
     return (tm);

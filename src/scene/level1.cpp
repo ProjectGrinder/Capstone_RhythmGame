@@ -346,8 +346,7 @@ inline Game::Battle::RhythmState create_rhythm_state(const int level)
 
 void Scene::Level1::load_chart(
     const std::shared_ptr<TaskManager> &tm,
-    Game::Battle::ChartData chart,
-    const Game::Rhythm::NoteField &field)
+    Game::Battle::ChartData chart)
 {
     using Timing = Game::Rhythm::Timing;
     using HoldStart = Game::Rhythm::HoldStart;
@@ -361,7 +360,7 @@ void Scene::Level1::load_chart(
         while (lane.current_note < lane.notes.size())
         {
             const auto &note = lane.notes.at(lane.current_note);
-            const auto pos = field_to_point(lane.lane_number, field);
+            const auto pos = lane_to_point(lane.lane_number);
 
             if (note.is_hold)
             {
@@ -538,10 +537,9 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(2));
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
 
-    tm->create_entity<Game::Rhythm::NoteField>(create_field());
     tm->create_entity<Game::Battle::LevelData>(std::move(data.query<Game::Battle::LevelData>().front()));
 
-    load_chart(tm, load_level_01_chart(0), create_field());
+    load_chart(tm, load_level_01_chart(0));
 
     init_battle_components(tm);
 

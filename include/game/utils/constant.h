@@ -13,6 +13,7 @@ namespace Game
     constexpr float NOTE_WIDTH = HALF_WIDTH / 960 * 150;
     constexpr float NOTE_HEIGHT = HALF_HEIGHT / 540 * 30;
     constexpr float JUDGE_LEVEL = HALF_HEIGHT * -2 / 3;
+    constexpr float SPAWN_LEVEL = HALF_HEIGHT + 20.f;
     // x-value of 4 lanes
     constexpr float LANE1 = -1 * (NOTE_WIDTH * 1.65f);
     constexpr float LANE2 = -1 * (NOTE_WIDTH * 0.55f);

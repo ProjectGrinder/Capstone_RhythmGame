@@ -43,7 +43,6 @@
 #include "components/rhythm/judgetext.h"
 #include "components/rhythm/keytext.h"
 #include "components/rhythm/lane.h"
-#include "components/rhythm/notefield.h"
 #include "components/rhythm/notestatus.h"
 #include "components/rhythm/notetype.h"
 #include "components/rhythm/timing.h"

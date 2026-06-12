@@ -78,7 +78,6 @@ namespace Scene
             Game::Rhythm::Timing,
             Game::Rhythm::HoldStart,
             Game::Rhythm::JudgeText,
-            Game::Rhythm::NoteField,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
@@ -141,8 +140,7 @@ namespace Scene
 
         static void load_chart(
             const std::shared_ptr<TaskManager> &tm,
-            Game::Battle::ChartData chart,
-            const Game::Rhythm::NoteField &field);
+            Game::Battle::ChartData chart);
 
         static std::shared_ptr<TaskManager> init();
         static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data);
