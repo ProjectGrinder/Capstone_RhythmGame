@@ -17,9 +17,9 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = Level1;
+    using StartingScene = Level2;
 
-    using SceneTuple = std::tuple<DemoMenu, Level1, DemoWorld>;
+    using SceneTuple = std::tuple<DemoMenu, Level1, Level2, DemoWorld>;
     using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;
     using TaskManagerVariant = Utils::make_task_manager_variant_t<SceneTuple>;
 

@@ -32,7 +32,7 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
     load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 }
 
-inline Game::Battle::LevelData create_level1_data()
+inline Game::Battle::LevelData create_level2_data()
 {
     Game::Battle::BpmInfo bpm;
     constexpr std::array timing_list = {17910, 66269, 123582};
@@ -133,7 +133,7 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
     // LevelRegistry
     // TODO : Move this to init at the start of the game
     tm->create_entity<Game::World::LevelRegistry>({{
-        create_level1_data()
+        create_level2_data()
     }});
 
     tm->create_entity<Game::World::Player, Rotation,
