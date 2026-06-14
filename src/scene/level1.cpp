@@ -344,6 +344,27 @@ inline Game::Battle::RhythmState create_rhythm_state(const int level)
     return (state);
 }
 
+inline std::string get_dsl_path(const int level)
+{
+    std::string dsl_path = "dsl/01-";
+    switch (level)
+    {
+        case 0:
+        dsl_path.append("L");
+        break;
+        case 1:
+        dsl_path.append("S");
+        break;
+        case 2:
+        dsl_path.append("B");
+        break;
+        default:
+        dsl_path.append("L");
+    }
+    dsl_path.append(".th0");
+    return dsl_path;
+}
+
 void Scene::Level1::load_chart(
     const std::shared_ptr<TaskManager> &tm,
     Game::Battle::ChartData chart)
@@ -499,10 +520,10 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     }
 
     init_graphics(tm);
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Level-01-L.th0"};
 
     const Game::Battle::BattleState bt_state = data.query<Game::Battle::BattleState>().front();
     const int level = bt_state.difficulty.difficulty;
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0",get_dsl_path(level).c_str()};
 
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
@@ -539,7 +560,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
 
     tm->create_entity<Game::Battle::LevelData>(std::move(data.query<Game::Battle::LevelData>().front()));
 
-    load_chart(tm, load_level_01_chart(0));
+    load_chart(tm, load_level_01_chart(level));
 
     init_battle_components(tm);
 
