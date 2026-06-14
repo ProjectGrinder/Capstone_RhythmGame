@@ -76,7 +76,7 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
         init_anim_data(),
-        Game::Audio::init_sounds()
+        Game::Audio::init_sounds(0)
         );
 
     // InputManager

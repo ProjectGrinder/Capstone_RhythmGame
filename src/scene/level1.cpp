@@ -353,19 +353,14 @@ inline std::string get_dsl_path(const int level)
     switch (level)
     {
         case 0:
-        dsl_path.append("L");
-        break;
+        return dsl_path.append("L.th0");
         case 1:
-        dsl_path.append("S");
-        break;
+        return dsl_path.append("S.th0");
         case 2:
-        dsl_path.append("B");
-        break;
+        return dsl_path.append("B.th0");
         default:
-        dsl_path.append("L");
+        return dsl_path.append("L.th0");
     }
-    dsl_path.append(".th0");
-    return dsl_path;
 }
 
 int Scene::Level1::load_chart(
@@ -554,7 +549,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
         init_anim_data(),
-        Game::Audio::init_sounds());
+        Game::Audio::init_sounds(0));
 
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());

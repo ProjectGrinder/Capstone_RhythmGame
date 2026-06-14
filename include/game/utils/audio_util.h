@@ -5,8 +5,20 @@
 namespace Game::Audio
 {
     extern "C" void *get_audio_api(void);
-    inline SoundRegistry init_sounds()
+    inline SoundRegistry init_sounds(const int level_num)
     {
+        std::string bgm = "audio/";
+        switch (level_num)
+        {
+            case 0:
+            bgm.append("DemoSong.wav");
+            break;
+            case 1:
+            bgm.append("DemoSong2.wav");
+            break;
+            default:
+            bgm.append("DemoSong.wav");
+        }
         const AssetsRecord* sound_ptr[] = {
             load_audio("audio/POP1.wav","POP1"),
             load_audio("audio/Click.mp3","Click"),
@@ -18,7 +30,7 @@ namespace Game::Audio
             load_audio("audio/edm-clap-53.wav","base_note"),
             load_audio("audio/VEC1 Tamb 07.wav","accent_fx"),
             load_audio("audio/edm-hihat-12.wav","rain_note"),
-            load_audio("audio/DemoSong.wav","DemoSong")
+            load_audio(bgm.c_str(),"level_music")
         };
         SoundRegistry sound_registry;
         sound_registry.audios.insert({
@@ -43,7 +55,7 @@ namespace Game::Audio
             {"sound_note_hit", Audio(sound_ptr[7])},
             {"sound_rain_note", Audio(sound_ptr[9])},
             {"sound_accent_effect", Audio(sound_ptr[8])},
-            {"DemoSong", Audio(sound_ptr[10])}
+            {"level_music", Audio(sound_ptr[10])}
         });
 
         for (const auto& [key, sound] : sound_registry.audios) {
