@@ -138,7 +138,7 @@ namespace Scene
             Game::Battle::handle_text_ui<Syscall>
             >;
 
-        static void load_chart(
+        static int load_chart(
             const std::shared_ptr<TaskManager> &tm,
             Game::Battle::ChartData chart);
 

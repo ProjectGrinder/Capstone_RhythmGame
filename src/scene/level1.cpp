@@ -327,17 +327,20 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
         Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1});
 }
 
-std::array total_note_list = {87, 150, 270}; // store total notes here
+// std::array total_note_list = {87, 150, 270}; // store total notes here
 std::array speed_list = {2.5f, 3.0f, 4.0f}; // in case of preset speed
 
-inline Game::Battle::RhythmState create_rhythm_state(const int level)
+inline Game::Battle::RhythmState create_rhythm_state(const int level, const int note_count)
 {
-    Game::Battle::RhythmState state(1, 10, total_note_list[level], speed_list[level], speed_list[level]);
-    state.accept_loss.normal = 50;
-    state.accept_loss.accent = 50;
-    state.accept_loss.rain = 20;
-    state.accept_loss.hold = 50;
-    state.accept_loss.hold_end = 20;
+    const int accept_gain = 20000/note_count;
+    Game::Battle::RhythmState state(1, accept_gain, note_count, speed_list[level], speed_list[level]);
+    const int accept_loss1 = accept_gain*5;
+    const int accept_loss2 = accept_gain*2;
+    state.accept_loss.normal = accept_loss1;
+    state.accept_loss.accent = accept_loss1;
+    state.accept_loss.rain = accept_loss2;
+    state.accept_loss.hold = accept_loss1;
+    state.accept_loss.hold_end = accept_loss2;
 
     constexpr float full_accuracy = 10000.00f; // represent full 100.00%
     state.apn = full_accuracy / static_cast<float>(state.total_notes);
@@ -365,7 +368,7 @@ inline std::string get_dsl_path(const int level)
     return dsl_path;
 }
 
-void Scene::Level1::load_chart(
+int Scene::Level1::load_chart(
     const std::shared_ptr<TaskManager> &tm,
     Game::Battle::ChartData chart)
 {
@@ -374,6 +377,7 @@ void Scene::Level1::load_chart(
     using NoteType = Game::Rhythm::NoteType;
     using NoteStatus = Game::Rhythm::NoteStatus;
 
+    int note_count = 0;
     // repeat for each lane
     LOG_INFO("Loading chart...");
     for (auto &lane: chart.lanes)
@@ -424,6 +428,8 @@ void Scene::Level1::load_chart(
                                 .layer = 3, .u0 = 0.0f, .v0 = 0.0f, .u1 = 1.0f, .v1 = 0.0f},
                                 Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
                                 Game::Render::Transform{pos, 0, 0, 0});
+
+                        note_count += 2;
                     }
                     else
                     {
@@ -449,6 +455,8 @@ void Scene::Level1::load_chart(
                         assign_sprite(note.note_type),
                         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
                         Game::Render::Transform{pos, 0, 0, 0});
+
+                note_count += 1;
             }
 
             ++lane.current_note;
@@ -464,6 +472,9 @@ void Scene::Level1::load_chart(
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 37/40 - 10, Game::HALF_HEIGHT * 3/5, 0}, 0, 0, 0});
     LOG_INFO("Finished loading chart")
+    LOG_INFO("Note count = %d", note_count)
+
+    return note_count;
 }
 
 Scene::Level1 Scene::Level1::instance()
@@ -505,7 +516,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     rm.add_resource(level_id, create_level1_data());
 
     const System::ECS::pid battle_id = rm.reserve_process();
-    rm.add_resource(battle_id, Game::Battle::BattleState(100,total_note_list[0]*5,diff_list[0]));
+    rm.add_resource(battle_id, Game::Battle::BattleState(100,10000,diff_list[0]));
 
     return init(rm);
 }
@@ -525,6 +536,8 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     const int level = bt_state.difficulty.difficulty;
     Game::BulletHell::BulletScript script{"dsl/ShotData.th0",get_dsl_path(level).c_str()};
 
+    const int note_count = load_chart(tm, load_level_01_chart(level));
+
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
     Game::Battle::RhythmState,
@@ -536,7 +549,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     (
         Game::Battle::BattleState{bt_state.max_hp, bt_state.max_accept_gauge, bt_state.difficulty},
         Game::Battle::BulletHellState(10),
-        create_rhythm_state(level),
+        create_rhythm_state(level, note_count),
         std::move(script.bullet_registry),
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
@@ -559,8 +572,6 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(3));
 
     tm->create_entity<Game::Battle::LevelData>(std::move(data.query<Game::Battle::LevelData>().front()));
-
-    load_chart(tm, load_level_01_chart(level));
 
     init_battle_components(tm);
 
