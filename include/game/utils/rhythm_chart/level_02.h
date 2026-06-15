@@ -14,11 +14,6 @@ inline Game::Battle::ChartData level_02_light()
     chart.difficulty.difficulty = Game::Battle::LIGHT;
     chart.difficulty.level = 2;
 
-    chart.lanes[0].notes.emplace_back(false, 20000, 0, Game::Battle::RhythmType::ACCENT);
-    chart.lanes[1].notes.emplace_back(false, 20000, 0, Game::Battle::RhythmType::ACCENT);
-    chart.lanes[2].notes.emplace_back(false, 20000, 0, Game::Battle::RhythmType::ACCENT);
-    chart.lanes[3].notes.emplace_back(false, 20000, 0, Game::Battle::RhythmType::ACCENT);
-
     return (chart);
 }
 

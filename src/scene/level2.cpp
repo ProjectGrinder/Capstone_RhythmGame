@@ -332,7 +332,11 @@ std::array speed_list2 = {2.5f, 3.0f, 4.0f}; // in case of preset speed
 
 inline Game::Battle::RhythmState create_rhythm_state(const int level, const int note_count)
 {
-    const int accept_gain = 20000/note_count;
+    int accept_gain;
+    if (note_count > 0)
+        accept_gain = 20000/note_count;
+    else
+        accept_gain = 1;
     Game::Battle::RhythmState state(1, accept_gain, note_count, speed_list2[level], speed_list2[level]);
     const int accept_loss1 = accept_gain*5;
     const int accept_loss2 = accept_gain*2;
@@ -555,11 +559,11 @@ std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init([[maybe_unused]]
     tm->create_entity<Game::Input>(Game::Input());
 
     // Transition Data
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16400, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(50149, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(80000, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 1000, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(27000, 1200, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(49700, 1100, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(72000, 1000, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(84500, 1200, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(110500, 1000, Game::Battle::RHYTHM));
 
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));

@@ -332,7 +332,11 @@ std::array speed_list1 = {2.5f, 3.0f, 4.0f}; // in case of preset speed
 
 inline Game::Battle::RhythmState create_rhythm_state(const int level, const int note_count)
 {
-    const int accept_gain = 20000/note_count;
+    int accept_gain;
+    if (note_count > 0)
+        accept_gain = 20000/note_count;
+    else
+        accept_gain = 1;
     Game::Battle::RhythmState state(1, accept_gain, note_count, speed_list1[level], speed_list1[level]);
     const int accept_loss1 = accept_gain*5;
     const int accept_loss2 = accept_gain*2;
