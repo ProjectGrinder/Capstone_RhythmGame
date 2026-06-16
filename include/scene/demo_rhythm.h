@@ -5,13 +5,14 @@
 
 namespace Scene
 {
-    Game::Rhythm::NoteField create_field();
+    // Game::Rhythm::NoteField create_field();
     Game::Render::Sprite assign_sprite(int type);
+    Game::Render::Text write_difficulty(Game::Battle::Difficulty difficulty);
 
     // Use these methods for the demo level
-    Game::Battle::ChartData create_level1_chart();
+    // Game::Battle::ChartData create_level1_chart();
 
-    Math::Point field_to_point(int lane, const Game::Rhythm::NoteField &field);
+    Math::Point lane_to_point(int lane);
 
     struct DemoRhythm
     {
@@ -33,7 +34,6 @@ namespace Scene
             Game::Rhythm::HoldStart,
             Game::Rhythm::NoteType,
             Game::Rhythm::NoteStatus,
-            Game::Rhythm::NoteField,
             Game::Rhythm::HoldConnect,
             Game::Render::Camera2D,
             Game::Render::Sprite,
@@ -64,8 +64,7 @@ namespace Scene
 
         static void load_chart(
             std::shared_ptr<TaskManager> &tm,
-            Game::Battle::ChartData &chart,
-            Game::Rhythm::NoteField &field);
+            Game::Battle::ChartData &chart);
 
         static std::shared_ptr<TaskManager> init();
 

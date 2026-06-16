@@ -204,6 +204,7 @@ namespace Game::Battle
     struct ChartData
     {
         std::array<LaneInfo, 4> lanes;
+        Difficulty difficulty;
     };
 
     // TODO : Should include max_acceptance_gauge

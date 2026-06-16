@@ -80,7 +80,6 @@ namespace Scene
             Game::Rhythm::Timing,
             Game::Rhythm::HoldStart,
             Game::Rhythm::JudgeText,
-            Game::Rhythm::NoteField,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
@@ -142,11 +141,8 @@ namespace Scene
             >;
 
         static void load_chart(
-            std::shared_ptr<TaskManager> &tm,
-            Game::Battle::ChartData &chart,
-            Game::Rhythm::NoteField &field);
-
-        // static Game::Battle::Difficulty set_difficulty(int level);
+            const std::shared_ptr<TaskManager> &tm,
+            Game::Battle::ChartData chart);
 
         static std::shared_ptr<TaskManager> init();
         static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data);
