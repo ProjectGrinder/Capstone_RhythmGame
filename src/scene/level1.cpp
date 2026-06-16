@@ -196,7 +196,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     tm->create_entity<Game::World::SaveState>(std::move(data.query<Game::World::SaveState>().front()));
 
     init_graphics(tm);
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Demo.th0"};
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Fail.th0"};
 
     const Game::Battle::BattleState bt_state = data.query<Game::Battle::BattleState>().front();
     const int level = bt_state.difficulty.difficulty;

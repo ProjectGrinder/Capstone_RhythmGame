@@ -72,7 +72,9 @@ namespace Game::BulletHell
 		    if (!bullet.is_damageable)
 		        continue;
 
-		    if (distance_squared - collision_distance*collision_distance <= GRAZE_HITBOX_SIZE)
+		    const float graze_distance = collision_distance + GRAZE_HITBOX_SIZE;
+
+		    if (distance_squared <= graze_distance * graze_distance)
 		    {
 		        if (!bullet.is_grazed)
 		        {
@@ -86,7 +88,8 @@ namespace Game::BulletHell
 		    {
 		        continue;
 		    }
-		    //Narrow check : SAT
+
+		    //Narrow check
             const auto player_hitbox_pos =
                     Math::Point(player_tra.position.x + player_hitbox.offset_x, player_tra.position.y + player_hitbox.offset_y);
 		    const auto bullet_hitbox_pos =
@@ -147,18 +150,21 @@ namespace Game::BulletHell
 	        if (!bullet.is_damageable)
 	            continue;
 
-	        if (distance_squared > collision_distance * collision_distance)
+	        const float graze_distance = collision_distance + GRAZE_HITBOX_SIZE;
+
+	        if (distance_squared <= graze_distance * graze_distance)
 	        {
-	            if (distance_squared - collision_distance*collision_distance <= GRAZE_HITBOX_SIZE)
+	            if (!bullet.is_grazed)
 	            {
-	                if (!bullet.is_grazed)
-	                {
-	                    bullet.is_grazed = true;
-	                    state.graze ++;
-	                    Audio::audio_play(sound_registry["sound_graze"]);
-	                }
+	                bullet.is_grazed = true;
+	                state.graze ++;
+	                Audio::audio_play(sound_registry["sound_graze"]);
 	            }
-                continue;
+	        }
+
+	        if (distance_squared > collision_distance*collision_distance)
+	        {
+	            continue;
 	        }
 
 	        // Ellipse vs circle collision

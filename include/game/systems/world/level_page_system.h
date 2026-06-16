@@ -145,7 +145,8 @@ namespace Game::World
             if (input.left_pressed || input.right_pressed)
             {
                 level_node.selection = 1;
-                level_node.diff = (level_node.diff + Physics::sign(input.right_pressed)) % (uint8_t)level_info.difficulties.difficulties.size();
+                const auto count = static_cast<uint8_t>(level_info.difficulties.difficulties.size());
+                level_node.diff = static_cast<uint8_t>((static_cast<int>(level_node.diff) + Physics::sign(input.right_pressed) + count) % count);
                 adjust_option_rect(syscall, level_node.select_rect_pid, level_node.selection, level_node.diff, level_info.difficulties.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
             }
         }
