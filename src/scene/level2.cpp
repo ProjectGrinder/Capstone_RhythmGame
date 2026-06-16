@@ -327,7 +327,6 @@ void init_battle_components(const std::shared_ptr<Scene::Level2::TaskManager>& t
         Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1});
 }
 
-// std::array total_note_list = {87, 150, 270}; // store total notes here
 std::array speed_list2 = {2.5f, 3.0f, 4.0f}; // in case of preset speed
 
 inline Game::Battle::RhythmState create_rhythm_state(const int level, const int note_count)
@@ -351,9 +350,9 @@ inline Game::Battle::RhythmState create_rhythm_state(const int level, const int 
     return (state);
 }
 
-inline std::string get_dsl_path(const int level)
+inline std::string get_dsl_path2(const int level)
 {
-    std::string dsl_path = "dsl/01-";
+    std::string dsl_path = "dsl/02-";
     switch (level)
     {
         case 0:
@@ -491,7 +490,7 @@ std::vector diff_list2 = {
 inline Game::Battle::LevelData create_level2_data()
 {
     Game::Battle::BpmInfo bpm;
-    constexpr std::array timing_list = {17910, 66269, 123582};
+    constexpr std::array timing_list = {27000, 72000, 110500};
     for (int m : timing_list)
     {
         Game::Battle::BpmInfo::InfoPair info{};
@@ -533,7 +532,7 @@ std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init([[maybe_unused]]
 
     const Game::Battle::BattleState bt_state = data.query<Game::Battle::BattleState>().front();
     const int level = bt_state.difficulty.difficulty;
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0",get_dsl_path(level).c_str()};
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0",get_dsl_path2(level).c_str()};
 
     const int note_count = load_chart(tm, load_level_02_chart(level));
 
