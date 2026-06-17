@@ -111,13 +111,12 @@ namespace Game::Battle
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Hit Taken", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{-200, 100, 0}, 0, 0, 0});
-        // TODO: change to hit taken variable when added
         syscall.template create_entity<
             Render::Text,
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "4", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = std::to_string(bullet_state.hit_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{0, 100, 0}, 0, 0, 0});
         syscall.template create_entity<

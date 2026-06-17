@@ -1,8 +1,8 @@
 #pragma once
 #include <unordered_set>
+#include "parser.h"
 #include "game/components/battle/battlestate.h"
 #include "game/components/battle/bullet_data.h"
-#include "parser.h"
 
 namespace DSL
 {

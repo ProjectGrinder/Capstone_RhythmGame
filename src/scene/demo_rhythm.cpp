@@ -52,7 +52,7 @@ inline Game::Battle::ChartData create_demo_chart()
 
 inline Game::Battle::BattleState create_battle_state()
 {
-    Game::Battle::BattleState state(100, 100, Game::Battle::Difficulty());
+    Game::Battle::BattleState state(100, Game::Battle::Difficulty());
     state.current_phase = Game::Battle::RHYTHM;
     return (state);
 }

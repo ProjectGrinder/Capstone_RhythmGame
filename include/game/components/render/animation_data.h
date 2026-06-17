@@ -1,6 +1,6 @@
 #pragma once
 #include <array>
-#include "utils/print_debug.h"
+#include <map>
 
 namespace Game::Render
 {
@@ -26,8 +26,8 @@ namespace Game::Render
     // Map?
     struct AnimationDataRegistry
     {
-        std::vector<AnimationData> animation_datas;
-        AnimationDataRegistry(std::vector<AnimationData> data)
+        std::unordered_map<std::string, AnimationData> animation_datas;
+        AnimationDataRegistry(std::unordered_map<std::string,AnimationData> data)
             : animation_datas(std::move(data)) {}
     };
 } // namespace Game::Render
