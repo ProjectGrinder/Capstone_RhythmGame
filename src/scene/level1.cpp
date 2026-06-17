@@ -2,7 +2,7 @@
 
 #include "scene.h"
 #include "game.h"
-#include "game/utils/Bullethell_DSL/bullet_script.h"
+#include "game/utils/DSL/bullethell/bullet_script.h"
 #include "game/utils/rhythm_chart/level_01.h"
 
 void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
@@ -51,7 +51,7 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 }
 
-void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
+void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& tm, const Game::Battle::BattleState &bt_state)
 {
     // Background
     tm->create_entity<Game::Render::Sprite,
@@ -107,7 +107,8 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
             .pos = {{-240, 300, 0}, {240, 300, 0}, {240, -300, 0}, {-240, -300, 0}}, .layer = 3,
             .u0 = 0.f, .v0 = 0.f, .u1 = 1.f/8.f, .v1 = 1.f/3.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
-        Game::Render::Animator{"Boss_Idle"}, Game::Render::Animation_Controller(true), init_boss_anim_seq(), {Game::Battle::BULLET_HELL,1}
+        Game::Render::Animator{"Boss_Idle"}, Game::Render::Animation_Controller(true),
+            Scene::init_boss_anim_seq(), {Game::Battle::BULLET_HELL,1}
     );
 
     // judgement line
@@ -284,7 +285,7 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
     Game::Render::Transform>
     (
         Game::Battle::UIComponent(Game::Battle::StatBox),
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "/ 20", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "/ "+ std::to_string(bt_state.graze_criteria), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{Game::HALF_WIDTH * 2/3 - 35, Game::HALF_HEIGHT * -1/5 - 15, 0}, 0, 0, 0});
 
@@ -304,7 +305,7 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
     Game::Render::Material,
     Game::Render::Transform, Game::Battle::BattleObject>
     (
-        GGame::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "S", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "S", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE1, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1}, {Game::Battle::RHYTHM,0.7f});
     tm->create_entity<Game::Render::Text,
@@ -328,7 +329,6 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
         Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = ";", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1}, {Game::Battle::RHYTHM,0.7f});
-        Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1});
 }
 
 std::array total_note_list = {87, 150, 270}; // store total notes here
@@ -455,12 +455,6 @@ Scene::Level1 Scene::Level1::instance()
     return (instance);
 }
 
-std::vector diff_list = {
-    Game::Battle::Difficulty(Game::Battle::LIGHT, 1),
-    Game::Battle::Difficulty(Game::Battle::SPARK, 3),
-    Game::Battle::Difficulty(Game::Battle::BLAZE, 5),
-};
-
 inline Game::Battle::LevelData create_level1_data()
 {
     Game::Battle::BpmInfo bpm;
@@ -477,7 +471,11 @@ inline Game::Battle::LevelData create_level1_data()
     "Nakuya",
     134.00f,
     bpm,
-    diff_list, 142000
+        {
+            Game::Battle::Difficulty(Game::Battle::LIGHT, 1, total_note_list[0]*5,20),
+            Game::Battle::Difficulty(Game::Battle::SPARK, 3, total_note_list[1]*5,30),
+            Game::Battle::Difficulty(Game::Battle::BLAZE, 4, total_note_list[2]*5,40),
+        },142000
     );
 }
 
@@ -485,10 +483,11 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
 {
     ResourceManager rm;
     const System::ECS::pid level_id = rm.reserve_process();
-    rm.add_resource(level_id, create_level1_data());
+    Game::Battle::LevelData level_data = create_level1_data();
+    rm.add_resource(level_id, std::move(level_data));
 
     const System::ECS::pid battle_id = rm.reserve_process();
-    rm.add_resource(battle_id, Game::Battle::BattleState(100,total_note_list[0]*5,diff_list[0]));
+    rm.add_resource(battle_id, Game::Battle::BattleState(100,level_data.difficulties[0]));
 
     return init(rm);
 }
@@ -503,10 +502,12 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     }
 
     init_graphics(tm);
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Level-01-L.th0"};
 
-    const Game::Battle::BattleState bt_state = data.query<Game::Battle::BattleState>().front();
+    Game::Battle::BattleState &bt_state = data.query<Game::Battle::BattleState>().front();
     const int level = bt_state.difficulty.difficulty;
+
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0", (Game::levelDSL_lists[0][level].bullet_script.c_str())};
+    script.read_dsl_from_file(Game::levelDSL_lists[0][level].bullet_script.c_str());
 
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
@@ -517,7 +518,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     Game::Render::AnimationDataRegistry,
     Game::Audio::SoundRegistry>
     (
-        Game::Battle::BattleState{bt_state.max_hp, bt_state.max_accept_gauge, bt_state.difficulty},
+        std::move(bt_state),
         Game::Battle::BulletHellState(10),
         create_rhythm_state(level),
         std::move(script.bullet_registry),
@@ -543,9 +544,9 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
 
     tm->create_entity<Game::Battle::LevelData>(std::move(data.query<Game::Battle::LevelData>().front()));
 
-    load_chart(tm, load_level_01_chart(0));
+    load_chart(tm, load_level_01_chart(level));
 
-    init_battle_components(tm);
+    init_battle_components(tm, bt_state);
 
     return (tm);
 }

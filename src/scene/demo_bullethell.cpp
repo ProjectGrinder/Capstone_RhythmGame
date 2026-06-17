@@ -87,7 +87,7 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
 
     init_graphics(tm);
 
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/Demo.th0"};
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0","dsl/01-B.th0"};
 
     // Create and configure BattleState
     tm->create_entity<Game::Battle::BattleState,
@@ -98,7 +98,7 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
     Game::Render::AnimationDataRegistry,
     Game::Audio::SoundRegistry>
     (
-        Game::Battle::BattleState(100, 100, Game::Battle::Difficulty()),
+        Game::Battle::BattleState(100, Game::Battle::Difficulty()),
         Game::Battle::BulletHellState(10),
         std::move(script.bullet_registry),
         std::move(script.bullet_loader),

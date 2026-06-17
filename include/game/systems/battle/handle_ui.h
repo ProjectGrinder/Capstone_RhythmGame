@@ -59,7 +59,7 @@ namespace Game::Battle
                 const int graze = (state_query.front().get<BulletHellState>().graze);
 
                 comp.get<Render::Text>().text = std::to_string(graze);
-                if (graze >= 20)
+                if (graze >= state_query.front().components.get<BattleState>().difficulty.graze_criteria)
                 {
                     comp.get<Render::Text>().color = Math::Color{0.3f, 1, 0.3f};
                 }

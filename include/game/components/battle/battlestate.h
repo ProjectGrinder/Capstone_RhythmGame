@@ -58,20 +58,12 @@ namespace Game::Battle
     {
         DifficultyType difficulty;
         int level;
-        Difficulty() : difficulty(LIGHT), level(1)
+        int max_accept_gauge;
+        int graze_criteria;
+        Difficulty() : difficulty(LIGHT), level(1), max_accept_gauge(0), graze_criteria(0)
         {}
-        Difficulty(const DifficultyType difficulty, const int level) :
-            difficulty(difficulty), level(level)
-        {}
-        // max level 10
-    };
-
-    struct DifficultyList
-    {
-        std::vector<Difficulty> difficulties;
-        DifficultyList() = default;
-        DifficultyList(std::vector<Difficulty> difficulties) :
-            difficulties(std::move(difficulties))
+        Difficulty(const DifficultyType difficulty, const int level, int max_accept_gauge, int graze_criteria) :
+            difficulty(difficulty), level(level),  max_accept_gauge(max_accept_gauge), graze_criteria(graze_criteria)
         {}
         // max level 10
     };
@@ -134,6 +126,7 @@ namespace Game::Battle
         int clock_time; // initialize clock with 3-second wait period
         int current_accept;
         int max_accept_gauge;
+        int graze_criteria;
         PlayerState player_state;
         Difficulty difficulty;
         JudgementCount judgement_count;
@@ -144,15 +137,17 @@ namespace Game::Battle
             clock_time(-3000000),
             current_accept(0),
             max_accept_gauge(0),
+            graze_criteria(20),
             player_state(PLAY),
             current_phase(BULLET_HELL)
         {}
-        explicit BattleState(const int max_hp, const int max_accept_gauge, const Difficulty difficulty) :
+        explicit BattleState(const int max_hp, const Difficulty difficulty) :
             max_hp(max_hp),
             hp(max_hp),
             clock_time(-3000000),
             current_accept(0),
-            max_accept_gauge(max_accept_gauge),
+            max_accept_gauge(difficulty.max_accept_gauge),
+            graze_criteria(difficulty.graze_criteria),
             player_state(PLAY),
             difficulty(difficulty),
             current_phase(BULLET_HELL)
@@ -215,20 +210,20 @@ namespace Game::Battle
         std::string genre_name;
         float main_bpm;
         BpmInfo bpm_info;
-        DifficultyList difficulties;
+        std::vector<Difficulty> difficulties;
         int duration;
         explicit LevelData(
                 std::string title,
                 std::string artist_name,
                 const float main_bpm,
                 BpmInfo bpm_info,
-                const DifficultyList difficulties,
+                const std::vector<Difficulty> &difficulties,
                 const int duration) :
             title(std::move(title)),
             artist_name(std::move(artist_name)),
             main_bpm(main_bpm),
             bpm_info(std::move(bpm_info)),
-            difficulties(difficulties),
+            difficulties(std::move(difficulties)),
             duration(duration)
         {}
     };
