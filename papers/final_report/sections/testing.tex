@@ -1,0 +1,85 @@
+\section{Testing and Experimentation}
+\label{sec:testing}
+
+\subsection{Methodology}
+\label{subsec:methodology}
+
+The purpose of the testing is to evaluate the performance characteristics of our custom engine in comparison with industry-standard
+ECS frameworks under comparable workloads.
+We assess performance through measuring system frame duration, the time required to run the user system,
+as this duration is a direct indicator of runtime responsiveness and execution efficiency.
+
+For each framework, system frame duration is measured by recording a timestamp immediately before the execution of
+the user system and another immediately after the user system finished processing.
+We repeat this process for different entity counts to observe underlying performance degradation.
+To evaluate the framework performance, we assume an instantaneous, highly optimized renderer.
+To this end, we exclude the rendering systems from Bevy and our custom engine, opting to compare only the logical systems.
+This lets us take the system frame duration to be representative of the response time from input to output,
+making it an effective metric for overall system performance.
+
+All ECS frameworks were tested using the language’s release build profile.
+Systems for each framework were implemented according to official tutorials and documentation
+to ensure that implementations were idiomatic and representative of recommended usage patterns.
+We average the system frame time across 1000 repetitions to remove noise from the result.
+The output is logged only after all time-sensitive work is done to not impact performance.
+
+All tests were executed on local hardware using the same machine and operating environment to ensure consistency across measurements.
+The hardware specifications are as follows:
+
+\begin{itemize}
+    \item CPU: 11th Gen Intel(R) Core(TM) i7-11800H @ 2.30 GHz
+    \item GPU: Intel(R) UHD Graphics
+    \item Memory: 3200 MHz 16.0 GB RAM
+    \item Operating System: Windows 10 Version 22H2 (OS Build 19045.6466)
+\end{itemize}
+
+When testing ECS frameworks, it is important that the user system implementation itself does not have a massive time cost relative to
+the framework.
+With consideration of this, we opted for a relatively simple process, instead of the logic used for complex simulations.
+The user system used for the benchmark is a process that adds an entity's velocity to its position.
+This system measures the framework's efficiency in iteration and data modification, which constitutes a large part of ECS usage.
+
+\subsubsection*{Bevy ECS}
+
+For the Bevy ECS implementation, timing measurements are performed using the Rust standard library's \texttt{std::time::Instant}.
+A benchmarking resource is defined to store frame timing information and maintain a handle to a log file for persistent output.
+
+Two benchmark systems are inserted into the Bevy update schedule: one system records the start timestamp immediately
+before execution of the user-defined systems, while another records the end timestamp immediately afterward.
+Bevy’s system chaining mechanism is used to guarantee deterministic execution order between the
+benchmark systems and the systems under test.
+Each user system is allowed to be parallelized by Bevy's ECS scheduler.
+To idiomatically measure only user systems and minimize additional overhead, we use Bevy's \texttt{MinimalPlugins} plugin group.
+According to related documentation~\cite{bevy_minimalplugins}, this plugin group represents the absolute minimum bare-bones application.
+
+The elapsed duration between the two timestamps was written both to standard output and to a log file after the system
+has run to the specified number of repetitions.
+We use \texttt{std::fs::File} guarded by a mutex for safe access.
+
+\subsubsection*{EnTT}
+
+For the EnTT implementation, timing measurements were performed using C++’s \texttt{<chrono>} library.
+The benchmark instrumentation was placed directly within the main \texttt{update()} function responsible for
+executing all ECS systems.
+We let this function return the duration measured by the benchmark to store and use for the time difference.
+We use a for-loop to repeat this function for the specified number of repetitions.
+For the user system, we use a range-for implementation as documented in the framework's given code example~\cite{ValtoLibraries_EnTT}.
+
+A timestamp was recorded immediately before system execution using \texttt{std::chrono::steady\_clock::now()},
+and a second timestamp was recorded immediately after all systems completed execution.
+The elapsed duration was converted to microseconds using \texttt{std::chrono::duration\_cast}.
+
+Test parameters and measured frame times were appended to a persistent log file using \texttt{std::ofstream},
+as well as the final average.
+
+\subsubsection*{Our Custom Engine}
+
+For our custom engine, we use the ECS header files to construct the benchmarking program.
+In the main function, we construct a \texttt{TaskManager} which registers the user system to run.
+We then create a helper function that applies the benchmark instrumentation before and after
+a call to the \texttt{TaskManager::update()}, returning the duration elapsed to store and use for the time difference.
+We use a for-loop to repeat this function for the specified number of repetitions.
+
+Test parameters and measured frame times were appended to a persistent log file using \texttt{std::ofstream},
+as well as the final average.
+The general mechanisms, outside of framework implementations, are kept identical to the EnTT case for parity.

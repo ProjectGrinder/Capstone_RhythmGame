@@ -34,6 +34,7 @@ namespace Scene
         // declare scene parameters
         using ComponentTuple = std::tuple<
             Game::Input,
+            Game::Battle::BattleObject,
             Game::Battle::BattleState,
             Game::Battle::BulletHellState,
             Game::Battle::BulletRegistry,
@@ -72,19 +73,18 @@ namespace Scene
             Game::Render::Flicker,
             Game::Render::AnimationDataRegistry,
             Game::Render::Animation_Controller,
+            Game::Render::AnimationSequence,
             Game::Render::Animator,
             Game::Rhythm::NoteType,
             Game::Rhythm::Lane,
             Game::Rhythm::Timing,
             Game::Rhythm::HoldStart,
             Game::Rhythm::JudgeText,
-            Game::Rhythm::NoteField,
             Game::Rhythm::NoteStatus,
             Game::Rhythm::HoldConnect,
             Game::Rhythm::JudgementLine,
             Game::Rhythm::LaneLine,
             Game::Rhythm::NoteEffect,
-            Game::Rhythm::KeyText,
             Game::Audio::SoundRegistry,
             Game::Battle::TransitionText,
             Game::World::GlobalState,
@@ -100,9 +100,9 @@ namespace Scene
             Game::Battle::check_player_state<Syscall>,
             Game::Battle::phase_border_change<Syscall>,
             Game::Battle::phase_player_change<Syscall>,
+            Game::Battle::phase_battle_object<Syscall>,
             Game::Battle::phase_judgement_change<Syscall>,
             Game::Battle::phase_split_line<Syscall>,
-            Game::Battle::phase_lane_key_text<Syscall>,
             Game::BulletHell::load_bullets<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
@@ -131,20 +131,18 @@ namespace Scene
             Game::Rhythm::handle_note_effect<Syscall>,
             Game::Render::set_camera<Syscall>,
             Game::Render::flickering_system<Syscall>,
-            Game::Render::draw_sprite<Syscall>,
-            Game::Render::draw_text<Syscall>,
+            Game::Render::animation_sequence_system<Syscall>,
             Game::Render::anim_transition_system<Syscall>,
             Game::Render::animation_system<Syscall>,
+            Game::Render::draw_sprite<Syscall>,
+            Game::Render::draw_text<Syscall>,
             Game::Battle::handle_sprite_ui<Syscall>,
             Game::Battle::handle_text_ui<Syscall>
             >;
 
         static void load_chart(
-            std::shared_ptr<TaskManager> &tm,
-            Game::Battle::ChartData &chart,
-            Game::Rhythm::NoteField &field);
-
-        // static Game::Battle::Difficulty set_difficulty(int level);
+            const std::shared_ptr<TaskManager> &tm,
+            Game::Battle::ChartData chart);
 
         static std::shared_ptr<TaskManager> init();
         static std::shared_ptr<TaskManager> init([[maybe_unused]] ResourceManager &data);

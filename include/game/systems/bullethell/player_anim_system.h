@@ -8,7 +8,7 @@ namespace Game::BulletHell
     void player_anim_system(
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Battle::BattleState> &query2,
-            System::ECS::Query<Player, Render::Transform, Render::Sprite, Physics::Velocity, Render::Animation_Controller> &query3
+            System::ECS::Query<Player, Render::Transform, Render::Sprite, Physics::Velocity,Render::Animator, Render::Animation_Controller> &query3
             )
     {
 
@@ -20,21 +20,22 @@ namespace Game::BulletHell
 
         for (auto &[id, comps]: query3)
         {
-            auto &anim = comps.get<Render::Animation_Controller>();
+            auto &anim = comps.get<Render::Animator>();
+            auto &anim_con = comps.get<Render::Animation_Controller>();
             const auto &velos = comps.get<Velocity>();
 
             if (velos.vx != 0)
             {
-                anim.to_id = 4;
+                anim_con.to_anim = "Player_Move_Left";
                 comps.get<Render::Sprite>().flipX = velos.vx > 0;
             }
             else if (velos.vy > 0)
-                anim.to_id = 5;
+                anim_con.to_anim = "Player_Move_Back";
             else if (velos.vy < 0)
-                anim.to_id = 3;
-            else if (anim.current_id>=3)
+                anim_con.to_anim = "Player_Move_Front";
+            else if (anim.anim_name.find("Move") != std::string::npos)
             {
-                anim.to_id = anim.current_id-3;
+                anim_con.to_anim = "Player_Idle_" + anim.anim_name.substr(12,anim.anim_name.size()-12+1);
             }
         }
 

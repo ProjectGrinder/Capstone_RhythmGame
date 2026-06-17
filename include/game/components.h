@@ -1,8 +1,9 @@
 #pragma once
 
+#include "components/battle/battle_object.h"
 #include "components/battle/battlestate.h"
-#include "components/battle/bullet_data.h"
 #include "components/battle/border.h"
+#include "components/battle/bullet_data.h"
 #include "components/battle/pattern_container.h"
 #include "components/battle/transition_data.h"
 #include "components/battle/ui_object.h"
@@ -41,9 +42,7 @@
 #include "components/rhythm/holdstart.h"
 #include "components/rhythm/judgement_line.h"
 #include "components/rhythm/judgetext.h"
-#include "components/rhythm/keytext.h"
 #include "components/rhythm/lane.h"
-#include "components/rhythm/notefield.h"
 #include "components/rhythm/notestatus.h"
 #include "components/rhythm/notetype.h"
 #include "components/rhythm/timing.h"

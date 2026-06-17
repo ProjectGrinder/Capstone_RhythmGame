@@ -1,4 +1,4 @@
-#include "game/utils/Bullethell_DSL/parser.h"
+#include "../../include/game/utils/DSL/bullethell/parser.h"
 
 #include <stdexcept>
 
