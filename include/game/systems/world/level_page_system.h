@@ -42,11 +42,11 @@ namespace Game::World
                         Render::Transform{0, HALF_HEIGHT * 3 / 4 - 200, 0, 0, 0, 0, 0, 1},
                         Render::Resize{{0.75f, 0.75f}, 500}));
 
-        const size_t diff_len = data.difficulties.difficulties.size();
+        const size_t diff_len = data.difficulties.size();
         for (int i=0;i<diff_len;i++)
         {
             const std::string diff_name[4] = {"LIGHT", "SPARK", "BLAZE", "ASTRA"};
-            const Battle::Difficulty diff = data.difficulties.difficulties[i];
+            const Battle::Difficulty diff = data.difficulties[i];
             level_node.level_node_texts_pid.push_back(syscall.template create_entity<Render::Text, Render::Material, Render::Transform>
         (
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = diff_name[diff.difficulty] + "(" + std::to_string(diff.level) + ")", .color = Math::Color{0, 0, 0, 1}, .layer = 51, .align = Render::Center},
@@ -140,13 +140,14 @@ namespace Game::World
             if (input.up_pressed || input.down_pressed)
             {
                 level_node.selection = (level_node.selection+1)%2;
-                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.selection, level_node.diff, level_info.difficulties.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
+                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
             }
             if (input.left_pressed || input.right_pressed)
             {
                 level_node.selection = 1;
-                level_node.diff = (level_node.diff + Physics::sign(input.right_pressed)) % (uint8_t)level_info.difficulties.difficulties.size();
-                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.selection, level_node.diff, level_info.difficulties.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
+                const auto count = static_cast<uint8_t>(level_info.difficulties.size());
+                level_node.diff = static_cast<uint8_t>((static_cast<int>(level_node.diff) + Physics::sign(input.right_pressed) + count) % count);
+                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
             }
         }
     }

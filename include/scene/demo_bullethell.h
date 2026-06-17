@@ -5,6 +5,8 @@ namespace Scene
 {
     Game::Render::AnimationDataRegistry init_anim_data();
 
+    Game::Render::AnimationSequence init_boss_anim_seq();
+
     Game::Battle::PatternContainer create_pattern_container();
 
     Game::Battle::BulletLoader create_bullet_data();
@@ -20,6 +22,7 @@ namespace Scene
         // declare scene parameters
         using ComponentTuple = std::tuple<
             Game::Input,
+            Game::Battle::BattleObject,
             Game::Battle::BattleState,
             Game::Battle::BulletHellState,
             Game::Battle::BulletRegistry,
@@ -55,6 +58,7 @@ namespace Scene
             Game::Render::Camera2D,
             Game::Render::AnimationDataRegistry,
             Game::Render::Animation_Controller,
+            Game::Render::AnimationSequence,
             Game::Render::Animator,
             Game::Rhythm::NoteType,
             Game::Audio::SoundRegistry,
@@ -88,6 +92,7 @@ namespace Scene
             // Game::BulletHell::logging_system<Syscall>,
             // Game::Test::draw_collider<Syscall>,
             Game::Render::set_camera<Syscall>,
+            Game::Render::animation_sequence_system<Syscall>,
             Game::Render::anim_transition_system<Syscall>,
             Game::Render::animation_system<Syscall>,
             Game::Render::draw_sprite<Syscall>,

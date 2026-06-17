@@ -18,21 +18,11 @@ namespace Game::Render
                 sprite.color.a = flicker.init_alpha;
                 syscall.template remove_component<Flicker>(id);
             }
-            else
+            else if (flicker.flicker_delay<=0)
             {
-                if (flicker.init_alpha == -1)
-                {
-                    flicker.init_alpha = sprite.color.a;
-                }
-                else
-                {
-                    if (flicker.flicker_delay<=0)
-                    {
-                        sprite.color.a = flicker.flicker?flicker.init_alpha:0;
-                        flicker.flicker = !flicker.flicker;
-                        flicker.flicker_delay = flicker.flicker_rate;
-                    }
-                }
+                sprite.color.a = flicker.flicker?flicker.init_alpha:0;
+                flicker.flicker = !flicker.flicker;
+                flicker.flicker_delay = flicker.flicker_rate;
             }
         }
     }

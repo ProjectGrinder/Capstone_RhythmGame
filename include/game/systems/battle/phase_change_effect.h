@@ -64,12 +64,60 @@ namespace Game::Battle
         }
     }
 
+    // Performance concern
+    template<typename T>
+    void phase_battle_object(
+        [[maybe_unused]] T &syscall,
+        System::ECS::Query<BattleState> &battle_query,
+        System::ECS::Query<TransitionData> &transition_query,
+        System::ECS::Query<BattleObject> &render_query
+        )
+    {
+        if (battle_query.begin() == battle_query.end())
+            return;
+
+        auto &battle_state = battle_query.front().get<BattleState>();
+
+        for (auto &[id, comps] : transition_query)
+        {
+            const auto &transition_data = comps.get<TransitionData>();
+            const float duration = static_cast<float>(transition_data.duration) * 1 / 3;
+            const float t = (battle_state.clock_time/1000 - transition_data.timing_start - duration*(3-transition_data.state))/duration;
+            if (transition_data.state == 3)
+            {
+                for (auto &[id2, comps2] : render_query)
+                {
+                    if (transition_data.phase != comps2.get<BattleObject>().phase)
+                    {
+                        if (Render::Sprite *spr = syscall.template try_query<Render::Sprite>(id2))
+                            spr->color.a = comps2.get<BattleObject>().start_alpha - t;
+                        else if (Render::Text *txt = syscall.template try_query<Render::Text>(id2))
+                            txt->color.a = comps2.get<BattleObject>().start_alpha - t;
+                    }
+                }
+            }
+            else if (transition_data.state == 1)
+            {
+                for (auto &[id2, comps2] : render_query)
+                {
+                    if (transition_data.phase == comps2.get<BattleObject>().phase)
+                    {
+                        if (Render::Sprite *spr = syscall.template try_query<Render::Sprite>(id2))
+                            spr->color.a = t * comps2.get<BattleObject>().start_alpha;
+                        else if (Render::Text *txt = syscall.template try_query<Render::Text>(id2))
+                            txt->color.a = t * comps2.get<BattleObject>().start_alpha;
+                    }
+                }
+            }
+        }
+    }
+
     template<typename T>
     void phase_player_change(
         [[maybe_unused]] T &syscall,
         System::ECS::Query<BattleState> &battle_query,
         System::ECS::Query<TransitionData> &transition_query,
-        System::ECS::Query<BulletHell::Player, Render::Transform, Render::Sprite, Render::Material, Render::Animation_Controller> &player_query,
+        System::ECS::Query<BulletHell::Player, Render::Transform, Render::Material, Render::Animation_Controller> &player_query,
         System::ECS::Query<BulletHell::PlayerHitbox, Render::Transform, Render::Material> &player_hitbox_query
         )
     {
@@ -79,14 +127,9 @@ namespace Game::Battle
         if (player_query.begin() == player_query.end())
             return;
 
-        auto &battle_state = battle_query.front().get<BattleState>();
-        auto &player_spr = player_query.front().get<Render::Sprite>();
-
         for (auto &[id, comps] : transition_query)
         {
             const auto &transition_data = comps.get<TransitionData>();
-            const float duration = static_cast<float>(transition_data.duration) * 1 / 3;
-            const float t = static_cast<float>((battle_state.clock_time/1000 - transition_data.timing_start)/duration);
             // Changing state
             if (transition_data.state == 3)
             {
@@ -97,15 +140,13 @@ namespace Game::Battle
                     player_query.front().get<Render::Material>().visible = true;
                     player_hitbox_query.front().get<Render::Material>().visible = true;
                     player_query.front().get<BulletHell::Player>().is_active = true;
-                    player_spr.color.a = t;
                 }
 
                 else if (transition_data.phase == RHYTHM)
                 {
                     if (player_query.front().get<BulletHell::Player>().is_active)
-                        player_query.front().get<Render::Animation_Controller>().to_id = 0;
+                        player_query.front().get<Render::Animation_Controller>().to_anim = "Player_Idle_Front";
                     player_query.front().get<BulletHell::Player>().is_active = false;
-                    player_spr.color.a = 1 - t;
                 }
             }
             else if (transition_data.state == 2)
@@ -119,6 +160,8 @@ namespace Game::Battle
             }
         }
     }
+
+
 
     template<typename T>
     void phase_judgement_change(
@@ -150,7 +193,6 @@ namespace Game::Battle
                 pos[1] = {JUDGE_LINE_WIDTH*(1-t),JUDGE_LINE_HEIGHT,0};
                 pos[2] = {JUDGE_LINE_WIDTH*(1-t),-JUDGE_LINE_HEIGHT,0};
                 pos[3] = {-JUDGE_LINE_WIDTH*(1-t),-JUDGE_LINE_HEIGHT,0};
-                judgement_spr.color.a = (1-t);
             }
             else if (transition_data.state == 1 && transition_data.phase == RHYTHM)
             {
@@ -158,7 +200,6 @@ namespace Game::Battle
                 pos[1] = {JUDGE_LINE_WIDTH*t,JUDGE_LINE_HEIGHT,0};
                 pos[2] = {JUDGE_LINE_WIDTH*t,-JUDGE_LINE_HEIGHT,0};
                 pos[3] = {-JUDGE_LINE_WIDTH*t,-JUDGE_LINE_HEIGHT,0};
-                judgement_spr.color.a = t;
 
             }
         }
@@ -197,42 +238,6 @@ namespace Game::Battle
                 {
                     pos[0].y = HALF_HEIGHT*2*t;
                     pos[1].y = HALF_HEIGHT*2*t;
-                }
-            }
-        }
-    }
-
-    template<typename T>
-    void phase_lane_key_text(
-        [[maybe_unused]] T &syscall,
-        System::ECS::Query<BattleState> &battle_query,
-        System::ECS::Query<TransitionData> &transition_query,
-        System::ECS::Query<Rhythm::KeyText, Render::Text> &text_query
-        )
-    {
-        if (battle_query.begin() == battle_query.end())
-            return;
-
-        auto &battle_state = battle_query.front().get<BattleState>();
-
-        for (auto &[id, comps] : text_query)
-        {
-            auto &text = comps.get<Render::Text>();
-
-            for (auto &[id2, comps2] : transition_query)
-            {
-                constexpr float text_alpha = 0.7f;
-                const auto &transition_data = comps2.get<TransitionData>();
-                const float duration = static_cast<float>(transition_data.duration) * 1 / 3;
-                const float t = (battle_state.clock_time/1000 - transition_data.timing_start - duration*(3-transition_data.state))/duration * text_alpha;
-                // Changing state
-                if (transition_data.state == 3 && transition_data.phase == BULLET_HELL)
-                {
-                    text.color.a = text_alpha - t;
-                }
-                else if (transition_data.state == 1 && transition_data.phase == RHYTHM)
-                {
-                    text.color.a = t;
                 }
             }
         }

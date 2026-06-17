@@ -1,6 +1,6 @@
+#include "../../include/game/utils/DSL/bullethell/bullet_data_reader.h"
 #include <regex>
 #include <sstream>
-#include "game/utils/Bullethell_DSL/bullet_data_reader.h"
 
 extern "C"{
     typedef unsigned long       DWORD;

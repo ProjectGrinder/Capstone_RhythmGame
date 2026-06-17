@@ -1,7 +1,7 @@
 #pragma once
 
 #include "game/components.h"
-extern "C" long double get_delta_time();
+#include "game/utils/constant.h"
 
 namespace Game::Rhythm
 {
@@ -27,10 +27,9 @@ namespace Game::Rhythm
         const int clock_time,
         System::ECS::Query<Transform, Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
         System::ECS::Query<HoldConnect, NoteStatus, Transform, Material, Sprite> &hold_query,
-        const NoteField &field,
         const float hold_height)
     {
-        const auto height = field.spawn_level - field.judge_level;
+        constexpr auto height = SPAWN_LEVEL - JUDGE_LEVEL;
 
         for (auto &[id, comp]: note_query)
         {
@@ -39,13 +38,13 @@ namespace Game::Rhythm
                 const auto note_diff = static_cast<float>(comp.get<Timing>().timing - clock_time);
                 if (note_diff < render_offset)
                 {
-                    comp.get<Transform>().position.y = field.judge_level + height * (static_cast<float>(note_diff) / render_offset);
+                    comp.get<Transform>().position.y = JUDGE_LEVEL + height * (static_cast<float>(note_diff) / render_offset);
                     comp.get<NoteStatus>().state = 1;
                     comp.get<Material>().visible = true;
                 }
                 else
                 {
-                    comp.get<Transform>().position.y = field.spawn_level;
+                    comp.get<Transform>().position.y = SPAWN_LEVEL;
                     comp.get<NoteStatus>().state = 0;
                     comp.get<Material>().visible = false;
                 }
@@ -64,19 +63,19 @@ namespace Game::Rhythm
             // handle start
             if (comp2.get<NoteStatus>().state == -1)
             {
-                comp2.get<Transform>().position.y = field.judge_level;
+                comp2.get<Transform>().position.y = JUDGE_LEVEL;
                 start_pos = 0;
                 comp2.get<Material>().visible = true;
             }
             else if (start_diff < render_offset)
             {
-                comp2.get<Transform>().position.y = field.judge_level + start_pos;
+                comp2.get<Transform>().position.y = JUDGE_LEVEL + start_pos;
                 comp2.get<NoteStatus>().state = 1;
                 comp2.get<Material>().visible = true;
             }
             else
             {
-                comp2.get<Transform>().position.y = field.spawn_level;
+                comp2.get<Transform>().position.y = SPAWN_LEVEL;
                 comp2.get<Sprite>().pos[0].y = 0;
                 comp2.get<Sprite>().pos[1].y = 0;
                 comp2.get<Sprite>().v1 = 0;
@@ -97,7 +96,6 @@ namespace Game::Rhythm
         [[maybe_unused]] T &syscall,
         System::ECS::Query<Transform, Material, Timing, HoldStart, NoteType, NoteStatus> &note_query,
         System::ECS::Query<Battle::BattleState, Battle::RhythmState> &battle_query,
-        System::ECS::Query<NoteField> &field_query,
         System::ECS::Query<HoldConnect, NoteStatus, Transform, Material, Sprite> &hold_query)
     {
         if (note_query.begin() == note_query.end())
@@ -110,17 +108,16 @@ namespace Game::Rhythm
             return;
 
         const auto frame_time = get_delta_time();
-        const auto field = field_query.front().get<NoteField>();
         const auto current_speed = battle_query.front().get<Battle::RhythmState>().current_speed;
-        const auto height = field.spawn_level - field.judge_level;
-        const float render_offset = field.move_time / current_speed; // speed 1 -> 5000 ms
+        constexpr auto height = SPAWN_LEVEL - JUDGE_LEVEL;
+        const float render_offset = NOTE_TIME / current_speed;
         const auto clock_time = battle_query.front().get<Battle::BattleState>().clock_time / 1000;
         constexpr float default_hold_height = 960.0f;
 
         // If speed change is detected, change note positions
         if (battle_query.front().get<Battle::RhythmState>().speed_change)
         {
-            handle_speed_change(render_offset, clock_time, note_query, hold_query, field, default_hold_height);
+            handle_speed_change(render_offset, clock_time, note_query, hold_query, default_hold_height);
             battle_query.front().get<Battle::RhythmState>().speed_change = false;
             return;
         }
@@ -169,13 +166,12 @@ namespace Game::Rhythm
                 continue;
             }
 
-            const auto judge_level = field.judge_level;
             auto start_pos = height * (static_cast<float>(comp.get<HoldConnect>().timing_start - clock_time)) / render_offset;
             float end_pos = height * (end_diff / render_offset);
 
-            if (comp.get<NoteStatus>().state == -1 || comp.get<Transform>().position.y <= judge_level)
+            if (comp.get<NoteStatus>().state == -1 || comp.get<Transform>().position.y <= JUDGE_LEVEL)
             {
-                comp.get<Transform>().position.y = judge_level;
+                comp.get<Transform>().position.y = JUDGE_LEVEL;
                 start_pos = 0;
                 if (end_diff > render_offset)
                 {
@@ -189,7 +185,7 @@ namespace Game::Rhythm
             else if (comp.get<NoteStatus>().state == 1)
             {
                 // handle start
-                if (comp.get<Transform>().position.y > judge_level)
+                if (comp.get<Transform>().position.y > JUDGE_LEVEL)
                 {
                     comp.get<Transform>().position.y -= (height / render_offset) * static_cast<float>(frame_time);
                 }

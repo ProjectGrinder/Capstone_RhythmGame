@@ -1,6 +1,6 @@
 #include <utility>
 
-#include "game/utils/Bullethell_DSL/interpreter.h"
+#include "../../include/game/utils/DSL/bullethell/interpreter.h"
 
 #include "game/utils/constant.h"
 #include "game/utils/physics_util.h"
@@ -421,8 +421,8 @@ void BulletHellCompiler::compile_spawn(const SpawnStatement& stmt, Scope& scope,
 
 Game::Battle::BulletLoader BulletHellCompiler::extract_bullets(const std::string &content)
 {
-    tokens = tokenize(content);
-    ast = parser(tokens);
+    const auto tokens = tokenize(content);
+    const auto ast = parser(tokens);
 
     bpm = -1;
     bullet_reg = {};

@@ -1,9 +1,9 @@
 #include <regex>
 #include <sstream>
 
-#include "game/utils/Bullethell_DSL/bullet_script.h"
+#include "../../include/game/utils/DSL/bullethell/bullet_script.h"
 
-#include "game/utils/Bullethell_DSL/bullet_data_reader.h"
+#include "../../include/game/utils/DSL/bullethell/bullet_data_reader.h"
 #include "system/asset_manager.h"
 
 extern "C"{

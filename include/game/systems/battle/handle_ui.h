@@ -48,7 +48,7 @@ namespace Game::Battle
                 }
                 comp.get<Render::Text>().text = final_text;
                 state_query.front().get<Battle::RhythmState>().accuracy_text = final_text;
-                if (accuracy == 100)
+                if (accuracy == 10000)
                 {
                     comp.get<Render::Text>().color = Math::Color{0.3f, 1, 0.3f};
                 }
@@ -59,41 +59,41 @@ namespace Game::Battle
                 const int graze = (state_query.front().get<BulletHellState>().graze);
 
                 comp.get<Render::Text>().text = std::to_string(graze);
-                if (graze >= 20)
+                if (graze >= state_query.front().components.get<BattleState>().difficulty.graze_criteria)
                 {
                     comp.get<Render::Text>().color = Math::Color{0.3f, 1, 0.3f};
                 }
             }
 
-            if (comp.get<UIComponent>().type ==LevelDiff)
-            {
-                const auto level = state_query.front().get<LevelData>().difficulty;
-                switch (level.difficulty)
-                {
-                    case LIGHT:
-                    comp.get<Render::Text>().text = "LIGHT " + std::to_string(level.level);
-                    comp.get<Render::Text>().color = Math::Color{0, 0.5f, 1};
-                    break;
-
-                    case SPARK:
-                    comp.get<Render::Text>().text = "SPARK " + std::to_string(level.level);
-                    comp.get<Render::Text>().color = Math::Color{1, 0.5f, 0};
-                    break;
-
-                    case BLAZE:
-                    comp.get<Render::Text>().text = "BLAZE " + std::to_string(level.level);
-                    comp.get<Render::Text>().color = Math::Color{1, 0, 0};
-                    break;
-
-                    case ASTRA:
-                    comp.get<Render::Text>().text = "ASTRA " + std::to_string(level.level);
-                    comp.get<Render::Text>().color = Math::Color{1, 0, 1};
-                    break;
-
-                    default:
-                    comp.get<Render::Text>().text = std::to_string(level.level);
-                }
-            }
+            // if (comp.get<UIComponent>().type ==LevelDiff)
+            // {
+            //     const auto level = state_query.front().get<LevelData>().difficulty;
+            //     switch (level.difficulty)
+            //     {
+            //         case LIGHT:
+            //         comp.get<Render::Text>().text = "LIGHT " + std::to_string(level.level);
+            //         comp.get<Render::Text>().color = Math::Color{0, 0.5f, 1};
+            //         break;
+            //
+            //         case SPARK:
+            //         comp.get<Render::Text>().text = "SPARK " + std::to_string(level.level);
+            //         comp.get<Render::Text>().color = Math::Color{1, 0.5f, 0};
+            //         break;
+            //
+            //         case BLAZE:
+            //         comp.get<Render::Text>().text = "BLAZE " + std::to_string(level.level);
+            //         comp.get<Render::Text>().color = Math::Color{1, 0, 0};
+            //         break;
+            //
+            //         case ASTRA:
+            //         comp.get<Render::Text>().text = "ASTRA " + std::to_string(level.level);
+            //         comp.get<Render::Text>().color = Math::Color{1, 0, 1};
+            //         break;
+            //
+            //         default:
+            //         comp.get<Render::Text>().text = std::to_string(level.level);
+            //     }
+            // }
         }
     }
 

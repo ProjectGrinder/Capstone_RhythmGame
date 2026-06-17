@@ -27,5 +27,4 @@ namespace Game::BulletHell
         const char *filepath = nullptr;
         DSL::BulletHellCompiler complier;
     };
-
 }

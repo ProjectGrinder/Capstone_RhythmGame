@@ -1,11 +1,9 @@
 #pragma once
 
 #include <cmath>
-
-
-#include "audio.h"
 #include "game/components.h"
 #include "game/utils/audio_util.h"
+#include "game/utils/constant.h"
 
 // Help. Bullet has 2 Collider types. So, I use 2 query each with different narrow check. Everything else is the same.
 // Therefore, this code's suck.
@@ -74,21 +72,14 @@ namespace Game::BulletHell
 		    if (!bullet.is_damageable)
 		        continue;
 
-		    if (distance_squared - collision_distance*collision_distance <= 2)
-		    {
-		        if (!bullet.is_grazed)
-		        {
-		            bullet.is_grazed = true;
-		            state.graze ++;
-		            Audio::audio_play(sound_registry["sound_graze"]);
-		        }
-		    }
+		    const float graze_distance = collision_distance + GRAZE_HITBOX_SIZE;
 
-		    if (distance_squared > collision_distance*collision_distance)
+		    if (distance_squared > graze_distance * graze_distance)
 		    {
 		        continue;
 		    }
-		    //Narrow check : SAT
+
+		    //Narrow check
             const auto player_hitbox_pos =
                     Math::Point(player_tra.position.x + player_hitbox.offset_x, player_tra.position.y + player_hitbox.offset_y);
 		    const auto bullet_hitbox_pos =
@@ -105,7 +96,18 @@ namespace Game::BulletHell
             const float distY =
                     (((fabs(dot_y) - bullet_hitbox_size_y / 2) > (.0f)) ? (fabs(dot_y) - bullet_hitbox_size_y / 2)
                                                                         : (.0f));
-		    if (distX * distX + distY * distY >= player_hitbox_size * player_hitbox_size) continue;
+
+		    const float dist_sq = distX * distX + distY * distY;
+
+            // Graze check
+		    if (dist_sq <= GRAZE_HITBOX_SIZE * GRAZE_HITBOX_SIZE && !bullet.is_grazed)
+		    {
+		        bullet.is_grazed = true;
+		        state.graze ++;
+		        Audio::audio_play(sound_registry["sound_graze"]);
+		    }
+
+		    if (dist_sq >= player_hitbox_size * player_hitbox_size) continue;
 
             // Reduce player HP
             auto &battle_state = battle_query.front().get<Battle::BattleState>();
@@ -113,10 +115,10 @@ namespace Game::BulletHell
             if (battle_state.hp < 0)
                 battle_state.hp = 0;
 
-		    // TODO : Make this const
 		    // Activate Player iFrame
-		    state.iframe_time = 3000;
-		    syscall.add_component(player_query.front().id, Render::Flicker(3000));
+		    state.iframe_time = IFRAME_TIME;
+		    state.hit_count++;
+		    syscall.add_component(player_query.front().id, Render::Flicker(1,IFRAME_TIME));
 
 		    // Deactivate the bullet
 		    bullet.pierce --;
@@ -149,18 +151,21 @@ namespace Game::BulletHell
 	        if (!bullet.is_damageable)
 	            continue;
 
-	        if (distance_squared > collision_distance * collision_distance)
+	        const float graze_distance = collision_distance + GRAZE_HITBOX_SIZE;
+
+	        if (distance_squared <= graze_distance * graze_distance)
 	        {
-	            if (distance_squared <= 1.5 * collision_distance * collision_distance)
+	            if (!bullet.is_grazed)
 	            {
-	                if (!bullet.is_grazed)
-	                {
-	                    bullet.is_grazed = true;
-	                    state.graze ++;
-	                    Audio::audio_play(sound_registry["sound_graze"]);
-	                }
+	                bullet.is_grazed = true;
+	                state.graze ++;
+	                Audio::audio_play(sound_registry["sound_graze"]);
 	            }
-                continue;
+	        }
+
+	        if (distance_squared > collision_distance*collision_distance)
+	        {
+	            continue;
 	        }
 
 	        // Ellipse vs circle collision
@@ -187,10 +192,10 @@ namespace Game::BulletHell
 	        if (battle_state.hp < 0)
 	            battle_state.hp = 0;
 
-	        // TODO : Make this const
 	        // Activate Player iFrame
-	        state.iframe_time = 3000;
-	        syscall.add_component(player_query.front().id, Render::Flicker(3000));
+	        state.iframe_time = IFRAME_TIME;
+	        state.hit_count++;
+	        syscall.add_component(player_query.front().id, Render::Flicker(1,IFRAME_TIME));
 
 	        // Deactivate the bullet
 	        bullet.pierce--;
