@@ -8,6 +8,7 @@
 #include "scene/demo_rhythm.h"
 #include "scene/demo_scene_change.h"
 #include "scene/level1.h"
+#include "scene/level2.h"
 #include "scene/scene_decl.h"
 #include "scene/demo_world.h"
 #include "utils/print_debug.h"
@@ -17,7 +18,7 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = Level2;
+    using StartingScene = DemoWorld;
 
     using SceneTuple = std::tuple<DemoMenu, Level1, Level2, DemoWorld>;
     using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;

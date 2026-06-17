@@ -32,7 +32,7 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
     load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 }
 
-inline Game::Battle::LevelData create_level2_data()
+inline Game::Battle::LevelData create_level1_data()
 {
     std::array total_note_list = {87, 150, 270}; // store total notes here
     Game::Battle::BpmInfo bpm;
@@ -50,9 +50,9 @@ inline Game::Battle::LevelData create_level2_data()
     134.00f,
     bpm,
         {
-            Game::Battle::Difficulty(Game::Battle::LIGHT, 1, total_note_list[0]*5,20),
-            Game::Battle::Difficulty(Game::Battle::SPARK, 3, total_note_list[1]*5,30),
-            Game::Battle::Difficulty(Game::Battle::BLAZE, 5, total_note_list[2]*5,40),
+            Game::Battle::Difficulty(Game::Battle::LIGHT, 1, 10000,20),
+            Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
+            Game::Battle::Difficulty(Game::Battle::BLAZE, 5, 10000,40),
         },142000
     );
 }
@@ -137,7 +137,7 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
     // LevelRegistry
     // TODO : Move this to init at the start of the game
     tm->create_entity<Game::World::LevelRegistry>({{
-        create_level2_data()
+        create_level1_data()
     }});
 
     tm->create_entity<Game::World::Player, Rotation,

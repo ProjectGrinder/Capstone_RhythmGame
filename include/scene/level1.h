@@ -22,7 +22,7 @@ namespace Scene
             if (get_key_state(ESC))
             {
                 LOG_INFO("Escape pressed");
-                Scene::queue_change_scene<DemoMenu>();
+                Scene::queue_change_scene<DemoWorld>();
             }
         }
 

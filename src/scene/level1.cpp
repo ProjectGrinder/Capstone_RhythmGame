@@ -128,21 +128,21 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(Game::LANE1+Game::LANE2)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,1});
+        Game::Render::Transform{Math::Point{(Game::LANE1+Game::LANE2)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,0.2f});
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::LaneLine, Game::Battle::BattleObject>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(Game::LANE2+Game::LANE3)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,1});
+        Game::Render::Transform{Math::Point{(Game::LANE2+Game::LANE3)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,0.2f});
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::LaneLine, Game::Battle::BattleObject>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(Game::LANE3+Game::LANE4)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,1});
+        Game::Render::Transform{Math::Point{(Game::LANE3+Game::LANE4)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,0.2f});
 
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::AcceptBarMax},
