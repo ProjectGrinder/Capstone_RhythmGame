@@ -34,6 +34,7 @@ namespace Scene
         // declare scene parameters
         using ComponentTuple = std::tuple<
             Game::Input,
+            Game::Battle::BattleObject,
             Game::Battle::BattleState,
             Game::Battle::BulletHellState,
             Game::Battle::BulletRegistry,
@@ -71,6 +72,7 @@ namespace Scene
             Game::Render::Camera2D,
             Game::Render::Flicker,
             Game::Render::AnimationDataRegistry,
+            Game::Render::AnimationSequence,
             Game::Render::Animation_Controller,
             Game::Render::Animator,
             Game::Rhythm::NoteType,
@@ -83,7 +85,6 @@ namespace Scene
             Game::Rhythm::JudgementLine,
             Game::Rhythm::LaneLine,
             Game::Rhythm::NoteEffect,
-            Game::Rhythm::KeyText,
             Game::Audio::SoundRegistry,
             Game::Battle::TransitionText,
             Game::World::GlobalState,
@@ -101,7 +102,6 @@ namespace Scene
             Game::Battle::phase_player_change<Syscall>,
             Game::Battle::phase_judgement_change<Syscall>,
             Game::Battle::phase_split_line<Syscall>,
-            Game::Battle::phase_lane_key_text<Syscall>,
             Game::BulletHell::load_bullets<Syscall>,
             Game::BulletHell::input_to_velocity<Syscall>,
             Game::BulletHell::movement_system<Syscall>,
