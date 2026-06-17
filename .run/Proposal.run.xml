@@ -3,7 +3,7 @@
     <texify>
       <compiler>PDFLATEX</compiler>
       <compiler-path />
-      <pdf-viewer>SumatraPDF</pdf-viewer>
+      <pdf-viewer>none</pdf-viewer>
       <require-focus>true</require-focus>
       <viewer-command />
       <compiler-arguments />
@@ -12,10 +12,11 @@
       <before-run-command />
       <main-file>$PROJECT_DIR$/papers/proposal/main.tex</main-file>
       <output-path>$PROJECT_DIR$/papers/proposal</output-path>
-      <auxil-path>$PROJECT_DIR$/auxil</auxil-path>
+      <auxil-path>$PROJECT_DIR$/papers/proposal</auxil-path>
+      <working-directory>{mainFileParent}</working-directory>
       <compile-twice>true</compile-twice>
       <output-format>PDF</output-format>
-      <latex-distribution>TEXLIVE</latex-distribution>
+      <latex-distribution>MIKTEX</latex-distribution>
       <has-been-run>true</has-been-run>
       <bib-run-config>[BibTeX.Proposal Bibliography]</bib-run-config>
       <makeindex-run-config>[]</makeindex-run-config>

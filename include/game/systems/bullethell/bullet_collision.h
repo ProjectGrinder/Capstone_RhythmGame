@@ -74,17 +74,7 @@ namespace Game::BulletHell
 
 		    const float graze_distance = collision_distance + GRAZE_HITBOX_SIZE;
 
-		    if (distance_squared <= graze_distance * graze_distance)
-		    {
-		        if (!bullet.is_grazed)
-		        {
-		            bullet.is_grazed = true;
-		            state.graze ++;
-		            Audio::audio_play(sound_registry["sound_graze"]);
-		        }
-		    }
-
-		    if (distance_squared > collision_distance*collision_distance)
+		    if (distance_squared > graze_distance * graze_distance)
 		    {
 		        continue;
 		    }
@@ -106,7 +96,18 @@ namespace Game::BulletHell
             const float distY =
                     (((fabs(dot_y) - bullet_hitbox_size_y / 2) > (.0f)) ? (fabs(dot_y) - bullet_hitbox_size_y / 2)
                                                                         : (.0f));
-		    if (distX * distX + distY * distY >= player_hitbox_size * player_hitbox_size) continue;
+
+		    const float dist_sq = distX * distX + distY * distY;
+
+            // Graze check
+		    if (dist_sq <= GRAZE_HITBOX_SIZE * GRAZE_HITBOX_SIZE && !bullet.is_grazed)
+		    {
+		        bullet.is_grazed = true;
+		        state.graze ++;
+		        Audio::audio_play(sound_registry["sound_graze"]);
+		    }
+
+		    if (dist_sq >= player_hitbox_size * player_hitbox_size) continue;
 
             // Reduce player HP
             auto &battle_state = battle_query.front().get<Battle::BattleState>();

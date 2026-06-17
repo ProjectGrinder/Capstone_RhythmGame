@@ -3,7 +3,7 @@
     <texify>
       <compiler>PDFLATEX</compiler>
       <compiler-path />
-      <pdf-viewer>SumatraPDF</pdf-viewer>
+      <pdf-viewer>none</pdf-viewer>
       <require-focus>true</require-focus>
       <viewer-command />
       <compiler-arguments />
@@ -11,13 +11,14 @@
       <expand-macros-in-environment-variables>false</expand-macros-in-environment-variables>
       <before-run-command />
       <main-file>$PROJECT_DIR$/papers/final_report/main.tex</main-file>
-      <output-path>{projectDir}/out</output-path>
-      <auxil-path>{projectDir}/auxil</auxil-path>
-      <compile-twice>false</compile-twice>
+      <output-path>$PROJECT_DIR$/papers/final_report</output-path>
+      <auxil-path>$PROJECT_DIR$/papers/final_report</auxil-path>
+      <working-directory>{mainFileParent}</working-directory>
+      <compile-twice>true</compile-twice>
       <output-format>PDF</output-format>
       <latex-distribution>MIKTEX</latex-distribution>
-      <has-been-run>false</has-been-run>
-      <bib-run-config>[]</bib-run-config>
+      <has-been-run>true</has-been-run>
+      <bib-run-config>[BibTeX.Final Report Bibliography]</bib-run-config>
       <makeindex-run-config>[]</makeindex-run-config>
     </texify>
     <method v="2" />

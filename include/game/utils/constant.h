@@ -49,5 +49,5 @@ namespace Game
     constexpr float CAMERA_SPEED = 0.005f;
 
     constexpr int IFRAME_TIME = 1500;
-    constexpr float GRAZE_HITBOX_SIZE = 30.f;
+    constexpr float GRAZE_HITBOX_SIZE = 40.f;
 }
