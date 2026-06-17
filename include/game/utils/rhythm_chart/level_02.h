@@ -44,8 +44,6 @@ inline Game::Battle::ChartData level_02_light()
     chart.lanes[2].notes.emplace_back(false, 49412, 0, Game::Battle::ACCENT);
 
     // RESPONSE 2
-    // chart.lanes[3].notes.emplace_back(true, 73412, 73941, Game::Battle::NORMAL);
-    // chart.lanes[2].notes.emplace_back(true, 73941, 74471, Game::Battle::NORMAL);
     chart.lanes[0].notes.emplace_back(true, 74824, 75353, Game::Battle::NORMAL);
     chart.lanes[1].notes.emplace_back(true, 75353, 75881, Game::Battle::NORMAL);
     chart.lanes[3].notes.emplace_back(false, 76235, 0, Game::Battle::NORMAL);
@@ -57,22 +55,27 @@ inline Game::Battle::ChartData level_02_light()
     chart.lanes[3].notes.emplace_back(false, 80471, 0, Game::Battle::NORMAL);
     chart.lanes[3].notes.emplace_back(true, 81000, 81529, Game::Battle::NORMAL);
     chart.lanes[0].notes.emplace_back(true, 81882, 82588, Game::Battle::NORMAL);
-    chart.lanes[1].notes.emplace_back(true, 82588, 84353, Game::Battle::NORMAL);
-    chart.lanes[2].notes.emplace_back(true, 83294, 84353, Game::Battle::NORMAL);
+    chart.lanes[1].notes.emplace_back(true, 82588, 84706, Game::Battle::NORMAL);
+    chart.lanes[2].notes.emplace_back(true, 83294, 84706, Game::Battle::NORMAL);
+    chart.lanes[0].notes.emplace_back(false, 86118, 0, Game::Battle::ACCENT);
+    chart.lanes[3].notes.emplace_back(false, 86118, 0, Game::Battle::ACCENT);
+    chart.lanes[0].notes.emplace_back(false, 87529, 0, Game::Battle::ACCENT);
+    chart.lanes[3].notes.emplace_back(false, 87529, 0, Game::Battle::ACCENT);
+    chart.lanes[2].notes.emplace_back(false, 88941, 0, Game::Battle::ACCENT);
+    chart.lanes[1].notes.emplace_back(false, 88941, 0, Game::Battle::ACCENT);
+    chart.lanes[2].notes.emplace_back(false, 89647, 0, Game::Battle::ACCENT);
+    chart.lanes[1].notes.emplace_back(false, 89647, 0, Game::Battle::ACCENT);
 
     // RESPONSE 3
-    chart.lanes[3].notes.emplace_back(false, 112941, 0, Game::Battle::NORMAL);
-    chart.lanes[2].notes.emplace_back(false, 113647, 0, Game::Battle::NORMAL);
+    chart.lanes[2].notes.emplace_back(false, 112941, 0, Game::Battle::NORMAL);
     chart.lanes[0].notes.emplace_back(false, 114353, 0, Game::Battle::NORMAL);
     chart.lanes[1].notes.emplace_back(false, 115059, 0, Game::Battle::NORMAL);
-    chart.lanes[3].notes.emplace_back(true, 115765, 116118, Game::Battle::ACCENT);
-    chart.lanes[2].notes.emplace_back(true, 115765, 116118, Game::Battle::ACCENT);
-    chart.lanes[0].notes.emplace_back(true, 116471, 116824, Game::Battle::ACCENT);
-    chart.lanes[1].notes.emplace_back(true, 116471, 116824, Game::Battle::ACCENT);
-    chart.lanes[2].notes.emplace_back(false, 117176, 0, Game::Battle::NORMAL);
-    chart.lanes[3].notes.emplace_back(false, 117882, 0, Game::Battle::NORMAL);
+    chart.lanes[3].notes.emplace_back(false, 115765, 0, Game::Battle::ACCENT);
+    chart.lanes[2].notes.emplace_back(false, 115765, 0, Game::Battle::ACCENT);
+    chart.lanes[0].notes.emplace_back(false, 116471, 0, Game::Battle::ACCENT);
+    chart.lanes[1].notes.emplace_back(false, 116471, 0, Game::Battle::ACCENT);
+    chart.lanes[3].notes.emplace_back(false, 117176, 0, Game::Battle::NORMAL);
     chart.lanes[1].notes.emplace_back(false, 118588, 0, Game::Battle::NORMAL);
-    chart.lanes[0].notes.emplace_back(false, 119294, 0, Game::Battle::NORMAL);
     chart.lanes[2].notes.emplace_back(true, 120000, 120706, Game::Battle::NORMAL);
     chart.lanes[3].notes.emplace_back(true, 121412, 122118, Game::Battle::ACCENT);
     chart.lanes[0].notes.emplace_back(true, 121412, 122118, Game::Battle::ACCENT);
@@ -82,10 +85,10 @@ inline Game::Battle::ChartData level_02_light()
     chart.lanes[0].notes.emplace_back(false, 124941, 0, Game::Battle::NORMAL);
     chart.lanes[0].notes.emplace_back(true, 125647, 126353, Game::Battle::NORMAL);
     chart.lanes[2].notes.emplace_back(false, 126353, 0, Game::Battle::NORMAL);
-    chart.lanes[1].notes.emplace_back(true, 127059, 127412, Game::Battle::ACCENT);
-    chart.lanes[3].notes.emplace_back(true, 127059, 127412, Game::Battle::ACCENT);
-    chart.lanes[0].notes.emplace_back(true, 127765, 128118, Game::Battle::ACCENT);
-    chart.lanes[2].notes.emplace_back(true, 127765, 128118, Game::Battle::ACCENT);
+    chart.lanes[1].notes.emplace_back(false, 127059, 0, Game::Battle::ACCENT);
+    chart.lanes[3].notes.emplace_back(false, 127059, 0, Game::Battle::ACCENT);
+    chart.lanes[0].notes.emplace_back(false, 127765, 0, Game::Battle::ACCENT);
+    chart.lanes[2].notes.emplace_back(false, 127765, 0, Game::Battle::ACCENT);
     chart.lanes[3].notes.emplace_back(true, 128471, 129176, Game::Battle::NORMAL);
     chart.lanes[1].notes.emplace_back(false, 129176, 0, Game::Battle::NORMAL);
     chart.lanes[1].notes.emplace_back(true, 129882, 130588, Game::Battle::NORMAL);

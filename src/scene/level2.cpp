@@ -329,7 +329,7 @@ void init_battle_components(const std::shared_ptr<Scene::Level2::TaskManager>& t
 
 std::array speed_list2 = {2.5f, 3.0f, 4.0f}; // in case of preset speed
 
-inline Game::Battle::RhythmState create_rhythm_state(const int level, const int note_count)
+inline Game::Battle::RhythmState create_rhythm_state2(const int level, const int note_count)
 {
     int accept_gain;
     if (note_count > 0)
@@ -490,7 +490,7 @@ std::vector diff_list2 = {
 inline Game::Battle::LevelData create_level2_data()
 {
     Game::Battle::BpmInfo bpm;
-    constexpr std::array timing_list = {27000, 72000, 110500};
+    constexpr std::array timing_list = {28235, 73412, 111529};
     for (int m : timing_list)
     {
         Game::Battle::BpmInfo::InfoPair info{};
@@ -547,7 +547,7 @@ std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init([[maybe_unused]]
     (
         Game::Battle::BattleState{bt_state.max_hp, bt_state.max_accept_gauge, bt_state.difficulty},
         Game::Battle::BulletHellState(10),
-        create_rhythm_state(level, note_count),
+        create_rhythm_state2(level, note_count),
         std::move(script.bullet_registry),
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
@@ -561,7 +561,7 @@ std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init([[maybe_unused]]
     tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(27000, 1200, Game::Battle::RHYTHM));
     tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(49700, 1100, Game::Battle::BULLET_HELL));
     tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(72000, 1000, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(84500, 1200, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(90300, 1200, Game::Battle::BULLET_HELL));
     tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(110500, 1000, Game::Battle::RHYTHM));
 
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
