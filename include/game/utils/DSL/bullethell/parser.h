@@ -48,6 +48,7 @@ namespace DSL
         ExprVariant expr;
         template<typename T>
         explicit Expr(T v) : expr(std::move(v)) {}
+        ~Expr() = default;
     };
 
     struct Statement;
@@ -103,6 +104,7 @@ namespace DSL
         StmtVariant stmt;
         template<typename T>
         explicit Statement(T v, size_t line) : stmt(std::move(v)), line(line) {}
+        ~Statement() = default;
     };
 
     struct AST

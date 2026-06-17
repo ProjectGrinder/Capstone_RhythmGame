@@ -421,8 +421,8 @@ void BulletHellCompiler::compile_spawn(const SpawnStatement& stmt, Scope& scope,
 
 Game::Battle::BulletLoader BulletHellCompiler::extract_bullets(const std::string &content)
 {
-    tokens = tokenize(content);
-    ast = parser(tokens);
+    const auto tokens = tokenize(content);
+    const auto ast = parser(tokens);
 
     bpm = -1;
     bullet_reg = {};

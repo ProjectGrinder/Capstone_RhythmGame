@@ -65,7 +65,6 @@ namespace DSL
     {
     public:
         void validate(const AST& ast);
-        Scope scope;
 
     private:
         void validate_stmt(const Statement& stmt, Scope &scope);
@@ -83,11 +82,8 @@ namespace DSL
         Scope global;
         Game::Battle::BulletLoader extract_bullets(const std::string &content);
 
-
     private:
         // Cache
-        std::vector<Token> tokens;
-        AST ast;
         Game::Battle::BulletLoader bullet_reg;
         size_t pos = 0;
         float bpm = -1;
