@@ -1,0 +1,32 @@
+\subsection{Analysis}
+\label{subsec:analysis}
+
+Table~\ref{tab:system-frame-duration-benchmark} shows the measured system frame duration for each ECS implementation
+across increasing entity counts.
+In all cases, frame duration increases approximately linearly with respect to the number of entities.
+This indicates that each framework scales proportionally with workload size and does not exhibit
+significant nonlinear overhead within the tested range.
+
+We find that our custom engine consistently outperforms EnTT in terms of iteration performance.
+The custom engine exhibits 2.7× speedup at 2000 entities, which decreases to 1.3× speedup at 64,000 entities.
+When comparing with Bevy, however, while the custom engine begins at 5.7× speedup at 2000 entities,
+its performance degrades to a 0.7× slowdown at 128,000 entities.
+
+When we analyze the entity iteration time in Table~\ref{tab:system-iter-benchmark}, we can see that the iteration cost for
+both EnTT and our custom engine generally increases as entity count increases.
+For Bevy, however, the iteration cost reduces as entity count increases, alluding to its optimization for batch processing,
+something not used in the implementation of the other two options.
+
+Overall, the results indicate that the custom engine provides competitive performance for the evaluated
+workload among the tested ECS frameworks for the 2000 to 16000 entity range.
+For use cases asking for more than 32000 entities, Bevy remains a superior option compared to our custom engine.
+
+\subsection{Limitations}
+\label{subsec:limitations-and-lessons}
+
+The evaluated workload is a simple process that depends only on iteration and data modification.
+It does not factor in the other aspects of an ECS architecture, such as the querying of entity archetypes and
+the adding and removing of components and entities.
+This means that we cannot properly measure the performance of the custom engine in those aspects in comparison to
+general-purpose architectures.
+We plan to benchmark these aspects of our custom engine in the future\@.

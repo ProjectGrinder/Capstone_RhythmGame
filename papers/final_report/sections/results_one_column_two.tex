@@ -1,0 +1,24 @@
+\vspace{1em}
+\centering
+\small
+\begin{minipage}{\textwidth}
+    \captionof{table}{System iteration time per entity in each ECS framework}
+    \begin{tabularx}{\textwidth}{|Y|Y|Y|Y|}
+        \hline
+        \multirow{2}{*}{\textbf{Entity Count}} &
+        \multicolumn{3}{c|}{\textbf{Entity iteration time (in nanoseconds)}} \\
+        \cline{2-4}
+        & \textbf{Bevy ECS} & \textbf{EnTT} & \textbf{Custom Engine} \\
+        \hline
+        2000 & 3.219 & 1.507 & 0.564 \\
+        4000 & 2.256 & 1.530 & 0.803 \\
+        8000 & 1.493 & 1.633 & 0.985 \\
+        16000 & 1.210 & 1.748 & 0.934 \\
+        32000 & 1.019 & 1.805 & 1.206 \\
+        64000 & 0.916 & 1.718 & 1.339 \\
+        128000 & 0.886 & 1.675 & 1.273 \\
+        \hline
+    \end{tabularx}
+    \label{tab:system-iter-benchmark}
+\end{minipage}
+
