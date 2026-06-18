@@ -354,22 +354,6 @@ inline Game::Battle::RhythmState create_rhythm_state2(const int level, const int
     return (state);
 }
 
-inline std::string get_dsl_path2(const int level)
-{
-    std::string dsl_path = "dsl/02-";
-    switch (level)
-    {
-        case 0:
-        return dsl_path.append("L.th0");
-        case 1:
-        return dsl_path.append("S.th0");
-        case 2:
-        return dsl_path.append("B.th0");
-        default:
-        return dsl_path.append("L.th0");
-    }
-}
-
 int Scene::Level2::load_chart(
     const std::shared_ptr<TaskManager> &tm,
     Game::Battle::ChartData chart)
@@ -517,7 +501,7 @@ std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init()
     rm.add_resource(level_id, std::move(level_data));
 
     const System::ECS::pid battle_id = rm.reserve_process();
-    rm.add_resource(battle_id, Game::Battle::BattleState(100,level_data.difficulties[0]));
+    rm.add_resource(battle_id, Game::Battle::BattleState(100,Game::Battle::Difficulty(Game::Battle::BLAZE, 5, 10000,40)));
 
     return init(rm);
 }
@@ -535,10 +519,10 @@ std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init([[maybe_unused]]
 
     Game::Battle::BattleState &bt_state = data.query<Game::Battle::BattleState>().front();
     const int level = bt_state.difficulty.difficulty;
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0", (Game::levelDSL_lists[0][level].bullet_script.c_str())};
-    script.read_dsl_from_file(Game::levelDSL_lists[0][level].bullet_script.c_str());
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0", (Game::levelDSL_lists[1][level].bullet_script.c_str())};
+    script.read_dsl_from_file(Game::levelDSL_lists[1][level].bullet_script.c_str());
 
-    const int note_count = load_chart(tm, load_level_02_chart(1));
+    const int note_count = load_chart(tm, load_level_02_chart(level));
 
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
