@@ -27,6 +27,7 @@ void init_graphics(const std::shared_ptr<Scene::Level2::TaskManager>& tm)
     load_sprite("img/test.dds", "test", 500, 500);
     load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
     load_sprite("img/bullethell/Hitbox.dds", "Hitbox", 12, 12);
+    load_sprite("img/bullethell/BossSprite.dds","BH_Boss_Sprite",3840,1800);
 
     load_sprite("img/Square.dds", "Square", 64, 64);
     load_sprite("img/Square64px.dds", "Square64px", 64, 64);
@@ -127,21 +128,21 @@ void init_battle_components(const std::shared_ptr<Scene::Level2::TaskManager>& t
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(Game::LANE1+Game::LANE2)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,1});
+        Game::Render::Transform{Math::Point{(Game::LANE1+Game::LANE2)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,0.2f});
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::LaneLine, Game::Battle::BattleObject>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(Game::LANE2+Game::LANE3)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,1});
+        Game::Render::Transform{Math::Point{(Game::LANE2+Game::LANE3)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,0.2f});
     tm->create_entity<Game::Render::Sprite,
     Game::Render::Material,
     Game::Render::Transform, Game::Rhythm::LaneLine, Game::Battle::BattleObject>
     (
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-3, 0, 0}, {3, 0, 0}, {3, 0, 0}, {-3, 0, 0}},.color = {1,1,1,0.2f}, .layer = 2},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-        Game::Render::Transform{Math::Point{(Game::LANE3+Game::LANE4)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,1});
+        Game::Render::Transform{Math::Point{(Game::LANE3+Game::LANE4)/2, -Game::HALF_HEIGHT, 0}, 0, 0, 0}, {}, {Game::Battle::RHYTHM,0.2f});
 
     tm->create_entity(
            Game::Battle::UIComponent{Game::Battle::AcceptBarMax},
@@ -502,7 +503,7 @@ inline Game::Battle::LevelData create_level2_data()
     bpm,
 {
             Game::Battle::Difficulty(Game::Battle::LIGHT, 2, 10000,20),
-            Game::Battle::Difficulty(Game::Battle::SPARK, 4, 10000,30),
+            Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
             Game::Battle::Difficulty(Game::Battle::BLAZE, 5, 10000,40),
         }, 139000
     );
@@ -537,7 +538,7 @@ std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init([[maybe_unused]]
     Game::BulletHell::BulletScript script{"dsl/ShotData.th0", (Game::levelDSL_lists[0][level].bullet_script.c_str())};
     script.read_dsl_from_file(Game::levelDSL_lists[0][level].bullet_script.c_str());
 
-    const int note_count = load_chart(tm, load_level_02_chart(level));
+    const int note_count = load_chart(tm, load_level_02_chart(1));
 
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
