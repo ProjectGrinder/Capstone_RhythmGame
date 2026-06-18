@@ -34,7 +34,6 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
 
 inline Game::Battle::LevelData create_level1_data()
 {
-    std::array total_note_list = {87, 150, 270}; // store total notes here
     Game::Battle::BpmInfo bpm;
     constexpr std::array timing_list = {17910, 66269, 123582};
     for (int m : timing_list)
@@ -181,7 +180,7 @@ Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::s
     });
 
     const System::ECS::pid battle_id = rm.reserve_process();
-    rm.add_resource(battle_id, Game::Battle::BattleState(200,level_data.difficulties[global.diff_selected]));
+    rm.add_resource(battle_id, Game::Battle::BattleState(100,level_data.difficulties[global.diff_selected]));
 
     // Should have something like. Permanent Container that run this for every frame (Set something permanent)
     System::ECS::ResourcePool<1000, Game::World::SaveState> &save_state =  manager->get_rm()->query<Game::World::SaveState>();

@@ -489,7 +489,7 @@ inline Game::Battle::LevelData create_level1_data()
         {
             Game::Battle::Difficulty(Game::Battle::LIGHT, 1, 10000,20),
             Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
-            Game::Battle::Difficulty(Game::Battle::BLAZE, 4, 10000,40),
+            Game::Battle::Difficulty(Game::Battle::BLAZE, 5, 10000,40),
         },142000
     );
 }
