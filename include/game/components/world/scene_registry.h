@@ -4,13 +4,17 @@ namespace Game::World
 {
     enum GraphicType
     {
-        Background,
-        Effect,
-        Npc,
+        Bg1,
+        Bg2,
+        Bg3,
         Platform,
+        Effect,
+        LevelNode,
+        Npc1,
+        Npc2,
         Other
     };
-    static const char * graphic_type_string[] = {"Background","Effect","Npc","Platform","Other"};
+    static const char * graphic_type_string[] = {"Bg1","Bg2","Bg3","Platform","Effect","LevelNode","Npc1","Npc2","Other"};
     struct GraphicData
     {
         GraphicType type;
@@ -18,7 +22,7 @@ namespace Game::World
         float dest_rect[4];
         float r,g,b,a;
         uint32_t layer;
-        GraphicData(const GraphicType type) : type(type), src_rect{}, dest_rect{}, r(1), g(1), b(1), a(1), layer(0)
+        GraphicData(const GraphicType type) : type(type), src_rect{}, dest_rect{}, r(1), g(1), b(1), a(1), layer(static_cast<int>(type))
         {}
         explicit GraphicData(
                 const GraphicType type,

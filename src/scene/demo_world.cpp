@@ -22,8 +22,13 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
 
     load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
 
-    load_sprite("img/Square.dds", "Platform", 64, 64);
-    load_sprite("img/test.dds", "Npc", 420, 420);
+    load_sprite("img/world_map/tile.dds", "Platform", 64, 64);
+    load_sprite("img/world_map/companion.dds", "Npc1", 564, 840);
+    load_sprite("img/world_map/mayor.dds", "Npc2", 744, 784);
+    load_sprite("img/world_map/level-node.dds", "LevelNode", 684, 700);
+    load_sprite("img/world_map/BG3.dds", "Bg1", 5408, 2160);
+    load_sprite("img/world_map/BG2.dds", "Bg2", 5408, 2160);
+    load_sprite("img/world_map/BG1.dds", "Bg3", 5408, 2160);
 
     load_sprite("img/Square.dds", "Square", 64, 64);
     load_sprite("img/Square64px.dds", "Square64px", 64, 64);
@@ -84,11 +89,10 @@ Game::World::DialogueRegistry init_dialogue_registry()
 {
     using namespace Game::World;
     std::vector<std::string> text_register = {
-        "This is a place holder text to test the system",
-        "This is not a place for you to be gooning",
-        "just...",
-        "become detroit.... destroy human",
-        "Fun time at poppy playtime co."
+        "Hey.",
+        "You're finally awake.",
+        "Not sure what's going on?",
+        "Just follow the music and you will be fine."
     };
     return {DialogueRegistry(text_register)};
 }
@@ -97,9 +101,10 @@ Game::World::EventRegister init_event_registry()
 {
     using namespace Game::World;
     EventRegister event_sequences = {
-        {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), UnlockInputEvent(), ChangeNextEvent(1)},
-        {LockInputEvent(0b100), DialogueEvent(3), LevelNodeEvent(1), UnlockInputEvent()},
-        {LockInputEvent(0b100), LevelNodeEvent(0), UnlockInputEvent()}
+        {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), DialogueEvent(3),
+            UnlockInputEvent(), ChangeNextEvent(1)},
+        {LockInputEvent(0b100), LevelNodeEvent(0), UnlockInputEvent()},
+        {LockInputEvent(0b100), LevelNodeEvent(1), UnlockInputEvent()}
     };
     return { EventRegister(event_sequences) };
 }
@@ -109,15 +114,19 @@ Game::World::SceneRegistry init_scene_registry()
     using namespace Game::World;
     const SceneRegistry scene_registry = {
         {
-            SceneObject(0,64*-1,100,1,2, {Platform}, {}),
-            SceneObject(-6400,64*6,1,12, 2, {Platform}, {}),
-            SceneObject(3600,64*0,50,1, 2, {Platform}, {}),
-            SceneObject(7200,64*1,25,1, 2, {Platform}, {}),
-            SceneObject(720,64*2,2,0.5, 2, {Platform}, {}),
-            SceneObject(1080,64*3,2,0.5, 2, {Platform}, {}),
-            SceneObject(6400,64*6,1,12, 2, {Platform}, {}),
-            SceneObject(1080,64*4.5,0.2f,0.2f, 1, 0, {Npc}, {}),
-            SceneObject(64*0,64*1,0.2f,0.2f, 1, 2, {Npc}, {}),
+            SceneObject(0,0,0.4f,0.4f,0, {Bg1}, {}),
+            SceneObject(0,0,0.4f,0.4f,0, {Bg2}, {}),
+            SceneObject(0,0,0.4f,0.4f,0, {Bg3}, {}),
+            SceneObject(0,64*-1,25,1,2, {Platform}, {}),
+            SceneObject(64*-45,0,20,20, 2, {Platform}, {}),
+            // SceneObject(3600,64*0,50,1, 2, {Platform}, {}),
+            // SceneObject(7200,64*1,25,1, 2, {Platform}, {}),
+            // SceneObject(720,64*2,2,0.5, 2, {Platform}, {}),
+            // SceneObject(1080,64*3,2,0.5, 2, {Platform}, {}),
+            // SceneObject(6400,64*6,1,12, 2, {Platform}, {}),
+            SceneObject(64*0,64*1,0.1f,0.1f, 1, 1, {LevelNode}, {}),
+            SceneObject(64*-3,64*1+20,0.1f,0.1f, 1, 0, {Npc1}, {}),
+            SceneObject(64*4,64*1+10,0.1f,0.1f, 1, 0, {Npc2}, {})
         }
     };
     return scene_registry;
@@ -170,7 +179,7 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
     AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material>(
         {},{}, {0,100}, {}, Acceleration(0,0,1000,1000,-1000,-1000), {}, Game::Physics::CircularCollider(20.f,32.f),
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Player_Sprite")),
-            .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 1,
+            .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 20,
             .u0 = 0.f, .v0 = 0.f, .u1 = 200.f/800.f, .v1 = 250.f/1500.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))}
     );
@@ -184,7 +193,9 @@ Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::s
     LOG_INFO("Exiting DemoGame Scene.");
 
     free_assets(get_assets_id("Platform"));
-    free_assets(get_assets_id("Npc"));
+    free_assets(get_assets_id("Npc1"));
+    free_assets(get_assets_id("Npc2"));
+    free_assets(get_assets_id("LevelNode"));
 
     ResourceManager rm;
     // Selected Level
