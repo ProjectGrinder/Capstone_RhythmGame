@@ -7,25 +7,29 @@ namespace Game::World
     void create_level_page(T &syscall, LevelNodeEvent& level_node, const Battle::LevelData& data)
     {
         level_node.level_node_texts_pid.clear();
+        int id = level_node.id;
+        if (id >= LEVEL_NODE_POS.size())
+            id = static_cast<int>(LEVEL_NODE_POS.size());
+        const auto pos = LEVEL_NODE_POS[id];
         level_node.level_node_box_pid = syscall.template create_entity<Render::Sprite, Render::Material, Render::Transform>
         (
             Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-HALF_WIDTH/2, HALF_HEIGHT*1/2, 0}, {HALF_WIDTH/2, HALF_HEIGHT*1/2, 0}, {HALF_WIDTH/2, -HALF_HEIGHT*1/2, 0}, {-HALF_WIDTH/2, -HALF_HEIGHT*1/2, 0}}, .layer = 45},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{0, 0, 0, 0, 0, 0,0, 1},
+            Render::Transform{pos.x,pos.y, 0, 0, 0, 0,0, 1},
             Render::Resize{{1, 1}, 500}
             );
         level_node.level_node_texts_pid.push_back(syscall.template create_entity<Render::Text, Render::Material, Render::Transform>
         (
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = data.title, .color = Math::Color{0, 0, 0, 1}, .layer = 51, .align = Render::Center},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{0, HALF_HEIGHT*1/2 - 100, 0, 0, 0, 0,0, 1},
+            Render::Transform{pos.x-50, pos.y + HALF_HEIGHT*1/2 - 100, 0, 0, 0, 0,0, 1},
             Render::Resize{{1.5f, 1.5f}, 500}));
 
         level_node.level_node_texts_pid.push_back(syscall.template create_entity<Render::Text, Render::Material, Render::Transform>
         (
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = data.artist_name, .color = Math::Color{0, 0, 0, 1}, .layer = 51, .align = Render::Center},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{0, HALF_HEIGHT*1/2 - 150, 0, 0, 0, 0,0, 1},
+            Render::Transform{pos.x, pos.y + HALF_HEIGHT*1/2 - 175, 0, 0, 0, 0,0, 1},
             Render::Resize{{1, 1}, 500}));
 
         level_node.level_node_texts_pid.push_back(
@@ -39,7 +43,7 @@ namespace Game::World
                         Render::Material(
                                 get_assets_record_ptr(get_assets_id("sprite_vs")),
                                 get_assets_record_ptr(get_assets_id("sprite_ps"))),
-                        Render::Transform{0, HALF_HEIGHT * 1/2 - 200, 0, 0, 0, 0, 0, 1},
+                        Render::Transform{pos.x, pos.y + HALF_HEIGHT * 1/2 - 250, 0, 0, 0, 0, 0, 1},
                         Render::Resize{{1, 1}, 500}));
 
         const size_t diff_len = data.difficulties.size();
@@ -51,20 +55,20 @@ namespace Game::World
         (
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = diff_name[diff.difficulty] + " " + std::to_string(diff.level), .color = Math::Color{0, 0, 0, 1}, .layer = 51, .align = Render::Center},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{-HALF_WIDTH/2 + HALF_WIDTH * (float)(i + 1) / (float)(diff_len+1), -HALF_HEIGHT*1/2 + 120, 0, 0, 0, 0,0, 1},
+            Render::Transform{pos.x - HALF_WIDTH/2 + HALF_WIDTH * (float)(i + 1) / (float)(diff_len+1), pos.y - HALF_HEIGHT*1/2 + 150, 0, 0, 0, 0,0, 1},
             Render::Resize{{1.f, 1.f}, 500}));
         }
 
         level_node.level_node_texts_pid.push_back(syscall.template create_entity<Render::Text, Render::Material, Render::Transform>(
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Exit", .color = Math::Color{0, 0, 0, 1}, .layer = 51, .align = Render::Center},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{0,-HALF_HEIGHT*1/2 + 50, 0, 0, 0, 0,0, 1},
+            Render::Transform{pos.x,pos.y - HALF_HEIGHT*1/2 + 50, 0, 0, 0, 0,0, 1},
             Render::Resize{{0.8f, 0.8f}, 500}));
 
         level_node.select_rect_pid = syscall.template create_entity<Render::Sprite, Render::Material, Render::Transform>(
             Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-100, 40, 0}, {100, 40, 0}, {100, -40, 0}, {-100, -40, 0}}, .color = {0.75f,0.25f,0.25f,0.5f}, .layer = 50},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{-HALF_WIDTH/2 + HALF_WIDTH * 1.f / (float)(diff_len+1),-HALF_HEIGHT*1/2 + 130, 0, 0, 0, 0,0, 1},
+            Render::Transform{pos.x - HALF_WIDTH/2 + HALF_WIDTH * 1.f / (float)(diff_len+1),pos.y - HALF_HEIGHT*1/2 + 160, 0, 0, 0, 0,0, 1},
             Render::Resize{{1, 1}, 500});
     }
 
@@ -91,8 +95,8 @@ namespace Game::World
         syscall.template remove_component<Render::Resize>(id);
         tra.scaleX = 0;
         syscall.template add_component<Render::Resize>(id, Render::Resize({1,1},500));
-        if (sel == 0) tra.position = {0,-HALF_HEIGHT*1/2 + 60};
-        else tra.position = { -HALF_WIDTH/2 + HALF_WIDTH * (float)(diff + 1) / (float)(diff_len+1),-HALF_HEIGHT*1/2 + 130 };
+        if (sel == 0) tra.position = {64*31,64*2 - HALF_HEIGHT*1/2 + 60};
+        else tra.position = { 64*31-HALF_WIDTH/2 + HALF_WIDTH * (float)(diff + 1) / (float)(diff_len+1),64*2-HALF_HEIGHT*1/2 + 160 };
     }
 
     template<typename T>

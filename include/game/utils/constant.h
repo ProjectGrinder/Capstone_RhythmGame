@@ -50,4 +50,9 @@ namespace Game
 
     constexpr int IFRAME_TIME = 1500;
     constexpr float GRAZE_HITBOX_SIZE = 40.f;
+
+    // world scene position
+    const std::vector<Math::Point> LEVEL_NODE_POS = {
+        {64*31, 64*2, 0}
+    };
 }

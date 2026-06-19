@@ -117,15 +117,11 @@ Game::World::SceneRegistry init_scene_registry()
             SceneObject(0,0,0.4f,0.4f,0, {Bg1}, {}),
             SceneObject(0,0,0.4f,0.4f,0, {Bg2}, {}),
             SceneObject(0,0,0.4f,0.4f,0, {Bg3}, {}),
-            SceneObject(0,64*-1,25,1,2, {Platform}, {}),
-            SceneObject(64*-45,0,20,20, 2, {Platform}, {}),
-            // SceneObject(3600,64*0,50,1, 2, {Platform}, {}),
-            // SceneObject(7200,64*1,25,1, 2, {Platform}, {}),
-            // SceneObject(720,64*2,2,0.5, 2, {Platform}, {}),
-            // SceneObject(1080,64*3,2,0.5, 2, {Platform}, {}),
-            // SceneObject(6400,64*6,1,12, 2, {Platform}, {}),
-            SceneObject(64*0,64*1,0.1f,0.1f, 1, 1, {LevelNode}, {}),
-            SceneObject(64*-3,64*1+20,0.1f,0.1f, 1, 0, {Npc1}, {}),
+            SceneObject(0,64*-1,15,1,2, {Platform}, {}),
+            SceneObject(64*25,64*-0.5,10,1.5f,2, {Platform}, {}),
+            SceneObject(64*-35,64*8,20,10, 2, {Platform}, {}),
+            SceneObject(64*31,64*2,0.1f,0.1f, 1, 1, {LevelNode}, {}),
+            SceneObject(64*23,64*2.3,0.1f,0.1f, 1, 0, {Npc1}, {}),
             SceneObject(64*4,64*1+10,0.1f,0.1f, 1, 0, {Npc2}, {})
         }
     };
