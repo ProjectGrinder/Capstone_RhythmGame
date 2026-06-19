@@ -18,7 +18,7 @@
 namespace Scene::Config
 {
     // starting scene
-    using StartingScene = Level2;
+    using StartingScene = DemoWorld;
 
     using SceneTuple = std::tuple<DemoMenu, Level1, Level2, DemoWorld>;
     using SceneVariant = Utils::make_scene_variant_t<SceneTuple>;
@@ -90,6 +90,16 @@ namespace Scene
         else
         {
             LOG_ERROR("Error: Scene %s is not in the scene tuple, cannot change to this scene", T::name);
+        }
+    }
+
+    // Scalability is my passion V2
+    inline void switch_to_level(const int level)
+    {
+        switch (level) {
+        case 0: Scene::queue_change_scene<Level1>(); break;
+        case 1: Scene::queue_change_scene<Level2>(); break;
+        default: Scene::queue_change_scene<DemoWorld>(); break;
         }
     }
 } // namespace Scene

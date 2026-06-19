@@ -133,7 +133,7 @@ namespace Game::World
             if (input.z_pressed && level_node.selection == 1)
             {
                 global.diff_selected = level_node.diff;
-                Scene::queue_change_scene<Scene::Level1>();
+                Scene::switch_to_level(level_node.id);
                 destroy_level_node(syscall,id, level_node, comps.get<EventState>());
             }
 
