@@ -498,10 +498,10 @@ std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init()
     ResourceManager rm;
     const System::ECS::pid level_id = rm.reserve_process();
     Game::Battle::LevelData level_data = create_level2_data();
-    rm.add_resource(level_id, std::move(level_data));
+    rm.add_resource(level_id, create_level2_data());
 
     const System::ECS::pid battle_id = rm.reserve_process();
-    rm.add_resource(battle_id, Game::Battle::BattleState(100,Game::Battle::Difficulty(Game::Battle::BLAZE, 5, 10000,40)));
+    rm.add_resource(battle_id, Game::Battle::BattleState(100,level_data.difficulties[0]));
 
     return init(rm);
 }

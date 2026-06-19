@@ -499,7 +499,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     ResourceManager rm;
     const System::ECS::pid level_id = rm.reserve_process();
     Game::Battle::LevelData level_data = create_level1_data();
-    rm.add_resource(level_id, std::move(level_data));
+    rm.add_resource(level_id, create_level1_data());
 
     const System::ECS::pid battle_id = rm.reserve_process();
     rm.add_resource(battle_id, Game::Battle::BattleState(100,level_data.difficulties[0]));
