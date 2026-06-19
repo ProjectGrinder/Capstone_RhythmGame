@@ -34,7 +34,6 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
 
 inline Game::Battle::LevelData create_level1_data()
 {
-    std::array total_note_list = {87, 150, 270}; // store total notes here
     Game::Battle::BpmInfo bpm;
     constexpr std::array timing_list = {17910, 66269, 123582};
     for (int m : timing_list)
@@ -50,10 +49,34 @@ inline Game::Battle::LevelData create_level1_data()
     134.00f,
     bpm,
         {
-            Game::Battle::Difficulty(Game::Battle::LIGHT, 1, total_note_list[0]*5,20),
-            Game::Battle::Difficulty(Game::Battle::SPARK, 3, total_note_list[1]*5,30),
-            Game::Battle::Difficulty(Game::Battle::BLAZE, 5, total_note_list[2]*5,40),
+            Game::Battle::Difficulty(Game::Battle::LIGHT, 1, 10000,20),
+            Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
+            Game::Battle::Difficulty(Game::Battle::BLAZE, 5, 10000,40),
         },142000
+    );
+}
+
+inline Game::Battle::LevelData create_level2_data()
+{
+    Game::Battle::BpmInfo bpm;
+    constexpr std::array timing_list = {28235, 73412, 111529};
+    for (int m : timing_list)
+    {
+        Game::Battle::BpmInfo::InfoPair info{};
+        info.bpm = 170.00f;
+        info.timing = m;
+        bpm.bpm_list.emplace_back(info);
+    }
+    return Game::Battle::LevelData(
+    "Strike Against The World!",
+    "Pooh5821",
+    170.00f,
+    bpm,
+{
+            Game::Battle::Difficulty(Game::Battle::LIGHT, 2, 10000,20),
+            Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
+            Game::Battle::Difficulty(Game::Battle::BLAZE, 5, 10000,40),
+        }, 139000
     );
 }
 
@@ -75,7 +98,7 @@ Game::World::EventRegister init_event_registry()
     using namespace Game::World;
     EventRegister event_sequences = {
         {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), UnlockInputEvent(), ChangeNextEvent(1)},
-        {LockInputEvent(0b100), DialogueEvent(3), UnlockInputEvent()},
+        {LockInputEvent(0b100), DialogueEvent(3), LevelNodeEvent(1), UnlockInputEvent()},
         {LockInputEvent(0b100), LevelNodeEvent(0), UnlockInputEvent()}
     };
     return { EventRegister(event_sequences) };
@@ -136,9 +159,9 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
     tm->create_entity<Game::Input>(Game::Input());
     // LevelRegistry
     // TODO : Move this to init at the start of the game
-    tm->create_entity<Game::World::LevelRegistry>({{
-        create_level1_data()
-    }});
+    tm->create_entity<Game::World::LevelRegistry>({
+        { create_level1_data(), create_level2_data()}
+    });
 
     tm->create_entity<Game::World::Player, Rotation,
     Game::Render::Transform,
@@ -170,7 +193,7 @@ Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::s
     const System::ECS::pid level_id = rm.reserve_process();
     System::ECS::ResourcePool<1000, Game::World::LevelRegistry> &level_registry = manager->get_rm()->query<Game::World::LevelRegistry>();
     if (level_registry.begin() == level_registry.end()) LOG_ERROR("Please dont happen");
-    const Game::Battle::LevelData level_data = level_registry.front().level_datas[global.level_selected];
+    const Game::Battle::LevelData &level_data = level_registry.front().level_datas[global.level_selected];
     rm.add_resource(level_id, Game::Battle::LevelData{
         level_data.title,
         level_data.artist_name,
@@ -181,7 +204,7 @@ Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::s
     });
 
     const System::ECS::pid battle_id = rm.reserve_process();
-    rm.add_resource(battle_id, Game::Battle::BattleState(200,level_data.difficulties[global.diff_selected]));
+    rm.add_resource(battle_id, Game::Battle::BattleState(100,level_data.difficulties[global.diff_selected]));
 
     // Should have something like. Permanent Container that run this for every frame (Set something permanent)
     System::ECS::ResourcePool<1000, Game::World::SaveState> &save_state =  manager->get_rm()->query<Game::World::SaveState>();

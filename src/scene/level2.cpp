@@ -3,9 +3,9 @@
 #include "scene.h"
 #include "game.h"
 #include "game/utils/DSL/bullethell/bullet_script.h"
-#include "game/utils/rhythm_chart/level_01.h"
+#include "game/utils/rhythm_chart/level_02.h"
 
-void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
+void init_graphics(const std::shared_ptr<Scene::Level2::TaskManager>& tm)
 {
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
 
@@ -51,7 +51,7 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_font("fonts/Klub04TT-NoBG.dds", "Klub04TT-NoBG", "fonts/Klub04TT-Normal.txt");
 }
 
-void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& tm, const Game::Battle::BattleState &bt_state)
+void init_battle_components(const std::shared_ptr<Scene::Level2::TaskManager>& tm, const Game::Battle::BattleState &bt_state)
 {
     // Background
     tm->create_entity<Game::Render::Sprite,
@@ -197,7 +197,7 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
     Game::Render::Transform>
     (
         Game::Battle::UIComponent{Game::Battle::SongTitle},
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "A World Without You", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Strike Against The World!", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Math::Point{-Game::HALF_WIDTH * 37/40 - 10, Game::HALF_HEIGHT * 4/5, 0}, 0, 0, 0});
     tm->create_entity<Game::Battle::UIComponent,
@@ -206,7 +206,7 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
     Game::Render::Transform>
     (
         Game::Battle::UIComponent{Game::Battle::ArtistName},
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Nakuya", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Pooh5821", .color = Math::Color{0, 0, 0, 1}, .layer = 51},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{-Game::HALF_WIDTH * 37/40 - 10, Game::HALF_HEIGHT * 11/15, 0, 0, 0, 0.8f, 0.8f, 0.8f});
     tm->create_entity<Game::Battle::UIComponent,
@@ -331,17 +331,16 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
         Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1}, {Game::Battle::RHYTHM,0.7f});
 }
 
-// std::array total_note_list = {87, 150, 270}; // store total notes here
-std::array speed_list1 = {2.5f, 3.0f, 4.0f}; // in case of preset speed
+std::array speed_list2 = {2.5f, 3.0f, 4.0f}; // in case of preset speed
 
-inline Game::Battle::RhythmState create_rhythm_state(const int level, const int note_count)
+inline Game::Battle::RhythmState create_rhythm_state2(const int level, const int note_count)
 {
     int accept_gain;
     if (note_count > 0)
         accept_gain = 20000/note_count;
     else
         accept_gain = 1;
-    Game::Battle::RhythmState state(1, accept_gain, note_count, speed_list1[level], speed_list1[level]);
+    Game::Battle::RhythmState state(1, accept_gain, note_count, speed_list2[level], speed_list2[level]);
     const int accept_loss1 = accept_gain*5;
     const int accept_loss2 = accept_gain*2;
     state.accept_loss.normal = accept_loss1;
@@ -355,7 +354,7 @@ inline Game::Battle::RhythmState create_rhythm_state(const int level, const int 
     return (state);
 }
 
-int Scene::Level1::load_chart(
+int Scene::Level2::load_chart(
     const std::shared_ptr<TaskManager> &tm,
     Game::Battle::ChartData chart)
 {
@@ -464,42 +463,42 @@ int Scene::Level1::load_chart(
     return note_count;
 }
 
-Scene::Level1 Scene::Level1::instance()
+Scene::Level2 Scene::Level2::instance()
 {
-    static Level1 instance;
+    static Level2 instance;
     return (instance);
 }
 
-inline Game::Battle::LevelData create_level1_data()
+inline Game::Battle::LevelData create_level2_data()
 {
     Game::Battle::BpmInfo bpm;
-    constexpr std::array timing_list = {17910, 66269, 123582};
+    constexpr std::array timing_list = {28235, 73412, 111529};
     for (int m : timing_list)
     {
         Game::Battle::BpmInfo::InfoPair info{};
-        info.bpm = 134.00f;
+        info.bpm = 170.00f;
         info.timing = m;
         bpm.bpm_list.emplace_back(info);
     }
     return Game::Battle::LevelData(
-    "A World Without You",
-    "Nakuya",
-    134.00f,
+    "Strike Against The World!",
+    "Pooh5821",
+    170.00f,
     bpm,
-        {
-            Game::Battle::Difficulty(Game::Battle::LIGHT, 1, 10000,20),
+{
+            Game::Battle::Difficulty(Game::Battle::LIGHT, 2, 10000,20),
             Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
             Game::Battle::Difficulty(Game::Battle::BLAZE, 5, 10000,40),
-        },142000
+        }, 139000
     );
 }
 
-std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
+std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init()
 {
     ResourceManager rm;
     const System::ECS::pid level_id = rm.reserve_process();
-    Game::Battle::LevelData level_data = create_level1_data();
-    rm.add_resource(level_id, create_level1_data());
+    Game::Battle::LevelData level_data = create_level2_data();
+    rm.add_resource(level_id, create_level2_data());
 
     const System::ECS::pid battle_id = rm.reserve_process();
     rm.add_resource(battle_id, Game::Battle::BattleState(100,level_data.difficulties[0]));
@@ -507,7 +506,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init()
     return init(rm);
 }
 
-std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]] ResourceManager &data)
+std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init([[maybe_unused]] ResourceManager &data)
 {
     auto tm = std::make_shared<TaskManager>();
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
@@ -520,11 +519,10 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
 
     Game::Battle::BattleState &bt_state = data.query<Game::Battle::BattleState>().front();
     const int level = bt_state.difficulty.difficulty;
+    Game::BulletHell::BulletScript script{"dsl/ShotData.th0", (Game::levelDSL_lists[1][level].bullet_script.c_str())};
+    script.read_dsl_from_file(Game::levelDSL_lists[1][level].bullet_script.c_str());
 
-    const int note_count = load_chart(tm, load_level_01_chart(level));
-
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0", (Game::levelDSL_lists[0][level].bullet_script.c_str())};
-    script.read_dsl_from_file(Game::levelDSL_lists[0][level].bullet_script.c_str());
+    const int note_count = load_chart(tm, load_level_02_chart(level));
 
     tm->create_entity<Game::Battle::BattleState,
     Game::Battle::BulletHellState,
@@ -537,22 +535,22 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     (
         std::move(bt_state),
         Game::Battle::BulletHellState(10),
-        create_rhythm_state(level, note_count),
+        create_rhythm_state2(level, note_count),
         std::move(script.bullet_registry),
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
         init_anim_data(),
-        Game::Audio::init_sounds(0));
+        Game::Audio::init_sounds(1));
 
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());
 
     // Transition Data
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(16400, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(50149, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(65000, 1500, Game::Battle::RHYTHM));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(80000, 1500, Game::Battle::BULLET_HELL));
-    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(122500, 1000, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(27000, 1200, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(49700, 1100, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(72000, 1000, Game::Battle::RHYTHM));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(90300, 1200, Game::Battle::BULLET_HELL));
+    tm->create_entity<Game::Battle::TransitionData>(Game::Battle::TransitionData(110500, 1000, Game::Battle::RHYTHM));
 
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(0));
     tm->create_entity<Game::Rhythm::Lane>(Game::Rhythm::Lane(1));
@@ -566,8 +564,8 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
     return (tm);
 }
 
-Scene::Level1::ResourceManager Scene::Level1::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
+Scene::Level2::ResourceManager Scene::Level2::exit([[maybe_unused]] std::shared_ptr<TaskManager> &manager)
 {
-    LOG_INFO("Exiting Level1 Scene.");
+    LOG_INFO("Exiting Level2 Scene.");
     return ResourceManager();
 }

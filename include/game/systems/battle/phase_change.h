@@ -23,10 +23,10 @@ namespace Game::Battle
         // Init Music. Fix later
         if (battle_state.clock_time>=0 && battle_state.clock_time/1000<1000)
         {
-            if (!sound_query.front().get<Audio::SoundRegistry>().audios["DemoSong"].play)
+            if (!sound_query.front().get<Audio::SoundRegistry>().audios["level_music"].play)
             {
-                Audio::audio_play(sound_query.front().get<Audio::SoundRegistry>().audios["DemoSong"]);
-                sound_query.front().get<Audio::SoundRegistry>().audios["DemoSong"].play = true;
+                Audio::audio_play(sound_query.front().get<Audio::SoundRegistry>().audios["level_music"]);
+                sound_query.front().get<Audio::SoundRegistry>().audios["level_music"].play = true;
             }
         }
 

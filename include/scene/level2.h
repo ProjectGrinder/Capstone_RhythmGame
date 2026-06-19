@@ -4,7 +4,7 @@
 
 namespace Scene
 {
-    struct Level1
+    struct Level2
     {
         template<typename T>
         static void return_to_menu(
@@ -26,9 +26,9 @@ namespace Scene
             }
         }
 
-        static Level1 instance();
+        static Level2 instance();
 
-        constexpr static auto name = "Level1";
+        constexpr static auto name = "Level2";
         constexpr static size_t MaxResource = 10000;
 
         // declare scene parameters
