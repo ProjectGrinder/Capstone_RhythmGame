@@ -93,7 +93,7 @@ namespace Game::World
             const uint16_t level_id, const int sel, const int diff, const size_t diff_len, Render::Transform &tra)
     {
         Math::Point pos{};
-        if (level_id >= LEVEL_NODE_POS.size())
+        if (level_id < LEVEL_NODE_POS.size())
             pos = LEVEL_NODE_POS[static_cast<int>(level_id)];
         else
             pos = LEVEL_NODE_POS[LEVEL_NODE_POS.size()-1];
