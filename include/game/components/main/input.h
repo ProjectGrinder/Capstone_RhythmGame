@@ -14,8 +14,8 @@ namespace Game
         bool up_held;
         bool down_pressed;
         bool down_held;
-        bool e_pressed;
-        bool e_held;
+        bool z_pressed;
+        bool z_held;
         bool shift_pressed;
         bool shift_held;
         bool space_pressed;

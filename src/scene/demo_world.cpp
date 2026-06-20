@@ -130,6 +130,7 @@ Game::World::SceneRegistry init_scene_registry()
     for (int i=15; i<31; i+=2)
     {
         scene_registry.scene_objects.emplace_back(SceneObject(64*i,0,1,1,2, {PlatformTop}, {}));
+        scene_registry.scene_objects.emplace_back(SceneObject(64*i,64*-1,1,1,2, {Platform}, {}));
     }
     return scene_registry;
 

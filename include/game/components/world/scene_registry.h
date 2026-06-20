@@ -7,15 +7,15 @@ namespace Game::World
         Bg1,
         Bg2,
         Bg3,
-        PlatformTop,
         Platform,
+        PlatformTop,
         Effect,
         LevelNode,
         Npc1,
         Npc2,
         Other
     };
-    static const char * graphic_type_string[] = {"Bg1","Bg2","Bg3","PlatformTop","Platform","Effect","LevelNode","Npc1","Npc2","Other"};
+    static const char * graphic_type_string[] = {"Bg1","Bg2","Bg3","Platform","PlatformTop","Effect","LevelNode","Npc1","Npc2","Other"};
     struct GraphicData
     {
         GraphicType type;

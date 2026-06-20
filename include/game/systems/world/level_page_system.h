@@ -147,7 +147,7 @@ namespace Game::World
             }
 
             auto &level_info = level_registry.level_datas[level_node.id];
-            if (input.escape_pressed || ((input.enter_pressed || input.e_pressed) && level_node.selection == 0))
+            if (input.escape_pressed || ((input.enter_pressed || input.z_pressed) && level_node.selection == 0))
             {
                 destroy_level_node(syscall,id, level_node, comps.get<EventState>());
                 global.level_selected = -1;
@@ -155,7 +155,7 @@ namespace Game::World
             }
 
 
-            if ((input.enter_pressed || input.e_pressed) && level_node.selection == 1)
+            if ((input.enter_pressed || input.z_pressed) && level_node.selection == 1)
             {
                 global.diff_selected = level_node.diff;
                 Scene::switch_to_level(level_node.id);

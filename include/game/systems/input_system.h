@@ -23,8 +23,7 @@ namespace Game
         constexpr auto A = 0x41;
         constexpr auto S = 0x53;
         constexpr auto D = 0x44;
-        constexpr auto E = 0x45;
-        // constexpr auto Z = 0x5A;
+        constexpr auto Z = 0x5A;
         // constexpr auto X = 0x58;
 
         constexpr auto KEY1 = 0x58; // X
@@ -53,8 +52,8 @@ namespace Game
 
         input_c.axis_y = static_cast<float>((get_key_state(UP) || get_key_state(W)) - (get_key_state(DOWN) || get_key_state(S)));
 
-        input_c.e_pressed = get_key_state(E) && !input_c.e_held;
-        input_c.e_held = get_key_state(E);
+        input_c.z_pressed = get_key_state(Z) && !input_c.z_held;
+        input_c.z_held = get_key_state(Z);
 
         input_c.shift_pressed = get_key_state(SHIFT) && !input_c.shift_held;
         input_c.shift_held = get_key_state(SHIFT);
