@@ -93,7 +93,8 @@ Game::World::DialogueRegistry init_dialogue_registry()
         "Hey.",
         "You're finally awake.",
         "Not sure what's going on?",
-        "Just follow the music and you will be fine."
+        "Just follow the music and you will be fine.",
+        "Go on. Try interacting with that crystal."
     };
     return {DialogueRegistry(text_register)};
 }
@@ -103,7 +104,7 @@ Game::World::EventRegister init_event_registry()
     using namespace Game::World;
     EventRegister event_sequences = {
         {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), DialogueEvent(3),
-            UnlockInputEvent(), ChangeNextEvent(1)},
+            DialogueEvent(4), UnlockInputEvent(), ChangeNextEvent(1)},
         {LockInputEvent(0b100), LevelNodeEvent(0), UnlockInputEvent()},
         {LockInputEvent(0b100), LevelNodeEvent(1), UnlockInputEvent()}
     };
@@ -119,18 +120,52 @@ Game::World::SceneRegistry init_scene_registry()
             SceneObject(0,0,0.4f,0.4f,0, {Bg2}, {}),
             SceneObject(0,0,0.4f,0.4f,0, {Bg3}, {}),
             SceneObject(64*25,64*2,0.1f,0.1f, 1, 1, {LevelNode}, {}),
+            SceneObject(64*69,64*1,0.1f,0.1f, 1, 2, {LevelNode}, {}),
             SceneObject(64*20,64*2.3f,0.1f,0.1f, 1, 0, {Npc1}, {}),
-            SceneObject(64*4,64*1+10,0.1f,0.1f, 1, 0, {Npc2}, {})
+            SceneObject(64*57,64*4.7f,0.1f,0.1f, 1, 0, {Npc2}, {})
         }
     };
     for (int i=-15; i<15; i+=2)
     {
-        scene_registry.scene_objects.emplace_back(SceneObject(64*i,64*-1,1,1,2, {PlatformTop}, {}));
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*-1,1,1,2, {PlatformTop}, {}));
     }
     for (int i=15; i<31; i+=2)
     {
-        scene_registry.scene_objects.emplace_back(SceneObject(64*i,0,1,1,2, {PlatformTop}, {}));
-        scene_registry.scene_objects.emplace_back(SceneObject(64*i,64*-1,1,1,2, {Platform}, {}));
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),0,1,1,2, {PlatformTop}, {}));
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*-1,1,1,2, {Platform}, {}));
+    }
+    for (int i=-17; i>-37; i-=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*7,1,1,2, {PlatformTop}, {}));
+        for (int j=5; j>=-1; j-=2)
+        {
+            scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*j,1,1,2, {Platform}, {}));
+        }
+    }
+    for (int i=35; i<41; i++)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64,0.5f,0.5f,2, {PlatformTop}, {}));
+    }
+    for (int i=44; i<50; i++)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*2.5f,0.5f,0.5f,2, {PlatformTop}, {}));
+    }
+    for (int i=53; i<59; i++)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*3,0.5f,0.5f,2, {PlatformTop}, {}));
+    }
+    scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*31),64*-1.5f,1,1,2, {PlatformTop}, {}));
+    for (int i=33; i<51; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*-3,1,1,2, {PlatformTop}, {}));
+    }
+    for (int i=51; i<65; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*-2,1,1,2, {PlatformTop}, {}));
+    }
+    for (int i=65; i<75; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*-1,1,1,2, {PlatformTop}, {}));
     }
     return scene_registry;
 

@@ -61,6 +61,7 @@ namespace Game
 
     // world scene position
     const std::vector<Math::Point> LEVEL_NODE_POS = {
-        {64*25, 64*2, 0}
+        {64*25, 64*2, 0},
+        {64*69, 64*1, 0}
     };
 }
