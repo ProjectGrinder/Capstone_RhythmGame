@@ -78,22 +78,22 @@ Game::Render::Text Scene::write_difficulty(const Game::Battle::Difficulty diffic
     {
     case Game::Battle::LIGHT:
         text.text = "LIGHT " + std::to_string(difficulty.level);
-        text.color = Math::Color{0, 0.5f, 1};
+        text.color = Game::DIFF_COLOR[0];
         break;
 
     case Game::Battle::SPARK:
         text.text = "SPARK " + std::to_string(difficulty.level);
-        text.color = Math::Color{1, 0.5f, 0};
+        text.color = Game::DIFF_COLOR[1];
         break;
 
     case Game::Battle::BLAZE:
         text.text = "BLAZE " + std::to_string(difficulty.level);
-        text.color = Math::Color{1, 0, 0};
+        text.color = Game::DIFF_COLOR[2];
         break;
 
     case Game::Battle::ASTRA:
         text.text = "ASTRA " + std::to_string(difficulty.level);
-        text.color = Math::Color{1, 0, 1};
+        text.color = Game::DIFF_COLOR[3];
         break;
 
     default:

@@ -66,7 +66,7 @@ namespace Game::World
             Render::Resize{{0.8f, 0.8f}, 500}));
 
         level_node.select_rect_pid = syscall.template create_entity<Render::Sprite, Render::Material, Render::Transform>(
-            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-100, 40, 0}, {100, 40, 0}, {100, -40, 0}, {-100, -40, 0}}, .color = {0.75f,0.25f,0.25f,0.5f}, .layer = 50},
+            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-100, 40, 0}, {100, 40, 0}, {100, -40, 0}, {-100, -40, 0}}, .color = {0,0.5f,1,0.5f}, .layer = 50},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{pos.x - HALF_WIDTH/2 + HALF_WIDTH * 1.f / (float)(diff_len+1),pos.y - HALF_HEIGHT*1/2 + 160, 0, 0, 0, 0,0, 1},
             Render::Resize{{1, 1}, 500});
@@ -90,7 +90,8 @@ namespace Game::World
 
     template<typename T>
     void adjust_option_rect(T &syscall, System::ECS::pid id,
-            const uint16_t level_id, const int sel, const int diff, const size_t diff_len, Render::Transform &tra)
+            const uint16_t level_id, const int sel, const int diff, const size_t diff_len,
+            Render::Transform &tra, Render::Sprite &spr)
     {
         Math::Point pos{};
         if (level_id < LEVEL_NODE_POS.size())
@@ -101,8 +102,22 @@ namespace Game::World
         syscall.template remove_component<Render::Resize>(id);
         tra.scaleX = 0;
         syscall.template add_component<Render::Resize>(id, Render::Resize({1,1},500));
-        if (sel == 0) tra.position = {pos.x,pos.y - HALF_HEIGHT*1/2 + 60};
-        else tra.position = { pos.x-HALF_WIDTH/2 + HALF_WIDTH * (float)(diff + 1) / (float)(diff_len+1),pos.y-HALF_HEIGHT*1/2 + 160 };
+        if (sel == 0)
+        {
+            tra.position = {pos.x,pos.y - HALF_HEIGHT*1/2 + 60};
+            spr.color = Math::Color{0.5f,0.5f,0.5f,0.5f};
+        }
+        else
+        {
+            tra.position = { pos.x-HALF_WIDTH/2 + HALF_WIDTH * (float)(diff + 1) / (float)(diff_len+1),pos.y-HALF_HEIGHT*1/2 + 160 };
+            Math::Color box_color;
+            if (diff <= 3)
+                box_color = DIFF_COLOR[diff];
+            else
+                box_color = Math::Color{0.5f,0.5f,0.5f};
+            box_color.a = 0.5f;
+            spr.color = box_color;
+        }
     }
 
     template<typename T>
@@ -150,14 +165,16 @@ namespace Game::World
             if (input.up_pressed || input.down_pressed)
             {
                 level_node.selection = (level_node.selection+1)%2;
-                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.id, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
+                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.id, level_node.selection, level_node.diff,
+                    level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid), syscall.template query<Render::Sprite>(level_node.select_rect_pid));
             }
             if (input.left_pressed || input.right_pressed)
             {
                 level_node.selection = 1;
                 const auto count = static_cast<uint8_t>(level_info.difficulties.size());
                 level_node.diff = static_cast<uint8_t>((static_cast<int>(level_node.diff) + Physics::sign(input.right_pressed) + count) % count);
-                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.id, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
+                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.id, level_node.selection, level_node.diff,
+                    level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid), syscall.template query<Render::Sprite>(level_node.select_rect_pid));
             }
         }
     }
