@@ -22,7 +22,8 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
 
     load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
 
-    load_sprite("img/world_map/tile.dds", "Platform", 64, 64);
+    load_sprite("img/world_map/tile1.dds", "PlatformTop", 64, 64);
+    load_sprite("img/world_map/tile2.dds", "Platform", 64, 64);
     load_sprite("img/world_map/companion.dds", "Npc1", 564, 840);
     load_sprite("img/world_map/mayor.dds", "Npc2", 744, 784);
     load_sprite("img/world_map/level-node.dds", "LevelNode", 684, 700);
@@ -112,19 +113,24 @@ Game::World::EventRegister init_event_registry()
 Game::World::SceneRegistry init_scene_registry()
 {
     using namespace Game::World;
-    const SceneRegistry scene_registry = {
+    SceneRegistry scene_registry = {
         {
             SceneObject(0,0,0.4f,0.4f,0, {Bg1}, {}),
             SceneObject(0,0,0.4f,0.4f,0, {Bg2}, {}),
             SceneObject(0,0,0.4f,0.4f,0, {Bg3}, {}),
-            SceneObject(0,64*-1,15,1,2, {Platform}, {}),
-            SceneObject(64*25,64*-0.5,10,1.5f,2, {Platform}, {}),
-            SceneObject(64*-35,64*8,20,10, 2, {Platform}, {}),
-            SceneObject(64*31,64*2,0.1f,0.1f, 1, 1, {LevelNode}, {}),
-            SceneObject(64*23,64*2.3,0.1f,0.1f, 1, 0, {Npc1}, {}),
+            SceneObject(64*25,64*2,0.1f,0.1f, 1, 1, {LevelNode}, {}),
+            SceneObject(64*20,64*2.3f,0.1f,0.1f, 1, 0, {Npc1}, {}),
             SceneObject(64*4,64*1+10,0.1f,0.1f, 1, 0, {Npc2}, {})
         }
     };
+    for (int i=-15; i<15; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(64*i,64*-1,1,1,2, {PlatformTop}, {}));
+    }
+    for (int i=15; i<31; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(64*i,0,1,1,2, {PlatformTop}, {}));
+    }
     return scene_registry;
 
 }
@@ -189,6 +195,7 @@ Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::s
     LOG_INFO("Exiting DemoGame Scene.");
 
     free_assets(get_assets_id("Platform"));
+    free_assets(get_assets_id("PlatformTop"));
     free_assets(get_assets_id("Npc1"));
     free_assets(get_assets_id("Npc2"));
     free_assets(get_assets_id("LevelNode"));

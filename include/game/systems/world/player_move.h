@@ -39,7 +39,7 @@ namespace Game::World
 
             comps.get<Velocity>().vx = x * velocity_factor;
 
-            if (input.z_pressed && comps.get<Player>().on_ground)
+            if (input.space_pressed && comps.get<Player>().on_ground)
             {
                 LOG_INFO("Player Jump");
                 comps.get<Velocity>().vy = player_stat.jump_height;

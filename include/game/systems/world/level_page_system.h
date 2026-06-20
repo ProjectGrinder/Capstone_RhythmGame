@@ -9,7 +9,7 @@ namespace Game::World
         level_node.level_node_texts_pid.clear();
         int id = level_node.id;
         if (id >= LEVEL_NODE_POS.size())
-            id = static_cast<int>(LEVEL_NODE_POS.size());
+            id = static_cast<int>(LEVEL_NODE_POS.size())-1;
         const auto pos = LEVEL_NODE_POS[id];
         level_node.level_node_box_pid = syscall.template create_entity<Render::Sprite, Render::Material, Render::Transform>
         (
@@ -30,7 +30,7 @@ namespace Game::World
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = data.artist_name, .color = Math::Color{0, 0, 0, 1}, .layer = 51, .align = Render::Center},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{pos.x, pos.y + HALF_HEIGHT*1/2 - 175, 0, 0, 0, 0,0, 1},
-            Render::Resize{{1, 1}, 500}));
+            Render::Resize{{1.2f, 1.2f}, 500}));
 
         level_node.level_node_texts_pid.push_back(
                 syscall.template create_entity<Render::Text, Render::Material, Render::Transform>(
@@ -89,14 +89,20 @@ namespace Game::World
     }
 
     template<typename T>
-    void adjust_option_rect(T &syscall, System::ECS::pid id, const int sel, const int diff, const size_t diff_len, Render::Transform &tra)
+    void adjust_option_rect(T &syscall, System::ECS::pid id,
+            const uint16_t level_id, const int sel, const int diff, const size_t diff_len, Render::Transform &tra)
     {
+        Math::Point pos{};
+        if (level_id >= LEVEL_NODE_POS.size())
+            pos = LEVEL_NODE_POS[static_cast<int>(level_id)];
+        else
+            pos = LEVEL_NODE_POS[LEVEL_NODE_POS.size()-1];
         // Test if viable
         syscall.template remove_component<Render::Resize>(id);
         tra.scaleX = 0;
         syscall.template add_component<Render::Resize>(id, Render::Resize({1,1},500));
-        if (sel == 0) tra.position = {64*31,64*2 - HALF_HEIGHT*1/2 + 60};
-        else tra.position = { 64*31-HALF_WIDTH/2 + HALF_WIDTH * (float)(diff + 1) / (float)(diff_len+1),64*2-HALF_HEIGHT*1/2 + 160 };
+        if (sel == 0) tra.position = {pos.x,pos.y - HALF_HEIGHT*1/2 + 60};
+        else tra.position = { pos.x-HALF_WIDTH/2 + HALF_WIDTH * (float)(diff + 1) / (float)(diff_len+1),pos.y-HALF_HEIGHT*1/2 + 160 };
     }
 
     template<typename T>
@@ -126,7 +132,7 @@ namespace Game::World
             }
 
             auto &level_info = level_registry.level_datas[level_node.id];
-            if (input.x_pressed || input.escape_pressed || (input.z_pressed && level_node.selection == 0))
+            if (input.escape_pressed || ((input.enter_pressed || input.e_pressed) && level_node.selection == 0))
             {
                 destroy_level_node(syscall,id, level_node, comps.get<EventState>());
                 global.level_selected = -1;
@@ -134,7 +140,7 @@ namespace Game::World
             }
 
 
-            if (input.z_pressed && level_node.selection == 1)
+            if ((input.enter_pressed || input.e_pressed) && level_node.selection == 1)
             {
                 global.diff_selected = level_node.diff;
                 Scene::switch_to_level(level_node.id);
@@ -144,14 +150,14 @@ namespace Game::World
             if (input.up_pressed || input.down_pressed)
             {
                 level_node.selection = (level_node.selection+1)%2;
-                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
+                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.id, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
             }
             if (input.left_pressed || input.right_pressed)
             {
                 level_node.selection = 1;
                 const auto count = static_cast<uint8_t>(level_info.difficulties.size());
                 level_node.diff = static_cast<uint8_t>((static_cast<int>(level_node.diff) + Physics::sign(input.right_pressed) + count) % count);
-                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
+                adjust_option_rect(syscall, level_node.select_rect_pid, level_node.id, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
             }
         }
     }
