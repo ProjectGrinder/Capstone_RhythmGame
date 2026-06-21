@@ -50,4 +50,8 @@ namespace Game
 
     constexpr int IFRAME_TIME = 1500;
     constexpr float GRAZE_HITBOX_SIZE = 40.f;
+
+    constexpr float DIALOGUE_BOX_OFFSET_Y = 80.f;
+    constexpr float DIALOGUE_BOX_HEIGHT = 60.f;
+    constexpr int DIALOGUE_TYPE_DELAY = 50;
 }

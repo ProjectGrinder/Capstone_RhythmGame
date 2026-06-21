@@ -24,6 +24,7 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 
     load_sprite("img/bullethell/Default_Shot.dds", "bullet_sprite", 512, 512);
+    // load_sprite("img/bullethell/NewBullet.dds", "bullet_sprite", 320, 200);
     load_sprite("img/test.dds", "test", 500, 500);
     load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
     load_sprite("img/bullethell/Hitbox.dds", "Hitbox", 12, 12);
@@ -523,7 +524,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
 
     const int note_count = load_chart(tm, load_level_01_chart(level));
 
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0", (Game::levelDSL_lists[0][level].bullet_script.c_str())};
+    Game::BulletHell::BulletScript script{"dsl/ShotData2.th0", (Game::levelDSL_lists[0][level].bullet_script.c_str())};
     script.read_dsl_from_file(Game::levelDSL_lists[0][level].bullet_script.c_str());
 
     tm->create_entity<Game::Battle::BattleState,

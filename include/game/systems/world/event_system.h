@@ -18,8 +18,7 @@ namespace Game::World
             auto &event_state = comps.get<EventState>();
             if (!event_state.event_occupied || event_state.has_event) continue;
 
-            LOG_INFO("Event : %d", event_state.event_idx);
-            if (event_register[event_state.event_id].events.size() == event_state.event_idx)
+            if (event_register[event_state.event_id].events.size() <= event_state.event_idx)
             {
                 event_state.event_occupied = false;
                 event_state.event_idx = 0;
@@ -69,8 +68,6 @@ namespace Game::World
 
             if ((lock_input.lockBit & 1) > 0)
                 global.menuLocked = true;
-
-            LOG_INFO("Entity ID : %d",id);
 
             event_state.has_event = false;
             syscall.template remove_component<LockInputEvent>(id);
@@ -128,6 +125,8 @@ namespace Game::World
             event_state.event_id = comps.get<ChangeNextEvent>().event_id;
             event_state.has_event = false;
             syscall.template remove_component<ChangeNextEvent>(id);
+            event_state.event_occupied = false;
+            event_state.event_idx = 0;
         }
     }
 

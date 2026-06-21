@@ -12,6 +12,6 @@ namespace Game
         // Level 1
         { {"dsl/01-L.th0"} , {"dsl/01-S.th0"}, {"dsl/01-B.th0"}},
         // Level 2
-        { {"dsl/02-L.th0"} , {"dsl/02-L.th0"}, {"dsl/02-L.th0"}}
+        { {"dsl/02-L.th0"} , {"dsl/02-S.th0"}, {"dsl/02-B.th0"}}
     };
 } // namespace Game

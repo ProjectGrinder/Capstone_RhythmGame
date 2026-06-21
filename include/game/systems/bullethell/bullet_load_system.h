@@ -4,6 +4,8 @@
 
 namespace Game::BulletHell
 {
+
+    inline Math::Point bullet_asset_size;
     // Refactor later
     template<typename T>
     void spawn_bullet(T &syscall, const Battle::BulletData& bullet_data, const Battle::BulletRegistry& bullet_registry, const Battle::BulletHellState bhs, const Audio::SoundRegistry sound_registry)
@@ -26,16 +28,15 @@ namespace Game::BulletHell
         else if (bullet_stage_data.special_bullet_data.type == Battle::Laser) syscall.add_components(bullet, Laser(bullet_movement.posX, bullet_movement.posY, bullet_stage_data.special_bullet_data.size, bullet_stage_data.special_bullet_data.frame));
 
         const Battle::GraphicData &bullet_graphic = bullet_graphic_data.graphic_data;
-        const auto bullet_asset_ptr = get_assets_record_ptr(get_assets_id("bullet_sprite"));
-        const float bullet_asset_size = static_cast<float>(bullet_asset_ptr->info.info.as_sprite.width);
+
         syscall.add_components(bullet, Render::Sprite{
-                    .sp = bullet_asset_ptr,
+                    .sp = get_assets_record_ptr(get_assets_id("bullet_sprite")),
                     .pos = {{bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[3], 0}, {bullet_graphic.dest_rect[2], bullet_graphic.dest_rect[1], 0}, {bullet_graphic.dest_rect[0], bullet_graphic.dest_rect[1], 0}},
                     .layer = 5,
-                    .u0 = static_cast<float>(bullet_graphic.src_rect[0])/bullet_asset_size,
-                    .v0 = static_cast<float>(bullet_graphic.src_rect[1])/bullet_asset_size,
-                    .u1 = static_cast<float>(bullet_graphic.src_rect[2])/bullet_asset_size,
-                    .v1 = static_cast<float>(bullet_graphic.src_rect[3])/bullet_asset_size}
+                    .u0 = static_cast<float>(bullet_graphic.src_rect[0])/bullet_asset_size.x,
+                    .v0 = static_cast<float>(bullet_graphic.src_rect[1])/bullet_asset_size.y,
+                    .u1 = static_cast<float>(bullet_graphic.src_rect[2])/bullet_asset_size.x,
+                    .v1 = static_cast<float>(bullet_graphic.src_rect[3])/bullet_asset_size.y}
                     , Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")),get_assets_record_ptr(get_assets_id("sprite_ps")), {bullet_graphic.r, bullet_graphic.g, bullet_graphic.b, bullet_graphic.a}));
         if (const Battle::ColliderData &bullet_collider = bullet_graphic_data.collider_data;
             bullet_collider.type == Physics::RECTANGLE) syscall.add_components(bullet, Physics::RectangularCollider(bullet_collider.offsetX,bullet_collider.offsetY, bullet_collider.colX, bullet_collider.colY));
@@ -65,6 +66,9 @@ namespace Game::BulletHell
 
         if (sound_query.begin() == sound_query.end())
             return;
+
+        const auto bullet_asset_ptr = get_assets_record_ptr(get_assets_id("bullet_sprite"));
+        bullet_asset_size = {static_cast<float>(bullet_asset_ptr->info.info.as_sprite.width),static_cast<float>(bullet_asset_ptr->info.info.as_sprite.height)};
 
         auto &bullet_loader = query.front().get<Battle::BulletLoader>();
         auto &pointer = bullet_loader.pointer;

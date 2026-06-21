@@ -84,10 +84,10 @@ Game::World::DialogueRegistry init_dialogue_registry()
 {
     using namespace Game::World;
     std::vector<std::string> text_register = {
-        "This is a place holder text to test the system",
-        "This is not a place for you to be gooning",
-        "just...",
-        "become detroit.... destroy human",
+        "Am I talking now?",
+        "Yes. It works",
+        "Let's go",
+        "I finally can talk now. PLAY MY STAGE",
         "Fun time at poppy playtime co."
     };
     return {DialogueRegistry(text_register)};
@@ -117,7 +117,7 @@ Game::World::SceneRegistry init_scene_registry()
             SceneObject(1080,64*3,2,0.5, 2, {Platform}, {}),
             SceneObject(6400,64*6,1,12, 2, {Platform}, {}),
             SceneObject(1080,64*4.5,0.2f,0.2f, 1, 0, {Npc}, {}),
-            SceneObject(64*0,64*1,0.2f,0.2f, 1, 2, {Npc}, {}),
+            SceneObject(64*0,64*1,0.2f,0.2f, 1, 0, {Npc}, {}),
         }
     };
     return scene_registry;
