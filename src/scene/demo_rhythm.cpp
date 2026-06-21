@@ -247,7 +247,7 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
         create_battle_state(),
         create_rhythm_state(),
         create_demo_chart(),
-        Game::Audio::init_sounds(0));
+        Game::Audio::init_battle_sounds(0));
 
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());

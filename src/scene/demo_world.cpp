@@ -218,13 +218,15 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
     Game::World::EventRegister,
     Game::World::SceneRegistry,
     Game::World::GlobalState,
-    Game::World::PlayerStat>
+    Game::World::PlayerStat,
+    Game::Audio::SoundRegistry>
     (
         init_dialogue_registry(),
         init_event_registry(),
         init_scene_registry(),
         Game::World::GlobalState(),
-        Game::World::PlayerStat()
+        Game::World::PlayerStat(),
+        Game::Audio::init_world_sounds()
         );
 
     // SaveState

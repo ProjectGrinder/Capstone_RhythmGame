@@ -542,7 +542,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
         init_anim_data(),
-        Game::Audio::init_sounds(0));
+        Game::Audio::init_battle_sounds(0));
 
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());
