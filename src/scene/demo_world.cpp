@@ -113,9 +113,9 @@ Game::World::SceneRegistry init_scene_registry()
     using namespace Game::World;
     SceneRegistry scene_registry = {
         {
-            SceneObject(0,0,0.4f,0.4f,0, {Bg1}, {}),
-            SceneObject(0,0,0.4f,0.4f,0, {Bg2}, {}),
-            SceneObject(0,0,0.4f,0.4f,0, {Bg3}, {}),
+            // SceneObject(0,0,0.4f,0.4f,0, {Bg1}, {}),
+            // SceneObject(0,0,0.4f,0.4f,0, {Bg2}, {}),
+            // SceneObject(0,0,0.4f,0.4f,0, {Bg3}, {}),
             SceneObject(64*25,64*2,0.1f,0.1f, 1, 1, {LevelNode}, {}),
             SceneObject(64*59,64*0,0.1f,0.1f, 1, 2, {LevelNode}, {}),
             SceneObject(64*20,64*2.3f,0.1f,0.1f, 1, 0, {Npc1}, {}),
@@ -207,7 +207,7 @@ Scene::DemoWorld Scene::DemoWorld::instance()
 std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
 {
     auto tm = std::make_shared<TaskManager>();
-    tm->create_entity(Game::Render::Camera2D{.offset = {5,5}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
+    tm->create_entity(Game::Render::Camera2D{.offset = {0,0}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
     init_graphics(tm);
 
     // Create and configure BattleState
@@ -225,6 +225,43 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
         Game::World::PlayerStat(),
         Game::Audio::init_world_sounds()
         );
+
+    constexpr int bg_width = 5408/2;
+    constexpr int bg_height = 2160/2;
+
+    tm->create_entity<
+        Game::Render::Sprite,
+        Game::Render::Material,
+        Game::Render::Transform,
+        Game::World::Background>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Bg1")), .pos = {{-bg_width,bg_height,0},{bg_width,bg_height,0},{bg_width,-bg_height,0},{-bg_width,-bg_height,0}},
+        .layer = 0},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{300, 0, 0, 0, 0, 0.5f, 0.5f, 1},
+        Game::World::Background());
+    tm->create_entity<
+        Game::Render::Sprite,
+        Game::Render::Material,
+        Game::Render::Transform,
+        Game::World::Background>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Bg2")), .pos = {{-bg_width,bg_height,0},{bg_width,bg_height,0},{bg_width,-bg_height,0},{-bg_width,-bg_height,0}},
+        .layer = 1},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{300, 0, 0, 0, 0, 0.5f, 0.5f, 1},
+        Game::World::Background(0.1f));
+    tm->create_entity<
+        Game::Render::Sprite,
+        Game::Render::Material,
+        Game::Render::Transform,
+        Game::World::Background>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Bg3")), .pos = {{-bg_width,bg_height,0},{bg_width,bg_height,0},{bg_width,-bg_height,0},{-bg_width,-bg_height,0}},
+        .layer = 2},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{300, 0, 0, 0, 0, 0.5f, 0.5f, 1},
+        Game::World::Background(0.1f));
 
     // SaveState
     tm->create_entity<Game::World::SaveState>(Game::World::SaveState());

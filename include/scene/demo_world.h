@@ -18,6 +18,7 @@ namespace Scene
             Game::World::DialogueRegistry,
             Game::World::EventRegister,
             Game::World::SceneRegistry,
+            Game::World::Background,
             Game::World::Block,
             Game::World::CameraAttractor,
             Game::World::DialogueBox,

@@ -8,7 +8,8 @@ namespace Game::World
             [[maybe_unused]] T &syscall,
             System::ECS::Query<Render::Camera2D> &camera_query,
             System::ECS::Query<Player, Render::Transform> &player_query,
-            System::ECS::Query<CameraAttractor, Render::Transform> &camera_attr_query)
+            System::ECS::Query<CameraAttractor, Render::Transform> &camera_attr_query,
+            System::ECS::Query<Background, Render::Transform> &bg_query)
     {
         if (camera_query.begin() == camera_query.end())
             return;
@@ -39,5 +40,12 @@ namespace Game::World
 
         // Cam follow
         camera_pos = Physics::lerp(camera_pos, camera_target, CAMERA_SPEED * (float)get_delta_time());
+        for (auto &[id, comps] : bg_query)
+        {
+            const float pan = 1 - comps.get<Background>().pan_value;
+            auto new_pos = Math::Point{300, 0} + player_pos * Math::Point{pan, 1};
+            auto &bg_pos = comps.get<Render::Transform>().position;
+            bg_pos = Physics::lerp(bg_pos, new_pos, CAMERA_SPEED * (float)get_delta_time());
+        }
     }
 } // namespace Game::Overview
