@@ -80,7 +80,7 @@ inline Game::Battle::LevelData create_level2_data()
     bpm,
 {
             Game::Battle::Difficulty(Game::Battle::LIGHT, 2, 10000,20),
-            Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
+            Game::Battle::Difficulty(Game::Battle::SPARK, 4, 10000,30),
             Game::Battle::Difficulty(Game::Battle::BLAZE, 5, 10000,40),
         }, 139000
     );

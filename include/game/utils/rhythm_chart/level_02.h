@@ -117,7 +117,7 @@ inline Game::Battle::ChartData level_02_spark()
     }
 
     chart.difficulty.difficulty = Game::Battle::SPARK;
-    chart.difficulty.level = 3;
+    chart.difficulty.level = 4;
 
     // RESPONSE 1
     chart.lanes[0].notes.emplace_back(false, 29647, 0, Game::Battle::NORMAL);
