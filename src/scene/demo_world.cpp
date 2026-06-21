@@ -90,11 +90,8 @@ Game::World::DialogueRegistry init_dialogue_registry()
 {
     using namespace Game::World;
     std::vector<std::string> text_register = {
-        "Hey.",
-        "You're finally awake.",
-        "Not sure what's going on?",
-        "Just follow the music and you will be fine.",
-        "Go on. Try interacting with that crystal."
+        "Hey. You're finally awake.",
+        "NOISZ STARLIGHT is the gayest rhythm game ever."
     };
     return {DialogueRegistry(text_register)};
 }
