@@ -152,10 +152,10 @@ inline Game::Battle::ChartData level_01_blaze()
     chart.lanes[3].notes.emplace_back(false, 68060, 0, Game::Battle::RhythmType::ACCENT);
     chart.lanes[0].notes.emplace_back(false, 68396, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[0].notes.emplace_back(false, 68731, 0, Game::Battle::RhythmType::NORMAL);
-    chart.lanes[1].notes.emplace_back(false, 68955, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(false, 68955, 0, Game::Battle::RhythmType::ACCENT);
     chart.lanes[2].notes.emplace_back(false, 69067, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[1].notes.emplace_back(false, 69235, 0, Game::Battle::RhythmType::NORMAL);
-    chart.lanes[2].notes.emplace_back(false, 69403, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[2].notes.emplace_back(false, 69403, 0, Game::Battle::RhythmType::ACCENT);
     chart.lanes[1].notes.emplace_back(false, 69515, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[2].notes.emplace_back(false, 69683, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[0].notes.emplace_back(false, 69851, 0, Game::Battle::RhythmType::ACCENT);
@@ -168,8 +168,10 @@ inline Game::Battle::ChartData level_01_blaze()
     chart.lanes[1].notes.emplace_back(false, 71418, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[0].notes.emplace_back(false, 71642, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[0].notes.emplace_back(false, 72090, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[3].notes.emplace_back(true, 72537, 72761, Game::Battle::RhythmType::ACCENT);
     chart.lanes[2].notes.emplace_back(false, 72537, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[2].notes.emplace_back(false, 72761, 0, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[0].notes.emplace_back(true, 72985, 73209, Game::Battle::RhythmType::ACCENT);
     chart.lanes[1].notes.emplace_back(false, 72985, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[1].notes.emplace_back(false, 73209, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[2].notes.emplace_back(false, 73433, 0, Game::Battle::RhythmType::ACCENT);
@@ -456,11 +458,11 @@ inline Game::Battle::ChartData level_01_spark()
     chart.lanes[3].notes.emplace_back(false, 125373, 0, Game::Battle::RhythmType::ACCENT);
     chart.lanes[1].notes.emplace_back(false, 126269, 0, Game::Battle::RhythmType::NORMAL);
     chart.lanes[2].notes.emplace_back(false, 126716, 0, Game::Battle::RhythmType::NORMAL);
-    chart.lanes[3].notes.emplace_back(true, 127164, 127612, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[3].notes.emplace_back(true, 127164, 127612, Game::Battle::RhythmType::ACCENT);
     chart.lanes[1].notes.emplace_back(true, 127612, 128060, Game::Battle::RhythmType::NORMAL);
     chart.lanes[2].notes.emplace_back(true, 128060, 128507, Game::Battle::RhythmType::NORMAL);
     chart.lanes[0].notes.emplace_back(true, 128507, 128955, Game::Battle::RhythmType::NORMAL);
-    chart.lanes[1].notes.emplace_back(true, 128955, 129403, Game::Battle::RhythmType::NORMAL);
+    chart.lanes[1].notes.emplace_back(true, 128955, 129403, Game::Battle::RhythmType::ACCENT);
     chart.lanes[0].notes.emplace_back(true, 129403, 129851, Game::Battle::RhythmType::NORMAL);
     chart.lanes[3].notes.emplace_back(true, 129851, 130299, Game::Battle::RhythmType::NORMAL);
     chart.lanes[2].notes.emplace_back(true, 130299, 130746, Game::Battle::RhythmType::NORMAL);
