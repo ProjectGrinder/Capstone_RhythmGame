@@ -331,7 +331,7 @@ void init_battle_components(const std::shared_ptr<Scene::Level2::TaskManager>& t
         Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1}, {Game::Battle::RHYTHM,0.7f});
 }
 
-std::array speed_list2 = {2.5f, 3.0f, 4.0f}; // in case of preset speed
+std::array speed_list2 = {2.0f, 2.5f, 3.2f}; // in case of preset speed
 
 inline Game::Battle::RhythmState create_rhythm_state2(const int level, const int note_count)
 {

@@ -54,7 +54,7 @@ namespace Game::Battle
         {
             return C;
         }
-        if (final_score <= 0 && player_state == FINISH) // F
+        if (final_score <= 0 && player_state == FINISH)
         {
             return F;
         }
@@ -192,7 +192,7 @@ namespace Game::Battle
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{0, -150, 0}, 0, 0, 0});
 
-        const auto rank = calculate_rank(0, bullet_state.graze, rhythm_state.accuracy, battle_state.player_state);
+        const auto rank = calculate_rank(bullet_state.hit_count, bullet_state.graze, rhythm_state.accuracy, battle_state.player_state);
         syscall.template create_entity<
             Render::Sprite,
             Render::Material,

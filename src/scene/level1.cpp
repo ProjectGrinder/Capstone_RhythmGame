@@ -332,7 +332,7 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
 }
 
 // std::array total_note_list = {87, 150, 270}; // store total notes here
-std::array speed_list1 = {2.5f, 3.0f, 4.0f}; // in case of preset speed
+std::array speed_list1 = {2.0f, 2.5f, 3.2f}; // in case of preset speed
 
 inline Game::Battle::RhythmState create_rhythm_state(const int level, const int note_count)
 {
