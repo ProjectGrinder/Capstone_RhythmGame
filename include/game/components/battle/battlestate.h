@@ -88,6 +88,8 @@ namespace Game::Battle
         {
             int timing;
             float bpm;
+            explicit InfoPair(const int timing, const float bpm) : timing(timing), bpm(bpm)
+            {}
         };
         std::vector<InfoPair> bpm_list;
         unsigned int idx = 0;

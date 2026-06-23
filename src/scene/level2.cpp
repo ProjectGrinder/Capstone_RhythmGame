@@ -471,20 +471,17 @@ Scene::Level2 Scene::Level2::instance()
 
 inline Game::Battle::LevelData create_level2_data()
 {
-    Game::Battle::BpmInfo bpm;
-    constexpr std::array timing_list = {28235, 73412, 111529};
-    for (int m : timing_list)
-    {
-        Game::Battle::BpmInfo::InfoPair info{};
-        info.bpm = 170.00f;
-        info.timing = m;
-        bpm.bpm_list.emplace_back(info);
-    }
+    // Game::Battle::BpmInfo bpm;
+    // constexpr std::array timing_list = {28235, 73412, 111529};
+    // for (int m : timing_list)
+    // {
+    //     bpm.bpm_list.emplace_back(Game::Battle::BpmInfo::InfoPair(m, 170.00f));
+    // }
     return Game::Battle::LevelData(
     "Strike Against The World!",
     "Pooh5821",
     170.00f,
-    bpm,
+    Game::Battle::BpmInfo({Game::Battle::BpmInfo::InfoPair(-3000, 170.00f)}),
 {
             Game::Battle::Difficulty(Game::Battle::LIGHT, 2, 10000,20),
             Game::Battle::Difficulty(Game::Battle::SPARK, 4, 10000,30),
