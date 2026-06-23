@@ -336,11 +336,9 @@ std::array speed_list1 = {2.0f, 2.5f, 3.2f}; // in case of preset speed
 
 inline Game::Battle::RhythmState create_rhythm_state(const int level, const int note_count)
 {
-    int accept_gain;
+    int accept_gain = 1;
     if (note_count > 0)
         accept_gain = 20000/note_count;
-    else
-        accept_gain = 1;
     Game::Battle::RhythmState state(1, accept_gain, note_count, speed_list1[level], speed_list1[level]);
     const int accept_loss1 = accept_gain*5;
     const int accept_loss2 = accept_gain*2;
@@ -351,7 +349,10 @@ inline Game::Battle::RhythmState create_rhythm_state(const int level, const int 
     state.accept_loss.hold_end = accept_loss2;
 
     constexpr float full_accuracy = 10000.00f; // represent full 100.00%
-    state.apn = full_accuracy / static_cast<float>(state.total_notes);
+    const float per_apn = full_accuracy / static_cast<float>(state.total_notes);
+    state.apn.perfect = per_apn;
+    state.apn.great = per_apn * 3/4;
+    state.apn.fine = per_apn / 2;
     return (state);
 }
 

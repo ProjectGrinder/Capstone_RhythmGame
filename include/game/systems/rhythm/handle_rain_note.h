@@ -50,7 +50,7 @@ namespace Game::Rhythm
 
                     battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
                     set_judge(PERFECT, judge_query);
-                    battle_query.front().get<Battle::RhythmState>().accuracy += apn;
+                    battle_query.front().get<Battle::RhythmState>().accuracy += apn.perfect;
                     create_note_effect(syscall, lane, PERFECT);
 
                     battle_query.front().get<Battle::BattleState>().hp += battle_query.front().get<Battle::RhythmState>().heal_hp;

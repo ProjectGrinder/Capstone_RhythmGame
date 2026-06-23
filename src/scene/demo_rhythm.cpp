@@ -65,7 +65,6 @@ inline Game::Battle::RhythmState create_rhythm_state()
     state.accept_loss.rain = 2;
     state.accept_loss.hold = 5;
     state.accept_loss.hold_end = 2;
-    state.apn = 100.00f / static_cast<float>(state.total_notes);
     return (state);
 }
 

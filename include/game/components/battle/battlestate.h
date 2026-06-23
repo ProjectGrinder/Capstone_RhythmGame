@@ -112,6 +112,18 @@ namespace Game::Battle
         {}
     };
 
+    struct AccPerNote
+    {
+        float perfect;
+        float great;
+        float fine;
+        AccPerNote() : perfect(0), great(0), fine(0)
+        {}
+        explicit AccPerNote(const float perfect, const float great, const float fine) :
+        perfect(perfect), great(great), fine(fine)
+        {}
+    };
+
     enum PlayerState
     {
         PLAY,
@@ -175,11 +187,11 @@ namespace Game::Battle
         float current_speed;
         bool speed_change;
         float accuracy;
-        float apn; // accuracy per note
+        AccPerNote apn; // accuracy per note
         std::string accuracy_text;
         AcceptLoss accept_loss;
         RhythmState() :
-            heal_hp(0), accept_gain(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false), accuracy(0.00f), apn(0.00f)
+            heal_hp(0), accept_gain(0), total_notes(0), base_speed(1.0f), current_speed(1.0f), speed_change(false), accuracy(0.00f)
         {}
         RhythmState(
                 const int heal_hp,
@@ -193,8 +205,7 @@ namespace Game::Battle
             base_speed(base_speed),
             current_speed(current_speed),
             speed_change(false),
-            accuracy(0.00f),
-            apn(0.00f)
+            accuracy(0.00f)
         {}
     };
 
