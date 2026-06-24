@@ -102,7 +102,8 @@ namespace Game::World
             System::ECS::Query<Input> &input_query,
             System::ECS::Query<LevelRegistry> &level_reg_query,
             System::ECS::Query<GlobalState> &global_query,
-            System::ECS::Query<EventState, LevelNodeEvent> &query1)
+            System::ECS::Query<EventState, LevelNodeEvent> &query1,
+            System::ECS::Query<Audio::SoundRegistry> &audio_query)
     {
         if (cam_query.begin() == cam_query.end())
             return;
@@ -114,6 +115,8 @@ namespace Game::World
         const auto &input = input_query.front().components.get<Input>();
         const auto &level_registry = level_reg_query.front().components.get<LevelRegistry>();
         auto &global = global_query.front().components.get<GlobalState>();
+        const auto &sound_reg = audio_query.front().components.get<Audio::SoundRegistry>();
+        auto sounds = sound_reg.audios;
 
         for (auto &[id, comps] : query1)
         {
@@ -123,33 +126,38 @@ namespace Game::World
             if (level_node.level_node_box_pid == INVALID_PID)
             {
                 global.level_selected = level_node.id;
+                Audio::audio_play(sounds["sound_popup"]);
                 create_level_page(syscall, cam_pos, level_node, level_data);
             }
 
             auto &level_info = level_registry.level_datas[level_node.id];
-            if (input.x_pressed || input.escape_pressed || (input.z_pressed && level_node.selection == 0))
+            if (input.escape_pressed || ((input.enter_pressed || input.z_pressed) && level_node.selection == 0))
             {
+                Audio::audio_play(sounds["sound_popup"]);
                 destroy_level_node(syscall,id, level_node, comps.get<EventState>());
                 global.level_selected = -1;
                 global.diff_selected = -1;
             }
 
 
-            if (input.z_pressed && level_node.selection == 1)
+            if ((input.enter_pressed || input.z_pressed) && level_node.selection == 1)
             {
                 global.diff_selected = level_node.diff;
+                Audio::audio_play(sounds["sound_confirm"]);
                 Scene::switch_to_level(level_node.id);
                 destroy_level_node(syscall,id, level_node, comps.get<EventState>());
             }
 
             if (input.up_pressed || input.down_pressed)
             {
+                Audio::audio_play(sounds["sound_select"]);
                 level_node.selection = (level_node.selection+1)%2;
                 adjust_option_rect(syscall, level_node.select_rect_pid, cam_pos, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
             }
             if (input.left_pressed || input.right_pressed)
             {
                 level_node.selection = 1;
+                Audio::audio_play(sounds["sound_select"]);
                 const auto count = static_cast<uint8_t>(level_info.difficulties.size());
                 level_node.diff = static_cast<uint8_t>((static_cast<int>(level_node.diff) + Physics::sign(input.right_pressed) + count) % count);
                 adjust_option_rect(syscall, level_node.select_rect_pid, cam_pos, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));

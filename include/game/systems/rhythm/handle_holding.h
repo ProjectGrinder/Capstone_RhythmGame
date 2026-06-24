@@ -30,7 +30,7 @@ namespace Game::Rhythm
         {
             battle_query.front().get<Battle::BattleState>().judgement_count.perfect_count += 1;
             set_judge(PERFECT, judge_query);
-            battle_query.front().get<Battle::RhythmState>().accuracy += apn;
+            battle_query.front().get<Battle::RhythmState>().accuracy += apn.perfect;
             create_note_effect(syscall, lane->get<Lane>().lane_number, PERFECT);
 
             battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
@@ -51,7 +51,7 @@ namespace Game::Rhythm
             battle_query.front().get<Battle::BattleState>().current_accept += battle_query.front().get<Battle::RhythmState>().accept_gain / 2;
             if (battle_query.front().get<Battle::BattleState>().current_accept > max_accept)
                 battle_query.front().get<Battle::BattleState>().current_accept = max_accept;
-            battle_query.front().get<Battle::RhythmState>().accuracy += apn * 3/4;
+            battle_query.front().get<Battle::RhythmState>().accuracy += apn.great;
         }
         // else if (time_diff > fine_judge)
         // {

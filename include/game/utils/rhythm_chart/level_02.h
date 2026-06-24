@@ -117,7 +117,7 @@ inline Game::Battle::ChartData level_02_spark()
     }
 
     chart.difficulty.difficulty = Game::Battle::SPARK;
-    chart.difficulty.level = 3;
+    chart.difficulty.level = 4;
 
     // RESPONSE 1
     chart.lanes[0].notes.emplace_back(false, 29647, 0, Game::Battle::NORMAL);
@@ -424,6 +424,8 @@ inline Game::Battle::ChartData level_02_blaze()
     chart.lanes[3].notes.emplace_back(false, 89294, 0, Game::Battle::NORMAL);
     chart.lanes[1].notes.emplace_back(false, 89647, 0, Game::Battle::ACCENT);
     chart.lanes[0].notes.emplace_back(false, 89647, 0, Game::Battle::NORMAL);
+    chart.lanes[1].notes.emplace_back(false, 90000, 0, Game::Battle::NORMAL);
+    chart.lanes[2].notes.emplace_back(false, 90000, 0, Game::Battle::NORMAL);
 
     // RESPONSE 3
     chart.lanes[0].notes.emplace_back(false, 112941, 0, Game::Battle::NORMAL);

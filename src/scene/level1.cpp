@@ -306,42 +306,40 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
     Game::Render::Material,
     Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "S", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "X", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE1, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1}, {Game::Battle::RHYTHM,0.7f});
     tm->create_entity<Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "D", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "C", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE2, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1}, {Game::Battle::RHYTHM,0.7f});
     tm->create_entity<Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "L", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "M", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE3, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1,1}, {Game::Battle::RHYTHM,0.7f});
     tm->create_entity<Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = ";", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "(,)", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1}, {Game::Battle::RHYTHM,0.7f});
 }
 
 // std::array total_note_list = {87, 150, 270}; // store total notes here
-std::array speed_list1 = {2.5f, 3.0f, 4.0f}; // in case of preset speed
+std::array speed_list1 = {2.0f, 2.5f, 3.2f}; // in case of preset speed
 
 inline Game::Battle::RhythmState create_rhythm_state(const int level, const int note_count)
 {
-    int accept_gain;
+    int accept_gain = 1;
     if (note_count > 0)
         accept_gain = 20000/note_count;
-    else
-        accept_gain = 1;
     Game::Battle::RhythmState state(1, accept_gain, note_count, speed_list1[level], speed_list1[level]);
     const int accept_loss1 = accept_gain*5;
     const int accept_loss2 = accept_gain*2;
@@ -352,7 +350,10 @@ inline Game::Battle::RhythmState create_rhythm_state(const int level, const int 
     state.accept_loss.hold_end = accept_loss2;
 
     constexpr float full_accuracy = 10000.00f; // represent full 100.00%
-    state.apn = full_accuracy / static_cast<float>(state.total_notes);
+    const float per_apn = full_accuracy / static_cast<float>(state.total_notes);
+    state.apn.perfect = per_apn;
+    state.apn.great = per_apn * 3/4;
+    state.apn.fine = per_apn / 2;
     return (state);
 }
 
@@ -473,20 +474,17 @@ Scene::Level1 Scene::Level1::instance()
 
 inline Game::Battle::LevelData create_level1_data()
 {
-    Game::Battle::BpmInfo bpm;
-    constexpr std::array timing_list = {17910, 66269, 123582};
-    for (int m : timing_list)
-    {
-        Game::Battle::BpmInfo::InfoPair info{};
-        info.bpm = 134.00f;
-        info.timing = m;
-        bpm.bpm_list.emplace_back(info);
-    }
+    // Game::Battle::BpmInfo bpm;
+    // constexpr std::array timing_list = {16400, 65000, 122500};
+    // for (int m : timing_list)
+    // {
+    //     bpm.bpm_list.emplace_back(Game::Battle::BpmInfo::InfoPair(m, 134.00f));
+    // }
     return Game::Battle::LevelData(
     "A World Without You",
     "Nakuya",
     134.00f,
-    bpm,
+    Game::Battle::BpmInfo({Game::Battle::BpmInfo::InfoPair(-3000, 134.00f)}),
         {
             Game::Battle::Difficulty(Game::Battle::LIGHT, 1, 10000,20),
             Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
@@ -543,7 +541,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
         init_anim_data(),
-        Game::Audio::init_sounds(0));
+        Game::Audio::init_battle_sounds(0));
 
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());

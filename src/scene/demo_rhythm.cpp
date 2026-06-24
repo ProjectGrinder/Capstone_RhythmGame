@@ -65,7 +65,6 @@ inline Game::Battle::RhythmState create_rhythm_state()
     state.accept_loss.rain = 2;
     state.accept_loss.hold = 5;
     state.accept_loss.hold_end = 2;
-    state.apn = 100.00f / static_cast<float>(state.total_notes);
     return (state);
 }
 
@@ -78,22 +77,22 @@ Game::Render::Text Scene::write_difficulty(const Game::Battle::Difficulty diffic
     {
     case Game::Battle::LIGHT:
         text.text = "LIGHT " + std::to_string(difficulty.level);
-        text.color = Math::Color{0, 0.5f, 1};
+        text.color = Game::DIFF_COLOR[0];
         break;
 
     case Game::Battle::SPARK:
         text.text = "SPARK " + std::to_string(difficulty.level);
-        text.color = Math::Color{1, 0.5f, 0};
+        text.color = Game::DIFF_COLOR[1];
         break;
 
     case Game::Battle::BLAZE:
         text.text = "BLAZE " + std::to_string(difficulty.level);
-        text.color = Math::Color{1, 0, 0};
+        text.color = Game::DIFF_COLOR[2];
         break;
 
     case Game::Battle::ASTRA:
         text.text = "ASTRA " + std::to_string(difficulty.level);
-        text.color = Math::Color{1, 0, 1};
+        text.color = Game::DIFF_COLOR[3];
         break;
 
     default:
@@ -247,7 +246,7 @@ std::shared_ptr<Scene::DemoRhythm::TaskManager> Scene::DemoRhythm::init()
         create_battle_state(),
         create_rhythm_state(),
         create_demo_chart(),
-        Game::Audio::init_sounds(0));
+        Game::Audio::init_battle_sounds(0));
 
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());

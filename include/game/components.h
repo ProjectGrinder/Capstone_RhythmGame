@@ -46,6 +46,7 @@
 #include "components/rhythm/notestatus.h"
 #include "components/rhythm/notetype.h"
 #include "components/rhythm/timing.h"
+#include "components/world/background.h"
 #include "components/world/block.h"
 #include "components/world/camera_attractor.h"
 #include "components/world/dialog_box.h"

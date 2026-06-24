@@ -5,7 +5,7 @@
 namespace Game::Audio
 {
     extern "C" void *get_audio_api(void);
-    inline SoundRegistry init_sounds(const int level_num)
+    inline SoundRegistry init_battle_sounds(const int level_num)
     {
         std::string bgm = "audio/";
         switch (level_num)
@@ -63,6 +63,22 @@ namespace Game::Audio
             load_audio_if_not_exist((AssetsRecord *)sound.audio, &out);
         }
 
+        return sound_registry;
+    }
+
+    inline SoundRegistry init_world_sounds()
+    {
+        const AssetsRecord* sound_ptr[] = {
+            load_audio("audio/VEC1 Percussion 022.wav", "click"),
+            load_audio("audio/VEC1 Percussion 024.wav", "click2"),
+            load_audio("audio/VEC1 Percussion 025.wav", "click3")
+        };
+        SoundRegistry sound_registry;
+        sound_registry.audios.insert({
+            {"sound_popup", Audio(sound_ptr[0])},
+            {"sound_confirm", Audio(sound_ptr[1])},
+            {"sound_select", Audio(sound_ptr[2])}
+        });
         return sound_registry;
     }
 

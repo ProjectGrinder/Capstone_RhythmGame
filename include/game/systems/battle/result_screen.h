@@ -54,7 +54,7 @@ namespace Game::Battle
         {
             return C;
         }
-        if (final_score <= 0 && player_state == FINISH) // F
+        if (final_score <= 0 && player_state == FINISH)
         {
             return F;
         }
@@ -156,33 +156,33 @@ namespace Game::Battle
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Perfect " + std::to_string(battle_state.judgement_count.perfect_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Perfect " + std::to_string(battle_state.judgement_count.perfect_count), .color = Math::Color{1, 0.7f, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{Math::Point{-200, -50, 0}, 0, 0, 0});
+            Render::Transform{-200, -50, 0, 0, 0, 0.8f, 0.8f, 1});
         syscall.template create_entity<
             Render::Text,
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Great " + std::to_string(battle_state.judgement_count.great_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Great " + std::to_string(battle_state.judgement_count.great_count), .color = Math::Color{0, 1, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{Math::Point{0, -50, 0}, 0, 0, 0});
+            Render::Transform{0, -50, 0, 0, 0, 0.8f, 0.8f, 1});
         syscall.template create_entity<
             Render::Text,
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Fine " + std::to_string(battle_state.judgement_count.fine_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Fine " + std::to_string(battle_state.judgement_count.fine_count), .color = Math::Color{0, 0.7f, 1, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{Math::Point{-200, -100, 0}, 0, 0, 0});
+            Render::Transform{-200, -100, 0, 0, 0, 0.8f, 0.8f, 1});
         syscall.template create_entity<
             Render::Text,
             Render::Material,
             Render::Transform>
         (
-            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Miss " + std::to_string(battle_state.judgement_count.miss_count), .color = Math::Color{0, 0, 0, 1}, .layer = 51},
+            Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "Miss " + std::to_string(battle_state.judgement_count.miss_count), .color = Math::Color{1, 0, 0, 1}, .layer = 51},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{Math::Point{0, -100, 0}, 0, 0, 0});
+            Render::Transform{0, -100, 0, 0, 0, 0.8f, 0.8f, 1});
         syscall.template create_entity<
             Render::Sprite,
             Render::Material,
@@ -192,7 +192,7 @@ namespace Game::Battle
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
             Render::Transform{Math::Point{0, -150, 0}, 0, 0, 0});
 
-        const auto rank = calculate_rank(0, bullet_state.graze, rhythm_state.accuracy, battle_state.player_state);
+        const auto rank = calculate_rank(bullet_state.hit_count, bullet_state.graze, rhythm_state.accuracy, battle_state.player_state);
         syscall.template create_entity<
             Render::Sprite,
             Render::Material,

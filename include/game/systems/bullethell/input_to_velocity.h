@@ -26,7 +26,7 @@ namespace Game::BulletHell
             float velocity_factor = (input.shift_held ? 200.f : 500.f);
 
             // Log timing
-            if (input.z_pressed) LOG_INFO("Timing : %d", query3.front().get<Battle::BattleState>().clock_time/1000)
+            if (input.space_pressed) LOG_INFO("Timing : %d", query3.front().get<Battle::BattleState>().clock_time/1000)
 
             float x = input.axis_x;
             float y = input.axis_y;

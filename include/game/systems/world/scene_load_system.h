@@ -12,7 +12,7 @@ namespace Game::World
         const GraphicData &scene_graphic = scene_data.graphic_data;
         const auto asset_ptr = get_assets_record_ptr(get_assets_id(graphic_type_string[scene_graphic.type]));
         const Math::Point asset_size = {
-                (float) asset_ptr->info.info.as_sprite.width, (float) asset_ptr->info.info.as_sprite.width};
+                (float) asset_ptr->info.info.as_sprite.width, (float) asset_ptr->info.info.as_sprite.height};
         int src_rect[4] = {scene_graphic.src_rect[0],scene_graphic.src_rect[1],scene_graphic.src_rect[2],scene_graphic.src_rect[3]};
         float dest_rect[4] = {scene_graphic.dest_rect[0],scene_graphic.dest_rect[1],scene_graphic.dest_rect[2],scene_graphic.dest_rect[3]};
         if (src_rect[0]==0 && src_rect[1]==0 && src_rect[2]==0 && src_rect[3]==0)
