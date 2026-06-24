@@ -3,10 +3,6 @@
 
 namespace Scene
 {
-    Game::Render::AnimationDataRegistry init_anim_data();
-
-    Game::Render::AnimationSequence init_boss_anim_seq();
-
     Game::Battle::PatternContainer create_pattern_container();
 
     Game::Battle::BulletLoader create_bullet_data();

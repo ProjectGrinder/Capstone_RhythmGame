@@ -64,4 +64,8 @@ namespace Game
         {64*25, 64*2, 0},
         {64*59, 0, 0}
     };
+
+    constexpr float DIALOGUE_BOX_OFFSET_Y = 80.f;
+    constexpr float DIALOGUE_BOX_HEIGHT = 60.f;
+    constexpr int DIALOGUE_TYPE_DELAY = 50;
 }

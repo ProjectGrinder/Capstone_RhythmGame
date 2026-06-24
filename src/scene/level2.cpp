@@ -5,6 +5,49 @@
 #include "game/utils/DSL/bullethell/bullet_script.h"
 #include "game/utils/rhythm_chart/level_02.h"
 
+Game::Render::AnimationDataRegistry init_anim_data2()
+{
+    using namespace Game::Render;
+    AnimationDataRegistry anim_datas{
+        {
+            {"Player_Idle_Front",{{0.25f,0.167f},0,3,10}},
+            {"Player_Idle_Left",{{0.25f, 0.167f}, 1, 3, 10}},
+            {"Player_Idle_Back",{{0.25f, 0.167f}, 2, 3, 10}},
+            {"Player_Move_Front",{{0.25f,0.167f},3,4,10}},
+            {"Player_Move_Left",{{0.25f,0.167f},4,4,10}},
+            {"Player_Move_Back",{{0.25f,0.167f},5,4,10}},
+            {"Boss_Idle",{{0.125f,0.5f},0,4,8}},
+            {"Boss_Cast",{{0.125f, 0.5f}, 1, 8, 8, true, 4}},
+        }
+    };
+    return anim_datas;
+}
+
+Game::Render::AnimationSequence init_boss_anim_seq2()
+{
+    using namespace Game::Render;
+    const float time_per_beat = 60000.f/ 134;
+    auto TTB = [&time_per_beat](const float beat)->int { return (int)std::round(beat * time_per_beat)+3000; };
+    AnimationSequence anim_seq{{
+        // I don't understand why. (-5 beat)
+        {TTB(0), "Boss_Idle"},
+    {TTB(7), "Boss_Cast"},
+    {TTB(27), "Boss_Idle"},
+    {TTB(83), "Boss_Cast"},
+    {TTB(87), "Boss_Idle"},
+    {TTB(89), "Boss_Cast"},
+    {TTB(92), "Boss_Idle"},
+    {TTB(105), "Boss_Cast"},
+    {TTB(146), "Boss_Cast"},
+    {TTB(150), "Boss_Idle"},
+    {TTB(164), "Boss_Cast"},
+    {TTB(170), "Boss_Idle"},
+    {TTB(172), "Boss_Cast"},
+    {TTB(175), "Boss_Cast"},
+    }};
+    return anim_seq;
+}
+
 void init_graphics(const std::shared_ptr<Scene::Level2::TaskManager>& tm)
 {
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
@@ -27,7 +70,7 @@ void init_graphics(const std::shared_ptr<Scene::Level2::TaskManager>& tm)
     load_sprite("img/test.dds", "test", 500, 500);
     load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
     load_sprite("img/bullethell/Hitbox.dds", "Hitbox", 12, 12);
-    load_sprite("img/bullethell/BossSprite.dds","BH_Boss_Sprite",3840,1800);
+    load_sprite("img/bullethell/BossSprite2.dds","BH_Boss_Sprite2",9600,3200);
 
     load_sprite("img/Square.dds", "Square", 64, 64);
     load_sprite("img/Square64px.dds", "Square64px", 64, 64);
@@ -103,12 +146,12 @@ void init_battle_components(const std::shared_ptr<Scene::Level2::TaskManager>& t
     tm->create_entity<Game::Render::Transform,
     Game::Render::Sprite, Game::Render::Material, Game::Render::Animator, Game::Render::Animation_Controller, Game::Render::AnimationSequence, Game::Battle::BattleObject>(
         Game::Render::Transform(0,240,0,0,0,0.5f,0.5f,1.f),
-        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Boss_Sprite")),
-            .pos = {{-240, 300, 0}, {240, 300, 0}, {240, -300, 0}, {-240, -300, 0}}, .layer = 3,
-            .u0 = 0.f, .v0 = 0.f, .u1 = 1.f/8.f, .v1 = 1.f/3.f},
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Boss_Sprite2")),
+            .pos = {{-240, 320, 0}, {240, 320, 0}, {240, -320, 0}, {-240, -320, 0}}, .layer = 3,
+            .u0 = 0.f, .v0 = 0.f, .u1 = 1.f/8.f, .v1 = 1.f/2.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
         Game::Render::Animator{"Boss_Idle"}, Game::Render::Animation_Controller(true),
-            Scene::init_boss_anim_seq(), {Game::Battle::BULLET_HELL,1}
+            init_boss_anim_seq2(), {Game::Battle::BULLET_HELL,1}
     );
 
     // judgement line
@@ -537,7 +580,7 @@ std::shared_ptr<Scene::Level2::TaskManager> Scene::Level2::init([[maybe_unused]]
         std::move(script.bullet_registry),
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
-        init_anim_data(),
+        init_anim_data2(),
         Game::Audio::init_battle_sounds(1));
 
     // InputManager

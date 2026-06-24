@@ -70,6 +70,7 @@ namespace Scene
             Game::World::dialogue_box_system<Syscall>,
             Game::World::lock_event_system<Syscall>,
             Game::World::level_node_system<Syscall>,
+            Game::World::change_event_system<Syscall>,
             Game::World::event_system<Syscall>,
             // Game::World::logging_system<Syscall>,
             Game::Render::set_camera<Syscall>,
