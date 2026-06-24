@@ -90,11 +90,11 @@ Game::World::EventRegister init_event_registry()
     using namespace Game::World;
     EventRegister event_sequences = {
         {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), DialogueEvent(3),
-            DialogueEvent(4), UnlockInputEvent(), ChangeNextEvent(1)},
+            DialogueEvent(4), UnlockInputEvent()},
         {LockInputEvent(0b100), LevelNodeEvent(0), UnlockInputEvent()},
         {LockInputEvent(0b100), LevelNodeEvent(1), UnlockInputEvent()},
         {LockInputEvent(0b100), DialogueEvent(5), DialogueEvent(6), DialogueEvent(7), DialogueEvent(8),
-            UnlockInputEvent(), ChangeNextEvent(1)}
+            UnlockInputEvent()}
     };
     return { EventRegister(event_sequences) };
 }
