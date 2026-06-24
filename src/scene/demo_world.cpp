@@ -78,7 +78,7 @@ Game::World::DialogueRegistry init_dialogue_registry()
         "Just follow the music and you will be fine.",
         "Go on. Try interacting with that crystal.",
         "So you've come to see me!",
-        "I'm just up here to enjoy the scenery",
+        "I'm just up here to enjoy the scenery.",
         "I'll come down when you want to battle me.",
         "May the odds be in your favor."
     };
