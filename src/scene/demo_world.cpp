@@ -72,8 +72,15 @@ Game::World::DialogueRegistry init_dialogue_registry()
 {
     using namespace Game::World;
     std::vector<std::string> text_register = {
-        "Hey. You're finally awake.",
-        "NOISZ STARLIGHT is the gayest rhythm game ever."
+        "Hey.",
+        "You're finally awake.",
+        "Not sure what's going on?",
+        "Just follow the music and you will be fine.",
+        "Go on. Try interacting with that crystal.",
+        "So you've come to see me!",
+        "I'm just up here to enjoy the scenery",
+        "I'll come down when you want to battle me.",
+        "May the odds be in your favor."
     };
     return {DialogueRegistry(text_register)};
 }
@@ -84,7 +91,9 @@ Game::World::EventRegister init_event_registry()
     EventRegister event_sequences = {
         {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), UnlockInputEvent(), ChangeNextEvent(1)},
         {LockInputEvent(0b100), LevelNodeEvent(0), UnlockInputEvent()},
-        {LockInputEvent(0b100), LevelNodeEvent(1), UnlockInputEvent()}
+        {LockInputEvent(0b100), LevelNodeEvent(1), UnlockInputEvent()},
+        {LockInputEvent(0b100), DialogueEvent(5), DialogueEvent(6), DialogueEvent(7), DialogueEvent(8),
+            UnlockInputEvent(), ChangeNextEvent(1)}
     };
     return { EventRegister(event_sequences) };
 }
@@ -100,7 +109,7 @@ Game::World::SceneRegistry init_scene_registry()
             SceneObject(64*25,64*2,0.1f,0.1f, 1, 1, {LevelNode}, {}),
             SceneObject(64*59,64*0,0.1f,0.1f, 1, 2, {LevelNode}, {}),
             SceneObject(64*20,64*2.3f,0.1f,0.1f, 1, 0, {Npc1}, {}),
-            SceneObject(64*47,64*4.2f,0.1f,0.1f, 1, 0, {Npc2}, {})
+            SceneObject(64*47,64*4.2f,0.1f,0.1f, 1, 3, {Npc2}, {})
         }
     };
     for (int i=-15; i<15; i+=2)
