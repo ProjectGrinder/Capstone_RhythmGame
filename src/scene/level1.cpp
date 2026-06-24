@@ -5,6 +5,50 @@
 #include "game/utils/DSL/bullethell/bullet_script.h"
 #include "game/utils/rhythm_chart/level_01.h"
 
+Game::Render::AnimationDataRegistry init_anim_data()
+{
+    using namespace Game::Render;
+    AnimationDataRegistry anim_datas{
+        {
+            {"Player_Idle_Front",{{0.25f,0.167f},0,3,10}},
+            {"Player_Idle_Left",{{0.25f, 0.167f}, 1, 3, 10}},
+            {"Player_Idle_Back",{{0.25f, 0.167f}, 2, 3, 10}},
+            {"Player_Move_Front",{{0.25f,0.167f},3,4,10}},
+            {"Player_Move_Left",{{0.25f,0.167f},4,4,10}},
+            {"Player_Move_Back",{{0.25f,0.167f},5,4,10}},
+            {"Boss_Idle",{{0.125f,0.33f},0,4,9}},
+            {"Boss_Cast1",{{0.125f, 0.33f}, 1, 7, 9, true, 3}},
+            {"Boss_Cast2",{{0.125f, 0.33f}, 2, 8, 9, false}},
+        }
+    };
+    return anim_datas;
+}
+
+Game::Render::AnimationSequence init_boss_anim_seq()
+{
+    using namespace Game::Render;
+    const float time_per_beat = 60000.f/ 134;
+    auto TTB = [&time_per_beat](const float beat)->int { return (int)std::round(beat * time_per_beat)+3000; };
+    AnimationSequence anim_seq{{
+        // I don't understand why.
+        {TTB(0), "Boss_Idle"},
+    {TTB(3), "Boss_Cast1"},
+    {TTB(5.5f), "Boss_Idle"},
+    {TTB(83), "Boss_Cast1"},
+    {TTB(87), "Boss_Idle"},
+    {TTB(89), "Boss_Cast2"},
+    {TTB(92), "Boss_Idle"},
+    {TTB(105), "Boss_Cast1"},
+    {TTB(146), "Boss_Cast2"},
+    {TTB(150), "Boss_Idle"},
+    {TTB(164), "Boss_Cast1"},
+    {TTB(170), "Boss_Idle"},
+    {TTB(172), "Boss_Cast2"},
+    {TTB(175), "Boss_Cast1"},
+    }};
+    return anim_seq;
+}
+
 void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
 {
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
@@ -109,7 +153,7 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
             .u0 = 0.f, .v0 = 0.f, .u1 = 1.f/8.f, .v1 = 1.f/3.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
         Game::Render::Animator{"Boss_Idle"}, Game::Render::Animation_Controller(true),
-            Scene::init_boss_anim_seq(), {Game::Battle::BULLET_HELL,1}
+            init_boss_anim_seq(), {Game::Battle::BULLET_HELL,1}
     );
 
     // judgement line
