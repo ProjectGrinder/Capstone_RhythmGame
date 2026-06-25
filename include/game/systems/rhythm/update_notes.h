@@ -104,8 +104,8 @@ namespace Game::Rhythm
         if (battle_query.begin() == battle_query.end())
             return;
 
-        if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
-            return;
+        // if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
+        //     return;
 
         const auto frame_time = get_delta_time();
         const auto current_speed = battle_query.front().get<Battle::RhythmState>().current_speed;
@@ -134,9 +134,16 @@ namespace Game::Rhythm
                 if (static_cast<float>(comp.get<Timing>().timing - clock_time) <= render_offset)
                 {
                     comp.get<NoteStatus>().state = 1;
-                    comp.get<Material>().visible = true;
                 }
             }
+            else continue;
+
+            if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
+            {
+                comp.get<Material>().visible = false;
+                continue;
+            }
+            comp.get<Material>().visible = true;
         }
         for (auto &[id, comp]: hold_query)
         {
@@ -159,11 +166,13 @@ namespace Game::Rhythm
                 continue;
             }
 
-            if (comp.get<NoteStatus>().state == 0 && static_cast<float>(comp.get<HoldConnect>().timing_start - clock_time) <= render_offset)
+            if (comp.get<NoteStatus>().state == 0)
             {
-                comp.get<NoteStatus>().state = 1;
-                comp.get<Material>().visible = true;
-                continue;
+                if (static_cast<float>(comp.get<HoldConnect>().timing_start - clock_time) <= render_offset)
+                {
+                    comp.get<NoteStatus>().state = 1;
+                }
+                else continue;
             }
 
             auto start_pos = height * (static_cast<float>(comp.get<HoldConnect>().timing_start - clock_time)) / render_offset;
@@ -214,6 +223,12 @@ namespace Game::Rhythm
                 }
                 adjust_hold(default_hold_height, start_pos, end_pos, &comp);
             }
+            if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
+            {
+                comp.get<Material>().visible = false;
+                continue;
+            }
+            comp.get<Material>().visible = true;
         }
     }
 }

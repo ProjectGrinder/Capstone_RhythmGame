@@ -16,10 +16,10 @@ namespace Game::Rhythm
         if (battle_query.begin() == battle_query.end())
             return;
 
-        if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
-        {
-            return;
-        }
+        // if (battle_query.front().get<Battle::BattleState>().current_phase != Battle::CurrentPhase::RHYTHM)
+        // {
+        //     return;
+        // }
 
         auto &level_data = level_query.front().get<Battle::LevelData>();
         auto &[bpm_list, idx] = level_data.bpm_info;

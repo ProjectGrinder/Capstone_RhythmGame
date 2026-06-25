@@ -22,8 +22,14 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
 
     load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
 
-    load_sprite("img/Square.dds", "Platform", 64, 64);
-    load_sprite("img/test.dds", "Npc", 420, 420);
+    load_sprite("img/world_map/tile1.dds", "PlatformTop", 64, 64);
+    load_sprite("img/world_map/tile2.dds", "Platform", 64, 64);
+    load_sprite("img/world_map/companion.dds", "Npc1", 564, 840);
+    load_sprite("img/world_map/mayor.dds", "Npc2", 744, 784);
+    load_sprite("img/world_map/level-node.dds", "LevelNode", 684, 700);
+    load_sprite("img/world_map/BG3.dds", "Bg1", 5408, 2160);
+    load_sprite("img/world_map/BG2.dds", "Bg2", 5408, 2160);
+    load_sprite("img/world_map/BG1.dds", "Bg3", 5408, 2160);
 
     load_sprite("img/Square.dds", "Square", 64, 64);
     load_sprite("img/Square64px.dds", "Square64px", 64, 64);
@@ -34,20 +40,11 @@ void init_graphics(const std::shared_ptr<Scene::DemoWorld::TaskManager>& tm)
 
 inline Game::Battle::LevelData create_level1_data()
 {
-    Game::Battle::BpmInfo bpm;
-    constexpr std::array timing_list = {17910, 66269, 123582};
-    for (int m : timing_list)
-    {
-        Game::Battle::BpmInfo::InfoPair info{};
-        info.bpm = 134.00f;
-        info.timing = m;
-        bpm.bpm_list.emplace_back(info);
-    }
     return Game::Battle::LevelData(
     "A World Without You",
     "Nakuya",
     134.00f,
-    bpm,
+    Game::Battle::BpmInfo({Game::Battle::BpmInfo::InfoPair(-3000, 134.00f)}),
         {
             Game::Battle::Difficulty(Game::Battle::LIGHT, 1, 10000,20),
             Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
@@ -58,23 +55,14 @@ inline Game::Battle::LevelData create_level1_data()
 
 inline Game::Battle::LevelData create_level2_data()
 {
-    Game::Battle::BpmInfo bpm;
-    constexpr std::array timing_list = {28235, 73412, 111529};
-    for (int m : timing_list)
-    {
-        Game::Battle::BpmInfo::InfoPair info{};
-        info.bpm = 170.00f;
-        info.timing = m;
-        bpm.bpm_list.emplace_back(info);
-    }
     return Game::Battle::LevelData(
     "Strike Against The World!",
     "Pooh5821",
     170.00f,
-    bpm,
+    Game::Battle::BpmInfo({Game::Battle::BpmInfo::InfoPair(-3000, 170.00f)}),
 {
             Game::Battle::Difficulty(Game::Battle::LIGHT, 2, 10000,20),
-            Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
+            Game::Battle::Difficulty(Game::Battle::SPARK, 4, 10000,30),
             Game::Battle::Difficulty(Game::Battle::BLAZE, 5, 10000,40),
         }, 139000
     );
@@ -84,11 +72,15 @@ Game::World::DialogueRegistry init_dialogue_registry()
 {
     using namespace Game::World;
     std::vector<std::string> text_register = {
-        "This is a place holder text to test the system",
-        "This is not a place for you to be gooning",
-        "just...",
-        "become detroit.... destroy human",
-        "Fun time at poppy playtime co."
+        "Hey.",
+        "You're finally awake.",
+        "Not sure what's going on?",
+        "Just follow the music and you will be fine.",
+        "Go on. Try interacting with that crystal.",
+        "So you've come to see me!",
+        "I'm just up here to enjoy the scenery",
+        "I'll come down when you want to battle me.",
+        "May the odds be in your favor."
     };
     return {DialogueRegistry(text_register)};
 }
@@ -97,9 +89,11 @@ Game::World::EventRegister init_event_registry()
 {
     using namespace Game::World;
     EventRegister event_sequences = {
-        {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), UnlockInputEvent(), ChangeNextEvent(1)},
-        {LockInputEvent(0b100), DialogueEvent(3), LevelNodeEvent(1), UnlockInputEvent()},
-        {LockInputEvent(0b100), LevelNodeEvent(0), UnlockInputEvent()}
+        {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), UnlockInputEvent(), ChangeNextEvent(1)},
+        {LockInputEvent(0b100), LevelNodeEvent(0), UnlockInputEvent()},
+        {LockInputEvent(0b100), LevelNodeEvent(1), UnlockInputEvent()},
+        {LockInputEvent(0b100), DialogueEvent(5), DialogueEvent(6), DialogueEvent(7), DialogueEvent(8),
+            UnlockInputEvent(), ChangeNextEvent(1)}
     };
     return { EventRegister(event_sequences) };
 }
@@ -107,19 +101,86 @@ Game::World::EventRegister init_event_registry()
 Game::World::SceneRegistry init_scene_registry()
 {
     using namespace Game::World;
-    const SceneRegistry scene_registry = {
+    SceneRegistry scene_registry = {
         {
-            SceneObject(0,64*-1,100,1,2, {Platform}, {}),
-            SceneObject(-6400,64*6,1,12, 2, {Platform}, {}),
-            SceneObject(3600,64*0,50,1, 2, {Platform}, {}),
-            SceneObject(7200,64*1,25,1, 2, {Platform}, {}),
-            SceneObject(720,64*2,2,0.5, 2, {Platform}, {}),
-            SceneObject(1080,64*3,2,0.5, 2, {Platform}, {}),
-            SceneObject(6400,64*6,1,12, 2, {Platform}, {}),
-            SceneObject(1080,64*4.5,0.2f,0.2f, 1, 0, {Npc}, {}),
-            SceneObject(64*0,64*1,0.2f,0.2f, 1, 2, {Npc}, {}),
+            // SceneObject(0,0,0.4f,0.4f,0, {Bg1}, {}),
+            // SceneObject(0,0,0.4f,0.4f,0, {Bg2}, {}),
+            // SceneObject(0,0,0.4f,0.4f,0, {Bg3}, {}),
+            SceneObject(64*25,64*2,0.1f,0.1f, 1, 1, {LevelNode}, {}),
+            SceneObject(64*59,64*0,0.1f,0.1f, 1, 2, {LevelNode}, {}),
+            SceneObject(64*20,64*2.3f,0.1f,0.1f, 1, 0, {Npc1}, {}),
+            SceneObject(64*47,64*4.2f,0.1f,0.1f, 1, 3, {Npc2}, {})
         }
     };
+    for (int i=-15; i<15; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*-1,1,1,2, {PlatformTop}, {}));
+        for (int j=-3; j>=-7; j-=2)
+        {
+            scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*j,1,1,2, {Platform}, {}));
+        }
+    }
+    for (int i=15; i<31; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),0,1,1,2, {PlatformTop}, {}));
+        for (int j=-2; j>=-10; j-=2)
+        {
+            scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*j,1,1,2, {Platform}, {}));
+        }
+    }
+    for (int i=-17; i>-37; i-=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*7,1,1,2, {PlatformTop}, {}));
+        for (int j=5; j>=-7; j-=2)
+        {
+            scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*j,1,1,2, {Platform}, {}));
+        }
+    }
+    for (int i=35; i<41; i++)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64,0.5f,0.5f,2, {PlatformTop}, {}));
+    }
+    for (int i=44; i<50; i++)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*2.5f,0.5f,0.5f,2, {PlatformTop}, {}));
+    }
+    scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*31),64*-1.5f,1,1,2, {PlatformTop}, {}));
+    for (int j=-3; j>=-9; j-=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*31),64*j,1,1,2, {Platform}, {}));
+    }
+    for (int i=33; i<51; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*-3,1,1,2, {PlatformTop}, {}));
+        for (int j=-5; j>=-9; j-=2)
+        {
+            scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*j,1,1,2, {Platform}, {}));
+        }
+    }
+    for (int i=51; i<65; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*-2,1,1,2, {PlatformTop}, {}));
+        for (int j=-4; j>=-10; j-=2)
+        {
+            scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*j,1,1,2, {Platform}, {}));
+        }
+    }
+    for (int i=65; i<69; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*-1,1,1,2, {PlatformTop}, {}));
+        for (int j=-3; j>=-9; j-=2)
+        {
+            scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*j,1,1,2, {Platform}, {}));
+        }
+    }
+    for (int i=69; i<85; i+=2)
+    {
+        scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*4,1,1,2, {PlatformTop}, {}));
+        for (int j=2; j>=-8; j-=2)
+        {
+            scene_registry.scene_objects.emplace_back(SceneObject(static_cast<float>(64*i),64*j,1,1,2, {Platform}, {}));
+        }
+    }
     return scene_registry;
 
 }
@@ -136,7 +197,7 @@ Scene::DemoWorld Scene::DemoWorld::instance()
 std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
 {
     auto tm = std::make_shared<TaskManager>();
-    tm->create_entity(Game::Render::Camera2D{.offset = {5,5}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
+    tm->create_entity(Game::Render::Camera2D{.offset = {0,0}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
     init_graphics(tm);
 
     // Create and configure BattleState
@@ -144,14 +205,53 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
     Game::World::EventRegister,
     Game::World::SceneRegistry,
     Game::World::GlobalState,
-    Game::World::PlayerStat>
+    Game::World::PlayerStat,
+    Game::Audio::SoundRegistry>
     (
         init_dialogue_registry(),
         init_event_registry(),
         init_scene_registry(),
         Game::World::GlobalState(),
-        Game::World::PlayerStat()
+        Game::World::PlayerStat(),
+        Game::Audio::init_world_sounds()
         );
+
+    constexpr int bg_width = 5408/2;
+    constexpr int bg_height = 2160/2;
+
+    tm->create_entity<
+        Game::Render::Sprite,
+        Game::Render::Material,
+        Game::Render::Transform,
+        Game::World::Background>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Bg1")), .pos = {{-bg_width,bg_height,0},{bg_width,bg_height,0},{bg_width,-bg_height,0},{-bg_width,-bg_height,0}},
+        .layer = 0},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{300, 0, 0, 0, 0, 0.5f, 0.5f, 1},
+        Game::World::Background());
+    tm->create_entity<
+        Game::Render::Sprite,
+        Game::Render::Material,
+        Game::Render::Transform,
+        Game::World::Background>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Bg2")), .pos = {{-bg_width,bg_height,0},{bg_width,bg_height,0},{bg_width,-bg_height,0},{-bg_width,-bg_height,0}},
+        .layer = 1},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{300, 0, 0, 0, 0, 0.5f, 0.5f, 1},
+        Game::World::Background(0.1f));
+    tm->create_entity<
+        Game::Render::Sprite,
+        Game::Render::Material,
+        Game::Render::Transform,
+        Game::World::Background>
+    (
+        Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Bg3")), .pos = {{-bg_width,bg_height,0},{bg_width,bg_height,0},{bg_width,-bg_height,0},{-bg_width,-bg_height,0}},
+        .layer = 2},
+        Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
+        Game::Render::Transform{300, 0, 0, 0, 0, 0.5f, 0.5f, 1},
+        Game::World::Background(0.1f));
 
     // SaveState
     tm->create_entity<Game::World::SaveState>(Game::World::SaveState());
@@ -170,7 +270,7 @@ std::shared_ptr<Scene::DemoWorld::TaskManager> Scene::DemoWorld::init()
     AngularVelocity, Game::Physics::CircularCollider, Game::Render::Sprite, Game::Render::Material>(
         {},{}, {0,100}, {}, Acceleration(0,0,1000,1000,-1000,-1000), {}, Game::Physics::CircularCollider(20.f,32.f),
         Game::Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("BH_Player_Sprite")),
-            .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 1,
+            .pos = {{-32, 40, 0}, {32, 40, 0}, {32, -40, 0}, {-32, -40, 0}}, .layer = 20,
             .u0 = 0.f, .v0 = 0.f, .u1 = 200.f/800.f, .v1 = 250.f/1500.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))}
     );
@@ -184,7 +284,10 @@ Scene::DemoWorld::ResourceManager Scene::DemoWorld::exit([[maybe_unused]] std::s
     LOG_INFO("Exiting DemoGame Scene.");
 
     free_assets(get_assets_id("Platform"));
-    free_assets(get_assets_id("Npc"));
+    free_assets(get_assets_id("PlatformTop"));
+    free_assets(get_assets_id("Npc1"));
+    free_assets(get_assets_id("Npc2"));
+    free_assets(get_assets_id("LevelNode"));
 
     ResourceManager rm;
     // Selected Level

@@ -30,7 +30,7 @@ void init_graphics(const std::shared_ptr<Scene::DemoBulletHell::TaskManager>& tm
     load_sprite("img/ring16px.dds", "ring16px", 72, 72);
 }
 
-Game::Render::AnimationDataRegistry Scene::init_anim_data()
+Game::Render::AnimationDataRegistry init_anim_data()
 {
     using namespace Game::Render;
     AnimationDataRegistry anim_datas{
@@ -49,7 +49,7 @@ Game::Render::AnimationDataRegistry Scene::init_anim_data()
     return anim_datas;
 }
 
-Game::Render::AnimationSequence Scene::init_boss_anim_seq()
+Game::Render::AnimationSequence init_boss_anim_seq()
 {
     using namespace Game::Render;
     const float time_per_beat = 60000.f/ 134;
@@ -104,7 +104,7 @@ std::shared_ptr<Scene::DemoBulletHell::TaskManager> Scene::DemoBulletHell::init(
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
         init_anim_data(),
-        Game::Audio::init_sounds(0)
+        Game::Audio::init_battle_sounds(0)
         );
 
     // InputManager

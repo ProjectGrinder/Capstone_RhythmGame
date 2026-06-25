@@ -18,6 +18,7 @@ namespace Scene
             Game::World::DialogueRegistry,
             Game::World::EventRegister,
             Game::World::SceneRegistry,
+            Game::World::Background,
             Game::World::Block,
             Game::World::CameraAttractor,
             Game::World::DialogueBox,
@@ -48,7 +49,8 @@ namespace Scene
             Game::Render::Camera2D,
             Game::Render::Resize,
             Game::Battle::BattleState,
-            Game::Battle::LevelData
+            Game::Battle::LevelData,
+            Game::Audio::SoundRegistry
             >;
         using ResourceManager = Utils::make_resource_manager_t<MaxResource, ComponentTuple>;
         using Syscall = Utils::make_syscall_t<MaxResource, ComponentTuple>;
@@ -68,6 +70,7 @@ namespace Scene
             Game::World::dialogue_box_system<Syscall>,
             Game::World::lock_event_system<Syscall>,
             Game::World::level_node_system<Syscall>,
+            Game::World::change_event_system<Syscall>,
             Game::World::event_system<Syscall>,
             // Game::World::logging_system<Syscall>,
             Game::Render::set_camera<Syscall>,

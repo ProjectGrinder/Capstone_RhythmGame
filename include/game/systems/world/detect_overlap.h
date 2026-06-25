@@ -31,7 +31,7 @@ namespace Game::World
                 if (distance_squared <= trigger_radius*trigger_radius)
                 {
                     comps.get<Interactable>().in_range = true;
-                    if (input.up_pressed && !global_state.interactionLocked) comps.get<EventState>().event_occupied = true;
+                    if ((input.z_pressed || input.enter_pressed) && !global_state.interactionLocked) comps.get<EventState>().event_occupied = true;
                 }
             }
         }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "maths/color.h"
 #define PI 3.1415927f
 
 namespace Game
@@ -50,4 +51,21 @@ namespace Game
 
     constexpr int IFRAME_TIME = 1500;
     constexpr float GRAZE_HITBOX_SIZE = 40.f;
+
+    const Math::Color DIFF_COLOR[4] = {
+        {0, 0.5f, 1},
+        {1, 0.5f, 0},
+        {1, 0, 0},
+        {1, 0, 1}
+    };
+
+    // world scene position
+    const std::vector<Math::Point> LEVEL_NODE_POS = {
+        {64*25, 64*2, 0},
+        {64*59, 0, 0}
+    };
+
+    constexpr float DIALOGUE_BOX_OFFSET_Y = 80.f;
+    constexpr float DIALOGUE_BOX_HEIGHT = 60.f;
+    constexpr int DIALOGUE_TYPE_DELAY = 50;
 }

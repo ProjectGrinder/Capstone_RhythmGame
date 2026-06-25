@@ -5,6 +5,50 @@
 #include "game/utils/DSL/bullethell/bullet_script.h"
 #include "game/utils/rhythm_chart/level_01.h"
 
+Game::Render::AnimationDataRegistry init_anim_data()
+{
+    using namespace Game::Render;
+    AnimationDataRegistry anim_datas{
+        {
+            {"Player_Idle_Front",{{0.25f,0.167f},0,3,10}},
+            {"Player_Idle_Left",{{0.25f, 0.167f}, 1, 3, 10}},
+            {"Player_Idle_Back",{{0.25f, 0.167f}, 2, 3, 10}},
+            {"Player_Move_Front",{{0.25f,0.167f},3,4,10}},
+            {"Player_Move_Left",{{0.25f,0.167f},4,4,10}},
+            {"Player_Move_Back",{{0.25f,0.167f},5,4,10}},
+            {"Boss_Idle",{{0.125f,0.33f},0,4,9}},
+            {"Boss_Cast1",{{0.125f, 0.33f}, 1, 7, 9, true, 3}},
+            {"Boss_Cast2",{{0.125f, 0.33f}, 2, 8, 9, false}},
+        }
+    };
+    return anim_datas;
+}
+
+Game::Render::AnimationSequence init_boss_anim_seq()
+{
+    using namespace Game::Render;
+    const float time_per_beat = 60000.f/ 134;
+    auto TTB = [&time_per_beat](const float beat)->int { return (int)std::round(beat * time_per_beat)+3000; };
+    AnimationSequence anim_seq{{
+        // I don't understand why.
+        {TTB(0), "Boss_Idle"},
+    {TTB(3), "Boss_Cast1"},
+    {TTB(5.5f), "Boss_Idle"},
+    {TTB(83), "Boss_Cast1"},
+    {TTB(87), "Boss_Idle"},
+    {TTB(89), "Boss_Cast2"},
+    {TTB(92), "Boss_Idle"},
+    {TTB(105), "Boss_Cast1"},
+    {TTB(146), "Boss_Cast2"},
+    {TTB(150), "Boss_Idle"},
+    {TTB(164), "Boss_Cast1"},
+    {TTB(170), "Boss_Idle"},
+    {TTB(172), "Boss_Cast2"},
+    {TTB(175), "Boss_Cast1"},
+    }};
+    return anim_seq;
+}
+
 void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
 {
     tm->create_entity(Game::Render::Camera2D{.offset = {}, .scaleX = 1920, .scaleY = 1080, .rotation = 0});
@@ -24,6 +68,7 @@ void init_graphics(const std::shared_ptr<Scene::Level1::TaskManager>& tm)
     load_pixel_shader("shaders/ps/sprite.cso", "sprite_ps", sprite_ps_input_attributes, 3);
 
     load_sprite("img/bullethell/Default_Shot.dds", "bullet_sprite", 512, 512);
+    // load_sprite("img/bullethell/NewBullet.dds", "bullet_sprite", 320, 200);
     load_sprite("img/test.dds", "test", 500, 500);
     load_sprite("img/bullethell/BH_Player_Sprite.dds", "BH_Player_Sprite", 800, 1500);
     load_sprite("img/bullethell/Hitbox.dds", "Hitbox", 12, 12);
@@ -108,7 +153,7 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
             .u0 = 0.f, .v0 = 0.f, .u1 = 1.f/8.f, .v1 = 1.f/3.f},
         Game::Render::Material{get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))},
         Game::Render::Animator{"Boss_Idle"}, Game::Render::Animation_Controller(true),
-            Scene::init_boss_anim_seq(), {Game::Battle::BULLET_HELL,1}
+            init_boss_anim_seq(), {Game::Battle::BULLET_HELL,1}
     );
 
     // judgement line
@@ -305,42 +350,40 @@ void init_battle_components(const std::shared_ptr<Scene::Level1::TaskManager>& t
     Game::Render::Material,
     Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "S", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "X", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE1, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1}, {Game::Battle::RHYTHM,0.7f});
     tm->create_entity<Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "D", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "C", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE2, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1,1,1}, {Game::Battle::RHYTHM,0.7f});
     tm->create_entity<Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "L", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "M", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE3, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1,1}, {Game::Battle::RHYTHM,0.7f});
     tm->create_entity<Game::Render::Text,
     Game::Render::Material,
     Game::Render::Transform, Game::Battle::BattleObject>
     (
-        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = ";", .color = {1, 1, 1, 0}, .layer = 50},
+        Game::Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = "(,)", .color = {1, 1, 1, 0}, .layer = 50},
         Game::Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
         Game::Render::Transform{Game::LANE4, Game::JUDGE_LEVEL - 50, 0, 0, 0, 1, 1, 1}, {Game::Battle::RHYTHM,0.7f});
 }
 
 // std::array total_note_list = {87, 150, 270}; // store total notes here
-std::array speed_list1 = {2.5f, 3.0f, 4.0f}; // in case of preset speed
+std::array speed_list1 = {2.0f, 2.5f, 3.2f}; // in case of preset speed
 
 inline Game::Battle::RhythmState create_rhythm_state(const int level, const int note_count)
 {
-    int accept_gain;
+    int accept_gain = 1;
     if (note_count > 0)
         accept_gain = 20000/note_count;
-    else
-        accept_gain = 1;
     Game::Battle::RhythmState state(1, accept_gain, note_count, speed_list1[level], speed_list1[level]);
     const int accept_loss1 = accept_gain*5;
     const int accept_loss2 = accept_gain*2;
@@ -351,7 +394,10 @@ inline Game::Battle::RhythmState create_rhythm_state(const int level, const int 
     state.accept_loss.hold_end = accept_loss2;
 
     constexpr float full_accuracy = 10000.00f; // represent full 100.00%
-    state.apn = full_accuracy / static_cast<float>(state.total_notes);
+    const float per_apn = full_accuracy / static_cast<float>(state.total_notes);
+    state.apn.perfect = per_apn;
+    state.apn.great = per_apn * 3/4;
+    state.apn.fine = per_apn / 2;
     return (state);
 }
 
@@ -472,20 +518,17 @@ Scene::Level1 Scene::Level1::instance()
 
 inline Game::Battle::LevelData create_level1_data()
 {
-    Game::Battle::BpmInfo bpm;
-    constexpr std::array timing_list = {17910, 66269, 123582};
-    for (int m : timing_list)
-    {
-        Game::Battle::BpmInfo::InfoPair info{};
-        info.bpm = 134.00f;
-        info.timing = m;
-        bpm.bpm_list.emplace_back(info);
-    }
+    // Game::Battle::BpmInfo bpm;
+    // constexpr std::array timing_list = {16400, 65000, 122500};
+    // for (int m : timing_list)
+    // {
+    //     bpm.bpm_list.emplace_back(Game::Battle::BpmInfo::InfoPair(m, 134.00f));
+    // }
     return Game::Battle::LevelData(
     "A World Without You",
     "Nakuya",
     134.00f,
-    bpm,
+    Game::Battle::BpmInfo({Game::Battle::BpmInfo::InfoPair(-3000, 134.00f)}),
         {
             Game::Battle::Difficulty(Game::Battle::LIGHT, 1, 10000,20),
             Game::Battle::Difficulty(Game::Battle::SPARK, 3, 10000,30),
@@ -523,7 +566,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
 
     const int note_count = load_chart(tm, load_level_01_chart(level));
 
-    Game::BulletHell::BulletScript script{"dsl/ShotData.th0", (Game::levelDSL_lists[0][level].bullet_script.c_str())};
+    Game::BulletHell::BulletScript script{"dsl/ShotData2.th0", (Game::levelDSL_lists[0][level].bullet_script.c_str())};
     script.read_dsl_from_file(Game::levelDSL_lists[0][level].bullet_script.c_str());
 
     tm->create_entity<Game::Battle::BattleState,
@@ -542,7 +585,7 @@ std::shared_ptr<Scene::Level1::TaskManager> Scene::Level1::init([[maybe_unused]]
         std::move(script.bullet_loader),
         std::move(script.pattern_container),
         init_anim_data(),
-        Game::Audio::init_sounds(0));
+        Game::Audio::init_battle_sounds(0));
 
     // InputManager
     tm->create_entity<Game::Input>(Game::Input());
