@@ -78,7 +78,7 @@ Game::World::DialogueRegistry init_dialogue_registry()
         "Just follow the music and you will be fine.",
         "Go on. Try interacting with that crystal.",
         "So you've come to see me!",
-        "I'm just up here to enjoy the scenery",
+        "I'm just up here to enjoy the scenery.",
         "I'll come down when you want to battle me.",
         "May the odds be in your favor."
     };
@@ -89,11 +89,12 @@ Game::World::EventRegister init_event_registry()
 {
     using namespace Game::World;
     EventRegister event_sequences = {
-        {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), UnlockInputEvent(), ChangeNextEvent(1)},
+        {LockInputEvent(0b100), DialogueEvent(0), DialogueEvent(1), DialogueEvent(2), DialogueEvent(3),
+            DialogueEvent(4), UnlockInputEvent()},
         {LockInputEvent(0b100), LevelNodeEvent(0), UnlockInputEvent()},
         {LockInputEvent(0b100), LevelNodeEvent(1), UnlockInputEvent()},
         {LockInputEvent(0b100), DialogueEvent(5), DialogueEvent(6), DialogueEvent(7), DialogueEvent(8),
-            UnlockInputEvent(), ChangeNextEvent(1)}
+            UnlockInputEvent()}
     };
     return { EventRegister(event_sequences) };
 }

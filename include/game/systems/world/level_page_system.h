@@ -7,6 +7,10 @@ namespace Game::World
     void create_level_page(T &syscall, const Math::Point &cam_pos, LevelNodeEvent& level_node, const Battle::LevelData& data)
     {
         level_node.level_node_texts_pid.clear();
+        // int id = level_node.id;
+        // if (id >= LEVEL_NODE_POS.size())
+        //     id = static_cast<int>(LEVEL_NODE_POS.size())-1;
+        // const auto pos = LEVEL_NODE_POS[id];
         level_node.level_node_box_pid = syscall.template create_entity<Render::Sprite, Render::Material, Render::Transform, Render::Resize>
         (
             Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-HALF_WIDTH/2, HALF_HEIGHT*1/2, 0}, {HALF_WIDTH/2, HALF_HEIGHT*1/2, 0}, {HALF_WIDTH/2, -HALF_HEIGHT*1/2, 0}, {-HALF_WIDTH/2, -HALF_HEIGHT*1/2, 0}}, .layer = 45},
@@ -18,15 +22,15 @@ namespace Game::World
         (
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = data.title, .color = Math::Color{0, 0, 0, 1}, .layer = 51, .align = Render::Center},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{cam_pos.x, cam_pos.y + HALF_HEIGHT*1/2 - 100, 0, 0, 0, 0,0, 1},
+            Render::Transform{cam_pos.x-50, cam_pos.y + HALF_HEIGHT*1/2 - 100, 0, 0, 0, 0,0, 1},
             Render::Resize{{1.5f, 1.5f}, 500}));
 
         level_node.level_node_texts_pid.push_back(syscall.template create_entity<Render::Text, Render::Material, Render::Transform, Render::Resize>
         (
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = data.artist_name, .color = Math::Color{0, 0, 0, 1}, .layer = 51, .align = Render::Center},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{cam_pos.x, cam_pos.y + HALF_HEIGHT*1/2 - 150, 0, 0, 0, 0,0, 1},
-            Render::Resize{{1, 1}, 500}));
+            Render::Transform{cam_pos.x, cam_pos.y + HALF_HEIGHT*1/2 - 175, 0, 0, 0, 0,0, 1},
+            Render::Resize{{1.2f, 1.2f}, 500}));
 
         level_node.level_node_texts_pid.push_back(
                 syscall.template create_entity<Render::Text, Render::Material, Render::Transform, Render::Resize>(
@@ -39,7 +43,7 @@ namespace Game::World
                         Render::Material(
                                 get_assets_record_ptr(get_assets_id("sprite_vs")),
                                 get_assets_record_ptr(get_assets_id("sprite_ps"))),
-                        Render::Transform{cam_pos.x, cam_pos.y + HALF_HEIGHT * 1/2 - 200, 0, 0, 0, 0, 0, 1},
+                        Render::Transform{cam_pos.x, cam_pos.y + HALF_HEIGHT * 1/2 - 250, 0, 0, 0, 0, 0, 1},
                         Render::Resize{{1, 1}, 500}));
 
         const size_t diff_len = data.difficulties.size();
@@ -51,7 +55,7 @@ namespace Game::World
         (
             Render::Text{.font = get_assets_record_ptr(get_assets_id("Klub04TT-NoBG")), .text = diff_name[diff.difficulty] + " " + std::to_string(diff.level), .color = Math::Color{0, 0, 0, 1}, .layer = 51, .align = Render::Center},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{cam_pos.x-HALF_WIDTH/2 + HALF_WIDTH * (float)(i + 1) / (float)(diff_len+1), cam_pos.y-HALF_HEIGHT*1/2 + 120, 0, 0, 0, 0,0, 1},
+            Render::Transform{cam_pos.x-HALF_WIDTH/2 + HALF_WIDTH * (float)(i + 1) / (float)(diff_len+1), cam_pos.y-HALF_HEIGHT*1/2 + 150, 0, 0, 0, 0,0, 1},
             Render::Resize{{1.f, 1.f}, 500}));
         }
 
@@ -62,9 +66,9 @@ namespace Game::World
             Render::Resize{{0.8f, 0.8f}, 500}));
 
         level_node.select_rect_pid = syscall.template create_entity<Render::Sprite, Render::Material, Render::Transform, Render::Resize>(
-            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-100, 40, 0}, {100, 40, 0}, {100, -40, 0}, {-100, -40, 0}}, .color = {0.75f,0.25f,0.25f,0.5f}, .layer = 50},
+            Render::Sprite{.sp = get_assets_record_ptr(get_assets_id("Square")), .pos = {{-100, 40, 0}, {100, 40, 0}, {100, -40, 0}, {-100, -40, 0}}, .color = {0,0.5f,1,0.5f}, .layer = 50},
             Render::Material(get_assets_record_ptr(get_assets_id("sprite_vs")), get_assets_record_ptr(get_assets_id("sprite_ps"))),
-            Render::Transform{cam_pos.x-HALF_WIDTH/2 + HALF_WIDTH * 1.f / (float)(diff_len+1),cam_pos.y-HALF_HEIGHT*1/2 + 130, 0, 0, 0, 0,0, 1},
+            Render::Transform{cam_pos.x-HALF_WIDTH/2 + HALF_WIDTH * 1.f / (float)(diff_len+1),cam_pos.y-HALF_HEIGHT*1/2 + 160, 0, 0, 0, 0,0, 1},
             Render::Resize{{1, 1}, 500});
     }
 
@@ -85,14 +89,33 @@ namespace Game::World
     }
 
     template<typename T>
-    void adjust_option_rect(T &syscall, System::ECS::pid id, const Math::Point &cam_pos, const int sel, const int diff, const size_t diff_len, Render::Transform &tra)
+    void adjust_option_rect(T &syscall, System::ECS::pid id, const Math::Point &cam_pos, const int sel, const int diff, const size_t diff_len, Render::Transform &tra, Render::Sprite &spr)
     {
+        // Math::Point pos{};
+        // if (level_id < LEVEL_NODE_POS.size())
+        //     pos = LEVEL_NODE_POS[static_cast<int>(level_id)];
+        // else
+        //     pos = LEVEL_NODE_POS[LEVEL_NODE_POS.size()-1];
         // Test if viable
         syscall.template remove_component<Render::Resize>(id);
         tra.scaleX = 0;
         syscall.template add_component<Render::Resize>(id, Render::Resize({1,1},500));
-        if (sel == 0) tra.position = {cam_pos.x,cam_pos.y-HALF_HEIGHT*1/2 + 60};
-        else tra.position = { cam_pos.x-HALF_WIDTH/2 + HALF_WIDTH * (float)(diff + 1) / (float)(diff_len+1),cam_pos.y-HALF_HEIGHT*1/2 + 130 };
+        if (sel == 0)
+        {
+            tra.position = {cam_pos.x,cam_pos.y - HALF_HEIGHT*1/2 + 60};
+            spr.color = Math::Color{0.5f,0.5f,0.5f,0.5f};
+        }
+        else
+        {
+            tra.position = { cam_pos.x-HALF_WIDTH/2 + HALF_WIDTH * (float)(diff + 1) / (float)(diff_len+1),cam_pos.y-HALF_HEIGHT*1/2 + 160 };
+            Math::Color box_color;
+            if (diff <= 3)
+                box_color = DIFF_COLOR[diff];
+            else
+                box_color = Math::Color{0.5f,0.5f,0.5f};
+            box_color.a = 0.5f;
+            spr.color = box_color;
+        }
     }
 
     template<typename T>
@@ -152,7 +175,7 @@ namespace Game::World
             {
                 Audio::audio_play(sounds["sound_select"]);
                 level_node.selection = (level_node.selection+1)%2;
-                adjust_option_rect(syscall, level_node.select_rect_pid, cam_pos, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
+                adjust_option_rect(syscall, level_node.select_rect_pid, cam_pos, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid), syscall.template query<Render::Sprite>(level_node.select_rect_pid));
             }
             if (input.left_pressed || input.right_pressed)
             {
@@ -160,7 +183,7 @@ namespace Game::World
                 Audio::audio_play(sounds["sound_select"]);
                 const auto count = static_cast<uint8_t>(level_info.difficulties.size());
                 level_node.diff = static_cast<uint8_t>((static_cast<int>(level_node.diff) + Physics::sign(input.right_pressed) + count) % count);
-                adjust_option_rect(syscall, level_node.select_rect_pid, cam_pos, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid));
+                adjust_option_rect(syscall, level_node.select_rect_pid, cam_pos, level_node.selection, level_node.diff, level_info.difficulties.size(), syscall.template query<Render::Transform>(level_node.select_rect_pid), syscall.template query<Render::Sprite>(level_node.select_rect_pid));
             }
         }
     }
