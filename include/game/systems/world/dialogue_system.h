@@ -39,7 +39,8 @@ namespace Game::World
             System::ECS::Query<Input> &input_query,
             System::ECS::Query<DialogueRegistry> &dialogue_query,
             System::ECS::Query<EventState, DialogueEvent, Render::Transform> &query1,
-            System::ECS::Query<DialogueBox> &query2)
+            System::ECS::Query<DialogueBox> &query2,
+            System::ECS::Query<Audio::SoundRegistry> &audio_query)
     {
         if (input_query.begin() == input_query.end())
             return;
@@ -49,6 +50,8 @@ namespace Game::World
 
         const auto &input = input_query.front().components.get<Input>();
         const auto &dialogue_registry = dialogue_query.front().components.get<DialogueRegistry>().text_register;
+        const auto &sound_reg = audio_query.front().components.get<Audio::SoundRegistry>();
+        auto sounds = sound_reg.audios;
 
         for (auto &[id, comps] : query1)
         {
@@ -56,7 +59,10 @@ namespace Game::World
             auto &dialogue = comps.get<DialogueEvent>();
 
             if (dialogue.dialogue_box_id == INVALID_PID)
+            {
                 dialogue.dialogue_box_id = InitTextBox(syscall, dialogue_registry[dialogue.dialogue_id], comps.get<Render::Transform>().position);
+                Audio::audio_play(sounds["sound_select"]);
+            }
 
             else
             {
@@ -68,6 +74,7 @@ namespace Game::World
                         auto &dialogue_box = comps2.get<DialogueBox>();
                         if (!dialogue_box.is_typing)
                         {
+                            Audio::audio_play(sounds["sound_select"]);
                             event_state.has_event = false;
                             syscall.template remove_component<DialogueEvent>(id);
                             dialogue_box.is_destroyed = true;

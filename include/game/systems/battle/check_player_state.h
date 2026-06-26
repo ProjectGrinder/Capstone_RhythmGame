@@ -27,15 +27,17 @@ namespace Game::Battle
                 battle_state.player_state = PlayerState::FINISH;
                 create_result_ui(syscall, battle_query);
             }
-            else if (battle_state.hp > 0)
-            {
-                battle_state.player_state = PlayerState::PLAY;
-            }
+            // else if (battle_state.hp > 0)
+            // {
+            //     battle_state.player_state = PlayerState::PLAY;
+            // }
+            // else
+            // {
+            //     battle_state.player_state = PlayerState::DEAD;
+            //     create_result_ui(syscall, battle_query);
+            // }
             else
-            {
-                battle_state.player_state = PlayerState::DEAD;
-                create_result_ui(syscall, battle_query);
-            }
+                battle_state.player_state = PlayerState::PLAY;
         }
     }
 }
