@@ -95,7 +95,7 @@ namespace System::ECS
             //             }
             //         });
             constexpr size_t bits_per_chunk = 64;
-            for (size_t chunk_idx = 0; chunk_idx < MaxResource / bits_per_chunk; ++chunk_idx)
+            for (size_t chunk_idx = 0; chunk_idx <= MaxResource / bits_per_chunk; ++chunk_idx)
             {
                 // Get the raw 64-bit word (this is where the speed is)
                 uint64_t chunk = extract_chunk_from_bitset(mask, chunk_idx);
@@ -105,7 +105,8 @@ namespace System::ECS
                     int tz = std::countr_zero(chunk);
                     size_t id = (chunk_idx * bits_per_chunk) + tz;
 
-                    query.add(static_cast<pid>(id), std::get<I>(cached_pools).get(id)...);
+                    if (id < MaxResource)
+                        query.add(static_cast<pid>(id), std::get<I>(cached_pools).get(id)...);
 
                     chunk &= (chunk - 1);
                 }

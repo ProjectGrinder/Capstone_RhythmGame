@@ -5,7 +5,6 @@
 #include <optional>
 #include <ranges>
 #include "ecs_types.h"
-#include "utils/print_debug.h"
 
 namespace System::ECS
 {
