@@ -147,6 +147,7 @@ namespace System::ECS
             _to_add_components.clear();
             _to_remove_entities.reset();
             std::apply([](auto &...bits) { (bits.reset(), ...); }, _to_remove_components);
+            _dirty_ids.clear();
         }
     };
 } // namespace System::ECS

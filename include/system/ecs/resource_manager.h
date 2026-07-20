@@ -269,6 +269,9 @@ namespace System::ECS
         {
             std::apply([](auto &...pools) { (pools.clear(), ...); }, _pools);
             _component_count.fill(0);
+            _occupied.reset();
+            overfilled = false;
+            _world_version++;
             _id = 0;
         }
 
