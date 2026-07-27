@@ -110,6 +110,15 @@ namespace System::ECS
                     chunk &= (chunk - 1);
                 }
             }
+
+            for (size_t id = (MaxResource / bits_per_chunk) * bits_per_chunk; id < MaxResource; ++id)
+            {
+                if (mask.test(id))
+                {
+                    query.add(static_cast<pid>(id), std::get<I>(cached_pools).get(id)...);
+                }
+            }
+
             return (query);
         }
 
