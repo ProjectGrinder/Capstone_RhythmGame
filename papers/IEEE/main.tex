@@ -1,5 +1,5 @@
 \documentclass[conference]{IEEEtran}
-\IEEEoverridecommandlockouts
+% \IEEEoverridecommandlockouts
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -8,71 +8,109 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
-    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Conference Paper Title*\\
-{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
-should not be used}
-\thanks{Identify applicable funding agency here. If none, delete this.}
-}
+    \title{Evaluating Compile-Time Specialization For Entity-Component-System Implementations\\
+    {\footnotesize }
+    \thanks{}
+    }
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{3\textsuperscript{rd} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{4\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{5\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{6\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-}
+    \author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
+    \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+    \textit{name of organization (of Aff.)}\\
+    City, Country \\
+    email address or ORCID}
+    \and
+    \IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
+    \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+    \textit{name of organization (of Aff.)}\\
+    City, Country \\
+    email address or ORCID}
+    \and
+    \IEEEauthorblockN{3\textsuperscript{rd} Given Name Surname}
+    \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+    \textit{name of organization (of Aff.)}\\
+    City, Country \\
+    email address or ORCID}
+    \and
+    \IEEEauthorblockN{4\textsuperscript{th} Given Name Surname}
+    \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+    \textit{name of organization (of Aff.)}\\
+    City, Country \\
+    email address or ORCID}
+    }
 
-\maketitle
+    \maketitle
 
-\begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
-\end{abstract}
+    \begin{abstract}
+        The Entity-Component-System (ECS) pattern is widely used for applications in interactive systems,
+        machine learning, and digital simulation contexts.
+        From examining existing infrastructure and development tools and comparing to theoretical ECS models,
+        we identified opportunities to reduce runtime overhead through increased compile-time specialization.
+        We present a framework implementing the ECS pattern and built upon C++ that aggressively applies compile-time
+        metaprogramming techniques to reduce overhead.
+        To analyze the potential of this approach, the framework was evaluated in comparison with
+        industry-standard ECS libraries EnTT and Bevy ECS in terms of performance, executable size, and memory usage.
+        The results showed that the proposed implementation exhibited performance comparable to existing frameworks while
+        substantially improving program size at a small cost to memory usage.
+    \end{abstract}
 
-\begin{IEEEkeywords}
-component, formatting, style, styling, insert
-\end{IEEEkeywords}
-
-\section{Introduction}
-\label{sec:introduction}
-
-Core ECS~\cite{Redmond_2025_CoreECS} is funny.
+    \begin{IEEEkeywords}
+        Entity Component System, ECS, Data-Oriented Design, Software Architectures
+    \end{IEEEkeywords}
 
 
-\bibliographystyle{IEEEtran}
-\bibliography{refs}
+    \section{Introduction}
+    \label{sec:introduction}
+
+    Core ECS~\cite{Redmond_2025_CoreECS} is funny.
+
+    \section{Method}
+    \label{sec:method}
+
+    The execution time of each ECS implementation was measured by recording the time immediately before and after
+    the execution of all user-defined systems within one frame.
+    For Bevy ECS, we used Rust's \verb|Instant| to record timestamps.
+    For EnTT and our implementation, we used the \verb|std::chrono::steady_clock| from C++.
+    Unrelated plugins, rendering, and other external factors were excluded to isolate the frame execution time such that
+    it served as a reliable primary performance metric.
+
+    Four benchmark scenarios were designed to evaluate the frameworks under different workloads.
+    For each scenario, the behavior and resultant work of user-defined systems remained equivalent across all frameworks.
+    Benchmarks involving entity creation and destruction were designed to maintain a steady-state workload by ensuring
+    that the ECS world returned to an equivalent state after each frame.
+
+    While each framework differed in implementation details, care was taken to ensure computational work performed by
+    the systems remained identical.
+    This allowed a direct comparison of runtime performance between implementations.
+
+    All benchmarks were compiled using release optimization settings, albeit with different compilers.
+    The Bevy ECS implementation was built using Rust's \verb|cargo --release| configuration.
+    The EnTT implementation used the MinGW Release configuration, whereas our implementation was built
+    using the MSVC Release configuration.
+
+    Before measurements were recorded, each benchmark was allowed to execute for a warm-up period to reduce the
+    influence of initialization overhead.
+    Following this, execution time was recorded over 1,000 consecutive frames and written to a log file.
+    The collected samples were then analyzed to compute the average execution time for each benchmark configuration.
+
+    \section{Results}
+    \label{sec:results}
+
+    \section{Discussion}
+    \label{sec:discussion}
+    A limitation of this evaluation is that the implementations were compiled using different toolchains.
+    Compiler-specific optimizations may significantly influence the measured performance in addition to the design of the ECS framework.
+    This choice was made because our implementation targets an existing MSVC-based game project,
+    and attempts to build it using MinGW resulted in undefined behavior.
+    With Bevy ECS also being built in a different language, the reported performance behavior should be interpreted as
+    comparisons between complete framework implementations, rather than compiler-independent measurements.
+
+    \section{Conclusion}
+    \label{sec:conclusion}
+
+    \bibliographystyle{IEEEtran}
+    \bibliography{refs}
 
 \end{document}
