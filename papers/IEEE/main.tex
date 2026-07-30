@@ -7,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{mathtools}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
 T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
@@ -64,10 +65,20 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Introduction}
     \label{sec:introduction}
 
-    Core ECS~\cite{Redmond_2025_CoreECS} is funny.
+    Redmond and Kuper~\cite{Redmond_2025_CoreECS} provided a formal operational model of ECS for reasoning about concurrency.
+    Since this work focused on empirical performance evaluation rather than formal semantics,
+    we instead adopted a simplified notation for entities, components, queries, and systems that would be
+    enough to specify implementation details for ECS-developed software.
+
+    % TODO: stub
+
 
     \section{Method}
     \label{sec:method}
+
+    For each framework, the size of the final executable is obtained by measuring the executable with Windows File Explorer.
+    % TODO: the memory section is ill-formed and should be retaken.
+    The memory usage of each framework is obtained by recording the Memory column from within Task Manager.
 
     The execution time of each ECS implementation was measured by recording the time immediately before and after
     the execution of all user-defined systems within one frame.
@@ -80,7 +91,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     For each scenario, the behavior and resultant work of user-defined systems remained equivalent across all frameworks.
     Benchmarks involving entity creation and destruction were designed to maintain a steady-state workload by ensuring
     that the ECS world returned to an equivalent state after each frame.
-
     While each framework differed in implementation details, care was taken to ensure computational work performed by
     the systems remained identical.
     This allowed a direct comparison of runtime performance between implementations.
@@ -95,11 +105,272 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Following this, execution time was recorded over 1,000 consecutive frames and written to a log file.
     The collected samples were then analyzed to compute the average execution time for each benchmark configuration.
 
+
+    \section{Benchmark Suite}
+    \label{sec:benchmark-suite}
+
+    The benchmark suite was designed to exercise common ECS operations individually,
+    including sequential iteration, entity creation and destruction, sparse component access, and archetype transitions.
+    By isolating these behaviors into separate scenarios, differences between implementations can be attributed
+    to specific aspects of ECS execution.
+
+    \subsection{Entity Iteration}
+    \label{subsec:entity-iteration}
+
+    This benchmark evaluated the performance of sequential entity iteration in the ECS framework.
+    The goal was to isolate the performance of entity traversal and component access.
+    Configurations specified the entity count ranging from 1,000 to 64,000 to compare the scalability of entity iteration.
+
+    For this benchmark, we emulated the behavior of a 2-dimensional physics engine which adjusts an entity's position according to their velocity.
+    We defined the components $\mathbf{Pos} \mapsto \mathbb{R}^2$
+    and ${\mathbf{Vel} \mapsto \mathbb{R}^2}$.
+    The system query was defined as $\mathrm{Q}_\mathrm{S} = \mathrm{Q}(\mathbf{Pos}, \mathbf{Vel})$.
+    Lastly, the user system was defined as $\mathrm{S}(\Delta t) = \left[\forall e \in \mathrm{Q}_\mathrm{S} : e.\mathbf{Pos} \leftarrow e.\mathbf{Pos} + e.\mathbf{Vel} \Delta t\right]$.
+
+    Before each configuration, the specified number of entities were created and initialized with
+    $\mathbf{Pos} \in \left\{ [-100, 100]^2 \right\}$ and $\mathbf{Vel} \in \left\{[-10, 10]^2\right\}$.
+    The distribution of the random initialization was uniform.
+
+    \subsection{Sparse Access}
+    \label{subsec:sparse-access}
+
+    This benchmark evaluated the performance of systems querying sparse entity archetypes in the ECS framework.
+    The ratio of entities of interest to total entities will be referred to as the sparse ratio $R_s$.
+    By varying the sparse ratio, the query-forming efficiency of ECS frameworks under sparse scenarios could be compared.
+
+    For this benchmark, we emulated the behavior of a system that interacts with only entities of interest.
+    In this implementation, entities of interest rotate their positions around the origin.
+    We used components $\mathbf{Pos} \mapsto \mathbb{R}^2$ and $\mathbf{Int} \mapsto \varnothing$.
+    The system query was defined as $\mathrm{Q}_\mathrm{S} = Q(\mathbf{Pos}, \mathbf{Int})$.
+    Lastly, the user system was defined as $\mathrm{S} = \left[\forall e \in \mathrm{Q}_\mathrm{S} : e.\mathbf{Pos} \leftarrow \mathrm{Rot}(e.\mathbf{Pos}) \right]$ where $\mathrm{Rot} : \mathbb{R}^2 \rightarrow \mathbb{R}^2, \quad (x,y) \mapsto (y,-x)$.
+
+    Before each configuration, the set number of 32,000 entities was created and initialized with $\mathbf{Pos} \in \left\{ [-100, 100]^2 \right\}$.
+    A random subset with size $R_s$ of the total entities were then attached with $\mathbf{Int}$ corresponding to the sparseness configuration.
+    The distribution of the random initialization was uniform.
+
+    \subsection{Entity Creation and Destruction}
+    \label{subsec:entity-creation-and-destruction}
+
+    This benchmark evaluated the performance of the ECS framework when creating and destroying entities while running user-defined systems.
+    To maintain a steady state throughout the benchmark, we set entity creation and destruction to the same rate $E$.
+    In this benchmark, we adjusted the rate of entity throughput between configurations on a range from 32 to 2048.
+
+    For this benchmark, we emulated the behavior of a system that creates entities and removes them after their duration has expired.
+    We defined components $\mathbf{Life} \mapsto \mathbb{Z}$ and the system query $\mathrm{Q}_\mathrm{S} = \mathrm{Q}(\mathbf{Life})$.
+    The user systems are separated into the entity creation system $\mathrm{C} = \left[\varnothing : \text{spawn }E\text{ entities with }\mathbf{Life \mapsto 2} \right]$
+    and the entity destruction system $\mathrm{D}$, which is defined as follows.
+
+    \[
+        \left[
+            \forall e \in \mathrm{Q}_\mathrm{S} :
+            \left.
+                \begin{cases}
+                    e.\mathbf{Life} \leftarrow e.\mathbf{Life} - 1 & \text{if }e.\mathbf{Life} > 1 \\
+                    \text{destroy }e & \text{otherwise.}
+                \end{cases}
+            \right.
+        \right]
+        \tag{1}\label{eq:benchmark-3-entity-destruction-system}
+    \]
+
+    The configuration did not prepare entities on initialization of the setup.
+
+    \subsection{Structural Changes}
+    \label{subsec:structural-changes}
+
+    This benchmark evaluated the performance of ECS frameworks under workloads requiring heavy structural changes.
+    This included the adding and removing of components, the changing of entity archetypes, and the change in queried entities.
+    While the number of components remained static, we vary the number of entities in the configuration on a range from 100 to 8000 entities to scale the workload.
+
+    For this benchmark, we emulated a system that operated a binary counter.
+    If the bit on the counter is set, the system would attach the corresponding component, and vice versa.
+    We defined the number component $\mathbf{Num} \mapsto \mathbb{Z}$, the counter bit components $\mathbf{B}_i \mapsto \varnothing \text{ for } i \in \left\{ 0, 1, \dots, 7 \right\} $
+    and the system query $\mathrm{Q}_\mathrm{S} = \mathrm{Q}(\mathbf{Num})$.
+
+    The system for this benchmark is a more complex process.
+    Let $\mathrm{O}_i$ and $\mathrm{P}_i$ be operations on an entity $e$.
+    $\mathrm{O}_i$ will attach $\mathbf{B}_i$ to $e$ if $e$ did not have the component and the binary representation of $e.\mathbf{Num}$ is $1$ in its $i$th digit.
+    $\mathrm{P}_i$ will detach $\mathbf{B}_i$ to $e$ if $e$ had the component and the binary representation of $e.\mathbf{Num}$ is $0$ in its $i$th digit.
+    To put simply, $\mathrm{O}_i$ and $\mathrm{P}_i$ updates the component based on the entity's $\mathbf{Num}$ value.
+    We can then define the system $\mathrm{S} = \left[\forall e \in \mathrm{Q}_\mathrm{S} : \text{Apply }\mathrm{O}_i(e), \mathrm{P}_i(e)\text{ for } i \in \left\{ 0, 1, \dots, 7 \right\} \right]$
+
+
     \section{Results}
     \label{sec:results}
 
+    \begin{table}[htbp]
+        \caption{Benchmark~\ref{subsec:entity-iteration}: Entity Iteration}
+        \begin{center}
+            \begin{tabular}{|c|c|c|c|c|c|}
+                \hline
+                \textbf{Entity} & \textbf{ECS} & \multicolumn{4}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                \cline{3-6}
+                \textbf{Count} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
+                \hline
+                1000 & Bevy ECS & 3.994 & 1.547 & 2 & 23 \\
+                 & EnTT & 3.013 & 0.113 & 3 & 4 \\
+                 & Custom & 1.009 & 0.130 & 1 & 4 \\
+                \hline
+                2000 & Bevy ECS & 6.254 & 1.514 & 3 & 17 \\
+                & EnTT & 6.087 & 0.577 & 6 & 16 \\
+                & Custom & 2.014 & 0.117 & 2 & 3 \\
+                \hline
+                4000 & Bevy ECS & 8.333 & 1.041 & 5 & 17 \\
+                & EnTT & 12.352 & 3.057 & 12 & 24 \\
+                & Custom & 4.823 & 1.012 & 4 & 27 \\
+                \hline
+                8000 & Bevy ECS & 12.264 & 2.136 & 9 & 38 \\
+                & EnTT & 25.120 & 1.471 & 23 & 54 \\
+                & Custom & 9.912 & 1.266 & 9 & 28 \\
+                \hline
+                16000 & Bevy ECS    & 18.002 & 2.766 & 14 & 59 \\
+                & EnTT              & 53.033 & 11.039 & 49 & 225 \\
+                & Custom            & 20.695 & 2.946 & 19 & 55 \\
+                \hline
+                32000 & Bevy ECS    & 32.512 & 2.912 & 26 & 44 \\
+                & EnTT              & 104.087 & 9.449 & 100 & 220 \\
+                & Custom            & 47.701 & 6.843 & 43 & 87 \\
+                \hline
+                64000 & Bevy ECS    & 58.591 & 4.719 & 51 & 88 \\
+                & EnTT              & 200.677 & 23.302 & 184 & 480 \\
+                & Custom            & 106.292 & 13.066 & 94 & 187 \\
+                \hline
+            \end{tabular}
+        \end{center}\label{tab:results-benchmark-1}
+    \end{table}
+
+    \begin{table}[htbp]
+        \caption{Benchmark~\ref{subsec:sparse-access}: Sparse Access}
+        \begin{center}
+            \begin{tabular}{|c|c|c|c|c|c|}
+                \hline
+                \textbf{Sparse} & \textbf{ECS} & \multicolumn{4}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                \cline{3-6}
+                \textbf{Ratio} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
+                \hline
+                0.90 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                0.75 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                0.50 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                0.40 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                0.30 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                0.20 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                0.10 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                0.05 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+            \end{tabular}
+        \end{center}\label{tab:results-benchmark-2}
+    \end{table}
+
+    \begin{table}[htbp]
+        \caption{Benchmark~\ref{subsec:entity-creation-and-destruction}: Entity Creation and Destruction}
+        \begin{center}
+            \begin{tabular}{|c|c|c|c|c|c|}
+                \hline
+                \textbf{Entity} & \textbf{ECS} & \multicolumn{4}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                \cline{3-6}
+                \textbf{Throughput} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
+                \hline
+                32 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                64 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                128 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                256 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                512 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                1024 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                2048 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+            \end{tabular}
+        \end{center}\label{tab:results-benchmark-3}
+    \end{table}
+
+    \begin{table}[htbp]
+        \caption{Benchmark~\ref{subsec:structural-changes}: Structural Changes}
+        \begin{center}
+            \begin{tabular}{|c|c|c|c|c|c|}
+                \hline
+                \textbf{Entity} & \textbf{ECS} & \multicolumn{4}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                \cline{3-6}
+                \textbf{Count} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
+                \hline
+                100 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                250 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                500 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                1000 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                2000 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                4000 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+                8000 & Bevy ECS & & & & \\
+                & EnTT & & & & \\
+                & Custom & & & & \\
+                \hline
+            \end{tabular}
+        \end{center}\label{tab:results-benchmark-4}
+    \end{table}
+
     \section{Discussion}
     \label{sec:discussion}
+
+    % TODO: stub
+
     A limitation of this evaluation is that the implementations were compiled using different toolchains.
     Compiler-specific optimizations may significantly influence the measured performance in addition to the design of the ECS framework.
     This choice was made because our implementation targets an existing MSVC-based game project,
@@ -107,8 +378,11 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     With Bevy ECS also being built in a different language, the reported performance behavior should be interpreted as
     comparisons between complete framework implementations, rather than compiler-independent measurements.
 
+
     \section{Conclusion}
     \label{sec:conclusion}
+
+    %TODO: stub
 
     \bibliographystyle{IEEEtran}
     \bibliography{refs}
