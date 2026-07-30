@@ -198,8 +198,26 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Results}
     \label{sec:results}
 
+    Table~\ref{tab:results-benchmark-1} shows the results of benchmark~\ref{subsec:entity-iteration}.
+    From the benchmark output, we normalized the frame time by taking the ratio with the entity count for that configuration, and plotting this value yielded Fig.~\ref{fig:chart1}.
+    This benchmark demonstrated that all three ECS frameworks exhibited the expected linear scaling for the simple data mutation system.
+    EnTT incurred significantly higher costs at higher entity counts, implying larger per-entity iteration costs compared to the other frameworks.
+    Bevy showed greater constant overhead, which was clear at lower entity counts, but scaled significantly better as entity count grew.
+    This could be attributed to Bevy's archetype storage, which allowed for faster iteration compared to sparse-set storage.
+
+    The custom implementation consistently exhibited the lowest frame times up to 8,000 entities, where Bevy took over.
+    This proved that the specialization and compiler optimizations used by the custom implementation allowed it to
+    consistently outperform EnTT at iteration tasks.
+
+
+    \begin{figure}
+        \centerline{\includegraphics[width=0.4\textwidth]{chart1}}
+        \caption{Benchmark~\ref{subsec:entity-iteration}: Scatter plot detailing frame time per entity as entity count increases.}
+        \label{fig:chart1}
+    \end{figure}
+
     \begin{table}[htbp]
-        \caption{Benchmark~\ref{subsec:entity-iteration}: Entity Iteration}
+        \caption{Benchmark~\ref{subsec:entity-iteration} – Statistics}
         \begin{center}
             \begin{tabular}{|c|c|c|c|c|c|}
                 \hline
@@ -239,8 +257,14 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{center}\label{tab:results-benchmark-1}
     \end{table}
 
+    \begin{figure}
+        \centerline{\includegraphics[width=0.4\textwidth]{chart2}}
+        \caption{Benchmark~\ref{subsec:sparse-access}: Scatter plot detailing frame time at varying sparse ratios.}
+        \label{fig:chart2}
+    \end{figure}
+
     \begin{table}[htbp]
-        \caption{Benchmark~\ref{subsec:sparse-access}: Sparse Access}
+        \caption{Benchmark~\ref{subsec:sparse-access} – Statistics}
         \begin{center}
             \begin{tabular}{|c|c|c|c|c|c|}
                 \hline
@@ -248,44 +272,50 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-6}
                 \textbf{Ratio} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
                 \hline
-                0.90 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                0.90 & Bevy ECS & 28.845 & 3.830 & 24 & 55 \\
+                & EnTT & 61.977 & 8.337 & 58 & 253 \\
+                & Custom & 32.293 & 6.049 & 29 & 130 \\
                 \hline
-                0.75 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                0.75 & Bevy ECS & 26.963 & 2.453 & 21 & 37 \\
+                & EnTT & 50.910 & 9.785 & 47 & 255 \\
+                & Custom & 29.378 & 5.894 & 26 & 76 \\
                 \hline
-                0.50 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                0.50 & Bevy ECS & 19.676 & 2.164 & 15 & 33 \\
+                & EnTT & 34.422 & 5.370 & 32 & 118 \\
+                & Custom & 21.970 & 4.134 & 20 & 79 \\
                 \hline
-                0.40 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                0.40 & Bevy ECS & 16.914 & 1.967 & 13 & 31 \\
+                & EnTT & 26.063 & 1.767 & 25 & 53 \\
+                & Custom & 18.633 & 3.173 & 17 & 58 \\
                 \hline
-                0.30 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                0.30 & Bevy ECS & 13.631 & 1.741 & 10 & 33 \\
+                & EnTT & 20.087 & 1.079 & 19 & 35 \\
+                & Custom & 15.705 & 3.475 & 14 & 59 \\
                 \hline
-                0.20 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                0.20 & Bevy ECS & 11.244 & 1.597 & 8 & 27 \\
+                & EnTT & 13.517 & 3.530 & 13 & 69 \\
+                & Custom & 12.363 & 2.294 & 11 & 65 \\
                 \hline
-                0.10 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                0.10 & Bevy ECS & 8.211 & 1.489 & 5 & 28 \\
+                & EnTT & 7.032 & 0.441 & 6 & 13 \\
+                & Custom & 9.065 & 0.507 & 9 & 19 \\
                 \hline
-                0.05 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                0.05 & Bevy ECS & 4.977 & 1.353 & 3 & 25 \\
+                & EnTT & 3.004 & 0.063 & 3 & 4 \\
+                & Custom & 8.011 & 1.018 & 7 & 39 \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-2}
     \end{table}
 
+    \begin{figure}
+        \centerline{\includegraphics[width=0.4\textwidth]{chart3}}
+        \caption{Benchmark~\ref{subsec:entity-creation-and-destruction}: Scatter plot detailing frame time per entity at varying entity rates.}
+        \label{fig:chart3}
+    \end{figure}
+
     \begin{table}[htbp]
-        \caption{Benchmark~\ref{subsec:entity-creation-and-destruction}: Entity Creation and Destruction}
+        \caption{Benchmark~\ref{subsec:entity-creation-and-destruction} – Statistics}
         \begin{center}
             \begin{tabular}{|c|c|c|c|c|c|}
                 \hline
@@ -293,40 +323,47 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-6}
                 \textbf{Throughput} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
                 \hline
-                32 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                32 & Bevy ECS & 13.683 & 3.027 & 8 & 35 \\
+                & EnTT & 1.060 & 0.237 & 1 & 2 \\
+                & Custom & 0.921 & 0.273 & 0$^{\mathrm{a}}$ & 6 \\
                 \hline
-                64 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                64 & Bevy ECS & 19.173 & 5.627 & 14 & 103 \\
+                & EnTT & 2.005 & 0.071 & 2 & 3 \\
+                & Custom & 1.032 & 0.243 & 1 & 3 \\
                 \hline
-                128 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                128 & Bevy ECS & 25.481 & 5.471 & 19 & 119 \\
+                & EnTT & 4.014 & 0.117 & 4 & 5 \\
+                & Custom & 3.014 & 0.209 & 3 & 9 \\
                 \hline
-                256 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                256 & Bevy ECS & 34.781 & 5.593 & 29 & 118 \\
+                & EnTT & 8.379 & 0.589 & 8 & 17 \\
+                & Custom & 6.046 & 0.283 & 6 & 11 \\
                 \hline
-                512 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                512 & Bevy ECS & 54.945 & 7.880 & 49 & 166 \\
+                & EnTT & 18.194 & 2.069 & 17 & 50 \\
+                & Custom & 12.081 & 0.610 & 12 & 21 \\
                 \hline
-                1024 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                1024 & Bevy ECS & 93.558 & 10.512 & 84 & 285 \\
+                & EnTT & 37.315 & 4.249 & 35 & 88 \\
+                & Custom & 24.181 & 3.256 & 23 & 69 \\
                 \hline
-                2048 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                2048 & Bevy ECS & 165.043 & 15.253 & 151 & 282 \\
+                & EnTT & 69.875 & 2.585 & 66 & 101 \\
+                & Custom & 63.684 & 8.454 & 46 & 163 \\
                 \hline
+                \multicolumn{6}{l}{$^{\mathrm{a}}$Measured time less than used benchmark precision.}
             \end{tabular}
         \end{center}\label{tab:results-benchmark-3}
     \end{table}
 
+    \begin{figure}
+        \centerline{\includegraphics[width=0.4\textwidth]{chart4}}
+        \caption{Benchmark~\ref{subsec:structural-changes}: Scatter plot detailing frame time per entity at varying entity count.}
+        \label{fig:chart4}
+    \end{figure}
+
     \begin{table}[htbp]
-        \caption{Benchmark~\ref{subsec:structural-changes}: Structural Changes}
+        \caption{Benchmark~\ref{subsec:structural-changes} – Statistics}
         \begin{center}
             \begin{tabular}{|c|c|c|c|c|c|}
                 \hline
@@ -334,33 +371,33 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-6}
                 \textbf{Count} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
                 \hline
-                100 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                100 & Bevy ECS & 82.519 & 9.150 & 57 & 200 \\
+                & EnTT & 13.731 & 0.854 & 10 & 19 \\
+                & Custom & 13.989 & 0.566 & 12 & 17 \\
                 \hline
-                250 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                250 & Bevy ECS & 179.518 & 19.655 & 135 & 315 \\
+                & EnTT & 34.865 & 3.283 & 28 & 70 \\
+                & Custom & 38.707 & 4.854 & 30 & 78 \\
                 \hline
-                500 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                500 & Bevy ECS & 335.878 & 38.078 & 235 & 680 \\
+                & EnTT & 60.377 & 4.629 & 48 & 108 \\
+                & Custom & 62.21 & 7.509 & 48 & 120 \\
                 \hline
-                1000 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                1000 & Bevy ECS & 580.667 & 58.969 & 440 & 1333 \\
+                & EnTT & 96.754 & 9.943 & 77 & 221 \\
+                & Custom & 103.315 & 12.867 & 85 & 218 \\
                 \hline
-                2000 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                2000 & Bevy ECS & 1044.088 & 75.280 & 811 & 1836 \\
+                & EnTT & 160.129 & 16.238 & 122 & 314 \\
+                & Custom & 161.302 & 16.706 & 145 & 420 \\
                 \hline
-                4000 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                4000 & Bevy ECS & 2024.916 & 120.372 & 1656 & 3230 \\
+                & EnTT & 280.599 & 23.471 & 218 & 448 \\
+                & Custom & 264.531 & 19.182 & 227 & 480 \\
                 \hline
-                8000 & Bevy ECS & & & & \\
-                & EnTT & & & & \\
-                & Custom & & & & \\
+                8000 & Bevy ECS & 3853.080 & 168.052 & 3188 & 4967 \\
+                & EnTT & 510.233 & 48.307 & 395 & 935 \\
+                & Custom & 509.261 & 59.871 & 396 & 1298 \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-4}
@@ -377,6 +414,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     and attempts to build it using MinGW resulted in undefined behavior.
     With Bevy ECS also being built in a different language, the reported performance behavior should be interpreted as
     comparisons between complete framework implementations, rather than compiler-independent measurements.
+
+    The EnTT implementation used standard view-based iteration.
+    EnTT also provides owned groups, which reorganize component storage to improve iteration locality
+    for frequently accessed component combinations.
+    These optimizations were not evaluated as part of this benchmark.
+    Consequently, the results should be interpreted as representative of the tested view-based implementation
+    rather than the theoretical maximum performance achievable with EnTT\@.
 
 
     \section{Conclusion}
