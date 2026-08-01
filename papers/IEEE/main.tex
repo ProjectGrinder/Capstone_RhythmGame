@@ -65,15 +65,39 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Introduction}
     \label{sec:introduction}
 
-    Redmond and Kuper~\cite{Redmond_2025_CoreECS} provided a formal operational model of ECS for reasoning about concurrency.
-    Since this work focused on empirical performance evaluation rather than formal semantics,
-    we instead adopted a simplified notation for entities, components, queries, and systems that would be
-    enough to specify implementation details for ECS-developed software.
+    Entity-component-system (ECS) is a software architectural pattern used in interactive systems development,
+    system simulations, and even machine learning.
+    Its mechanisms are characterized by the entities, composed of components of data,
+    and the systems which operate upon those components.
+    An entity's behavior emerges from the systems that operate on its components, whether by mutating, adding, or removing these components.
+
+    ECS has been implemented and used widely in production contexts.
+    One of the more popular implementations is EnTT~\cite{ValtoLibraries_EnTT}, a header-only C++ library for game programming.
+    This library has been used to develop many game titles, the most major of which is Minecraft.
+    Another popular implementation is Bevy ECS~\cite{Bevy_Engine}, a data-driven game engine built in Rust, which was
+    used in~\cite{machine-learning-bevy} to implement a machine learning solution.
+
+    However, existing ECS implementations generally balance runtime flexibility with compile-time optimization in different ways.
+    Many use runtime component registration, type-erased execution, runtime scheduling, or other dynamic mechanisms to support extensibility,
+    while using templates to optimize frequently executed operations such as query building.
+    As a result, compile-time specialization is often applied selectively rather than uniformly across all ECS subsystems.
+
+    This work explores and investigates the extent of compile-time specializations that can be applied within an ECS implementation.
+    We create a custom framework to evaluate its impact on core ECS functionalities while maintaining an interface suitable for practical software development.
+    We then assess the resulting performance of this framework through benchmarking in comparison to existing production frameworks.
+
+    \section{Related Work}
+    \label{sec:related-work}
+
+    % TODO: stub
+
+    \section{Design}
+    \label{sec:design}
 
     % TODO: stub
 
 
-    \section{Method}
+    \section{Evaluation}
     \label{sec:method}
 
     For each framework, the size of the final executable is obtained by measuring the executable with Windows File Explorer.
@@ -153,7 +177,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     This benchmark evaluated the performance of the ECS framework when creating and destroying entities while running user-defined systems.
     To maintain a steady state throughout the benchmark, we set entity creation and destruction to the same rate $E$.
-    In this benchmark, we adjusted the rate of entity throughput between configurations on a range from 32 to 2048.
+    In this benchmark, we adjusted the entity rate between configurations on a range from 32 to 2048.
 
     For this benchmark, we emulated the behavior of a system that creates entities and removes them after their duration has expired.
     We defined components $\mathbf{Life} \mapsto \mathbb{Z}$ and the system query $\mathrm{Q}_\mathrm{S} = \mathrm{Q}(\mathbf{Life})$.
@@ -198,8 +222,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Results}
     \label{sec:results}
 
-    Table~\ref{tab:results-benchmark-1} shows the results of benchmark~\ref{subsec:entity-iteration}.
-    From the benchmark output, we normalized the frame time by taking the ratio with the entity count for that configuration, and plotting this value yielded Fig.~\ref{fig:chart1}.
+    \paragraph*{Entity Iteration}Table~\ref{tab:results-benchmark-1} shows the results of benchmark~\ref{subsec:entity-iteration}.
+    From the benchmark output, we normalized the mean frame time by taking the ratio with the entity count for that configuration, and plotting this value yielded Fig.~\ref{fig:chart1}.
     This benchmark demonstrated that all three ECS frameworks exhibited the expected linear scaling for the simple data mutation system.
     EnTT incurred significantly higher costs at higher entity counts, implying larger per-entity iteration costs compared to the other frameworks.
     Bevy showed greater constant overhead, which was clear at lower entity counts, but scaled significantly better as entity count grew.
@@ -257,6 +281,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{center}\label{tab:results-benchmark-1}
     \end{table}
 
+    \paragraph*{Sparse Access}Table~\ref{tab:results-benchmark-2} shows the results of benchmark~\ref{subsec:sparse-access}.
+    Plotting the mean frame time against the sparse ratio of the benchmark configuration yields Fig.~\ref{fig:chart2}.
+
+    Considering the figure, we observe that while EnTT performed worse at high entity counts compared to the other frameworks,
+    it exhibited superior efficiency when entities of interest are sparse, specifically at sparse ratio 0.1 and less.
+    Bevy and the custom implementation showed similar decreases as entity density lowered, but the custom implementation had
+    more constant overhead compared to Bevy.
+    As such, the custom framework consistently underperformed in terms of sparse access efficiency compared to
+    the other frameworks.
+
     \begin{figure}
         \centerline{\includegraphics[width=0.4\textwidth]{chart2}}
         \caption{Benchmark~\ref{subsec:sparse-access}: Scatter plot detailing frame time at varying sparse ratios.}
@@ -308,6 +342,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{center}\label{tab:results-benchmark-2}
     \end{table}
 
+    \paragraph*{Entity Creation and Destruction}Table~\ref{tab:results-benchmark-3} shows the results of benchmark~\ref{subsec:entity-creation-and-destruction}.
+    We normalized the mean frame time by taking the ratio with the entity rate for that configuration, and plotting this value yielded Fig.~\ref{fig:chart3}.
+    For this benchmark, we observe EnTT and the custom framework exhibiting similar performance behavior, remaining relatively consistent as entity rate varied.
+    Bevy ECS, at low entity rates, showed a significant performance drop with frame times at multiples of the other frameworks.
+    This may be in part due to the framework using the archetype as data storage.
+    As entity rates increase, Bevy slowly recovered from the static performance overhead.
+
     \begin{figure}
         \centerline{\includegraphics[width=0.4\textwidth]{chart3}}
         \caption{Benchmark~\ref{subsec:entity-creation-and-destruction}: Scatter plot detailing frame time per entity at varying entity rates.}
@@ -321,7 +362,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \hline
                 \textbf{Entity} & \textbf{ECS} & \multicolumn{4}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-6}
-                \textbf{Throughput} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
+                \textbf{Rate} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
                 \hline
                 32 & Bevy ECS & 13.683 & 3.027 & 8 & 35 \\
                 & EnTT & 1.060 & 0.237 & 1 & 2 \\
@@ -355,6 +396,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
             \end{tabular}
         \end{center}\label{tab:results-benchmark-3}
     \end{table}
+
+    \paragraph*{Structural Changes}The findings of the previous benchmark were further amplified with the results in Table~\ref{tab:results-benchmark-4}.
+    When entities undergo structural changes rapidly, archetype ECS frameworks suffer large performance hits from archetype switching.
+    This can be observed by the even more extreme performance hits shown by Bevy in Fig.~\ref{fig:chart4}.
+    Unlike in benchmark~\ref{subsec:entity-creation-and-destruction}, however, Bevy's performance did not largely improve as entity count increased.
+    With structural changes being the main workload, the cost of archetype switching became a significant load compared to the other frameworks that did not use archetype storage in the implementation.
+    EnTT and the custom implementation remained largely similar to each other in performance behavior in this scenario, as well.
 
     \begin{figure}
         \centerline{\includegraphics[width=0.4\textwidth]{chart4}}
