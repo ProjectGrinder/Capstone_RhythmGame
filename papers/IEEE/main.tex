@@ -48,12 +48,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         The Entity-Component-System (ECS) pattern is widely used for applications in interactive systems,
         machine learning, and digital simulation contexts.
         From examining existing infrastructure and development tools and comparing to theoretical ECS models,
-        we identified opportunities to reduce runtime overhead through increased compile-time specialization.
+        we identified opportunities to reduce runtime overhead and increase performance through increased compile-time specialization.
         We present a framework implementing the ECS pattern and built upon C++ that aggressively applies compile-time
         metaprogramming techniques to reduce overhead.
         To analyze the potential of this approach, the framework was evaluated in comparison with
         industry-standard ECS libraries EnTT and Bevy ECS in terms of performance, executable size, and memory usage.
-        The results showed that the proposed implementation exhibited performance comparable to existing frameworks while
+        The results showed that the presented implementation exhibited performance comparable to existing frameworks while
         substantially improving program size at a small cost to memory usage.
     \end{abstract}
 
@@ -86,27 +86,64 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We create a custom framework to evaluate its impact on core ECS functionalities while maintaining an interface suitable for practical software development.
     We then assess the resulting performance of this framework through benchmarking in comparison to existing production frameworks.
 
+
     \section{Related Work}
     \label{sec:related-work}
 
-    % TODO: stub
+    EnTT is a modern C++ ECS library that uses compile-time optimization through extensive use of template metaprogramming.
+    Component views, registries, and queries are expressed as template types, allowing the compiler to generate specialized
+    implementations for each combination of component types.
+    This eliminates virtual dispatch, enables aggressive function inlining, and dead code elimination, producing
+    highly optimized iteration code with minimal runtime overhead.
+    EnTT's approach leverages C++'s static type system to shift most of the ECS abstraction cost from runtime to compile time.
+
+    Bevy ECS, written in Rust, achieves compile-time optimization by relying on Rust's generic type system and monomorphization.
+    Systems declare the components they access through generic query types, and the compiler generates specialized code for each query at compile time.
+    Rust's ownership and borrowing rules also provide compile-time guarantees about aliasing and mutability, allowing
+    the LLVM to safely optimize memory accesses and eliminate unnecessary runtime checks.
+    The resultant code is efficient and statically typed with strong safety guarantees and performance comparable to handwritten loops.
+
+    Unity's Data-Oriented Technology Stack (DOTS) combines compile-time code generation with the Burst compiler to maximize ECS performance.
+    Entity queries are analyzed using C\# source generators, which produce specialized iteration code before compilation.
+    The Burst compiler then compiles this generated code into highly optimized native machine code.
+    DOTS also performs static analysis of system dependencies to construct efficient execution schedules,
+    minimizing runtime scheduling overhead.
+    The combination of all these optimizing factors resulted in a formidable engine for use with the classic game engine.
 
     \section{Design}
     \label{sec:design}
 
-    % TODO: stub
+    We decided to implement our custom ECS framework using C++20 as it provides mature support for template
+    metaprogramming, concepts, \verb|constexpr| evaluation, and deep type inference support.
+    Additionally, it provides fine-grained control over memory layout and data locality without
+    This made it well-suited for expressing ECS storage, systems execution, and query semantics as compile-time constructs.
+
+    A crucial decision we had to make was choosing the type of component storage, as the selection greatly affects performance under varying scenarios.
+    Two widely used types of ECS component storage are archetype-based and sparse-set-based storage.
+    Cox, Williams, Vickers, Ward, and Headleand's work~\cite{cox2025run} showed that archetypes excel at large-scale entity iteration while sparse-sets are more efficient with component insertion and removal.
+    We decided on sparse-set storage for the custom implementation to more conveniently support our optimization work.
+
+    When implementing our framework, we applied three types of compile-time specialization:
+
+    \begin{enumerate}
+        \item \textbf{Component Storage:} We used template specialization on the component storage such that the data type could be derived and components registered at runtime.
+        \item \textbf{System Registration:} We applied concepts to restrict the type of systems that are valid for the framework.
+        Then, we applied compile-time template specialization over the function traits to derive the correct component types it requires.
+        If the connected component storage did not have the required components, a compile-time error would be raised.
+        By adjusting the order of system registration with the ECS, we could specify the system execution order in sequential order through loop unrolling.
+        \item \textbf{Query Construction:} With compile-time loop unrolling and template folding over component types, we could generate query builder functions that exactly matched related component types.
+    \end{enumerate}
 
 
     \section{Evaluation}
     \label{sec:method}
 
-    For each framework, the size of the final executable is obtained by measuring the executable with Windows File Explorer.
-    % TODO: the memory section is ill-formed and should be retaken.
-    The memory usage of each framework is obtained by recording the Memory column from within Task Manager.
+    For each framework, the size of the final executable is obtained by measuring the executable with the device's File Explorer.
+    The memory usage of each framework is obtained by recording the Memory column from the Processes tab within the device's Task Manager while the benchmark was executing under steady-state conditions.
 
     The execution time of each ECS implementation was measured by recording the time immediately before and after
     the execution of all user-defined systems within one frame.
-    For Bevy ECS, we used Rust's \verb|Instant| to record timestamps.
+    For Bevy, we used Rust's \verb|Instant| to record timestamps.
     For EnTT and our implementation, we used the \verb|std::chrono::steady_clock| from C++.
     Unrelated plugins, rendering, and other external factors were excluded to isolate the frame execution time such that
     it served as a reliable primary performance metric.
@@ -120,7 +157,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     This allowed a direct comparison of runtime performance between implementations.
 
     All benchmarks were compiled using release optimization settings, albeit with different compilers.
-    The Bevy ECS implementation was built using Rust's \verb|cargo --release| configuration.
+    The Bevy implementation was built using Rust's \verb|cargo --release| configuration.
     The EnTT implementation used the MinGW Release configuration, whereas our implementation was built
     using the MSVC Release configuration.
 
@@ -128,6 +165,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     influence of initialization overhead.
     Following this, execution time was recorded over 1,000 consecutive frames and written to a log file.
     The collected samples were then analyzed to compute the average execution time for each benchmark configuration.
+
+    All tests were executed on local hardware using the same machine and operating environment to ensure consistency across measurements.
+    The hardware specifications are as follows:
+
+    \begin{itemize}
+        \item CPU: 11th Gen Intel(R) Core(TM) i7-11800H @ 2.30 GHz
+        \item GPU: Intel(R) UHD Graphics
+        \item Memory: 3200 MHz 16.0 GB RAM
+        \item Operating System: Windows 10 Version 22H2 (OS Build 19045.6466)
+    \end{itemize}
 
 
     \section{Benchmark Suite}
@@ -169,7 +216,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Lastly, the user system was defined as $\mathrm{S} = \left[\forall e \in \mathrm{Q}_\mathrm{S} : e.\mathbf{Pos} \leftarrow \mathrm{Rot}(e.\mathbf{Pos}) \right]$ where $\mathrm{Rot} : \mathbb{R}^2 \rightarrow \mathbb{R}^2, \quad (x,y) \mapsto (y,-x)$.
 
     Before each configuration, the set number of 32,000 entities was created and initialized with $\mathbf{Pos} \in \left\{ [-100, 100]^2 \right\}$.
-    A random subset with size $R_s$ of the total entities were then attached with $\mathbf{Int}$ corresponding to the sparseness configuration.
+    A random subset of the total entities with size $R_s \times \mathrm{Entity Count}$ were then attached with $\mathbf{Int}$ corresponding to the sparseness configuration.
     The distribution of the random initialization was uniform.
 
     \subsection{Entity Creation and Destruction}
@@ -230,9 +277,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     This could be attributed to Bevy's archetype storage, which allowed for faster iteration compared to sparse-set storage.
 
     The custom implementation consistently exhibited the lowest frame times up to 8,000 entities, where Bevy took over.
-    This proved that the specialization and compiler optimizations used by the custom implementation allowed it to
-    consistently outperform EnTT at iteration tasks.
-
+    The specialization and compiler optimizations used by the custom implementation allowed it to
+    perform well when compared to EnTT.
 
     \begin{figure}
         \centerline{\includegraphics[width=0.4\textwidth]{chart1}}
@@ -249,33 +295,33 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-6}
                 \textbf{Count} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
                 \hline
-                1000 & Bevy ECS & 3.994 & 1.547 & 2 & 23 \\
-                 & EnTT & 3.013 & 0.113 & 3 & 4 \\
-                 & Custom & 1.009 & 0.130 & 1 & 4 \\
+                1000           & Bevy               & 3.994         & 1.547                      & 2                     & 23                    \\
+                & EnTT               & 3.013         & 0.113                      & 3                     & 4                     \\
+                & Custom             & 1.009         & 0.130                      & 1                     & 4                     \\
                 \hline
-                2000 & Bevy ECS & 6.254 & 1.514 & 3 & 17 \\
-                & EnTT & 6.087 & 0.577 & 6 & 16 \\
-                & Custom & 2.014 & 0.117 & 2 & 3 \\
+                2000           & Bevy               & 6.254         & 1.514                      & 3                     & 17                    \\
+                & EnTT               & 6.087         & 0.577                      & 6                     & 16                    \\
+                & Custom             & 2.014         & 0.117                      & 2                     & 3                     \\
                 \hline
-                4000 & Bevy ECS & 8.333 & 1.041 & 5 & 17 \\
-                & EnTT & 12.352 & 3.057 & 12 & 24 \\
-                & Custom & 4.823 & 1.012 & 4 & 27 \\
+                4000           & Bevy               & 8.333         & 1.041                      & 5                     & 17                    \\
+                & EnTT               & 12.352        & 3.057                      & 12                    & 24                    \\
+                & Custom             & 4.823         & 1.012                      & 4                     & 27                    \\
                 \hline
-                8000 & Bevy ECS & 12.264 & 2.136 & 9 & 38 \\
-                & EnTT & 25.120 & 1.471 & 23 & 54 \\
-                & Custom & 9.912 & 1.266 & 9 & 28 \\
+                8000           & Bevy               & 12.264        & 2.136                      & 9                     & 38                    \\
+                & EnTT               & 25.120        & 1.471                      & 23                    & 54                    \\
+                & Custom             & 9.912         & 1.266                      & 9                     & 28                    \\
                 \hline
-                16000 & Bevy ECS    & 18.002 & 2.766 & 14 & 59 \\
-                & EnTT              & 53.033 & 11.039 & 49 & 225 \\
-                & Custom            & 20.695 & 2.946 & 19 & 55 \\
+                16000          & Bevy               & 18.002        & 2.766                      & 14                    & 59                    \\
+                & EnTT               & 53.033        & 11.039                     & 49                    & 225                   \\
+                & Custom             & 20.695        & 2.946                      & 19                    & 55                    \\
                 \hline
-                32000 & Bevy ECS    & 32.512 & 2.912 & 26 & 44 \\
-                & EnTT              & 104.087 & 9.449 & 100 & 220 \\
-                & Custom            & 47.701 & 6.843 & 43 & 87 \\
+                32000          & Bevy               & 32.512        & 2.912                      & 26                    & 44                    \\
+                & EnTT               & 104.087       & 9.449                      & 100                   & 220                   \\
+                & Custom             & 47.701        & 6.843                      & 43                    & 87                    \\
                 \hline
-                64000 & Bevy ECS    & 58.591 & 4.719 & 51 & 88 \\
-                & EnTT              & 200.677 & 23.302 & 184 & 480 \\
-                & Custom            & 106.292 & 13.066 & 94 & 187 \\
+                64000          & Bevy               & 58.591        & 4.719                      & 51                    & 88                    \\
+                & EnTT               & 200.677       & 23.302                     & 184                   & 480                   \\
+                & Custom             & 106.292       & 13.066                     & 94                    & 187                   \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-1}
@@ -306,37 +352,37 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-6}
                 \textbf{Ratio} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
                 \hline
-                0.90 & Bevy ECS & 28.845 & 3.830 & 24 & 55 \\
-                & EnTT & 61.977 & 8.337 & 58 & 253 \\
-                & Custom & 32.293 & 6.049 & 29 & 130 \\
+                0.90           & Bevy               & 28.845        & 3.830                      & 24                    & 55                    \\
+                & EnTT               & 61.977        & 8.337                      & 58                    & 253                   \\
+                & Custom             & 32.293        & 6.049                      & 29                    & 130                   \\
                 \hline
-                0.75 & Bevy ECS & 26.963 & 2.453 & 21 & 37 \\
-                & EnTT & 50.910 & 9.785 & 47 & 255 \\
-                & Custom & 29.378 & 5.894 & 26 & 76 \\
+                0.75           & Bevy               & 26.963        & 2.453                      & 21                    & 37                    \\
+                & EnTT               & 50.910        & 9.785                      & 47                    & 255                   \\
+                & Custom             & 29.378        & 5.894                      & 26                    & 76                    \\
                 \hline
-                0.50 & Bevy ECS & 19.676 & 2.164 & 15 & 33 \\
-                & EnTT & 34.422 & 5.370 & 32 & 118 \\
-                & Custom & 21.970 & 4.134 & 20 & 79 \\
+                0.50           & Bevy               & 19.676        & 2.164                      & 15                    & 33                    \\
+                & EnTT               & 34.422        & 5.370                      & 32                    & 118                   \\
+                & Custom             & 21.970        & 4.134                      & 20                    & 79                    \\
                 \hline
-                0.40 & Bevy ECS & 16.914 & 1.967 & 13 & 31 \\
-                & EnTT & 26.063 & 1.767 & 25 & 53 \\
-                & Custom & 18.633 & 3.173 & 17 & 58 \\
+                0.40           & Bevy               & 16.914        & 1.967                      & 13                    & 31                    \\
+                & EnTT               & 26.063        & 1.767                      & 25                    & 53                    \\
+                & Custom             & 18.633        & 3.173                      & 17                    & 58                    \\
                 \hline
-                0.30 & Bevy ECS & 13.631 & 1.741 & 10 & 33 \\
-                & EnTT & 20.087 & 1.079 & 19 & 35 \\
-                & Custom & 15.705 & 3.475 & 14 & 59 \\
+                0.30           & Bevy               & 13.631        & 1.741                      & 10                    & 33                    \\
+                & EnTT               & 20.087        & 1.079                      & 19                    & 35                    \\
+                & Custom             & 15.705        & 3.475                      & 14                    & 59                    \\
                 \hline
-                0.20 & Bevy ECS & 11.244 & 1.597 & 8 & 27 \\
-                & EnTT & 13.517 & 3.530 & 13 & 69 \\
-                & Custom & 12.363 & 2.294 & 11 & 65 \\
+                0.20           & Bevy               & 11.244        & 1.597                      & 8                     & 27                    \\
+                & EnTT               & 13.517        & 3.530                      & 13                    & 69                    \\
+                & Custom             & 12.363        & 2.294                      & 11                    & 65                    \\
                 \hline
-                0.10 & Bevy ECS & 8.211 & 1.489 & 5 & 28 \\
-                & EnTT & 7.032 & 0.441 & 6 & 13 \\
-                & Custom & 9.065 & 0.507 & 9 & 19 \\
+                0.10           & Bevy               & 8.211         & 1.489                      & 5                     & 28                    \\
+                & EnTT               & 7.032         & 0.441                      & 6                     & 13                    \\
+                & Custom             & 9.065         & 0.507                      & 9                     & 19                    \\
                 \hline
-                0.05 & Bevy ECS & 4.977 & 1.353 & 3 & 25 \\
-                & EnTT & 3.004 & 0.063 & 3 & 4 \\
-                & Custom & 8.011 & 1.018 & 7 & 39 \\
+                0.05           & Bevy               & 4.977         & 1.353                      & 3                     & 25                    \\
+                & EnTT               & 3.004         & 0.063                      & 3                     & 4                     \\
+                & Custom             & 8.011         & 1.018                      & 7                     & 39                    \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-2}
@@ -345,7 +391,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \paragraph*{Entity Creation and Destruction}Table~\ref{tab:results-benchmark-3} shows the results of benchmark~\ref{subsec:entity-creation-and-destruction}.
     We normalized the mean frame time by taking the ratio with the entity rate for that configuration, and plotting this value yielded Fig.~\ref{fig:chart3}.
     For this benchmark, we observe EnTT and the custom framework exhibiting similar performance behavior, remaining relatively consistent as entity rate varied.
-    Bevy ECS, at low entity rates, showed a significant performance drop with frame times at multiples of the other frameworks.
+    Bevy, at low entity rates, showed a significant performance drop with frame times at multiples of the other frameworks.
     This may be in part due to the framework using the archetype as data storage.
     As entity rates increase, Bevy slowly recovered from the static performance overhead.
 
@@ -364,33 +410,33 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-6}
                 \textbf{Rate} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
                 \hline
-                32 & Bevy ECS & 13.683 & 3.027 & 8 & 35 \\
-                & EnTT & 1.060 & 0.237 & 1 & 2 \\
-                & Custom & 0.921 & 0.273 & 0$^{\mathrm{a}}$ & 6 \\
+                32            & Bevy               & 13.683        & 3.027                      & 8                     & 35                    \\
+                & EnTT               & 1.060         & 0.237                      & 1                     & 2                     \\
+                & Custom             & 0.921         & 0.273                      & 0$^{\mathrm{a}}$      & 6                     \\
                 \hline
-                64 & Bevy ECS & 19.173 & 5.627 & 14 & 103 \\
-                & EnTT & 2.005 & 0.071 & 2 & 3 \\
-                & Custom & 1.032 & 0.243 & 1 & 3 \\
+                64            & Bevy               & 19.173        & 5.627                      & 14                    & 103                   \\
+                & EnTT               & 2.005         & 0.071                      & 2                     & 3                     \\
+                & Custom             & 1.032         & 0.243                      & 1                     & 3                     \\
                 \hline
-                128 & Bevy ECS & 25.481 & 5.471 & 19 & 119 \\
-                & EnTT & 4.014 & 0.117 & 4 & 5 \\
-                & Custom & 3.014 & 0.209 & 3 & 9 \\
+                128           & Bevy               & 25.481        & 5.471                      & 19                    & 119                   \\
+                & EnTT               & 4.014         & 0.117                      & 4                     & 5                     \\
+                & Custom             & 3.014         & 0.209                      & 3                     & 9                     \\
                 \hline
-                256 & Bevy ECS & 34.781 & 5.593 & 29 & 118 \\
-                & EnTT & 8.379 & 0.589 & 8 & 17 \\
-                & Custom & 6.046 & 0.283 & 6 & 11 \\
+                256           & Bevy               & 34.781        & 5.593                      & 29                    & 118                   \\
+                & EnTT               & 8.379         & 0.589                      & 8                     & 17                    \\
+                & Custom             & 6.046         & 0.283                      & 6                     & 11                    \\
                 \hline
-                512 & Bevy ECS & 54.945 & 7.880 & 49 & 166 \\
-                & EnTT & 18.194 & 2.069 & 17 & 50 \\
-                & Custom & 12.081 & 0.610 & 12 & 21 \\
+                512           & Bevy               & 54.945        & 7.880                      & 49                    & 166                   \\
+                & EnTT               & 18.194        & 2.069                      & 17                    & 50                    \\
+                & Custom             & 12.081        & 0.610                      & 12                    & 21                    \\
                 \hline
-                1024 & Bevy ECS & 93.558 & 10.512 & 84 & 285 \\
-                & EnTT & 37.315 & 4.249 & 35 & 88 \\
-                & Custom & 24.181 & 3.256 & 23 & 69 \\
+                1024          & Bevy               & 93.558        & 10.512                     & 84                    & 285                   \\
+                & EnTT               & 37.315        & 4.249                      & 35                    & 88                    \\
+                & Custom             & 24.181        & 3.256                      & 23                    & 69                    \\
                 \hline
-                2048 & Bevy ECS & 165.043 & 15.253 & 151 & 282 \\
-                & EnTT & 69.875 & 2.585 & 66 & 101 \\
-                & Custom & 63.684 & 8.454 & 46 & 163 \\
+                2048          & Bevy               & 165.043       & 15.253                     & 151                   & 282                   \\
+                & EnTT               & 69.875        & 2.585                      & 66                    & 101                   \\
+                & Custom             & 63.684        & 8.454                      & 46                    & 163                   \\
                 \hline
                 \multicolumn{6}{l}{$^{\mathrm{a}}$Measured time less than used benchmark precision.}
             \end{tabular}
@@ -419,49 +465,96 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-6}
                 \textbf{Count} & \textbf{Framework} & \textbf{Mean} & \textbf{\textit{Std.Dev.}} & \textbf{\textit{Min}} & \textbf{\textit{Max}} \\
                 \hline
-                100 & Bevy ECS & 82.519 & 9.150 & 57 & 200 \\
-                & EnTT & 13.731 & 0.854 & 10 & 19 \\
-                & Custom & 13.989 & 0.566 & 12 & 17 \\
+                100            & Bevy               & 82.519        & 9.150                      & 57                    & 200                   \\
+                & EnTT               & 13.731        & 0.854                      & 10                    & 19                    \\
+                & Custom             & 13.989        & 0.566                      & 12                    & 17                    \\
                 \hline
-                250 & Bevy ECS & 179.518 & 19.655 & 135 & 315 \\
-                & EnTT & 34.865 & 3.283 & 28 & 70 \\
-                & Custom & 38.707 & 4.854 & 30 & 78 \\
+                250            & Bevy               & 179.518       & 19.655                     & 135                   & 315                   \\
+                & EnTT               & 34.865        & 3.283                      & 28                    & 70                    \\
+                & Custom             & 38.707        & 4.854                      & 30                    & 78                    \\
                 \hline
-                500 & Bevy ECS & 335.878 & 38.078 & 235 & 680 \\
-                & EnTT & 60.377 & 4.629 & 48 & 108 \\
-                & Custom & 62.21 & 7.509 & 48 & 120 \\
+                500            & Bevy               & 335.878       & 38.078                     & 235                   & 680                   \\
+                & EnTT               & 60.377        & 4.629                      & 48                    & 108                   \\
+                & Custom             & 62.21         & 7.509                      & 48                    & 120                   \\
                 \hline
-                1000 & Bevy ECS & 580.667 & 58.969 & 440 & 1333 \\
-                & EnTT & 96.754 & 9.943 & 77 & 221 \\
-                & Custom & 103.315 & 12.867 & 85 & 218 \\
+                1000           & Bevy               & 580.667       & 58.969                     & 440                   & 1333                  \\
+                & EnTT               & 96.754        & 9.943                      & 77                    & 221                   \\
+                & Custom             & 103.315       & 12.867                     & 85                    & 218                   \\
                 \hline
-                2000 & Bevy ECS & 1044.088 & 75.280 & 811 & 1836 \\
-                & EnTT & 160.129 & 16.238 & 122 & 314 \\
-                & Custom & 161.302 & 16.706 & 145 & 420 \\
+                2000           & Bevy               & 1044.088      & 75.280                     & 811                   & 1836                  \\
+                & EnTT               & 160.129       & 16.238                     & 122                   & 314                   \\
+                & Custom             & 161.302       & 16.706                     & 145                   & 420                   \\
                 \hline
-                4000 & Bevy ECS & 2024.916 & 120.372 & 1656 & 3230 \\
-                & EnTT & 280.599 & 23.471 & 218 & 448 \\
-                & Custom & 264.531 & 19.182 & 227 & 480 \\
+                4000           & Bevy               & 2024.916      & 120.372                    & 1656                  & 3230                  \\
+                & EnTT               & 280.599       & 23.471                     & 218                   & 448                   \\
+                & Custom             & 264.531       & 19.182                     & 227                   & 480                   \\
                 \hline
-                8000 & Bevy ECS & 3853.080 & 168.052 & 3188 & 4967 \\
-                & EnTT & 510.233 & 48.307 & 395 & 935 \\
-                & Custom & 509.261 & 59.871 & 396 & 1298 \\
+                8000           & Bevy               & 3853.080      & 168.052                    & 3188                  & 4967                  \\
+                & EnTT               & 510.233       & 48.307                     & 395                   & 935                   \\
+                & Custom             & 509.261       & 59.871                     & 396                   & 1298                  \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-4}
     \end{table}
 
-    \section{Discussion}
-    \label{sec:discussion}
+    \paragraph*{Executable Size and Memory Usage}Table~\ref{tab:results-size-and-memory} shows the executable size and memory usage of the frameworks while running the workload according to the given scenarios.
+    The size of the executable did not particularly change as each benchmark's configurations varied, while memory usage scaled linearly.
+    As such, only one configuration of each scenario sufficed for display.
+    In all four scenarios, we observe that the custom framework-built executable size was 25\% the size of the equivalent EnTT-built executable, while the Bevy-built executable size is substantially higher.
+    The simple explanation was that Bevy housed not just the ECS, but also various other features designed to support application development.
+    Reducing Bevy from the overall engine to the parts relevant to the Bevy ECS would decrease executable size, but not by enough of a margin to contend with the other frameworks.
 
-    % TODO: stub
+    Regarding memory usage, EnTT consumed the least memory, followed by the custom framework, then Bevy.
+    As Bevy ECS is part of a broader engine ecosystem, the additional functionalities, such as change detection,
+    scheduling infrastructure, metadata, and registries are likely to contribute to the larger memory footprint.
+    While EnTT and the custom framework are more similar, the custom framework may have utilized more complex data storage
+    and temporary objects compared to EnTT, such as the structured query object, thereby contributing to more memory usage.
+
+    \begin{table*}
+        \caption{Executable Size and Memory Usage of ECS Frameworks in Benchmark Scenarios}
+        \begin{center}
+            \begin{tabular}{|c|c|c|c|c|c|c|}
+                \hline
+                \textbf{Scenario} & \multicolumn{3}{|c|}{\textbf{Executable Size (KB)}} & \multicolumn{3}{|c|}{\textbf{Memory Usage (MB)}} \\
+                \cline{2-7}
+                & Bevy  & EnTT & Custom & Bevy & EnTT & Custom \\
+                \hline
+                Benchmark~\ref{subsec:entity-iteration}                & 28097 & 179  & 42     & 9.4  & 3.4  & 8.5    \\
+                64K Entity Count                                       &       &      &        &      &      &        \\
+                \hline
+                Benchmark~\ref{subsec:sparse-access}                   & 7988  & 168  & 44     & 5.9  & 1.7  & 2.9    \\
+                0.01 Sparse Ratio                                      &       &      &        &      &      &        \\
+                \hline
+                Benchmark~\ref{subsec:entity-creation-and-destruction} & 7986  & 188  & 41     & 2.8  & 0.7  & 0.9    \\
+                1K Entity Rate                                         &       &      &        &      &      &        \\
+                \hline
+                Benchmark~\ref{subsec:structural-changes}              & 8044  & 298  & 48     & 4.6  & 0.9  & 1.3    \\
+                1K Entity Count                                        &       &      &        &      &      &        \\
+                \hline
+            \end{tabular}
+        \end{center}
+        \label{tab:results-size-and-memory}
+    \end{table*}
+
+
+    \section{Limitations}
+    \label{sec:limitations}
 
     A limitation of this evaluation is that the implementations were compiled using different toolchains.
-    Compiler-specific optimizations may significantly influence the measured performance in addition to the design of the ECS framework.
-    This choice was made because our implementation targets an existing MSVC-based game project,
+    Since Bevy itself is an engine written in Rust, its build process is entirely different from the C++ implementations.
+    Moreover, compiler-specific optimizations may significantly influence the measured performance in addition to the design of the ECS framework.
+    This choice was made because our implementation targeted an existing MSVC-based game project,
     and attempts to build it using MinGW resulted in undefined behavior.
-    With Bevy ECS also being built in a different language, the reported performance behavior should be interpreted as
+    With Bevy also being built in a different language, the reported performance behavior should be interpreted as
     comparisons between complete framework implementations, rather than compiler-independent measurements.
+    The evaluation was also run on only one hardware configuration.
+    This may result in device-specific artifacts that may interfere with the evaluation, such as other running processes.
+
+    Regarding the evaluation method, the measurements of memory usage with Task Manager can also be seen to be imprecise compared to more sophisticated methods like the Resource Monitor.
+    This meant that the results should be taken as broad trends, not precise measurements of component-storage memory usage.
+    The single-run benchmark scenarios that create entities with randomized component data may also result in variance between runs that were not captured in the recorded run, and repetitions may not be sufficient to capture the variance of ECS performance.
+    Further, these benchmark systems are crafted specifically to fully utilize the ECS for a specific type of workload.
+    While this is appropriate for performance evaluation, they do not represent complete simulations or applications with tens of systems running in tandem.
 
     The EnTT implementation used standard view-based iteration.
     EnTT also provides owned groups, which reorganize component storage to improve iteration locality
@@ -469,12 +562,39 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     These optimizations were not evaluated as part of this benchmark.
     Consequently, the results should be interpreted as representative of the tested view-based implementation
     rather than the theoretical maximum performance achievable with EnTT\@.
+    Similarly, the Bevy implementation used the entire Bevy crate with minimal plugins as the standard.
+    Any additional optimizations, such as conditional running or events, were not evaluated.
 
 
-    \section{Conclusion}
+    \section{Discussion and Conclusion}
     \label{sec:conclusion}
 
-    %TODO: stub
+    This paper set out to examine the potential of compile-time specialization to imrpove the performance of ECS implementations.
+    A custom-built C++ implementation applying compile-time component storage, query type inference, and system registration
+    was developed to apply these compile-time optimizations and be used as a reference in the benchmarking process.
+    While the results did not imply a universal performance advantage, it revealed promising insights for ECS development and usage.
+
+    The benchmarking data demonstrated that the custom implementation showed strong performance for entity iteration while remaining
+    competitive for entity creation and destruction when compared to the two selected frameworks.
+    However, it showed weaker performance for sparse access.
+    In all scenarios, it delivered smaller executables while exhibiting a somewhat higher memory usage than EnTT.
+
+    The chosen sparse-set storage was beneficial for the custom framework for structural changes and entity lifecycle handling.
+    However, it was also evident with Bevy's performance at higher entity counts the advantage of archetype storage for dense iteration scenarios.
+    While compile-time query and system specialization reduced some overhead, the costs of sparse lookup could not be eliminated.
+    As a result, the choice of storage architecture may have dominated the workload performance at higher entity scenarios.
+
+    In terms of the executable size, the results showed that the custom executable was substantially smaller.
+    This may indicate that compile-time specialization had removed the general-purpose runtime infrastructure of the ECS,
+    leaving behind generated code that took the form of pure functions.
+    The comparison with Bevy could not be said to be equivalent, however, as Bevy included broader engine functionalities.
+
+    In terms of memory usage, we observe somewhat of a trade-off between executable size and runtime memory.
+    The custom framework used more memory than EnTT in the reported scenarios, so compile-time specialization did not necessarily minimize the runtime footprint further.
+
+    All in all, in conclusion, the results suggest that extensive compile-time specialization can produce performance competitive
+    with established ECS frameworks for standard iteration and structural workloads, but its benefits come from coupling it
+    with optimized storage, query building, and system execution policy.
 
     \bibliographystyle{IEEEtran}
     \bibliography{refs}
