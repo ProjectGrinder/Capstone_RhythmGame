@@ -17,28 +17,28 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \thanks{}
     }
 
-    \author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
-    \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-    \textit{name of organization (of Aff.)}\\
-    City, Country \\
+    \author{\IEEEauthorblockN{Wachirawich Kanil}
+    \IEEEauthorblockA{\textit{Department of Computer Engineering} \\
+    \textit{Chulalongkorn University}\\
+    Bangkok, Thailand \\
     email address or ORCID}
     \and
-    \IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
-    \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-    \textit{name of organization (of Aff.)}\\
-    City, Country \\
+    \IEEEauthorblockN{Tapaneeya Odmung}
+    \IEEEauthorblockA{\textit{Department of Computer Engineering} \\
+    \textit{Chulalongkorn University}\\
+    Bangkok, Thailand \\
     email address or ORCID}
     \and
-    \IEEEauthorblockN{3\textsuperscript{rd} Given Name Surname}
-    \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-    \textit{name of organization (of Aff.)}\\
-    City, Country \\
+    \IEEEauthorblockN{Pranesh Ingkanunt}
+    \IEEEauthorblockA{\textit{Department of Computer Engineering} \\
+    \textit{Chulalongkorn University}\\
+    Bangkok, Thailand \\
     email address or ORCID}
     \and
-    \IEEEauthorblockN{4\textsuperscript{th} Given Name Surname}
-    \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-    \textit{name of organization (of Aff.)}\\
-    City, Country \\
+    \IEEEauthorblockN{Rangsiman Jearuksa}
+    \IEEEauthorblockA{\textit{Department of Computer Engineering} \\
+    \textit{Chulalongkorn University}\\
+    Bangkok, Thailand \\
     email address or ORCID}
     }
 
@@ -73,7 +73,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     ECS has been implemented and used widely in production contexts.
     One of the more popular implementations is EnTT~\cite{ValtoLibraries_EnTT}, a header-only C++ library for game programming.
-    This library has been used to develop many game titles, the most major of which is Minecraft.
+    This library has been used to develop many game titles, a major one of which is the Bedrock edition of Minecraft.~\cite{mojang_minecraft_attribution}
     Another popular implementation is Bevy ECS~\cite{Bevy_Engine}, a data-driven game engine built in Rust, which was
     used in~\cite{machine-learning-bevy} to implement a machine learning solution.
 
@@ -103,7 +103,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     the LLVM to safely optimize memory accesses and eliminate unnecessary runtime checks.
     The resultant code is efficient and statically typed with strong safety guarantees and performance comparable to handwritten loops.
 
-    Unity's Data-Oriented Technology Stack (DOTS) combines compile-time code generation with the Burst compiler to maximize ECS performance.
+    Unity's Data-Oriented Technology Stack (DOTS)~\cite{Unity_DOTS} combines compile-time code generation with the Burst compiler to maximize ECS performance.
+    The Entities package~\cite{unity_entities}, part of DOTS, provides the ECS implementation.
     Entity queries are analyzed using C\# source generators, which produce specialized iteration code before compilation.
     The Burst compiler then compiles this generated code into highly optimized native machine code.
     DOTS also performs static analysis of system dependencies to construct efficient execution schedules,
@@ -115,7 +116,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     We decided to implement our custom ECS framework using C++20 as it provides mature support for template
     metaprogramming, concepts, \verb|constexpr| evaluation, and deep type inference support.
-    Additionally, it provides fine-grained control over memory layout and data locality without
+    Additionally, it provides fine-grained control over memory layout and data locality.
     This made it well-suited for expressing ECS storage, systems execution, and query semantics as compile-time constructs.
 
     A crucial decision we had to make was choosing the type of component storage, as the selection greatly affects performance under varying scenarios.
@@ -126,7 +127,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     When implementing our framework, we applied three types of compile-time specialization:
 
     \begin{enumerate}
-        \item \textbf{Component Storage:} We used template specialization on the component storage such that the data type could be derived and components registered at runtime.
+        \item \textbf{Component Storage:} We used template specialization on the component storage such that the data type could be derived and components registered at compile time.
         \item \textbf{System Registration:} We applied concepts to restrict the type of systems that are valid for the framework.
         Then, we applied compile-time template specialization over the function traits to derive the correct component types it requires.
         If the connected component storage did not have the required components, a compile-time error would be raised.
@@ -276,7 +277,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Bevy showed greater constant overhead, which was clear at lower entity counts, but scaled significantly better as entity count grew.
     This could be attributed to Bevy's archetype storage, which allowed for faster iteration compared to sparse-set storage.
 
-    The custom implementation consistently exhibited the lowest frame times up to 8,000 entities, where Bevy took over.
+    The custom implementation consistently exhibited the lowest frame times up to 8,000 entities, after which Bevy took over.
     The specialization and compiler optimizations used by the custom implementation allowed it to
     perform well when compared to EnTT.
 
@@ -330,7 +331,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \paragraph*{Sparse Access}Table~\ref{tab:results-benchmark-2} shows the results of benchmark~\ref{subsec:sparse-access}.
     Plotting the mean frame time against the sparse ratio of the benchmark configuration yields Fig.~\ref{fig:chart2}.
 
-    Considering the figure, we observe that while EnTT performed worse at high entity counts compared to the other frameworks,
+    Considering the figure, we observe that while EnTT performed worse at high sparse ratios compared to the other frameworks,
     it exhibited superior efficiency when entities of interest are sparse, specifically at sparse ratio 0.1 and less.
     Bevy and the custom implementation showed similar decreases as entity density lowered, but the custom implementation had
     more constant overhead compared to Bevy.
@@ -392,8 +393,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     We normalized the mean frame time by taking the ratio with the entity rate for that configuration, and plotting this value yielded Fig.~\ref{fig:chart3}.
     For this benchmark, we observe EnTT and the custom framework exhibiting similar performance behavior, remaining relatively consistent as entity rate varied.
     Bevy, at low entity rates, showed a significant performance drop with frame times at multiples of the other frameworks.
-    This may be in part due to the framework using the archetype as data storage.
-    As entity rates increase, Bevy slowly recovered from the static performance overhead.
+    As entity rates increase, Bevy recovered from the static performance overhead, but not to comparable performance.
 
     \begin{figure}
         \centerline{\includegraphics[width=0.4\textwidth]{chart3}}
@@ -446,7 +446,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \paragraph*{Structural Changes}The findings of the previous benchmark were further amplified with the results in Table~\ref{tab:results-benchmark-4}.
     When entities undergo structural changes rapidly, archetype ECS frameworks suffer large performance hits from archetype switching.
     This can be observed by the even more extreme performance hits shown by Bevy in Fig.~\ref{fig:chart4}.
-    Unlike in benchmark~\ref{subsec:entity-creation-and-destruction}, however, Bevy's performance did not largely improve as entity count increased.
+    Unlike in benchmark~\ref{subsec:entity-creation-and-destruction}, however, Bevy's performance did not improve to be able to compare to the other frameworks as entity count increased.
     With structural changes being the main workload, the cost of archetype switching became a significant load compared to the other frameworks that did not use archetype storage in the implementation.
     EnTT and the custom implementation remained largely similar to each other in performance behavior in this scenario, as well.
 
@@ -500,15 +500,15 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \paragraph*{Executable Size and Memory Usage}Table~\ref{tab:results-size-and-memory} shows the executable size and memory usage of the frameworks while running the workload according to the given scenarios.
     The size of the executable did not particularly change as each benchmark's configurations varied, while memory usage scaled linearly.
     As such, only one configuration of each scenario sufficed for display.
-    In all four scenarios, we observe that the custom framework-built executable size was 25\% the size of the equivalent EnTT-built executable, while the Bevy-built executable size is substantially higher.
+    We observe that the custom framework-built executable size was approximately 25\% the size of the equivalent EnTT-built executable (except for~\ref{subsec:structural-changes}, where it was around 16.1\%,) while the Bevy-built executable size is substantially higher.
     The simple explanation was that Bevy housed not just the ECS, but also various other features designed to support application development.
     Reducing Bevy from the overall engine to the parts relevant to the Bevy ECS would decrease executable size, but not by enough of a margin to contend with the other frameworks.
 
     Regarding memory usage, EnTT consumed the least memory, followed by the custom framework, then Bevy.
     As Bevy ECS is part of a broader engine ecosystem, the additional functionalities, such as change detection,
     scheduling infrastructure, metadata, and registries are likely to contribute to the larger memory footprint.
-    While EnTT and the custom framework are more similar, the custom framework may have utilized more complex data storage
-    and temporary objects compared to EnTT, such as the structured query object, thereby contributing to more memory usage.
+    Considering the other frameworks, the custom framework may have used more complex data storage
+    and temporary objects compared to EnTT, such as the structured query objects, thereby contributing to more memory usage.
 
     \begin{table*}
         \caption{Executable Size and Memory Usage of ECS Frameworks in Benchmark Scenarios}
@@ -522,13 +522,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 Benchmark~\ref{subsec:entity-iteration}                & 28097 & 179  & 42     & 9.4  & 3.4  & 8.5    \\
                 64K Entity Count                                       &       &      &        &      &      &        \\
                 \hline
-                Benchmark~\ref{subsec:sparse-access}                   & 7988  & 168  & 44     & 5.9  & 1.7  & 2.9    \\
-                0.01 Sparse Ratio                                      &       &      &        &      &      &        \\
+                Benchmark~\ref{subsec:sparse-access}                   & 28102  & 168  & 44     & 6.0  & 1.7  & 3.4    \\
+                0.20 Sparse Ratio                                      &       &      &        &      &      &        \\
                 \hline
-                Benchmark~\ref{subsec:entity-creation-and-destruction} & 7986  & 188  & 41     & 2.8  & 0.7  & 0.9    \\
+                Benchmark~\ref{subsec:entity-creation-and-destruction} & 28092  & 188  & 41     & 2.8  & 0.7  & 0.9    \\
                 1K Entity Rate                                         &       &      &        &      &      &        \\
                 \hline
-                Benchmark~\ref{subsec:structural-changes}              & 8044  & 298  & 48     & 4.6  & 0.9  & 1.3    \\
+                Benchmark~\ref{subsec:structural-changes}              & 28149  & 298  & 48     & 4.6  & 0.9  & 1.3    \\
                 1K Entity Count                                        &       &      &        &      &      &        \\
                 \hline
             \end{tabular}
