@@ -110,26 +110,49 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Design}
     \label{sec:design}
 
-    We decided to implement our custom ECS framework using C++20 as it provides mature support for template
-    metaprogramming, concepts, \verb|constexpr| evaluation, and deep type inference support.
-    Additionally, it provides fine-grained control over memory layout and data locality.
-    This made it well-suited for expressing ECS storage, systems execution, and query semantics as compile-time constructs.
+    The primary design goal of the custom ECS was to investigate how extensively ECS functionality can be specialized at compile time.
+    To this end, we applied static typing and template-based specialization across component storage, system registration, and query construction.
+    The resulting framework was designed to retain a conventional ECS programming interface while moving as much type-dependent work as possible from runtime to compile time.
 
-    When implementing our framework, we applied three types of compile-time specialization:
+    The framework was implemented in C++20, for it provided the language features required for this approach.
+    This included templates, concepts, compile-time evaluation, and type deduction, while also providing direct control over memory layout and storage.
+    These features allowed component types and system interfaces to be represented natively within the framework.
 
-    \begin{enumerate}
-        \item \textbf{Component Storage:} We used template specialization on the component storage such that the data type could be derived and components registered at compile time.
-        \item \textbf{System Registration:} We applied concepts to restrict the type of systems that are valid for the framework.
-        Then, we applied compile-time template specialization over the function traits to derive the correct component types it requires.
-        If the connected component storage did not have the required components, a compile-time error would be raised.
-        By adjusting the order of system registration with the ECS, we could specify the system execution order in sequential order through loop unrolling.
-        \item \textbf{Query Construction:} With compile-time loop unrolling and template folding over component types, we could generate query builder functions that exactly matched related component types.
-    \end{enumerate}
+    \subsection{Compile-Time Specialization}\label{subsec:compile-time-specialization}
 
-    A crucial decision we had to make was choosing the type of component storage, as the selection greatly affects performance under varying scenarios.
-    Two widely used types of ECS component storage are archetype-based and sparse-set-based storage.
-    Cox, Williams, Vickers, Ward, and Headleand's work~\cite{cox2025run} showed that archetypes excel at large-scale entity iteration while sparse-sets are more efficient with component insertion and removal.
-    We decided on sparse-set storage for the custom implementation to more conveniently support our optimization work.
+    The implementation applies compile-time specialization in three main areas:
+
+    \begin{itemize}
+        \item \textbf{Component Storage.} Component types are represented directly in the storage types used by the ECS\@.
+        The framework derives the storage information at compile time, allowing component access to be expressed through statically known types.
+
+        \item \textbf{System Registration.} Systems are represented by their function types.
+        C++ concepts are used to constrain the functions that may be registered as systems, while template-based function-trait mechanisms extract the component types accessed by each system.
+        This information is used to validate system requirements during compilation.
+        Systems without the required components in related storage will fail to compile.
+        Systems are stored in a compile-time structure and invoked according to their registration order, allowing the compiler to specialize the resulting execution path for the registered systems.
+
+        \item \textbf{Query Construction.} Query component types are specified as template parameters.
+        The framework uses parameter packs and compile-time expansion to construct the component accesses required by a query.
+        Because the component types are known when the query is compiled, the implementation can generate access operations specialized to the exact set of components requested by the query.
+    \end{itemize}
+
+    These mechanisms define the main distinction between the custom framework and the more dynamic portions of existing ECS implementations.
+    The goal is not to eliminate runtime work entirely.
+    Rather, it is to determine how much type-dependent ECS work can be moved into compilation without making the programming interface impractical.
+
+    \subsection{Component Storage}\label{subsec:component-storage}
+
+    A crucial decision we had to make was choosing the type of component storage because it directly affects the performance of entity iteration and modification.
+    Two common approaches are archetype-based storage and sparse-set storage.
+    Archetype storage organizes entities based on their component combinations, providing efficient iteration over entities with the same component group.
+    Sparse-set storage instead maintains a dense component array with an index structure, allowing for efficient component insertion and removal.
+    These approaches therefore represent trade-offs between iteration and structural modification costs. \cite{cox2025run}
+
+    We selected sparse-set storage as they provide a relatively direct mapping between a component type and its storage,
+    making them suitable for isolating the effects of compile-time specialization in component access and query construction.
+    Outside of this, however, the choice of storage also proves a useful comparison point with existing ECS implementations.
+    In particular, EnTT uses sparse-set storage, while Bevy defaults to archetype-based storage.
 
     \section{Evaluation}
     \label{sec:method}
@@ -538,64 +561,52 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{tab:results-size-and-memory}
     \end{table*}
 
+    \section{Discussion and Conclusion}
+    \label{sec:conclusion}
+
+    This paper investigated the extent to which compile-time specialization can improve the performance of ECS implementations.
+    A custom C++ ECS was developed using compile-time component storage, query construction, and system registration,
+    and evaluated for performance against EnTT and Bevy with reference to synthesized ECS workloads.
+    The results did not demonstrate a universal performance advantage but showed that extensive compile-time specialization
+    can produce competitive performance for several ECS workloads.
+
+    The custom implementation performed particularly well for entity iteration and remained competitive for entity
+    creation and destruction, but performed worse for sparse access.
+    This suggests that compile-time specialization can reduce overhead in type-dependent ECS operations
+    but cannot compensate for either the underlying costs of the storage architecture or the efficiency of the implementation details.
+    In particular, the sparse-set design provided efficient structural modification while limiting performance
+    for workloads dominated by sparse component access.
+    Bevy's performance at higher entity counts also demonstrates the advantage that
+    archetype storage can provide for dense iteration.
+
+    The custom implementation also produced substantially smaller executables than the evaluated frameworks,
+    although the comparison with Bevy is not directly equivalent because Bevy provides broader engine functionality.
+    Runtime memory usage, however, was higher than EnTT in the evaluated scenarios.
+    These results indicate that reducing runtime infrastructure through compile-time specialization
+    does not necessarily reduce all aspects of the resource footprint.
+
+    Overall, the results suggest that extensive compile-time specialization can produce performance competitive
+    with established ECS frameworks, particularly for predictable iteration and structural workloads.
+    However, its effectiveness depends on the underlying storage architecture and access patterns.
+    Compile-time specialization should therefore be considered as one part of ECS performance design,
+    rather than a replacement for appropriate storage and execution strategies outright, for maximal benefits.
 
     \section{Limitations}
     \label{sec:limitations}
 
-    A limitation of this evaluation is that the implementations were compiled using different toolchains.
-    Since Bevy itself is an engine written in Rust, its build process is entirely different from the C++ implementations.
-    Moreover, compiler-specific optimizations may significantly influence the measured performance in addition to the design of the ECS framework.
-    Our attempt to mitigate this difference was to compile the C++ implementations using Clang, as it is a compiler based on the LLVM like Rust's \verb|cargo|.
-    With Bevy also being built in a different language, the reported performance behavior should be interpreted as
-    comparisons between complete framework implementations, rather than compiler-independent measurements.
-    The evaluation was also run on only one hardware configuration.
-    This may result in device-specific artifacts that may interfere with the evaluation, such as other running processes.
+    Bevy is written in Rust while the other implementations are in C++, so compiler and language differences may affect the measured performance.
+    The C++ implementations were compiled with Clang to use the same LLVM backend as Rust,
+    but the results should still be interpreted as comparisons between complete framework implementations rather than compiler-independent measurements.
+    All benchmarks were also run on a single hardware configuration, so hardware-specific effects cannot be excluded.
 
-    Regarding the evaluation method, the measurements of memory usage with Task Manager can also be seen to be imprecise compared to more sophisticated methods like the Resource Monitor.
-    This meant that the results should be taken as broad trends, not precise measurements of component-storage memory usage.
-    The single-run benchmark scenarios that create entities with randomized component data may also result in variance between runs that were not captured in the recorded run, and repetitions may not be sufficient to capture the variance of ECS performance.
-    Further, these benchmark systems are crafted specifically to fully utilize the ECS for a specific type of workload.
-    While this is appropriate for performance evaluation, they do not represent complete simulations or applications with tens of systems running in tandem.
+    The workloads were designed to isolate specific ECS operations rather than represent complete applications,
+    so the results may not generalize to workloads with many interacting systems or different access patterns.
+    Randomized entity creation and limited repetitions may also additionally introduce measurement variance.
 
-    The EnTT implementation used standard view-based iteration.
-    EnTT also provides owned groups, which reorganize component storage to improve iteration locality
-    for frequently accessed component combinations.
-    These optimizations were not evaluated as part of this benchmark.
-    Consequently, the results should be interpreted as representative of the tested view-based implementation
-    rather than the theoretical maximum performance achievable with EnTT\@.
-    Similarly, the Bevy implementation used the entire Bevy crate with minimal plugins as the standard.
-    Any additional optimizations, such as conditional running or events, were not evaluated.
-
-
-    \section{Discussion and Conclusion}
-    \label{sec:conclusion}
-
-    This paper set out to examine the potential of compile-time specialization to imrpove the performance of ECS implementations.
-    A custom-built C++ implementation applying compile-time component storage, query type inference, and system registration
-    was developed to apply these compile-time optimizations and be used as a reference in the benchmarking process.
-    While the results did not imply a universal performance advantage, it revealed promising insights for ECS development and usage.
-
-    The benchmarking data demonstrated that the custom implementation showed strong performance for entity iteration while remaining
-    competitive for entity creation and destruction when compared to the two selected frameworks.
-    However, it showed weaker performance for sparse access.
-    In all scenarios, it delivered smaller executables while exhibiting a somewhat higher memory usage than EnTT.
-
-    The chosen sparse-set storage was beneficial for the custom framework for structural changes and entity lifecycle handling.
-    However, it was also evident with Bevy's performance at higher entity counts the advantage of archetype storage for dense iteration scenarios.
-    While compile-time query and system specialization reduced some overhead, the costs of sparse lookup could not be eliminated.
-    As a result, the choice of storage architecture may have dominated the workload performance at higher entity scenarios.
-
-    In terms of the executable size, the results showed that the custom executable was substantially smaller.
-    This may indicate that compile-time specialization had removed the general-purpose runtime infrastructure of the ECS,
-    leaving behind generated code that took the form of pure functions.
-    The comparison with Bevy could not be said to be equivalent, however, as Bevy included broader engine functionalities.
-
-    In terms of memory usage, we observe somewhat of a trade-off between executable size and runtime memory.
-    The custom framework used more memory than EnTT in the reported scenarios, so compile-time specialization did not necessarily minimize the runtime footprint further.
-
-    All in all, in conclusion, the results suggest that extensive compile-time specialization can produce performance competitive
-    with established ECS frameworks for standard iteration and structural workloads, but its benefits come from coupling it
-    with optimized storage, query building, and system execution policy.
+    The evaluated configurations also do not necessarily represent the maximum performance of each framework.
+    EnTT was tested using standard views rather than owned groups, and the Bevy configuration
+    used minimal plugins without evaluating additional mechanisms such as conditional system execution or events.
+    Results therefore reflect the tested configurations rather than the maximum achievable performance of each framework.
 
     \bibliographystyle{IEEEtran}
     \bibliography{refs}
