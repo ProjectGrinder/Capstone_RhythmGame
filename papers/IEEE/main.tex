@@ -45,16 +45,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \maketitle
 
     \begin{abstract}
-        The Entity-Component-System (ECS) pattern is widely used for applications in interactive systems,
+        The Entity-Component-System (ECS) pattern is used for applications in interactive systems,
         machine learning, and digital simulation contexts.
-        From examining existing infrastructure and development tools and comparing to theoretical ECS models,
-        we identified opportunities to reduce runtime overhead and increase performance through increased compile-time specialization.
-        We present a framework implementing the ECS pattern and built upon C++ that aggressively applies compile-time
-        metaprogramming techniques to reduce overhead.
-        To analyze the potential of this approach, the framework was evaluated in comparison with
-        industry-standard ECS libraries EnTT and Bevy ECS in terms of performance, executable size, and memory usage.
-        The results showed that the presented implementation exhibited performance comparable to existing frameworks while
-        substantially improving program size at a small cost to memory usage.
+        From examining existing infrastructure and tools and comparing to theoretical models,
+        we identified opportunities to reduce ECS runtime overhead and increase performance through increased compile-time specialization.
+        We present an ECS framework built upon C++ that aggressively applies compile-time
+        metaprogramming techniques to reduce overhead to analyze the potential of this approach.
+        The framework was evaluated in comparison with industry-standard ECS libraries EnTT
+        and Bevy ECS in terms of performance, executable size, and memory usage.
+        The results showed that our framework performs similarly compared to existing frameworks while
+        improving program size at a small cost to memory usage in tested workloads.
     \end{abstract}
 
     \begin{IEEEkeywords}
@@ -64,52 +64,48 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Introduction}
     \label{sec:introduction}
+    Entity-component-system (ECS) is a software architectural pattern widely used in interactive systems, simulations, and machine learning.
+    An ECS represents entities through collections of data-oriented components, with systems defining the behavior that operates on those components.
+    An entity's behavior therefore emerges from the systems that add, remove, or modify its components.
 
-    Entity-component-system (ECS) is a software architectural pattern used in interactive systems development,
-    system simulations, and even machine learning.
-    Its mechanisms are characterized by the entities, composed of components of data,
-    and the systems which operate upon those components.
-    An entity's behavior emerges from the systems that operate on its components, whether by mutating, adding, or removing these components.
+    ECS has been adopted in several production frameworks, including EnTT~\cite{ValtoLibraries_EnTT}, a header-only C++ library used in projects such as the Bedrock edition of Minecraft~\cite{mojang_minecraft_attribution},
+    and Bevy ECS~\cite{Bevy_Engine}, a Rust-based ECS used, for example, in~\cite{machine-learning-bevy}.
 
-    ECS has been implemented and used widely in production contexts.
-    One of the more popular implementations is EnTT~\cite{ValtoLibraries_EnTT}, a header-only C++ library for game programming.
-    This library has been used to develop many game titles, a major one of which is the Bedrock edition of Minecraft.~\cite{mojang_minecraft_attribution}
-    Another popular implementation is Bevy ECS~\cite{Bevy_Engine}, a data-driven game engine built in Rust, which was
-    used in~\cite{machine-learning-bevy} to implement a machine learning solution.
+    Existing ECS implementations have different trade-offs between runtime flexibility and compile-time optimization.
+    While templates and generics are commonly used to specialize frequently executed operations,
+    other parts of an ECS may rely on runtime registration, type erasure, or dynamic scheduling to be more flexible and extendable.
+    Compile-time specialization is typically applied selectively rather than throughout the ECS architecture.
 
-    However, existing ECS implementations generally balance runtime flexibility with compile-time optimization in different ways.
-    Many use runtime component registration, type-erased execution, runtime scheduling, or other dynamic mechanisms to support extensibility,
-    while using templates to optimize frequently executed operations such as query building.
-    As a result, compile-time specialization is often applied selectively rather than uniformly across all ECS subsystems.
-
-    This work explores and investigates the extent of compile-time specializations that can be applied within an ECS implementation.
-    We create a custom framework to evaluate its impact on core ECS functionalities while maintaining an interface suitable for practical software development.
-    We then assess the resulting performance of this framework through benchmarking in comparison to existing production frameworks.
-
+    This work investigates the extent to which ECS functionality can be specialized at compile time.
+    We develop a custom ECS framework designed to maximize compile-time specialization while retaining an
+    interface suitable for practical software development.
+    We then evaluate its performance against existing production ECS frameworks through a set of benchmarks.
 
     \section{Related Work}
     \label{sec:related-work}
 
-    EnTT is a modern C++ ECS library that uses compile-time optimization through extensive use of template metaprogramming.
-    Component views, registries, and queries are expressed as template types, allowing the compiler to generate specialized
-    implementations for each combination of component types.
-    This eliminates virtual dispatch, enables aggressive function inlining, and dead code elimination, producing
-    highly optimized iteration code with minimal runtime overhead.
-    EnTT's approach leverages C++'s static type system to shift most of the ECS abstraction cost from runtime to compile time.
+    Several established ECS frameworks employ static techniques to reduce runtime overhead, but they differ in how
+    extensively they rely on compile-time specialization.
 
-    Bevy ECS, written in Rust, achieves compile-time optimization by relying on Rust's generic type system and monomorphization.
-    Systems declare the components they access through generic query types, and the compiler generates specialized code for each query at compile time.
-    Rust's ownership and borrowing rules also provide compile-time guarantees about aliasing and mutability, allowing
-    the LLVM to safely optimize memory accesses and eliminate unnecessary runtime checks.
-    The resultant code is efficient and statically typed with strong safety guarantees and performance comparable to handwritten loops.
+    EnTT uses C++ templates and metaprogramming extensively.
+    Component views, registries, and queries are represented by template types, allowing the compiler
+    to generate specialized implementations for particular component combinations.
+    This enables optimizations such as function inlining and dead-code elimination while avoiding forms of runtime dispatch.
 
-    Unity's Data-Oriented Technology Stack (DOTS)~\cite{Unity_DOTS} combines compile-time code generation with the Burst compiler to maximize ECS performance.
-    The Entities package~\cite{unity_entities}, part of DOTS, provides the ECS implementation.
-    Entity queries are analyzed using C\# source generators, which produce specialized iteration code before compilation.
-    The Burst compiler then compiles this generated code into highly optimized native machine code.
-    DOTS also performs static analysis of system dependencies to construct efficient execution schedules,
-    minimizing runtime scheduling overhead.
-    The combination of all these optimizing factors resulted in a formidable engine for use with the classic game engine.
+    Bevy ECS similarly relies on Rust's generic type system and monomorphism.
+    Systems express their component accesses through generic query types, from which the compiler generates specialized code.
+    Rust's ownership and borrowing system additionally provides compile-time guarantees concerning aliasing and mutability,
+    enabling further optimization of memory accesses while retaining strong safety guarantees.
+
+    Unity's Data-Oriented Technology Stack (DOTS)~\cite{Unity_DOTS} takes a more explicit code-generation approach.
+    Its Entities package~\cite{unity_entities} uses C\# source generators to produce specialized code for entity queries,
+    which is subsequently optimized by the Burst compiler.
+    DOTS also performs static analysis of system dependencies to construct execution schedules,
+    reducing runtime scheduling overhead.
+
+    These frameworks demonstrate several established approaches to compile-time optimization in ECS,
+    but they differ in which parts of the architecture are specialized statically and which remain dynamic.
+    This work builds on these approaches by investigating a more comprehensive application of compile-time specialization across ECS functionality.
 
     \section{Design}
     \label{sec:design}
@@ -118,11 +114,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     metaprogramming, concepts, \verb|constexpr| evaluation, and deep type inference support.
     Additionally, it provides fine-grained control over memory layout and data locality.
     This made it well-suited for expressing ECS storage, systems execution, and query semantics as compile-time constructs.
-
-    A crucial decision we had to make was choosing the type of component storage, as the selection greatly affects performance under varying scenarios.
-    Two widely used types of ECS component storage are archetype-based and sparse-set-based storage.
-    Cox, Williams, Vickers, Ward, and Headleand's work~\cite{cox2025run} showed that archetypes excel at large-scale entity iteration while sparse-sets are more efficient with component insertion and removal.
-    We decided on sparse-set storage for the custom implementation to more conveniently support our optimization work.
 
     When implementing our framework, we applied three types of compile-time specialization:
 
@@ -135,6 +126,10 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \item \textbf{Query Construction:} With compile-time loop unrolling and template folding over component types, we could generate query builder functions that exactly matched related component types.
     \end{enumerate}
 
+    A crucial decision we had to make was choosing the type of component storage, as the selection greatly affects performance under varying scenarios.
+    Two widely used types of ECS component storage are archetype-based and sparse-set-based storage.
+    Cox, Williams, Vickers, Ward, and Headleand's work~\cite{cox2025run} showed that archetypes excel at large-scale entity iteration while sparse-sets are more efficient with component insertion and removal.
+    We decided on sparse-set storage for the custom implementation to more conveniently support our optimization work.
 
     \section{Evaluation}
     \label{sec:method}
@@ -144,8 +139,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     The execution time of each ECS implementation was measured by recording the time immediately before and after
     the execution of all user-defined systems within one frame.
-    For Bevy, we used Rust's \verb|Instant| to record timestamps.
-    For EnTT and our implementation, we used the \verb|std::chrono::steady_clock| from C++.
+    For Bevy, we used Rust's \verb|Instant|~\cite{rust_instant} to record timestamps.
+    For EnTT and our implementation, we used the \verb|std::chrono::steady_clock|~\cite{cpp_steady_clock} from C++.
     Unrelated plugins, rendering, and other external factors were excluded to isolate the frame execution time such that
     it served as a reliable primary performance metric.
 
@@ -159,8 +154,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     All benchmarks were compiled using release optimization settings, albeit with different compilers.
     The Bevy implementation was built using Rust's \verb|cargo --release| configuration.
-    The EnTT implementation used the MinGW Release configuration, whereas our implementation was built
-    using the MSVC Release configuration.
+    The EnTT implementation and our custom implementation, built on C++, instead used the MSVC Release
+    configuration with Clang compiler.
 
     Before measurements were recorded, each benchmark was allowed to execute for a warm-up period to reduce the
     influence of initialization overhead.
@@ -390,10 +385,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 & Custom & 8.176 & 8.100 & 0.396 & 7.900 & 15.80 \\
                 \hline
                 0.00 & Bevy & 3.579 & 3.500 & 0.828 & 1.400 & 8.500 \\
-                & EnTT & 0.020 & 0.000$^{a}$ & 0.040 & 0.000$^{a}$ & 0.100 \\
+                & EnTT & 0.020 & 0.000 & 0.040 & 0.000 & 0.100 \\
                 & Custom & 6.583 & 6.600 & 0.274 & 6.400 & 12.30 \\
                 \hline
-                \multicolumn{6}{l}{$^{\mathrm{a}}$Measured time less than used benchmark precision.}
             \end{tabular}
         \end{center}\label{tab:results-benchmark-2}
     \end{table}
@@ -551,8 +545,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     A limitation of this evaluation is that the implementations were compiled using different toolchains.
     Since Bevy itself is an engine written in Rust, its build process is entirely different from the C++ implementations.
     Moreover, compiler-specific optimizations may significantly influence the measured performance in addition to the design of the ECS framework.
-    This choice was made because our implementation targeted an existing MSVC-based game project,
-    and attempts to build it using MinGW resulted in undefined behavior.
+    Our attempt to mitigate this difference was to compile the C++ implementations using Clang, as it is a compiler based on the LLVM like Rust's \verb|cargo|.
     With Bevy also being built in a different language, the reported performance behavior should be interpreted as
     comparisons between complete framework implementations, rather than compiler-independent measurements.
     The evaluation was also run on only one hardware configuration.
