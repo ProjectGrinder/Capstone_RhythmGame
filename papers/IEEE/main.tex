@@ -65,7 +65,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         We present an ECS framework built upon C++ that aggressively applies compile-time
         metaprogramming techniques to reduce overhead to analyze the potential of this approach.
         The framework was evaluated in comparison with EnTT
-        and Bevy ECS in terms of performance, executable size, and memory usage.
+        and Bevy in terms of performance, executable size, and memory usage.
         The results showed that our framework performs similarly compared to existing frameworks while
         improving program size at a small cost to memory usage in tested workloads.
     \end{abstract}
@@ -82,7 +82,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     An entity's behavior therefore emerges from the systems that add, remove, or modify its components.
 
     ECS has been adopted in several production frameworks, including EnTT~\cite{ValtoLibraries_EnTT}, a header-only C++ library used in projects such as the Bedrock edition of Minecraft~\cite{mojang_minecraft_attribution},
-    and Bevy ECS~\cite{Bevy_Engine}, a Rust-based ECS used, for example, in~\cite{machine-learning-bevy}.
+    and Bevy~\cite{Bevy_Engine}, a Rust-based ECS used, for example, in~\cite{machine-learning-bevy}.
 
     Existing ECS implementations have different trade-offs between runtime flexibility and compile-time optimization.
     While templates and generics are commonly used to specialize frequently executed operations,
@@ -106,7 +106,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     to generate specialized implementations for particular component combinations.
     This enables optimizations such as function inlining and dead-code elimination while avoiding forms of runtime dispatch.
 
-    Bevy ECS similarly relies on Rust's generic type system and monomorphism.
+    Bevy similarly relies on Rust's generic type system and monomorphism.
     Systems express their component accesses through generic query types, from which the compiler generates specialized code.
     Rust's ownership and borrowing system additionally provides compile-time guarantees concerning aliasing and mutability,
     enabling further optimization of memory accesses while retaining strong safety guarantees.
@@ -404,7 +404,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \label{sec:results}
 
     \paragraph*{Entity Iteration}Table~\ref{tab:results-benchmark-1} shows the results of benchmark~\ref{subsec:entity-iteration}.
-    From the benchmark output, we normalized the mean frame time by taking the ratio with the entity count for that configuration, and plotting this value yielded Fig.~\ref{fig:chart1}.
+    We normalized mean frame time by entity count for each configuration, yielding Fig.~\ref{fig:chart1}.
 
     \begin{table}[htbp]
         \caption{Benchmark~\ref{subsec:entity-iteration} – Statistics}
@@ -453,14 +453,14 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:chart1}
     \end{figure}
 
-    This benchmark demonstrated that all three ECS frameworks exhibited the expected linear scaling for data mutation.
-    EnTT incurred significantly higher costs at higher entity counts, implying larger per-entity iteration costs compared to the other frameworks.
-    Bevy showed greater constant overhead, which was clear at lower entity counts, but scaled significantly better as entity count grew.
-    This could be attributed to Bevy's archetype storage, which allowed for faster iteration compared to sparse-set storage.
-    It can be seen that the custom implementation consistently exhibited the lowest frame times up to 8,000 entities, after which Bevy took over.
+    All three ECS frameworks exhibited the expected linear scaling for data mutation.
+    EnTT incurred significantly higher costs at larger entity counts, indicating higher per-entity iteration costs.
+    Bevy exhibited greater constant overhead at lower entity counts but scaled better as the entity count increased.
+    This may be attributed to Bevy's archetype storage, which enables faster iteration than sparse-set storage.
+    The custom implementation consistently achieved the lowest frame times up to 8,000 entities, after which Bevy performed best.
 
-    \paragraph*{Sparse Access}Table~\ref{tab:results-benchmark-2} shows the results of benchmark~\ref{subsec:sparse-access}.
-    Plotting the mean frame time against the sparse ratio of the benchmark configuration yields Fig.~\ref{fig:chart2}.
+    \paragraph*{Sparse Access}Table~\ref{tab:results-benchmark-2} presents the results of benchmark~\ref{subsec:sparse-access}.
+    Plotting mean frame time against the sparse ratio yielded Fig.~\ref{fig:chart2}.
 
     \begin{table}[htbp]
         \caption{Benchmark~\ref{subsec:sparse-access} – Statistics}
@@ -521,15 +521,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:chart2}
     \end{figure}
 
-    Considering the figure, we observe that while EnTT performed worse at high sparse ratios compared to the other frameworks,
-    it exhibited superior efficiency when entities of interest are sparse, specifically at sparse ratio 0.1 and less.
-    Bevy and the custom implementation showed similar decreases as entity density lowered, but the custom implementation had
-    more constant overhead compared to Bevy.
-    As such, the custom framework consistently underperformed in terms of sparse access efficiency compared to
-    the other frameworks.
+    EnTT performed worse at high sparse ratios than the other frameworks but was more efficient when entities of interest were sparse, particularly at sparse ratios of 0.1 or less.
+    Bevy and the custom implementation showed similar decreases as entity density decreased, although the custom implementation had greater constant overhead.
+    Consequently, the custom framework consistently underperformed the other frameworks in sparse access efficiency.
 
-    \paragraph*{Entity Creation and Destruction}Table~\ref{tab:results-benchmark-3} shows the results of benchmark~\ref{subsec:entity-creation-and-destruction}.
-    We normalized the mean frame time by taking the ratio with the entity rate for that configuration, and plotting this value yielded Fig.~\ref{fig:chart3}.
+    \paragraph*{Entity Creation and Destruction}Table~\ref{tab:results-benchmark-3} presents the results of benchmark~\ref{subsec:entity-creation-and-destruction}.
+    We normalized mean frame time by entity rate for each configuration, yielding Fig.~\ref{fig:chart3}.
 
     \begin{table}[htbp]
         \caption{Benchmark~\ref{subsec:entity-creation-and-destruction} – Statistics}
@@ -578,13 +575,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:chart3}
     \end{figure}
 
-    For this benchmark, we observe EnTT and the custom framework exhibiting similar performance behavior, remaining relatively consistent as entity rate varied.
-    Bevy, at low entity rates, showed frame times at multiples of the other frameworks.
-    As entity rates increase, Bevy recovered from the static performance overhead, but not to comparable performance.
+    EnTT and the custom framework exhibited similar performance, remaining relatively consistent as the entity rate varied.
+    At low entity rates, Bevy's frame times were several times higher than those of the other frameworks.
+    As the entity rate increased, Bevy's performance improved as its constant overhead was amortized, but it did not reach comparable performance.
 
-    \paragraph*{Structural Changes}The findings of the previous benchmark were further amplified with the results in
-    Table~\ref{tab:results-benchmark-4} and the subsequent Fig~\ref{fig:chart4} plotting the value normalized
-    against the entity count.
+    \paragraph*{Structural Changes}The findings of the previous benchmark were further amplified in
+    Table~\ref{tab:results-benchmark-4} and Fig~\ref{fig:chart4}, which presents the results of benchmark~\ref{subsec:structural-changes}.
 
     \begin{table}[htbp]
         \caption{Benchmark~\ref{subsec:structural-changes} – Statistics}
@@ -633,12 +629,10 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{fig:chart4}
     \end{figure}
 
-    Unlike in benchmark~\ref{subsec:entity-creation-and-destruction}, however, Bevy's performance did not improve to be able to compare to the other frameworks as entity count increased.
-    When entities undergo structural changes rapidly, archetype ECS frameworks suffer large performance hits from archetype switching.
-    This can be observed by the even more extreme performance hits shown.
-
-    EnTT and the custom implementation remained largely similar to each other in performance behavior in this scenario, as well.
-
+    Unlike benchmark~\ref{subsec:entity-creation-and-destruction}, Bevy's performance did not improve relative to the other frameworks as the entity count increased.
+    Rapid structural changes impose significant performance costs on archetype-based ECS frameworks due to archetype switching,
+    as reflected in the more extreme performance degradation observed here.
+    EnTT and the custom implementation again exhibited similar performance behavior.
 
     \paragraph*{Executable Size and Memory Usage}
     Table~\ref{tab:results-size-and-memory} shows the executable size and memory usage of each framework under the given scenarios.
@@ -688,26 +682,22 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     can produce competitive performance for several ECS workloads.
 
     The custom implementation performed particularly well for entity iteration and remained competitive for entity
-    creation and destruction, but performed worse for sparse access.
-    This suggests that compile-time specialization can reduce overhead in type-dependent ECS operations
-    but cannot compensate for either the underlying costs of the storage architecture or the efficiency of the implementation details.
-    In particular, the sparse-set design provided efficient structural modification while limiting performance
-    for workloads dominated by sparse component access.
-    Bevy's performance at higher entity counts also demonstrates the advantage that
-    archetype storage can provide for dense iteration.
+    creation and destruction, but underperformed in sparse access.
+    These results suggest that compile-time specialization can reduce overhead in type-dependent ECS operations
+    but does not overcome the performance characteristics of the underlying storage architecture.
+    In particular, sparse-set storage favored structural modification but was less effective for sparse component access,
+    while Bevy's archetype storage provided an advantage for dense iteration at higher entity counts.
 
     The custom implementation also produced substantially smaller executables than the evaluated frameworks,
-    although the comparison with Bevy is not directly equivalent because Bevy provides broader engine functionality.
-    Runtime memory usage, however, was higher than EnTT in the evaluated scenarios.
-    These results indicate that reducing runtime infrastructure through compile-time specialization
-    does not necessarily reduce all aspects of the resource footprint.
+    although the comparison with Bevy is not directly equivalent because of its broader engine functionality.
+    Its runtime memory usage was nevertheless higher than EnTT, indicating that compile-time specialization
+    does not necessarily reduce all aspects of resource usage.
 
-    Overall, the results suggest that extensive compile-time specialization can produce performance competitive
-    with established ECS frameworks, particularly for predictable iteration and structural workloads.
-    However, its effectiveness depends on the underlying storage architecture and access patterns.
-    Compile-time specialization should therefore be considered as one part of ECS performance design,
-    rather than a replacement for appropriate storage and execution strategies outright, for maximal benefits.
-
+    Overall, compile-time specialization can provide competitive ECS performance, particularly for
+    predictable iteration and structural workloads, but its effectiveness depends on storage
+    architecture and access patterns.
+    It is therefore best viewed as a complementary performance strategy rather than a replacement for
+    appropriate storage and execution designs.
 
     \section{Limitations}
     \label{sec:limitations}
