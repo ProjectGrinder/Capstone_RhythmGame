@@ -3,7 +3,7 @@
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage[ruled, norelsize]{algorithm2e}
+\usepackage[ruled, noline, norelsize]{algorithm2e}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
@@ -14,6 +14,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \makeatletter
 \newcommand{\removelatexerror}{\let\@latex@error\@gobble}
 \makeatother
+
+\SetKwRepeat{Struct}{struct \{}{\}}%
 
 \begin{document}
 
@@ -92,6 +94,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     interface suitable for practical software development.
     We then evaluate its performance against existing production ECS frameworks through a set of benchmarks.
 
+
     \section{Related Work}
     \label{sec:related-work}
 
@@ -118,6 +121,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     but they differ in which parts of the architecture are specialized statically and which remain dynamic.
     This work builds on these approaches by investigating a more comprehensive application of compile-time specialization across ECS functionality.
 
+
     \section{Design}
     \label{sec:design}
 
@@ -140,7 +144,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \item \textbf{System Registration.} Systems are represented by their function types.
         C++ concepts (compile-time predicates) are used to constrain the functions that may be registered as systems, while function-trait mechanisms extract the component types accessed by each system.
         This information is used to validate system requirements during compilation.
-        For example, systems that use components not registered with the framework would emit an error at compile-time.
         Systems are stored in a compile-time structure and invoked according to their registration order, allowing the compiler to generate for registered systems the appropriate parameters and execution order.
 
         \item \textbf{Query Construction.} Query component types are specified as C++ template parameters, allowing the compiler to generate specific query types as needed by systems.
@@ -150,6 +153,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     These mechanisms define the main distinction between the custom framework and the more dynamic portions of existing ECS implementations.
     The goal of the specialization is to determine and remove as much type-dependent ECS work from runtime to compilation while keeping the framework interface lean and simple to use.
     Runtime overhead for certain mechanisms in the framework remained essential, such as in entity organization and providing query references to systems.
+
     \subsection{Component Storage}\label{subsec:component-storage}
 
     A crucial decision we had to make was choosing the type of component storage because it directly affects the performance of entity iteration and modification.
@@ -162,6 +166,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     making them suitable for isolating the effects of compile-time specialization in component access and query construction.
     Outside of this, however, the choice of storage also proves a useful comparison point with existing ECS implementations.
     In particular, EnTT uses sparse-set storage, while Bevy defaults to archetype-based storage but provides both types depending on configuration.
+
 
     \section{Evaluation}
     \label{sec:method}
@@ -195,90 +200,210 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Benchmark Suite}
     \label{sec:benchmark-suite}
 
+    The following are components used in the benchmark suite and the values they map to:
+
+    \begin{gather*}
+        \mathbf{Pos} \mapsto \mathbb{R}^{2},
+        \qquad
+        \mathbf{Vel} \mapsto \mathbb{R}^{2}
+        \\
+        \mathbf{Int} \mapsto \varnothing,
+        \qquad
+        \mathbf{Life} \mapsto \mathbb{Z}
+        \\
+        \mathbf{Num} \mapsto \mathbb{Z},
+        \qquad
+        \mathbf{B}_i \mapsto \varnothing,
+        i \in {0,1,\ldots,7}.
+    \end{gather*}
+
     The benchmark suite was designed to exercise common ECS operations individually,
-    including sequential iteration, entity creation and destruction, sparse component access, and archetype transitions.
-    By isolating these behaviors into separate scenarios, differences between implementations can be attributed
-    to specific aspects of ECS execution.
+    including sequential iteration, entity creation and destruction, sparse component
+    access, and archetype transitions.
+    By isolating these behaviors into separate
+    scenarios, differences between implementations can be attributed to specific
+    aspects of ECS execution.
 
     \subsection{Entity Iteration}
     \label{subsec:entity-iteration}
 
-    This benchmark evaluated the performance of sequential entity iteration in the ECS framework.
-    The goal was to isolate the performance of entity traversal and component access.
+    This benchmark evaluated the performance of sequential entity iteration in the
+    ECS framework.
+    The goal was to isolate the performance of entity traversal and
+    component access.
     Configurations specified the entity count ranging from 1,000 to 64,000 to compare the scalability of entity iteration.
 
-    For this benchmark, we emulated the behavior of a 2-dimensional physics engine which adjusts an entity's position according to their velocity.
-    We defined the components $\mathbf{Pos} \mapsto \mathbb{R}^2$
-    and ${\mathbf{Vel} \mapsto \mathbb{R}^2}$.
-    The system query was defined as $\mathrm{Q}_\mathrm{S} = \mathrm{Q}(\mathbf{Pos}, \mathbf{Vel})$.
-    Lastly, the user system was defined as $\mathrm{S}(\Delta t) = \left[\forall e \in \mathrm{Q}_\mathrm{S} : e.\mathbf{Pos} \leftarrow e.\mathbf{Pos} + e.\mathbf{Vel} \Delta t\right]$.
+    For this benchmark, we emulated the behavior of a 2-dimensional physics engine
+    that adjusts an entity's position according to its velocity.
+    The benchmark used position and velocity components, each representing a point in two-dimensional space.
+    The system queried entities possessing both components and updated their positions using a fixed timestep $\Delta t$.
 
-    Before each configuration, the specified number of entities were created and initialized with
-    $\mathbf{Pos} \in \left\{ [-100, 100]^2 \right\}$ and $\mathbf{Vel} \in \left\{[-10, 10]^2\right\}$.
-    The distribution of the random initialization was uniform.
+    The operation performed by the ECS system is described in
+    Algorithm~\ref{alg:entity-iteration}.
+
+    \begin{algorithm}[h]
+        \caption{Entity Iteration}
+        \label{alg:entity-iteration}
+        \KwIn{Entity count $N$, timestep $\Delta t$}
+        \For{$e \in \mathrm{Query}(\mathbf{Pos}, \mathbf{Vel})$}
+        {
+            $e.\mathbf{Pos} \gets e.\mathbf{Pos} + e.\mathbf{Vel}\Delta t$;
+        }
+    \end{algorithm}
+
+    Before each configuration, the specified number of entities were created and
+    initialized with positions and velocities sampled uniformly from their
+    respective ranges.
+
+    \[
+        \mathbf{Pos} \in [-100,100]^2,
+        \qquad
+        \mathbf{Vel} \in [-10,10]^2.
+    \]
 
     \subsection{Sparse Access}
     \label{subsec:sparse-access}
 
-    This benchmark evaluated the performance of systems querying sparse entity archetypes in the ECS framework.
-    The ratio of entities of interest to total entities will be referred to as the sparse ratio $R_s$.
+    This benchmark evaluated the performance of systems querying sparse entity
+    archetypes in the ECS framework.
+    The ratio of entities of interest to total entities is referred to as the sparse ratio $R_s$.
     By varying the sparse ratio, the query-forming efficiency of ECS frameworks under sparse scenarios could be compared.
 
-    For this benchmark, we emulated the behavior of a system that interacts with only entities of interest.
-    In this implementation, entities of interest rotate their positions around the origin.
-    We used components $\mathbf{Pos} \mapsto \mathbb{R}^2$ and $\mathbf{Int} \mapsto \varnothing$.
-    The system query was defined as $\mathrm{Q}_\mathrm{S} = Q(\mathbf{Pos}, \mathbf{Int})$.
-    Lastly, the user system was defined as $\mathrm{S} = \left[\forall e \in \mathrm{Q}_\mathrm{S} : e.\mathbf{Pos} \leftarrow \mathrm{Rot}(e.\mathbf{Pos}) \right]$ where $\mathrm{Rot} : \mathbb{R}^2 \rightarrow \mathbb{R}^2, \quad (x,y) \mapsto (y,-x)$.
+    For this benchmark, we emulated the behavior of a system that interacts only with entities of interest.
+    Entities of interest rotate their positions around the origin.
+    The benchmark used a position component and a marker component identifying entities of interest.
 
-    Before each configuration, the set number of 32,000 entities was created and initialized with $\mathbf{Pos} \in \left\{ [-100, 100]^2 \right\}$.
-    A random subset of the total entities with size $R_s \times \mathrm{Entity Count}$ were then attached with $\mathbf{Int}$ corresponding to the sparseness configuration.
-    The distribution of the random initialization was uniform.
+    The position transformation used by the system is defined as follows.
+
+    \[
+        \operatorname{Rot} : \mathbb{R}^{2} \rightarrow \mathbb{R}^{2},
+        \qquad
+        (x,y) \mapsto (y,-x).
+    \]
+
+    The operation performed by the ECS system is described in
+    Algorithm~\ref{alg:sparse-access}.
+
+    \begin{algorithm}[h]
+    \caption{Sparse Access}
+    \label{alg:sparse-access}
+    \KwIn {Entity set with a sparse ratio $R_s$}
+    \For{$e \in \mathrm{Query}(\mathbf{Pos}, \mathbf{Int})$}
+    {
+        $(x,y) \gets $;
+        $e.\mathbf{Pos} \gets \operatorname{Rot} (e.\mathbf{Pos})$;
+    }
+    \end{algorithm}
+
+    Before each configuration, 32,000 entities were created and initialized with
+    positions sampled uniformly from the specified range.
+    A random subset of the
+    entities, with size determined by the sparse ratio, was then assigned the marker component.
+
+    \[
+        \mathbf{Pos} \in [-100,100]^2,
+        \qquad
+        |\mathrm{Interest}| = R_s \times 32{,}000.
+    \]
 
     \subsection{Entity Creation and Destruction}
     \label{subsec:entity-creation-and-destruction}
 
-    This benchmark evaluated the performance of the ECS framework when creating and destroying entities while running user-defined systems.
-    To maintain a steady state throughout the benchmark, we set entity creation and destruction to the same rate $E$.
-    In this benchmark, we adjusted the entity rate between configurations on a range from 32 to 2048.
+    This benchmark evaluated the performance of the ECS framework when creating and
+    destroying entities while running user-defined systems.
+    To maintain a steady state throughout the benchmark, entity creation and destruction were performed at the same rate $E$.
+    The entity rate was varied between configurations from 32 to 2,048 entities.
 
-    For this benchmark, we emulated the behavior of a system that creates entities and removes them after their duration has expired.
-    We defined components $\mathbf{Life} \mapsto \mathbb{Z}$ and the system query $\mathrm{Q}_\mathrm{S} = \mathrm{Q}(\mathbf{Life})$.
-    The user systems are separated into the entity creation system $\mathrm{C} = \left[\varnothing : \text{spawn }E\text{ entities with }\mathbf{Life \mapsto 2} \right]$
-    and the entity destruction system $\mathrm{D}$, which is defined as follows.
+    For this benchmark, we emulated a system that creates entities and removes them
+    after their duration has expired.
+    Each newly created entity was assigned a lifetime of two iterations.
 
-    \[
-        \left[
-            \forall e \in \mathrm{Q}_\mathrm{S} :
-            \left.
-                \begin{cases}
-                    e.\mathbf{Life} \leftarrow e.\mathbf{Life} - 1 & \text{if }e.\mathbf{Life} > 1 \\
-                    \text{destroy }e & \text{otherwise.}
-                \end{cases}
-            \right.
-        \right]
-        \tag{1}\label{eq:benchmark-3-entity-destruction-system}
-    \]
+    The creation and destruction operations were implemented as two separate ECS
+    systems.
+    Their behavior is described in
+    Algorithms~\ref{alg:entity-creation} and~\ref{alg:entity-destruction}.
 
-    The configuration did not prepare entities on initialization of the setup.
+    \begin{algorithm}[h]
+        \caption{Entity Creation}
+        \label{alg:entity-creation}
+        \KwIn {Entity creation rate $E$}
+        \For{$i \gets 1$ to $E$}
+        {
+            Create entity $e$\;
+            Attach $\mathbf{Life}$ to $e$\;
+            $e.\mathbf{Life} \gets 2$\;
+        }
+    \end{algorithm}
+
+    \begin{algorithm}[h]
+        \caption{Entity Destruction}
+        \label{alg:entity-destruction}
+        \Struct{$\mathbf{Life}$}{
+            \KwSty{int} life;
+        }
+        \For{$e \in \mathrm{Query}(\mathbf{Life})$}
+        {
+            \eIf{$e.\mathbf{Life} > 1$}
+            {
+                $e.\mathbf{Life} \gets e.\mathbf{Life} - 1$\;
+            }
+            {
+                Destroy $e$
+            }
+        }
+    \end{algorithm}
+
+    The configuration did not prepare entities during initialization; all entities were created during benchmark execution.
 
     \subsection{Structural Changes}
     \label{subsec:structural-changes}
 
-    This benchmark evaluated the performance of ECS frameworks under workloads requiring heavy structural changes.
-    This included the adding and removing of components, the changing of entity archetypes, and the change in queried entities.
-    While the number of components remained static, we vary the number of entities in the configuration on a range from 100 to 8000 entities to scale the workload.
+    This benchmark evaluated ECS frameworks under workloads requiring heavy structural changes.
+    These changes included adding and removing components,
+    changing entity archetypes, and consequently changing the set of entities
+    matched by queries.
+    While the number of components remained static, the number
+    of entities was varied from 100 to 8,000 to scale the workload.
 
     For this benchmark, we emulated a system that operated a binary counter.
-    If the bit on the counter is set, the system would attach the corresponding component, and vice versa.
-    We defined the number component $\mathbf{Num} \mapsto \mathbb{Z}$, the counter bit components $\mathbf{B}_i \mapsto \varnothing \text{ for } i \in \left\{ 0, 1, \dots, 7 \right\} $
-    and the system query $\mathrm{Q}_\mathrm{S} = \mathrm{Q}(\mathbf{Num})$.
+    Each entity contained a numerical counter value, while eight marker components
+    represented the individual bits of the counter.
 
-    The system for this benchmark is a more complex process.
-    Let $\mathrm{O}_i$ and $\mathrm{P}_i$ be operations on an entity $e$.
-    $\mathrm{O}_i$ will attach $\mathbf{B}_i$ to $e$ if $e$ did not have the component and the binary representation of $e.\mathbf{Num}$ is $1$ in its $i$th digit.
-    $\mathrm{P}_i$ will detach $\mathbf{B}_i$ to $e$ if $e$ had the component and the binary representation of $e.\mathbf{Num}$ is $0$ in its $i$th digit.
-    To put simply, $\mathrm{O}_i$ and $\mathrm{P}_i$ updates the component based on the entity's $\mathbf{Num}$ value.
-    We can then define the system $\mathrm{S} = \left[\forall e \in \mathrm{Q}_\mathrm{S} : \text{Apply }\mathrm{O}_i(e), \mathrm{P}_i(e)\text{ for } i \in \left\{ 0, 1, \dots, 7 \right\} \right]$
+    The system queried entities possessing the numerical component.
+    For every
+    queried entity, each marker component was added when the corresponding bit of
+    the entity's counter was set and removed when that bit was not set.
+
+    For an entity $e$ and bit index $i$, the structural update is described by
+    Algorithm~\ref{alg:structural-changes}.
+
+    \begin{algorithm}[h]
+\caption{Structural Changes}
+\label{alg:structural-changes}
+\For{$e \in \mathrm{Query}(\mathbf{Num})$}
+{
+    \For{$i \gets 0$ to $7$}
+    {
+        \eIf{the $i$th bit of $e.\mathbf{Num}$ is $1$}
+        {
+            \If{$e$ does not have $\mathbf{B}_i$}
+            {
+                Attach $\mathbf{B}_i$ to $e$;
+            }
+        }
+        {
+            \If{$e$ has $\mathbf{B}_i$}
+            {
+                Detach $\mathbf{B}_i$ from $e$;
+            }
+        }
+    }
+}
+    \end{algorithm}
+
+    Thus, each iteration of the system may cause multiple archetype transitions for
+    a single entity, while simultaneously changing the set of entities matched by the
+    system query.
 
 
     \section{Results}
@@ -310,33 +435,33 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-7}
                 \textbf{Count} & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
-                1000 & Bevy & 5.527 & 5.950 & 1.393 & 2.300 & 15.80 \\
-                & EnTT & 5.352 & 5.300 & 1.544 & 5.100 & 6.700 \\
-                & Custom & 1.308 & 1.300 & 0.049 & 1.200 & 2.200 \\
+                1000           & Bevy               & 5.527         & 5.950           & 1.393             & 2.300        & 15.80        \\
+                & EnTT               & 5.352         & 5.300           & 1.544             & 5.100        & 6.700        \\
+                & Custom             & 1.308         & 1.300           & 0.049             & 1.200        & 2.200        \\
                 \hline
-                2000 & Bevy & 6.168 & 6.600 & 1.480 & 3.000 & 14.40 \\
-                & EnTT & 10.48 & 10.40 & 0.708 & 10.10 & 25.40 \\
-                & Custom & 2.914 & 2.700 & 0.493 & 2.400 & 8.200 \\
+                2000           & Bevy               & 6.168         & 6.600           & 1.480             & 3.000        & 14.40        \\
+                & EnTT               & 10.48         & 10.40           & 0.708             & 10.10        & 25.40        \\
+                & Custom             & 2.914         & 2.700           & 0.493             & 2.400        & 8.200        \\
                 \hline
-                4000 & Bevy & 8.942 & 9.000 & 0.949 & 6.100 & 15.50 \\
-                & EnTT & 20.93 & 21.00 & 0.522 & 20.30 & 27.90 \\
-                & Custom & 5.029 & 5.000 & 0.265 & 4.700 & 6.600 \\
+                4000           & Bevy               & 8.942         & 9.000           & 0.949             & 6.100        & 15.50        \\
+                & EnTT               & 20.93         & 21.00           & 0.522             & 20.30        & 27.90        \\
+                & Custom             & 5.029         & 5.000           & 0.265             & 4.700        & 6.600        \\
                 \hline
-                8000 & Bevy & 13.26 & 13.50 & 1.571 & 10.00 & 34.20 \\
-                & EnTT & 41.49 & 41.60 & 2.100 & 39.80 & 71.40 \\
-                & Custom & 10.30 & 10.00 & 0.976 & 9.800 & 20.30 \\
+                8000           & Bevy               & 13.26         & 13.50           & 1.571             & 10.00        & 34.20        \\
+                & EnTT               & 41.49         & 41.60           & 2.100             & 39.80        & 71.40        \\
+                & Custom             & 10.30         & 10.00           & 0.976             & 9.800        & 20.30        \\
                 \hline
-                16000 & Bevy & 21.22 & 21.30 & 4.244 & 16.20 & 126.4 \\
-                & EnTT & 85.15 & 84.40 & 0.398 & 80.80 & 146.3 \\
-                & Custom & 21.64 & 20.60 & 3.020 & 19.80 & 42.40 \\
+                16000          & Bevy               & 21.22         & 21.30           & 4.244             & 16.20        & 126.4        \\
+                & EnTT               & 85.15         & 84.40           & 0.398             & 80.80        & 146.3        \\
+                & Custom             & 21.64         & 20.60           & 3.020             & 19.80        & 42.40        \\
                 \hline
-                32000 & Bevy & 32.98 & 31.80 & 7.903 & 27.70 & 256.2 \\
-                & EnTT & 176.2 & 168.8 & 22.31 & 161.0 & 293.3 \\
-                & Custom & 46.13 & 45.20 & 4.258 & 43.70 & 81.50 \\
+                32000          & Bevy               & 32.98         & 31.80           & 7.903             & 27.70        & 256.2        \\
+                & EnTT               & 176.2         & 168.8           & 22.31             & 161.0        & 293.3        \\
+                & Custom             & 46.13         & 45.20           & 4.258             & 43.70        & 81.50        \\
                 \hline
-                64000 & Bevy & 59.88 & 59.05 & 16.11 & 44.70 & 297.1 \\
-                & EnTT & 333.1 & 322.4 & 43.15 & 308.7 & 1178 \\
-                & Custom & 96.29 & 93.00 & 11.68 & 90.40 & 336.6 \\
+                64000          & Bevy               & 59.88         & 59.05           & 16.11             & 44.70        & 297.1        \\
+                & EnTT               & 333.1         & 322.4           & 43.15             & 308.7        & 1178         \\
+                & Custom             & 96.29         & 93.00           & 11.68             & 90.40        & 336.6        \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-1}
@@ -367,45 +492,45 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-7}
                 \textbf{Ratio} & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
-                1.00 & Bevy & 34.27 & 36.30 & 4.570 & 27.80 & 60.90 \\
-                & EnTT & 53.27 & 52.70 & 2.811 & 51.30 & 93.40 \\
-                & Custom & 34.56 & 32.80 & 4.845 & 32.50 & 86.70 \\
+                1.00           & Bevy               & 34.27         & 36.30           & 4.570             & 27.80        & 60.90        \\
+                & EnTT               & 53.27         & 52.70           & 2.811             & 51.30        & 93.40        \\
+                & Custom             & 34.56         & 32.80           & 4.845             & 32.50        & 86.70        \\
                 \hline
-                0.90 & Bevy & 31.65 & 33.20 & 3.436 & 25.30 & 51.10 \\
-                & EnTT & 70.31 & 69.80 & 3.157 & 68.10 & 114.9 \\
-                & Custom & 36.56 & 33.10 & 8.706 & 30.90 & 96.30 \\
+                0.90           & Bevy               & 31.65         & 33.20           & 3.436             & 25.30        & 51.10        \\
+                & EnTT               & 70.31         & 69.80           & 3.157             & 68.10        & 114.9        \\
+                & Custom             & 36.56         & 33.10           & 8.706             & 30.90        & 96.30        \\
                 \hline
-                0.75 & Bevy & 26.59 & 28.40 & 3.024 & 21.70 & 46.10 \\
-                & EnTT & 58.77 & 58.40 & 2.036 & 57.60 & 98.90 \\
-                & Custom & 29.03 & 28.30 & 3.262 & 26.70 & 74.10 \\
+                0.75           & Bevy               & 26.59         & 28.40           & 3.024             & 21.70        & 46.10        \\
+                & EnTT               & 58.77         & 58.40           & 2.036             & 57.60        & 98.90        \\
+                & Custom             & 29.03         & 28.30           & 3.262             & 26.70        & 74.10        \\
                 \hline
-                0.50 & Bevy & 20.37 & 21.30 & 1.950 & 16.30 & 33.80 \\
-                & EnTT & 41.08 & 39.90 & 8.495 & 37.50 & 225.9 \\
-                & Custom & 21.92 & 21.30 & 2.543 & 20.30 & 43.80 \\
+                0.50           & Bevy               & 20.37         & 21.30           & 1.950             & 16.30        & 33.80        \\
+                & EnTT               & 41.08         & 39.90           & 8.495             & 37.50        & 225.9        \\
+                & Custom             & 21.92         & 21.30           & 2.543             & 20.30        & 43.80        \\
                 \hline
-                0.40 & Bevy & 17.86 & 18.20 & 1.950 & 16.30 & 33.80 \\
-                & EnTT & 33.29 & 32.90 & 2.107 & 31.60 & 69.30 \\
-                & Custom & 18.40 & 17.70 & 2.954 & 16.70 & 38.60 \\
+                0.40           & Bevy               & 17.86         & 18.20           & 1.950             & 16.30        & 33.80        \\
+                & EnTT               & 33.29         & 32.90           & 2.107             & 31.60        & 69.30        \\
+                & Custom             & 18.40         & 17.70           & 2.954             & 16.70        & 38.60        \\
                 \hline
-                0.30 & Bevy & 14.16 & 15.00 & 2.490 & 11.10 & 51.00 \\
-                & EnTT & 29.18 & 24.80 & 8.725 & 23.00 & 99.20 \\
-                & Custom & 15.12 & 14.50 & 2.733 & 14.10 & 42.40 \\
+                0.30           & Bevy               & 14.16         & 15.00           & 2.490             & 11.10        & 51.00        \\
+                & EnTT               & 29.18         & 24.80           & 8.725             & 23.00        & 99.20        \\
+                & Custom             & 15.12         & 14.50           & 2.733             & 14.10        & 42.40        \\
                 \hline
-                0.20 & Bevy & 11.81 & 11.20 & 2.198 & 7.900 & 35.20 \\
-                & EnTT & 16.49 & 16.40 & 0.721 & 15.90 & 31.40 \\
-                & Custom & 12.16 & 11.90 & 1.222 & 11.70 & 37.30 \\
+                0.20           & Bevy               & 11.81         & 11.20           & 2.198             & 7.900        & 35.20        \\
+                & EnTT               & 16.49         & 16.40           & 0.721             & 15.90        & 31.40        \\
+                & Custom             & 12.16         & 11.90           & 1.222             & 11.70        & 37.30        \\
                 \hline
-                0.10 & Bevy & 8.214 & 7.700 & 2.955 & 4.200 & 41.40 \\
-                & EnTT & 8.909 & 8.800 & 0.694 & 8.400 & 15.90 \\
-                & Custom & 9.731 & 9.600 & 1.463 & 9.200 & 52.80 \\
+                0.10           & Bevy               & 8.214         & 7.700           & 2.955             & 4.200        & 41.40        \\
+                & EnTT               & 8.909         & 8.800           & 0.694             & 8.400        & 15.90        \\
+                & Custom             & 9.731         & 9.600           & 1.463             & 9.200        & 52.80        \\
                 \hline
-                0.05 & Bevy & 5.388 & 5.000 & 1.420 & 2.800 & 13.90 \\
-                & EnTT & 4.082 & 4.000 & 0.227 & 3.900 & 6.400 \\
-                & Custom & 8.176 & 8.100 & 0.396 & 7.900 & 15.80 \\
+                0.05           & Bevy               & 5.388         & 5.000           & 1.420             & 2.800        & 13.90        \\
+                & EnTT               & 4.082         & 4.000           & 0.227             & 3.900        & 6.400        \\
+                & Custom             & 8.176         & 8.100           & 0.396             & 7.900        & 15.80        \\
                 \hline
-                0.00 & Bevy & 3.579 & 3.500 & 0.828 & 1.400 & 8.500 \\
-                & EnTT & 0.020 & 0.000 & 0.040 & 0.000 & 0.100 \\
-                & Custom & 6.583 & 6.600 & 0.274 & 6.400 & 12.30 \\
+                0.00           & Bevy               & 3.579         & 3.500           & 0.828             & 1.400        & 8.500        \\
+                & EnTT               & 0.020         & 0.000           & 0.040             & 0.000        & 0.100        \\
+                & Custom             & 6.583         & 6.600           & 0.274             & 6.400        & 12.30        \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-2}
@@ -432,33 +557,33 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-7}
                 \textbf{Rate} & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
-                32 & Bevy & 15.61 & 14.70 & 3.280 & 9.800 & 40.80 \\
-                & EnTT & 1.750 & 1.700 & 0.093 & 1.600 & 3.100 \\
-                & Custom & 0.949 & 0.900 & 0.178 & 0.800 & 6.200 \\
+                32            & Bevy               & 15.61         & 14.70           & 3.280             & 9.800        & 40.80        \\
+                & EnTT               & 1.750         & 1.700           & 0.093             & 1.600        & 3.100        \\
+                & Custom             & 0.949         & 0.900           & 0.178             & 0.800        & 6.200        \\
                 \hline
-                64 & Bevy & 21.52 & 22.30 & 3.664 & 13.70 & 69.80 \\
-                & EnTT & 3.248 & 3.200 & 0.180 & 3.100 & 4.700 \\
-                & Custom & 1.608 & 1.600 & 0.079 & 1.500 & 2.900 \\
+                64            & Bevy               & 21.52         & 22.30           & 3.664             & 13.70        & 69.80        \\
+                & EnTT               & 3.248         & 3.200           & 0.180             & 3.100        & 4.700        \\
+                & Custom             & 1.608         & 1.600           & 0.079             & 1.500        & 2.900        \\
                 \hline
-                128 & Bevy & 29.40 & 27.70 & 9.880 & 20.00 & 155.2 \\
-                & EnTT & 6.591 & 6.400 & 1.469 & 6.200 & 40.00 \\
-                & Custom & 2.848 & 2.800 & 0.143 & 2.700 & 5.800 \\
+                128           & Bevy               & 29.40         & 27.70           & 9.880             & 20.00        & 155.2        \\
+                & EnTT               & 6.591         & 6.400           & 1.469             & 6.200        & 40.00        \\
+                & Custom             & 2.848         & 2.800           & 0.143             & 2.700        & 5.800        \\
                 \hline
-                256 & Bevy & 40.97 & 39.20 & 5.685 & 35.40 & 176.8 \\
-                & EnTT & 13.02 & 12.90 & 1.530 & 11.40 & 43.30 \\
-                & Custom & 5.452 & 5.400 & 0.176 & 5.200 & 6.900 \\
+                256           & Bevy               & 40.97         & 39.20           & 5.685             & 35.40        & 176.8        \\
+                & EnTT               & 13.02         & 12.90           & 1.530             & 11.40        & 43.30        \\
+                & Custom             & 5.452         & 5.400           & 0.176             & 5.200        & 6.900        \\
                 \hline
-                512 & Bevy & 66.21 & 62.50 & 7.548 & 59.50 & 125.3 \\
-                & EnTT & 25.79 & 25.60 & 0.762 & 24.90 & 34.90 \\
-                & Custom & 10.81 & 10.60 & 1.308 & 10.30 & 28.70 \\
+                512           & Bevy               & 66.21         & 62.50           & 7.548             & 59.50        & 125.3        \\
+                & EnTT               & 25.79         & 25.60           & 0.762             & 24.90        & 34.90        \\
+                & Custom             & 10.81         & 10.60           & 1.308             & 10.30        & 28.70        \\
                 \hline
-                1024 & Bevy & 114.1 & 110.3 & 9.538 & 103.8 & 194.1 \\
-                & EnTT & 55.58 & 55.50 & 2.228 & 52.00 & 97.50 \\
-                & Custom & 21.51 & 21.20 & 1.726 & 20.40 & 62.40 \\
+                1024          & Bevy               & 114.1         & 110.3           & 9.538             & 103.8        & 194.1        \\
+                & EnTT               & 55.58         & 55.50           & 2.228             & 52.00        & 97.50        \\
+                & Custom             & 21.51         & 21.20           & 1.726             & 20.40        & 62.40        \\
                 \hline
-                2048 & Bevy & 236.4 & 217.1 & 106.4 & 203.3 & 3000 \\
-                & EnTT & 111.8 & 109.9 & 7.771 & 101.9 & 180.1 \\
-                & Custom & 40.95 & 40.90 & 1.593 & 39.00 & 59.10 \\
+                2048          & Bevy               & 236.4         & 217.1           & 106.4             & 203.3        & 3000         \\
+                & EnTT               & 111.8         & 109.9           & 7.771             & 101.9        & 180.1        \\
+                & Custom             & 40.95         & 40.90           & 1.593             & 39.00        & 59.10        \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-3}
@@ -486,33 +611,33 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \cline{3-7}
                 \textbf{Count} & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
-                100 & Bevy & 90.87 & 86.30 & 25.53 & 60.10 & 582.4 \\
-                & EnTT & 13.67 & 13.60 & 0.785 & 10.70 & 25.10 \\
-                & Custom & 13.18 & 13.20 & 0.565 & 11.40 & 17.80 \\
+                100            & Bevy               & 90.87         & 86.30           & 25.53             & 60.10        & 582.4        \\
+                & EnTT               & 13.67         & 13.60           & 0.785             & 10.70        & 25.10        \\
+                & Custom             & 13.18         & 13.20           & 0.565             & 11.40        & 17.80        \\
                 \hline
-                250 & Bevy & 208.4 & 191.7 & 61.56 & 141.1 & 881.8 \\
-                & EnTT & 41.86 & 37.15 & 9.266 & 26.50 & 103.9 \\
-                & Custom & 33.06 & 33.10 & 1.734 & 27.40 & 52.10 \\
+                250            & Bevy               & 208.4         & 191.7           & 61.56             & 141.1        & 881.8        \\
+                & EnTT               & 41.86         & 37.15           & 9.266             & 26.50        & 103.9        \\
+                & Custom             & 33.06         & 33.10           & 1.734             & 27.40        & 52.10        \\
                 \hline
-                500 & Bevy & 350.4 & 338.6 & 77.19 & 256.6 & 1671 \\
-                & EnTT & 59.51 & 57.90 & 6.402 & 47.00 & 109.6 \\
-                & Custom & 55.94 & 55.80 & 6.278 & 46.50 & 183.0 \\
+                500            & Bevy               & 350.4         & 338.6           & 77.19             & 256.6        & 1671         \\
+                & EnTT               & 59.51         & 57.90           & 6.402             & 47.00        & 109.6        \\
+                & Custom             & 55.94         & 55.80           & 6.278             & 46.50        & 183.0        \\
                 \hline
-                1000 & Bevy & 567.5 & 568.0 & 42.86 & 450.3 & 1255 \\
-                & EnTT & 92.56 & 91.10 & 6.980 & 73.20 & 164.0 \\
-                & Custom & 87.58 & 86.80 & 9.665 & 73.20 & 292.4 \\
+                1000           & Bevy               & 567.5         & 568.0           & 42.86             & 450.3        & 1255         \\
+                & EnTT               & 92.56         & 91.10           & 6.980             & 73.20        & 164.0        \\
+                & Custom             & 87.58         & 86.80           & 9.665             & 73.20        & 292.4        \\
                 \hline
-                2000 & Bevy & 1027 & 1024 & 74.30 & 854.5 & 1919 \\
-                & EnTT & 167.8 & 163.7 & 53.31 & 124.1 & 1620 \\
-                & Custom & 153.5 & 147.6 & 27.94 & 128.6 & 671.6 \\
+                2000           & Bevy               & 1027          & 1024            & 74.30             & 854.5        & 1919         \\
+                & EnTT               & 167.8         & 163.7           & 53.31             & 124.1        & 1620         \\
+                & Custom             & 153.5         & 147.6           & 27.94             & 128.6        & 671.6        \\
                 \hline
-                4000 & Bevy & 1920 & 1913 & 1020 & 1543 & 2806 \\
-                & EnTT & 287.0 & 285.2 & 33.52 & 203.1 & 529.4 \\
-                & Custom & 244.3 & 242.6 & 31.67 & 199.8 & 1046 \\
+                4000           & Bevy               & 1920          & 1913            & 1020              & 1543         & 2806         \\
+                & EnTT               & 287.0         & 285.2           & 33.52             & 203.1        & 529.4        \\
+                & Custom             & 244.3         & 242.6           & 31.67             & 199.8        & 1046         \\
                 \hline
-                8000 & Bevy & 3622 & 3595 & 194.2 & 3077 & 4761 \\
-                & EnTT & 527.2 & 531.7 & 55.15 & 382.3 & 1281 \\
-                & Custom & 472.9 & 466.8 & 55.87 & 352.2 & 1270 \\
+                8000           & Bevy               & 3622          & 3595            & 194.2             & 3077         & 4761         \\
+                & EnTT               & 527.2         & 531.7           & 55.15             & 382.3        & 1281         \\
+                & Custom             & 472.9         & 466.8           & 55.87             & 352.2        & 1270         \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-4}
@@ -543,19 +668,20 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 Benchmark~\ref{subsec:entity-iteration}                & 28097 & 179  & 42     & 9.4  & 3.4  & 8.5    \\
                 64K Entity Count                                       &       &      &        &      &      &        \\
                 \hline
-                Benchmark~\ref{subsec:sparse-access}                   & 28102  & 168  & 44     & 6.0  & 1.7  & 3.4    \\
+                Benchmark~\ref{subsec:sparse-access}                   & 28102 & 168  & 44     & 6.0  & 1.7  & 3.4    \\
                 0.20 Sparse Ratio                                      &       &      &        &      &      &        \\
                 \hline
-                Benchmark~\ref{subsec:entity-creation-and-destruction} & 28092  & 188  & 41     & 2.8  & 0.7  & 0.9    \\
+                Benchmark~\ref{subsec:entity-creation-and-destruction} & 28092 & 188  & 41     & 2.8  & 0.7  & 0.9    \\
                 1K Entity Rate                                         &       &      &        &      &      &        \\
                 \hline
-                Benchmark~\ref{subsec:structural-changes}              & 28149  & 298  & 48     & 4.6  & 0.9  & 1.3    \\
+                Benchmark~\ref{subsec:structural-changes}              & 28149 & 298  & 48     & 4.6  & 0.9  & 1.3    \\
                 1K Entity Count                                        &       &      &        &      &      &        \\
                 \hline
             \end{tabular}
         \end{center}
         \label{tab:results-size-and-memory}
     \end{table*}
+
 
     \section{Discussion and Conclusion}
     \label{sec:conclusion}
@@ -586,6 +712,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     However, its effectiveness depends on the underlying storage architecture and access patterns.
     Compile-time specialization should therefore be considered as one part of ECS performance design,
     rather than a replacement for appropriate storage and execution strategies outright, for maximal benefits.
+
 
     \section{Limitations}
     \label{sec:limitations}
