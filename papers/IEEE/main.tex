@@ -3,13 +3,18 @@
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
+\usepackage[ruled, norelsize]{algorithm2e}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{mathtools}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
 T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\makeatletter
+\newcommand{\removelatexerror}{\let\@latex@error\@gobble}
+\makeatother
+
 \begin{document}
 
     \title{Evaluating Compile-Time Specialization For Entity-Component-System Implementations\\
@@ -40,6 +45,12 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \textit{Chulalongkorn University}\\
     Bangkok, Thailand \\
     email address or ORCID}
+    \and
+    \IEEEauthorblockN{Vishnu Kotrajaras}
+    \IEEEauthorblockA{\textit{Department of Computer Engineering} \\
+    \textit{Chulalongkorn University}\\
+    Bangkok, Thailand \\
+    email address or ORCID}
     }
 
     \maketitle
@@ -47,11 +58,11 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \begin{abstract}
         The Entity-Component-System (ECS) pattern is used for applications in interactive systems,
         machine learning, and digital simulation contexts.
-        From examining existing infrastructure and tools and comparing to theoretical models,
+        From examining existing infrastructure and tools, such as EnTT, Bevy Engine, and the Unity Data-Oriented Technology Stack (DOTS), and comparing to theoretical models,
         we identified opportunities to reduce ECS runtime overhead and increase performance through increased compile-time specialization.
         We present an ECS framework built upon C++ that aggressively applies compile-time
         metaprogramming techniques to reduce overhead to analyze the potential of this approach.
-        The framework was evaluated in comparison with industry-standard ECS libraries EnTT
+        The framework was evaluated in comparison with EnTT
         and Bevy ECS in terms of performance, executable size, and memory usage.
         The results showed that our framework performs similarly compared to existing frameworks while
         improving program size at a small cost to memory usage in tested workloads.
@@ -64,7 +75,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \section{Introduction}
     \label{sec:introduction}
-    Entity-component-system (ECS) is a software architectural pattern widely used in interactive systems, simulations, and machine learning.
+    Entity-component-system (ECS) is a data-oriented software architectural pattern widely used in interactive systems, simulations, and machine learning.
     An ECS represents entities through collections of data-oriented components, with systems defining the behavior that operates on those components.
     An entity's behavior therefore emerges from the systems that add, remove, or modify its components.
 
@@ -127,67 +138,52 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         The framework derives the storage information at compile time, allowing component access to be expressed through statically known types.
 
         \item \textbf{System Registration.} Systems are represented by their function types.
-        C++ concepts are used to constrain the functions that may be registered as systems, while template-based function-trait mechanisms extract the component types accessed by each system.
+        C++ concepts (compile-time predicates) are used to constrain the functions that may be registered as systems, while function-trait mechanisms extract the component types accessed by each system.
         This information is used to validate system requirements during compilation.
-        Systems without the required components in related storage will fail to compile.
-        Systems are stored in a compile-time structure and invoked according to their registration order, allowing the compiler to specialize the resulting execution path for the registered systems.
+        For example, systems that use components not registered with the framework would emit an error at compile-time.
+        Systems are stored in a compile-time structure and invoked according to their registration order, allowing the compiler to generate for registered systems the appropriate parameters and execution order.
 
-        \item \textbf{Query Construction.} Query component types are specified as template parameters.
-        The framework uses parameter packs and compile-time expansion to construct the component accesses required by a query.
-        Because the component types are known when the query is compiled, the implementation can generate access operations specialized to the exact set of components requested by the query.
+        \item \textbf{Query Construction.} Query component types are specified as C++ template parameters, allowing the compiler to generate specific query types as needed by systems.
+        The framework uses parameter packs and compile-time expansion to construct the component accesses required by a query, such that the implementation can generate access operations specialized to the query's component set.
     \end{itemize}
 
     These mechanisms define the main distinction between the custom framework and the more dynamic portions of existing ECS implementations.
-    The goal is not to eliminate runtime work entirely.
-    Rather, it is to determine how much type-dependent ECS work can be moved into compilation without making the programming interface impractical.
-
+    The goal of the specialization is to determine and remove as much type-dependent ECS work from runtime to compilation while keeping the framework interface lean and simple to use.
+    Runtime overhead for certain mechanisms in the framework remained essential, such as in entity organization and providing query references to systems.
     \subsection{Component Storage}\label{subsec:component-storage}
 
     A crucial decision we had to make was choosing the type of component storage because it directly affects the performance of entity iteration and modification.
-    Two common approaches are archetype-based storage and sparse-set storage.
-    Archetype storage organizes entities based on their component combinations, providing efficient iteration over entities with the same component group.
-    Sparse-set storage instead maintains a dense component array with an index structure, allowing for efficient component insertion and removal.
+    Two common approaches are archetype-based storage and sparse-set-based storage.
+    Archetype storage organizes entities based on the component set attached to them, providing efficient iteration over entities with the same component group.
+    Sparse-set storage instead maintains a dense component array with an indexing structure, allowing for efficient component lifecycle management.
     These approaches therefore represent trade-offs between iteration and structural modification costs. \cite{cox2025run}
 
     We selected sparse-set storage as they provide a relatively direct mapping between a component type and its storage,
     making them suitable for isolating the effects of compile-time specialization in component access and query construction.
     Outside of this, however, the choice of storage also proves a useful comparison point with existing ECS implementations.
-    In particular, EnTT uses sparse-set storage, while Bevy defaults to archetype-based storage.
+    In particular, EnTT uses sparse-set storage, while Bevy defaults to archetype-based storage but provides both types depending on configuration.
 
     \section{Evaluation}
     \label{sec:method}
 
-    For each framework, the size of the final executable is obtained by measuring the executable with the device's File Explorer.
-    The memory usage of each framework is obtained by recording the Memory column from the Processes tab within the device's Task Manager while the benchmark was executing under steady-state conditions.
+    For each framework, final executable size was measured using the device's File Explorer,
+    while memory usage was recorded from the Memory column in the device's Task Manager during steady-state benchmark execution.
 
-    The execution time of each ECS implementation was measured by recording the time immediately before and after
-    the execution of all user-defined systems within one frame.
-    For Bevy, we used Rust's \verb|Instant|~\cite{rust_instant} to record timestamps.
-    For EnTT and our implementation, we used the \verb|std::chrono::steady_clock|~\cite{cpp_steady_clock} from C++.
-    Unrelated plugins, rendering, and other external factors were excluded to isolate the frame execution time such that
-    it served as a reliable primary performance metric.
+    Execution time was measured as the interval encompassing all user-defined systems within a frame.
+    Bevy used Rust's \verb|Instant|~\cite{rust_instant}, while EnTT and our implementation used C++ \verb|std::chrono::steady_clock|~\cite{cpp_steady_clock}.
+    Rendering, unrelated plugins, and other external factors were excluded to isolate ECS execution time.
 
-    Four benchmark scenarios were designed to evaluate the frameworks under different workloads.
-    For each scenario, the behavior and resultant work of user-defined systems remained equivalent across all frameworks.
-    Benchmarks involving entity creation and destruction were designed to maintain a steady-state workload by ensuring
-    that the ECS world returned to an equivalent state after each frame.
-    While each framework differed in implementation details, care was taken to ensure computational work performed by
-    the systems remained identical.
-    This allowed a direct comparison of runtime performance between implementations.
+    Four benchmark scenarios evaluated the frameworks under different workloads.
+    In each scenario, user-defined systems performed equivalent work across implementations.
+    Entity creation and destruction benchmarks maintained a steady-state workload by restoring the ECS world to an equivalent state after each frame.
 
-    All benchmarks were compiled using release optimization settings, albeit with different compilers.
-    The Bevy implementation was built using Rust's \verb|cargo --release| configuration.
-    The EnTT implementation and our custom implementation, built on C++, instead used the MSVC Release
-    configuration with Clang compiler.
+    Each benchmark was warmed up before measurement, after which execution time was recorded for 1,000 consecutive frames and logged.
+    The samples were then averaged to obtain the mean execution time for each configuration.
 
-    Before measurements were recorded, each benchmark was allowed to execute for a warm-up period to reduce the
-    influence of initialization overhead.
-    Following this, execution time was recorded over 1,000 consecutive frames and written to a log file.
-    The collected samples were then analyzed to compute the average execution time for each benchmark configuration.
+    All benchmarks used release optimizations: Bevy was built with \verb|cargo --release|, while the C++ implementations used the MSVC Release configuration with Clang.
+    Tests were conducted on local hardware using the same machine and operating environment to ensure consistency across measurements.
 
-    All tests were executed on local hardware using the same machine and operating environment to ensure consistency across measurements.
     The hardware specifications are as follows:
-
     \begin{itemize}
         \item CPU: 11th Gen Intel(R) Core(TM) i7-11800H @ 2.30 GHz
         \item GPU: Intel(R) UHD Graphics
