@@ -142,9 +142,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         The framework derives the storage information at compile time, allowing component access to be expressed through statically known types.
 
         \item \textbf{System Registration.} Systems are represented by their function types.
-        C++ concepts (compile-time predicates) are used to constrain the functions that may be registered as systems, while function-trait mechanisms extract the component types accessed by each system.
+        C++ concepts (compile-time predicates) provide constraints to system functions, while function-trait mechanisms extract the component types they access.
         This information is used to validate system requirements during compilation.
-        Systems are stored in a compile-time structure and invoked according to their registration order, allowing the compiler to generate for registered systems the appropriate parameters and execution order.
+        Systems are stored in a compile-time structure, letting the compiler generate the appropriate system parameters and invoke these systems sequentially.
 
         \item \textbf{Query Construction.} Query component types are specified as C++ template parameters, allowing the compiler to generate specific query types as needed by systems.
         The framework uses parameter packs and compile-time expansion to construct the component accesses required by a query, such that the implementation can generate access operations specialized to the query's component set.
@@ -297,8 +297,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     Before each configuration, 32,000 entities were created and initialized with
     positions sampled uniformly from the specified range.
-    A random subset of the
-    entities, with size determined by the sparse ratio, was then assigned the marker component.
+    A random subset of the entities, with size determined by the sparse ratio, was then assigned the marker component.
 
     \[
         \mathbf{Pos} \in [-100,100]^2,
@@ -309,18 +308,13 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \subsection{Entity Creation and Destruction}
     \label{subsec:entity-creation-and-destruction}
 
-    This benchmark evaluated the performance of the ECS framework when creating and
-    destroying entities while running user-defined systems.
+    This benchmark evaluated the performance of the ECS framework when creating and destroying entities while running systems.
     To maintain a steady state throughout the benchmark, entity creation and destruction were performed at the same rate $E$.
-    The entity rate was varied between configurations from 32 to 2,048 entities.
+    The entity rate varied between configurations from 32 to 2,048 entities.
 
     For this benchmark, we emulated a system that creates entities and removes them
     after their duration has expired.
-    Each newly created entity was assigned a lifetime of two iterations.
-
-    The creation and destruction operations were implemented as two separate ECS
-    systems.
-    Their behavior is described in
+    The creation and destruction operations were implemented as two separate ECS systems, described in
     Algorithms~\ref{alg:entity-creation} and~\ref{alg:entity-destruction}.
 
     \begin{algorithm}[h]
@@ -378,27 +372,27 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Algorithm~\ref{alg:structural-changes}.
 
     \begin{algorithm}[h]
-\caption{Structural Changes}
-\label{alg:structural-changes}
-\For{$e \in \mathrm{Query}(\mathbf{Num})$}
-{
-    \For{$i \gets 0$ to $7$}
-    {
-        \eIf{the $i$th bit of $e.\mathbf{Num}$ is $1$}
+        \caption{Structural Changes}
+        \label{alg:structural-changes}
+        \For{$e \in \mathrm{Query}(\mathbf{Num})$}
         {
-            \If{$e$ does not have $\mathbf{B}_i$}
+            \For{$i \gets 0$ to $7$}
             {
-                Attach $\mathbf{B}_i$ to $e$;
+                \eIf{the $i$th bit of $e.\mathbf{Num}$ is $1$}
+                {
+                    \If{$e$ does not have $\mathbf{B}_i$}
+                    {
+                        Attach $\mathbf{B}_i$ to $e$;
+                    }
+                }
+                {
+                    \If{$e$ has $\mathbf{B}_i$}
+                    {
+                        Detach $\mathbf{B}_i$ from $e$;
+                    }
+                }
             }
         }
-        {
-            \If{$e$ has $\mathbf{B}_i$}
-            {
-                Detach $\mathbf{B}_i$ from $e$;
-            }
-        }
-    }
-}
     \end{algorithm}
 
     Thus, each iteration of the system may cause multiple archetype transitions for
@@ -411,20 +405,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \paragraph*{Entity Iteration}Table~\ref{tab:results-benchmark-1} shows the results of benchmark~\ref{subsec:entity-iteration}.
     From the benchmark output, we normalized the mean frame time by taking the ratio with the entity count for that configuration, and plotting this value yielded Fig.~\ref{fig:chart1}.
-    This benchmark demonstrated that all three ECS frameworks exhibited the expected linear scaling for the simple data mutation system.
-    EnTT incurred significantly higher costs at higher entity counts, implying larger per-entity iteration costs compared to the other frameworks.
-    Bevy showed greater constant overhead, which was clear at lower entity counts, but scaled significantly better as entity count grew.
-    This could be attributed to Bevy's archetype storage, which allowed for faster iteration compared to sparse-set storage.
-
-    The custom implementation consistently exhibited the lowest frame times up to 8,000 entities, after which Bevy took over.
-    The specialization and compiler optimizations used by the custom implementation allowed it to
-    perform well when compared to EnTT\@.
-
-    \begin{figure}
-        \centerline{\includegraphics[width=0.4\textwidth]{chart1}}
-        \caption{Benchmark~\ref{subsec:entity-iteration}: Scatter plot detailing frame time per entity as entity count increases.}
-        \label{fig:chart1}
-    \end{figure}
 
     \begin{table}[htbp]
         \caption{Benchmark~\ref{subsec:entity-iteration} – Statistics}
@@ -467,21 +447,20 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{center}\label{tab:results-benchmark-1}
     \end{table}
 
+    \begin{figure}
+        \centerline{\includegraphics[width=0.4\textwidth]{chart1}}
+        \caption{Benchmark~\ref{subsec:entity-iteration}: Scatter plot detailing frame time per entity as entity count increases.}
+        \label{fig:chart1}
+    \end{figure}
+
+    This benchmark demonstrated that all three ECS frameworks exhibited the expected linear scaling for data mutation.
+    EnTT incurred significantly higher costs at higher entity counts, implying larger per-entity iteration costs compared to the other frameworks.
+    Bevy showed greater constant overhead, which was clear at lower entity counts, but scaled significantly better as entity count grew.
+    This could be attributed to Bevy's archetype storage, which allowed for faster iteration compared to sparse-set storage.
+    It can be seen that the custom implementation consistently exhibited the lowest frame times up to 8,000 entities, after which Bevy took over.
+
     \paragraph*{Sparse Access}Table~\ref{tab:results-benchmark-2} shows the results of benchmark~\ref{subsec:sparse-access}.
     Plotting the mean frame time against the sparse ratio of the benchmark configuration yields Fig.~\ref{fig:chart2}.
-
-    Considering the figure, we observe that while EnTT performed worse at high sparse ratios compared to the other frameworks,
-    it exhibited superior efficiency when entities of interest are sparse, specifically at sparse ratio 0.1 and less.
-    Bevy and the custom implementation showed similar decreases as entity density lowered, but the custom implementation had
-    more constant overhead compared to Bevy.
-    As such, the custom framework consistently underperformed in terms of sparse access efficiency compared to
-    the other frameworks.
-
-    \begin{figure}
-        \centerline{\includegraphics[width=0.4\textwidth]{chart2}}
-        \caption{Benchmark~\ref{subsec:sparse-access}: Scatter plot detailing frame time at varying sparse ratios.}
-        \label{fig:chart2}
-    \end{figure}
 
     \begin{table}[htbp]
         \caption{Benchmark~\ref{subsec:sparse-access} – Statistics}
@@ -536,17 +515,21 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{center}\label{tab:results-benchmark-2}
     \end{table}
 
+    \begin{figure}
+        \centerline{\includegraphics[width=0.4\textwidth]{chart2}}
+        \caption{Benchmark~\ref{subsec:sparse-access}: Scatter plot detailing frame time at varying sparse ratios.}
+        \label{fig:chart2}
+    \end{figure}
+
+    Considering the figure, we observe that while EnTT performed worse at high sparse ratios compared to the other frameworks,
+    it exhibited superior efficiency when entities of interest are sparse, specifically at sparse ratio 0.1 and less.
+    Bevy and the custom implementation showed similar decreases as entity density lowered, but the custom implementation had
+    more constant overhead compared to Bevy.
+    As such, the custom framework consistently underperformed in terms of sparse access efficiency compared to
+    the other frameworks.
+
     \paragraph*{Entity Creation and Destruction}Table~\ref{tab:results-benchmark-3} shows the results of benchmark~\ref{subsec:entity-creation-and-destruction}.
     We normalized the mean frame time by taking the ratio with the entity rate for that configuration, and plotting this value yielded Fig.~\ref{fig:chart3}.
-    For this benchmark, we observe EnTT and the custom framework exhibiting similar performance behavior, remaining relatively consistent as entity rate varied.
-    Bevy, at low entity rates, showed a significant performance drop with frame times at multiples of the other frameworks.
-    As entity rates increase, Bevy recovered from the static performance overhead, but not to comparable performance.
-
-    \begin{figure}
-        \centerline{\includegraphics[width=0.4\textwidth]{chart3}}
-        \caption{Benchmark~\ref{subsec:entity-creation-and-destruction}: Scatter plot detailing frame time per entity at varying entity rates.}
-        \label{fig:chart3}
-    \end{figure}
 
     \begin{table}[htbp]
         \caption{Benchmark~\ref{subsec:entity-creation-and-destruction} – Statistics}
@@ -589,18 +572,19 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{center}\label{tab:results-benchmark-3}
     \end{table}
 
-    \paragraph*{Structural Changes}The findings of the previous benchmark were further amplified with the results in Table~\ref{tab:results-benchmark-4}.
-    When entities undergo structural changes rapidly, archetype ECS frameworks suffer large performance hits from archetype switching.
-    This can be observed by the even more extreme performance hits shown by Bevy in Fig.~\ref{fig:chart4}.
-    Unlike in benchmark~\ref{subsec:entity-creation-and-destruction}, however, Bevy's performance did not improve to be able to compare to the other frameworks as entity count increased.
-    With structural changes being the main workload, the cost of archetype switching became a significant load compared to the other frameworks that did not use archetype storage in the implementation.
-    EnTT and the custom implementation remained largely similar to each other in performance behavior in this scenario, as well.
-
     \begin{figure}
-        \centerline{\includegraphics[width=0.4\textwidth]{chart4}}
-        \caption{Benchmark~\ref{subsec:structural-changes}: Scatter plot detailing frame time per entity at varying entity count.}
-        \label{fig:chart4}
+        \centerline{\includegraphics[width=0.4\textwidth]{chart3}}
+        \caption{Benchmark~\ref{subsec:entity-creation-and-destruction}: Scatter plot detailing frame time per entity at varying entity rates.}
+        \label{fig:chart3}
     \end{figure}
+
+    For this benchmark, we observe EnTT and the custom framework exhibiting similar performance behavior, remaining relatively consistent as entity rate varied.
+    Bevy, at low entity rates, showed frame times at multiples of the other frameworks.
+    As entity rates increase, Bevy recovered from the static performance overhead, but not to comparable performance.
+
+    \paragraph*{Structural Changes}The findings of the previous benchmark were further amplified with the results in
+    Table~\ref{tab:results-benchmark-4} and the subsequent Fig~\ref{fig:chart4} plotting the value normalized
+    against the entity count.
 
     \begin{table}[htbp]
         \caption{Benchmark~\ref{subsec:structural-changes} – Statistics}
@@ -643,18 +627,21 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \end{center}\label{tab:results-benchmark-4}
     \end{table}
 
-    \paragraph*{Executable Size and Memory Usage}Table~\ref{tab:results-size-and-memory} shows the executable size and memory usage of the frameworks while running the workload according to the given scenarios.
-    The size of the executable did not particularly change as each benchmark's configurations varied, while memory usage scaled linearly.
-    As such, only one configuration of each scenario sufficed for display.
-    We observe that the custom framework-built executable size was approximately 25\% the size of the equivalent EnTT-built executable (except for~\ref{subsec:structural-changes}, where it was around 16.1\%,) while the Bevy-built executable size is substantially higher.
-    The simple explanation was that Bevy housed not just the ECS, but also various other features designed to support application development.
-    Reducing Bevy from the overall engine to the parts relevant to the Bevy ECS would decrease executable size, but not by enough of a margin to contend with the other frameworks.
+    \begin{figure}
+        \centerline{\includegraphics[width=0.4\textwidth]{chart4}}
+        \caption{Benchmark~\ref{subsec:structural-changes}: Scatter plot detailing frame time per entity at varying entity count.}
+        \label{fig:chart4}
+    \end{figure}
 
-    Regarding memory usage, EnTT consumed the least memory, followed by the custom framework, then Bevy.
-    As Bevy ECS is part of a broader engine ecosystem, the additional functionalities, such as change detection,
-    scheduling infrastructure, metadata, and registries are likely to contribute to the larger memory footprint.
-    Considering the other frameworks, the custom framework may have used more complex data storage
-    and temporary objects compared to EnTT, such as the structured query objects, thereby contributing to more memory usage.
+    Unlike in benchmark~\ref{subsec:entity-creation-and-destruction}, however, Bevy's performance did not improve to be able to compare to the other frameworks as entity count increased.
+    When entities undergo structural changes rapidly, archetype ECS frameworks suffer large performance hits from archetype switching.
+    This can be observed by the even more extreme performance hits shown.
+
+    EnTT and the custom implementation remained largely similar to each other in performance behavior in this scenario, as well.
+
+
+    \paragraph*{Executable Size and Memory Usage}
+    Table~\ref{tab:results-size-and-memory} shows the executable size and memory usage of each framework under the given scenarios.
 
     \begin{table*}
         \caption{Executable Size and Memory Usage of ECS Frameworks in Benchmark Scenarios}
@@ -682,6 +669,14 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{tab:results-size-and-memory}
     \end{table*}
 
+    Executable size remained largely unchanged across benchmark configurations, whereas memory usage scaled approximately linearly; therefore, only one configuration per scenario is shown.
+    The custom framework produced executables approximately 25\% the size of equivalent EnTT executables, except for~\ref{subsec:structural-changes}, where it was approximately 16.1\%.
+    Bevy executables were substantially larger, primarily because Bevy provides functionality beyond its ECS, including broader application-development features.
+    Restricting Bevy to its ECS components would reduce this overhead, but likely not enough to match the other frameworks.
+
+    For memory usage, EnTT consumed the least, followed by the custom framework and then Bevy.
+    Bevy's broader engine infrastructure likely contributed to its larger memory footprint.
+    The custom framework's higher usage than EnTT may similarly result from its more complex data storage and temporary objects, such as structured query objects.
 
     \section{Discussion and Conclusion}
     \label{sec:conclusion}
