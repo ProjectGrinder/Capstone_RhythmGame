@@ -55,6 +55,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     email address or ORCID}
     }
 
+
     \maketitle
 
     \begin{abstract}
@@ -138,16 +139,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The implementation applies compile-time specialization in three main areas:
 
     \begin{itemize}
-        \item \textbf{Component Storage.} Component types are represented directly in the storage types used by the ECS\@.
-        The framework derives the storage information at compile time, allowing component access to be expressed through statically known types.
+        \item \textbf{Component Storage.} Component types are represented directly in ECS storage types.
+        Storage information is derived at compile time, allowing component access through statically known types.
 
         \item \textbf{System Registration.} Systems are represented by their function types.
-        C++ concepts (compile-time predicates) provide constraints to system functions, while function-trait mechanisms extract the component types they access.
-        This information is used to validate system requirements during compilation.
-        Systems are stored in a compile-time structure, letting the compiler generate the appropriate system parameters and invoke these systems sequentially.
+        C++ concepts constrain system functions, while function traits extract their component types.
+        These types are used to validate system requirements at compile time.
+        Systems are stored in a compile-time structure, allowing the compiler to generate system parameters and invoke systems sequentially.
 
-        \item \textbf{Query Construction.} Query component types are specified as C++ template parameters, allowing the compiler to generate specific query types as needed by systems.
-        The framework uses parameter packs and compile-time expansion to construct the component accesses required by a query, such that the implementation can generate access operations specialized to the query's component set.
+        \item \textbf{Query Construction.} Query component types are specified as C++ template parameters, allowing the compiler to generate query types for each system.
+        Parameter packs and compile-time expansion construct the required component accesses, enabling operations specialized to each query's component set.
     \end{itemize}
 
     These mechanisms define the main distinction between the custom framework and the more dynamic portions of existing ECS implementations.
@@ -233,7 +234,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     component access.
     Configurations specified the entity count ranging from 1,000 to 64,000 to compare the scalability of entity iteration.
 
-    For this benchmark, we emulated the behavior of a 2-dimensional physics engine
+    We emulated the behavior of a 2-dimensional physics engine
     that adjusts an entity's position according to its velocity.
     The benchmark used position and velocity components, each representing a point in two-dimensional space.
     The system queried entities possessing both components and updated their positions using a fixed timestep $\Delta t$.
@@ -251,15 +252,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         }
     \end{algorithm}
 
-    Before each configuration, the specified number of entities were created and
-    initialized with positions and velocities sampled uniformly from their
-    respective ranges.
-
-    \[
-        \mathbf{Pos} \in [-100,100]^2,
-        \qquad
-        \mathbf{Vel} \in [-10,10]^2.
-    \]
+    On setup, all entities were initialized with components $\mathbf{Pos} \in [-100,100]^2, \mathbf{Vel} \in [-10,10]^2$.
 
     \subsection{Sparse Access}
     \label{subsec:sparse-access}
@@ -269,7 +262,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The ratio of entities of interest to total entities is referred to as the sparse ratio $R_s$.
     By varying the sparse ratio, the query-forming efficiency of ECS frameworks under sparse scenarios could be compared.
 
-    For this benchmark, we emulated the behavior of a system that interacts only with entities of interest.
+    We emulated the behavior of a system that interacts only with entities of interest.
     Entities of interest rotate their positions around the origin.
     The benchmark used a position component and a marker component identifying entities of interest.
 
@@ -295,15 +288,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     }
     \end{algorithm}
 
-    Before each configuration, 32,000 entities were created and initialized with
-    positions sampled uniformly from the specified range.
-    A random subset of the entities, with size determined by the sparse ratio, was then assigned the marker component.
-
-    \[
-        \mathbf{Pos} \in [-100,100]^2,
-        \qquad
-        |\mathrm{Interest}| = R_s \times 32{,}000.
-    \]
+    On setup, all entities were initialized with $\mathbf{Pos} \in [-100,100]^2$, then
+    $R_s \times 32{,}000$ $\mathbf{Int}$ component instances were attached to the entities at random.
 
     \subsection{Entity Creation and Destruction}
     \label{subsec:entity-creation-and-destruction}
@@ -312,7 +298,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     To maintain a steady state throughout the benchmark, entity creation and destruction were performed at the same rate $E$.
     The entity rate varied between configurations from 32 to 2,048 entities.
 
-    For this benchmark, we emulated a system that creates entities and removes them
+    We emulated a system that creates entities and removes them
     after their duration has expired.
     The creation and destruction operations were implemented as two separate ECS systems, described in
     Algorithms~\ref{alg:entity-creation} and~\ref{alg:entity-destruction}.
@@ -332,9 +318,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \begin{algorithm}[h]
         \caption{Entity Destruction}
         \label{alg:entity-destruction}
-        \Struct{$\mathbf{Life}$}{
-            \KwSty{int} life;
-        }
         \For{$e \in \mathrm{Query}(\mathbf{Life})$}
         {
             \eIf{$e.\mathbf{Life} > 1$}
@@ -357,9 +340,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     changing entity archetypes, and consequently changing the set of entities
     matched by queries.
     While the number of components remained static, the number
-    of entities was varied from 100 to 8,000 to scale the workload.
+    of entities varied from 100 to 8,000 to scale the workload.
 
-    For this benchmark, we emulated a system that operated a binary counter.
+    We emulated a system that operated a binary counter.
     Each entity contained a numerical counter value, while eight marker components
     represented the individual bits of the counter.
 
