@@ -188,6 +188,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     All benchmarks used release optimizations: Bevy was built with \verb|cargo --release|, while the C++ implementations used the MSVC Release configuration with Clang.
     Tests were conducted on local hardware using the same machine and operating environment to ensure consistency across measurements.
+    If implementations require random numbers, a seeded generator was used with the seed \verb|776769420|.
 
     The hardware specifications are as follows:
     \begin{itemize}
@@ -212,7 +213,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \qquad
         \mathbf{Life} \mapsto \mathbb{Z}
         \\
-        \mathbf{Num} \mapsto \mathbb{Z},
+        \mathbf{Count(x,y)} \mapsto \mathbb{Z \times Z},
         \qquad
         \mathbf{B}_i \mapsto \varnothing,
         i \in {0,1,\ldots,7}.
@@ -232,7 +233,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     ECS framework.
     The goal was to isolate the performance of entity traversal and
     component access.
-    Configurations specified the entity count ranging from 1,000 to 64,000 to compare the scalability of entity iteration.
+    Configurations specified the entity count $N$ varying from 1,000 to 64,000 to compare the scalability of entity iteration.
 
     We emulated the behavior of a 2-dimensional physics engine
     that adjusts an entity's position according to its velocity.
@@ -245,7 +246,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \begin{algorithm}[h]
         \caption{Entity Iteration}
         \label{alg:entity-iteration}
-        \KwIn{Entity count $N$, timestep $\Delta t$}
+        \KwIn{Timestep $\Delta t$}
         \For{$e \in \mathrm{Query}(\mathbf{Pos}, \mathbf{Vel})$}
         {
             $e.\mathbf{Pos} \gets e.\mathbf{Pos} + e.\mathbf{Vel}\Delta t$;
@@ -280,7 +281,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \begin{algorithm}[h]
     \caption{Sparse Access}
     \label{alg:sparse-access}
-    \KwIn {Entity set with a sparse ratio $R_s$}
     \For{$e \in \mathrm{Query}(\mathbf{Pos}, \mathbf{Int})$}
     {
         $(x,y) \gets $;
@@ -320,10 +320,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \label{alg:entity-destruction}
         \For{$e \in \mathrm{Query}(\mathbf{Life})$}
         {
-            \eIf{$e.\mathbf{Life} > 1$}
-            {
-                $e.\mathbf{Life} \gets e.\mathbf{Life} - 1$\;
-            }
+            $e.\mathbf{Life} \gets e.\mathbf{Life} - 1$\;
+            \If{$e.\mathbf{Life} = 0$}
             {
                 Destroy $e$
             }
@@ -335,16 +333,16 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \subsection{Structural Changes}
     \label{subsec:structural-changes}
 
-    This benchmark evaluated ECS frameworks under workloads requiring heavy structural changes.
-    These changes included adding and removing components,
+    This benchmark evaluated ECS frameworks under workloads requiring adding and removing components,
     changing entity archetypes, and consequently changing the set of entities
     matched by queries.
     While the number of components remained static, the number
-    of entities varied from 100 to 8,000 to scale the workload.
+    of entities $N$ varied from 100 to 8,000 to scale the workload.
 
     We emulated a system that operated a binary counter.
-    Each entity contained a numerical counter value, while eight marker components
-    represented the individual bits of the counter.
+    Each entity contained $\mathbf{Count(x,y)}$, where $x$ represents the number to display
+    and $y$ the number to increment $x$ each iteration.
+    Eight components $\mathbf{B}_i, i \in {0,1,\ldots,7}$ may be attached, each representing the presence of a bit in a counter.
 
     The system queried entities possessing the numerical component.
     For every
@@ -357,31 +355,24 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \begin{algorithm}[h]
         \caption{Structural Changes}
         \label{alg:structural-changes}
-        \For{$e \in \mathrm{Query}(\mathbf{Num})$}
+        \For{$e \in \mathrm{Query}(\mathbf{Count})$}
         {
+            $e.\mathbf{Count}.x \gets (e.\mathbf{Count}.x + e.\mathbf{Count}.y) \% 256 $
             \For{$i \gets 0$ to $7$}
             {
-                \eIf{the $i$th bit of $e.\mathbf{Num}$ is $1$}
+                \eIf{the $i$th bit of $e.\mathbf{Count}.x$ is $1$}
                 {
-                    \If{$e$ does not have $\mathbf{B}_i$}
-                    {
-                        Attach $\mathbf{B}_i$ to $e$;
-                    }
+                    Attach $\mathbf{B}_i$ to $e$ if $e$ does not have $\mathbf{B}_i$;
                 }
                 {
-                    \If{$e$ has $\mathbf{B}_i$}
-                    {
-                        Detach $\mathbf{B}_i$ from $e$;
-                    }
+                    Detach $\mathbf{B}_i$ from $e$ if $e$ has $\mathbf{B}_i$;
                 }
             }
         }
     \end{algorithm}
 
-    Thus, each iteration of the system may cause multiple archetype transitions for
-    a single entity, while simultaneously changing the set of entities matched by the
-    system query.
-
+    On setup, each entity is instantiated with $\mathbf{Count} \gets (0, 0 \dots N)$.
+    That is, each entity will increment by a different number each time.
 
     \section{Results}
     \label{sec:results}
@@ -394,9 +385,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \begin{center}
             \begin{tabular}{|c|c|c|c|c|c|c|}
                 \hline
-                \textbf{Entity} & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                $N$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                \textbf{Count} & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                 & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
                 1000           & Bevy               & 5.527         & 5.950           & 1.393             & 2.300        & 15.80        \\
                 & EnTT               & 5.352         & 5.300           & 1.544             & 5.100        & 6.700        \\
@@ -450,9 +441,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \begin{center}
             \begin{tabular}{|c|c|c|c|c|c|c|}
                 \hline
-                \textbf{Sparse} & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                $R_s$& \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                \textbf{Ratio} & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
                 1.00           & Bevy               & 34.27         & 36.30           & 4.570             & 27.80        & 60.90        \\
                 & EnTT               & 53.27         & 52.70           & 2.811             & 51.30        & 93.40        \\
@@ -516,9 +507,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \begin{center}
             \begin{tabular}{|c|c|c|c|c|c|c|}
                 \hline
-                \textbf{Entity} & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                $E$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                \textbf{Rate} & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
                 32            & Bevy               & 15.61         & 14.70           & 3.280             & 9.800        & 40.80        \\
                 & EnTT               & 1.750         & 1.700           & 0.093             & 1.600        & 3.100        \\
@@ -570,9 +561,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \begin{center}
             \begin{tabular}{|c|c|c|c|c|c|c|}
                 \hline
-                \textbf{Entity} & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                $N$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                \textbf{Count} & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                 & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
                 100            & Bevy               & 90.87         & 86.30           & 25.53             & 60.10        & 582.4        \\
                 & EnTT               & 13.67         & 13.60           & 0.785             & 10.70        & 25.10        \\
@@ -620,31 +611,31 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \paragraph*{Executable Size and Memory Usage}
     Table~\ref{tab:results-size-and-memory} shows the executable size and memory usage of each framework under the given scenarios.
 
-    \begin{table*}
-        \caption{Executable Size and Memory Usage of ECS Frameworks in Benchmark Scenarios}
+    \begin{table}
+        \caption{Executable Size and Memory Usage of Frameworks in Benchmark Scenarios}
         \begin{center}
             \begin{tabular}{|c|c|c|c|c|c|c|}
                 \hline
-                \textbf{Scenario} & \multicolumn{3}{|c|}{\textbf{Executable Size (KB)}} & \multicolumn{3}{|c|}{\textbf{Memory Usage (MB)}} \\
+                \textbf{Benchmark} & \multicolumn{3}{|c|}{\textbf{Executable Size (KB)}} & \multicolumn{3}{|c|}{\textbf{Memory Usage (MB)}} \\
                 \cline{2-7}
-                & Bevy  & EnTT & Custom & Bevy & EnTT & Custom \\
+                \textbf{Scenario} & Bevy  & EnTT & Custom & Bevy & EnTT & Custom \\
                 \hline
-                Benchmark~\ref{subsec:entity-iteration}                & 28097 & 179  & 42     & 9.4  & 3.4  & 8.5    \\
-                64K Entity Count                                       &       &      &        &      &      &        \\
+                \ref{subsec:entity-iteration}                & 28097 & 179  & 42     & 9.4  & 3.4  & 8.5    \\
+                $N = 64{,}000$                                      &       &      &        &      &      &        \\
                 \hline
-                Benchmark~\ref{subsec:sparse-access}                   & 28102 & 168  & 44     & 6.0  & 1.7  & 3.4    \\
-                0.20 Sparse Ratio                                      &       &      &        &      &      &        \\
+                \ref{subsec:sparse-access}                   & 28102 & 168  & 44     & 6.0  & 1.7  & 3.4    \\
+                $R_s = 0.20$                                      &       &      &        &      &      &        \\
                 \hline
-                Benchmark~\ref{subsec:entity-creation-and-destruction} & 28092 & 188  & 41     & 2.8  & 0.7  & 0.9    \\
-                1K Entity Rate                                         &       &      &        &      &      &        \\
+                \ref{subsec:entity-creation-and-destruction} & 28092 & 188  & 41     & 2.8  & 0.7  & 0.9    \\
+                $E = 1000$                                        &       &      &        &      &      &        \\
                 \hline
-                Benchmark~\ref{subsec:structural-changes}              & 28149 & 298  & 48     & 4.6  & 0.9  & 1.3    \\
-                1K Entity Count                                        &       &      &        &      &      &        \\
+                \ref{subsec:structural-changes}              & 28149 & 298  & 48     & 4.6  & 0.9  & 1.3    \\
+                $N = 1000$                                        &       &      &        &      &      &        \\
                 \hline
             \end{tabular}
         \end{center}
         \label{tab:results-size-and-memory}
-    \end{table*}
+    \end{table}
 
     Executable size remained largely unchanged across benchmark configurations, whereas memory usage scaled approximately linearly; therefore, only one configuration per scenario is shown.
     The custom framework produced executables approximately 25\% the size of equivalent EnTT executables, except for~\ref{subsec:structural-changes}, where it was approximately 16.1\%.
