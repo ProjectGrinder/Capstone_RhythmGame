@@ -179,7 +179,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Bevy used Rust's \verb|Instant|~\cite{rust_instant}, while EnTT and our implementation used C++ \verb|std::chrono::steady_clock|~\cite{cpp_steady_clock}.
     Rendering, unrelated plugins, and other external factors were excluded to isolate ECS execution time.
 
-    Four benchmark scenarios evaluated the frameworks under different workloads.
+    Taking inspiration from~\cite{evaluation_paper}, we designed four benchmark scenarios to evaluate the frameworks under different workloads.
     In each scenario, user-defined systems performed equivalent work across implementations.
     Entity creation and destruction benchmarks maintained a steady-state workload by restoring the ECS world to an equivalent state after each frame.
 
