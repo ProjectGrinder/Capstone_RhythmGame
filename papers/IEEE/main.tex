@@ -15,7 +15,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \newcommand{\removelatexerror}{\let\@latex@error\@gobble}
 \makeatother
 
-\SetKwRepeat{Struct}{struct \{}{\}}%
 
 \begin{document}
 
@@ -26,35 +25,39 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
     \author{\IEEEauthorblockN{Wachirawich Kanil}
     \IEEEauthorblockA{\textit{Department of Computer Engineering} \\
+    \textit{Faculty of Engineering} \\
     \textit{Chulalongkorn University}\\
     Bangkok, Thailand \\
     email address or ORCID}
     \and
     \IEEEauthorblockN{Tapaneeya Odmung}
     \IEEEauthorblockA{\textit{Department of Computer Engineering} \\
+    \textit{Faculty of Engineering} \\
     \textit{Chulalongkorn University}\\
     Bangkok, Thailand \\
     email address or ORCID}
     \and
     \IEEEauthorblockN{Pranesh Ingkanunt}
     \IEEEauthorblockA{\textit{Department of Computer Engineering} \\
+    \textit{Faculty of Engineering} \\
     \textit{Chulalongkorn University}\\
     Bangkok, Thailand \\
     email address or ORCID}
     \and
     \IEEEauthorblockN{Rangsiman Jearuksa}
     \IEEEauthorblockA{\textit{Department of Computer Engineering} \\
+    \textit{Faculty of Engineering} \\
     \textit{Chulalongkorn University}\\
     Bangkok, Thailand \\
     email address or ORCID}
     \and
     \IEEEauthorblockN{Vishnu Kotrajaras}
     \IEEEauthorblockA{\textit{Department of Computer Engineering} \\
+    \textit{Faculty of Engineering} \\
     \textit{Chulalongkorn University}\\
     Bangkok, Thailand \\
     email address or ORCID}
     }
-
 
     \maketitle
 
@@ -63,8 +66,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         machine learning, and digital simulation contexts.
         From examining existing infrastructure and tools, such as EnTT, Bevy Engine, and the Unity Data-Oriented Technology Stack (DOTS), and comparing to theoretical models,
         we identified opportunities to reduce ECS runtime overhead and increase performance through increased compile-time specialization.
-        We present an ECS framework built upon C++ that aggressively applies compile-time
-        metaprogramming techniques to reduce overhead to analyze the potential of this approach.
+        We present KAWA, an ECS framework built upon C++ that aggressively applies compile-time
+        metaprogramming techniques to reduce overhead and analyze the potential of this approach.
         The framework was evaluated in comparison with EnTT
         and Bevy in terms of performance, executable size, and memory usage.
         The results showed that our framework has comparable performance to existing frameworks while
@@ -91,9 +94,9 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Compile-time specialization is typically applied selectively rather than throughout the ECS architecture.
 
     This work investigates the extent to which ECS functionality can be specialized at compile time.
-    We develop a custom ECS framework designed to maximize compile-time specialization while retaining an
+    We developed KAWA, a custom ECS framework designed to maximize compile-time specialization while retaining an
     interface suitable for practical software development.
-    We then evaluate its performance against existing production ECS frameworks through a set of benchmarks.
+    We then evaluated its performance against existing production ECS frameworks through a set of benchmarks.
 
 
     \section{Related Work}
@@ -126,34 +129,34 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Design}
     \label{sec:design}
 
-    The primary design goal of the custom ECS was to investigate how extensively ECS functionality can be specialized at compile time.
+    The primary design goal of KAWA was to investigate how extensively ECS functionality could be specialized at compile time.
     To this end, we applied static typing and template-based specialization across component storage, system registration, and query construction.
     The resulting framework was designed to retain a conventional ECS programming interface while moving as much type-dependent work as possible from runtime to compile time.
 
-    The framework was implemented in C++20, for it provided the language features required for this approach.
+    KAWA was implemented in C++20 as it provided the language features required for this approach.
     This included templates, concepts, compile-time evaluation, and type deduction, while also providing direct control over memory layout and storage.
     These features allowed component types and system interfaces to be represented natively within the framework.
 
     \subsection{Compile-Time Specialization}\label{subsec:compile-time-specialization}
 
-    The implementation applies compile-time specialization in three main areas:
+    The implementation applied compile-time specialization in three main areas:
 
     \begin{itemize}
-        \item \textbf{Component Storage.} Component types are represented directly in ECS storage types.
-        Storage information is derived at compile time, allowing component access through statically known types.
+        \item \textbf{Component Storage.} Component types were represented directly in ECS storage types.
+        Storage information was derived at compile time, allowing component access through statically known types.
 
-        \item \textbf{System Registration.} Systems are represented by their function types.
-        C++ concepts constrain system functions, while function traits extract their component types.
-        These types are used to validate system requirements at compile time.
-        Systems are stored in a compile-time structure, allowing the compiler to generate system parameters and invoke systems sequentially.
+        \item \textbf{System Registration.} Systems were represented by their function types.
+        C++ concepts constrained system functions, while function traits extracted their component types.
+        These types were used to validate system requirements at compile time.
+        Systems were stored in a compile-time structure, allowing the compiler to generate system parameters and invoke systems sequentially.
 
-        \item \textbf{Query Construction.} Query component types are specified as C++ template parameters, allowing the compiler to generate query types for each system.
+        \item \textbf{Query Construction.} Query component types were specified as C++ template parameters, allowing the compiler to generate query types for each system.
         Parameter packs and compile-time expansion construct the required component accesses, enabling operations specialized to each query's component set.
     \end{itemize}
 
-    These mechanisms define the main distinction between the custom framework and the more dynamic portions of existing ECS implementations.
-    The goal of the specialization is to determine and remove as much type-dependent ECS work from runtime to compilation while keeping the framework interface lean and simple to use.
-    Runtime overhead for certain mechanisms in the framework remained essential, such as in entity organization and providing query references to systems.
+    These mechanisms defined the main distinction between KAWA and the more dynamic portions of existing ECS implementations.
+    The goal of the specialization was to determine and remove as much type-dependent ECS work from runtime to compilation while keeping the framework interface lean and simple to use.
+    Runtime overhead for certain mechanisms in KAWA remained essential, such as in entity organization and providing query references to systems.
 
     \subsection{Component Storage}\label{subsec:component-storage}
 
@@ -172,11 +175,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Evaluation}
     \label{sec:method}
 
-    For each framework, the executable size was measured using Windows PowerShell,
-    while memory usage was logged by using the Windows Process Status API~\cite{microsoft_process_status_api}.
-
     Execution time was measured as the interval encompassing all user-defined systems within a frame.
-    Bevy used Rust's \verb|Instant|~\cite{rust_instant}, while EnTT and our implementation used C++ \verb|std::chrono::steady_clock|~\cite{cpp_steady_clock}.
+    Bevy used Rust's \verb|Instant|~\cite{rust_instant}, while EnTT and KAWA used C++ \verb|std::chrono::steady_clock|~\cite{cpp_steady_clock}.
     Rendering, unrelated plugins, and other external factors were excluded to isolate ECS execution time.
 
     Inspired by Masiukiewicz and his group's work~\cite{evaluation_paper}, we designed four benchmark scenarios to evaluate the frameworks under different workloads.
@@ -186,11 +186,14 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Each benchmark was warmed up before measurement, after which execution time was recorded for 1,000 consecutive frames and logged.
     The samples were then averaged to obtain the mean execution time for each configuration.
 
-    All benchmarks used release optimizations: Bevy was built with \verb|cargo --release|, while the C++ implementations used the MSVC Release configuration with Clang.
+    All benchmarks used release optimizations: Bevy was built with \verb|cargo --release|, while EnTT and KAWA used the MSVC Release configuration with Clang.
     Tests were conducted on local hardware using the same machine and operating environment to ensure consistency across measurements.
-    If implementations require random numbers, a seeded generator was used with the seed \verb|776769420|.
+    If implementations required random numbers, a seeded generator was used with the seed \verb|776769420|.
 
-    The hardware specifications are as follows:
+    Some benchmark configurations were selected to measure executable size and memory usage across all frameworks.
+    The former was measured using Windows PowerShell, while the latter was logged via the Windows Process Status API~\cite{microsoft_process_status_api}.
+
+    The hardware specifications were as follows:
     \begin{itemize}
         \item CPU: 11th Gen Intel(R) Core(TM) i7-11800H @ 2.30 GHz
         \item GPU: Intel(R) UHD Graphics
@@ -202,28 +205,21 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \section{Benchmark Suite}
     \label{sec:benchmark-suite}
 
-    The following are components used in the benchmark suite and the values they map to:
-
-    \begin{gather*}
-        \mathbf{Pos} \mapsto \mathbb{R}^{2},
-        \qquad
-        \mathbf{Vel} \mapsto \mathbb{R}^{2}
-        \\
-        \mathbf{Int} \mapsto \varnothing,
-        \qquad
-        \mathbf{Life} \mapsto \mathbb{Z}
-        \\
-        \mathbf{Count(x,y)} \mapsto \mathbb{Z \times Z},
-        \qquad
-        \mathbf{B}_i \mapsto \varnothing,
-        i \in {0,1,\ldots,7}.
-    \end{gather*}
+    The following are components used in the benchmark suite and their meaning:
+    \begin{enumerate}
+        \item $\mathbf{Pos}: (x,y) \in \mathbb{R^2}$; A position in 2D space.
+        \item $\mathbf{Vel}: (x,y) \in \mathbb{R^2}$; A velocity vector in 2D space.
+        \item $\mathbf{Life}: (l) \in \mathbb{Z}$; An entity's lifetime.
+        \item $\mathbf{Count}: (x,y) \in \mathbb{Z^2}$; A pair of accumulator and incrementing values.
+        \item $\mathbf{Int}$; A tag component marking entities of interest.
+        \item $\mathbf{B}_i, i \in {0,1,\ldots,7}$; Eight tag components representing bits of a counter.
+    \end{enumerate}
 
     The benchmark suite was designed to exercise common ECS operations individually,
     including sequential iteration, entity creation and destruction, sparse component
     access, and archetype transitions.
     By isolating these behaviors into separate
-    scenarios, differences between implementations can be attributed to specific
+    scenarios, differences between implementations could be attributed to specific
     aspects of ECS execution.
 
     \subsection{Entity Iteration}
@@ -235,15 +231,11 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     component access.
     Configurations specified the entity count $N$ varying from 1,000 to 64,000 to compare the scalability of entity iteration.
 
-    We emulated the behavior of a 2-dimensional physics engine
-    that adjusts an entity's position according to its velocity.
-    The benchmark used position and velocity components, each representing a point in two-dimensional space.
-    The system queried entities possessing both components and updated their positions using a fixed timestep $\Delta t$.
+    We emulated the movement system in a 2D physics engine.
+    For a timestep, the system updates an entity's position according to its velocity using a fixed timestep $\Delta t$.
+    The operation performed is described in Algorithm~\ref{alg:entity-iteration}.
 
-    The operation performed by the ECS system is described in
-    Algorithm~\ref{alg:entity-iteration}.
-
-    \begin{algorithm}[h]
+    \begin{algorithm}[htbp]
         \caption{Entity Iteration}
         \label{alg:entity-iteration}
         \KwIn{Timestep $\Delta t$}
@@ -258,33 +250,21 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \subsection{Sparse Access}
     \label{subsec:sparse-access}
 
-    This benchmark evaluated the performance of systems querying sparse entity
-    archetypes in the ECS framework.
+    This benchmark evaluated the performance of querying sparse entities with the target components.
     The ratio of entities of interest to total entities is referred to as the sparse ratio $R_s$.
     By varying the sparse ratio, the query-forming efficiency of ECS frameworks under sparse scenarios could be compared.
 
     We emulated the behavior of a system that interacts only with entities of interest.
-    Entities of interest rotate their positions around the origin.
-    The benchmark used a position component and a marker component identifying entities of interest.
-
-    The position transformation used by the system is defined as follows.
-
-    \[
-        \operatorname{Rot} : \mathbb{R}^{2} \rightarrow \mathbb{R}^{2},
-        \qquad
-        (x,y) \mapsto (y,-x).
-    \]
-
+    The system queries every entity of interest with a position and adjusts its position with a trivial rotation.
     The operation performed by the ECS system is described in
     Algorithm~\ref{alg:sparse-access}.
 
-    \begin{algorithm}[h]
+    \begin{algorithm}[htbp]
     \caption{Sparse Access}
     \label{alg:sparse-access}
     \For{$e \in \mathrm{Query}(\mathbf{Pos}, \mathbf{Int})$}
     {
-        $(x,y) \gets $;
-        $e.\mathbf{Pos} \gets \operatorname{Rot} (e.\mathbf{Pos})$;
+        $e.\mathbf{Pos}(x,y) \gets (-y,x)$;
     }
     \end{algorithm}
 
@@ -298,10 +278,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     To maintain a steady state throughout the benchmark, entity creation and destruction were performed at the same rate $E$.
     The entity rate varied between configurations from 32 to 2,048 entities.
 
-    We emulated a system that creates entities and removes them
-    after their duration has expired.
-    The creation and destruction operations were implemented as two separate ECS systems, described in
-    Algorithms~\ref{alg:entity-creation} and~\ref{alg:entity-destruction}.
+    We emulated a twin system that creates entities and removes them after their duration has expired.
+    The behaviors of the systems are described in Algorithms~\ref{alg:entity-creation} and~\ref{alg:entity-destruction}.
 
     \begin{algorithm}[h]
         \caption{Entity Creation}
@@ -347,9 +325,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     The system queried entities possessing the numerical component.
     For every queried entity, each marker component was added when the corresponding bit of
     the entity's counter was set and removed when that bit was not set.
-
-    For an entity $e$ and bit index $i$, the structural update is described by
-    Algorithm~\ref{alg:structural-changes}.
+    The structural update is described in Algorithm~\ref{alg:structural-changes}
 
     \begin{algorithm}[h]
         \caption{Structural Changes}
@@ -373,7 +349,6 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     On setup, each entity is instantiated with $\mathbf{Count} \gets (0, 0 \dots N)$.
     That is, each entity will increment by a different number each time.
 
-
     \section{Results}
     \label{sec:results}
 
@@ -385,45 +360,45 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \begin{center}
             \begin{tabular}{|c|l|r|r|r|r|r|}
                 \hline
-                $N$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                \textbf{Entity} & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                &  & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                \textbf{Count} &  & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
                 1000  & Bevy           & 5.269         & 4.8             & 2.361             & 2.2          & 60.6         \\
                 & EnTT               & 5.236         & 5.2             & 0.579             & 5.0          & 21.7         \\
-                & Custom             & 1.320         & 1.3             & 0.140             & 1.2          & 2.6          \\
+                & KAWA             & 1.320         & 1.3             & 0.140             & 1.2          & 2.6          \\
                 \hline
                 2000  & Bevy          & 6.418         & 6.8             & 1.859             & 3.0          & 28.3         \\
                 & EnTT               & 11.89         & 11.8            & 0.367             & 11.3         & 16.5         \\
-                & Custom             & 2.555         & 2.6             & 0.078             & 2.4          & 3.4          \\
+                & KAWA             & 2.555         & 2.6             & 0.078             & 2.4          & 3.4          \\
                 \hline
                 4000  & Bevy           & 8.616         & 8.8             & 1.213             & 6.0          & 21.2         \\
                 & EnTT               & 21.23         & 21.1            & 1.486             & 19.9         & 52.7         \\
-                & Custom             & 5.084         & 5.0             & 0.579             & 4.8          & 18.9         \\
+                & KAWA             & 5.084         & 5.0             & 0.579             & 4.8          & 18.9         \\
                 \hline
                 8000  & Bevy           & 13.25         & 13.6            & 1.693             & 10.1         & 33.4         \\
                 & EnTT               & 42.52         & 42.1            & 2.651             & 40.8         & 64.8         \\
-                & Custom             & 10.18         & 10.2            & 0.153             & 9.9          & 11.7         \\
+                & KAWA             & 10.18         & 10.2            & 0.153             & 9.9          & 11.7         \\
                 \hline
                 16000 & Bevy           & 19.81         & 20.5            & 2.106             & 15.9         & 40.1         \\
                 & EnTT               & 84.81         & 82.8            & 10.36             & 79.9         & 244.9        \\
-                & Custom             & 20.43         & 20.4            & 0.827             & 19.4         & 41.7         \\
+                & KAWA             & 20.43         & 20.4            & 0.827             & 19.4         & 41.7         \\
                 \hline
                 32000 & Bevy           & 33.45         & 33.2            & 5.106             & 27.5         & 73.5         \\
                 & EnTT               & 179.8         & 177.7           & 14.67             & 165.2        & 368.7        \\
-                & Custom             & 48.54         & 47.0            & 9.058             & 42.4         & 173.0        \\
+                & KAWA             & 48.54         & 47.0            & 9.058             & 42.4         & 173.0        \\
                 \hline
                 64000 & Bevy           & 58.81         & 58.2            & 4.914             & 51.2         & 94.5         \\
                 & EnTT               & 328.5         & 319.3           & 27.22             & 307.2        & 854.8        \\
-                & Custom             & 101.9         & 100.4           & 9.911             & 92.0         & 182.3        \\
+                & KAWA             & 101.9         & 100.4           & 9.911             & 92.0         & 182.3        \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-1}
     \end{table}
 
 
-    \begin{figure}[t]
-        \centerline{\includegraphics[width=0.35\columnwidth]{chart1}}
+    \begin{figure}[hbtp]
+        \centerline{\includegraphics[width=0.8\columnwidth]{chart1}}
         \caption{Benchmark~\ref{subsec:entity-iteration}: Scatter plot detailing frame time per entity as entity count increases.}
         \label{fig:chart1}
     \end{figure}
@@ -432,7 +407,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     EnTT incurred significantly higher costs at larger entity counts, indicating higher per-entity iteration costs.
     Bevy exhibited greater constant overhead at lower entity counts but scaled better as the entity count increased.
     This may be attributed to Bevy's archetype storage, which enables faster iteration than sparse-set storage.
-    The custom implementation consistently achieved the lowest frame times up to 8,000 entities, after which Bevy performed best.
+    KAWA consistently achieved the lowest frame times up to 8,000 entities, after which Bevy performed best.
 
     \paragraph*{Sparse Access}Table~\ref{tab:results-benchmark-2} presents the results of benchmark~\ref{subsec:sparse-access}.
     Plotting mean frame time against the sparse ratio yielded Fig.~\ref{fig:chart2}.
@@ -442,55 +417,55 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \begin{center}
             \begin{tabular}{|c|l|r|r|r|r|r|}
                 \hline
-                $R_s$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                \textbf{Sparse} & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                & & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                \textbf{Ratio} & & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
                 1.00 & Bevy           & 33.10         & 34.0            & 4.315             & 26.4         & 70.5         \\
                 & EnTT               & 53.39         & 52.7            & 2.625             & 50.3         & 96.0         \\
-                & Custom             & 36.82         & 35.2            & 6.181             & 33.2         & 101.9        \\
+                & KAWA             & 36.82         & 35.2            & 6.181             & 33.2         & 101.9        \\
                 \hline
                 0.90 & Bevy           & 30.53         & 29.8            & 3.913             & 25.7         & 49.9         \\
                 & EnTT               & 75.97         & 72.1            & 11.81             & 70.1         & 178.9        \\
-                & Custom             & 33.48         & 32.6            & 3.989             & 31.4         & 81.4         \\
+                & KAWA             & 33.48         & 32.6            & 3.989             & 31.4         & 81.4         \\
                 \hline
                 0.75 & Bevy           & 26.62         & 27.4            & 3.778             & 20.7         & 78.2         \\
                 & EnTT               & 61.55         & 61.5            & 3.229             & 58.4         & 100.5        \\
-                & Custom             & 29.75         & 29.4            & 1.771             & 29.0         & 61.5         \\
+                & KAWA             & 29.75         & 29.4            & 1.771             & 29.0         & 61.5         \\
                 \hline
                 0.50 & Bevy           & 19.91         & 21.0            & 2.289             & 16.0         & 34.5         \\
                 & EnTT               & 42.94         & 42.4            & 2.274             & 41.1         & 78.1         \\
-                & Custom             & 21.30         & 20.9            & 2.148             & 20.4         & 56.7         \\
+                & KAWA             & 21.30         & 20.9            & 2.148             & 20.4         & 56.7         \\
                 \hline
                 0.30 & Bevy           & 14.31         & 14.6            & 1.583             & 11.1         & 25.3         \\
                 & EnTT               & 24.63         & 24.5            & 0.737             & 23.9         & 34.1         \\
-                & Custom             & 15.11         & 15.0            & 0.998             & 14.8         & 41.2         \\
+                & KAWA             & 15.11         & 15.0            & 0.998             & 14.8         & 41.2         \\
                 \hline
                 0.20 & Bevy           & 11.69         & 12.2            & 1.207             & 7.8          & 20.6         \\
                 & EnTT               & 17.62         & 17.4            & 1.266             & 17.1         & 30.4         \\
-                & Custom             & 12.27         & 12.0            & 1.467             & 11.9         & 31.1         \\
+                & KAWA             & 12.27         & 12.0            & 1.467             & 11.9         & 31.1         \\
                 \hline
                 0.10 & Bevy           & 7.949         & 7.8             & 1.031             & 5.3          & 16.2         \\
                 & EnTT               & 7.970         & 7.9             & 0.335             & 7.6          & 13.6         \\
-                & Custom             & 9.534         & 9.5             & 0.122             & 9.4          & 11.0         \\
+                & KAWA             & 9.534         & 9.5             & 0.122             & 9.4          & 11.0         \\
                 \hline
                 0.00 & Bevy           & 3.390         & 3.3             & 0.694             & 1.5          & 8.3          \\
                 & EnTT               & 0.020         & 0.0             & 0.040             & 0.0          & 0.1          \\
-                & Custom             & 7.085         & 6.6             & 1.809             & 6.3          & 33.1         \\
+                & KAWA             & 7.085         & 6.6             & 1.809             & 6.3          & 33.1         \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-2}
     \end{table}
 
-    \begin{figure}
-        \centerline{\includegraphics[width=0.35\columnwidth]{chart2}}
+    \begin{figure}[hbtp]
+        \centerline{\includegraphics[width=0.8\columnwidth]{chart2}}
         \caption{Benchmark~\ref{subsec:sparse-access}: Scatter plot detailing frame time at varying sparse ratios.}
         \label{fig:chart2}
     \end{figure}
 
     EnTT performed worse at high sparse ratios than the other frameworks but was more efficient when entities of interest were sparse, particularly at sparse ratios of 0.1 or less.
-    Bevy and the custom implementation showed similar decreases as entity density decreased, although the custom implementation had greater constant overhead.
-    Consequently, the custom framework consistently underperformed the other frameworks in sparse access efficiency.
+    Bevy and KAWA showed similar decreases as entity density decreased, although the custom implementation had greater constant overhead.
+    Consequently, KAWA consistently underperformed the other frameworks in sparse access efficiency.
 
     \paragraph*{Entity Creation and Destruction}Table~\ref{tab:results-benchmark-3} presents the results of benchmark~\ref{subsec:entity-creation-and-destruction}.
     We normalized mean frame time by entity rate for each configuration, yielding Fig.~\ref{fig:chart3}.
@@ -500,51 +475,50 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \begin{center}
             \begin{tabular}{|c|l|r|r|r|r|r|}
                 \hline
-                $E$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                \textbf{Entity} & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                & & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                \textbf{Rate} & & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
                 32   & Bevy           & 15.26         & 14.7            & 4.600             & 9.3          & 84.6         \\
                 & EnTT               & 1.628         & 1.6             & 0.173             & 1.5          & 3.4          \\
-                & Custom             & 0.978         & 0.9             & 0.236             & 0.8          & 6.6          \\
+                & KAWA             & 0.978         & 0.9             & 0.236             & 0.8          & 6.6          \\
                 \hline
                 64   & Bevy           & 20.52         & 20.5            & 5.988             & 14.6         & 133.1        \\
                 & EnTT               & 3.516         & 3.5             & 0.255             & 3.3          & 5.8          \\
-                & Custom             & 1.540         & 1.5             & 0.057             & 1.4          & 2.4          \\
+                & KAWA             & 1.540         & 1.5             & 0.057             & 1.4          & 2.4          \\
                 \hline
                 128  & Bevy           & 32.65         & 31.9            & 6.382             & 19.7         & 116.7        \\
                 & EnTT               & 6.750         & 6.6             & 0.892             & 6.3          & 23.5         \\
-                & Custom             & 2.783         & 2.8             & 0.100             & 2.7          & 4.2          \\
+                & KAWA             & 2.783         & 2.8             & 0.100             & 2.7          & 4.2          \\
                 \hline
                 256  & Bevy           & 38.94         & 36.2            & 6.973             & 32.0         & 124.0        \\
                 & EnTT               & 13.59         & 13.5            & 0.388             & 12.5         & 18.2         \\
-                & Custom             & 5.451         & 5.4             & 0.278             & 5.2          & 8.4          \\
+                & KAWA             & 5.451         & 5.4             & 0.278             & 5.2          & 8.4          \\
                 \hline
                 512  & Bevy           & 70.33         & 65.1            & 14.30             & 53.7         & 183.3        \\
                 & EnTT               & 25.63         & 25.5            & 1.569             & 23.6         & 48.9         \\
-                & Custom             & 10.52         & 10.4            & 0.466             & 9.8          & 17.0         \\
+                & KAWA             & 10.52         & 10.4            & 0.466             & 9.8          & 17.0         \\
                 \hline
                 1024 & Bevy           & 101.5         & 99.4            & 6.564             & 94.0         & 159.7        \\
                 & EnTT               & 53.03         & 52.1            & 4.709             & 49.7         & 102.4        \\
-                & Custom             & 33.00         & 32.2            & 13.71             & 21.4         & 437.2        \\
+                & KAWA             & 33.00         & 32.2            & 13.71             & 21.4         & 437.2        \\
                 \hline
                 2048 & Bevy           & 197.5         & 189.7           & 25.42             & 170.9        & 361.8        \\
                 & EnTT               & 108.4         & 108.4           & 5.609             & 101.1        & 193.6        \\
-                & Custom             & 42.7          & 42.5            & 2.808             & 40.7         & 90.2         \\
+                & KAWA             & 42.7          & 42.5            & 2.808             & 40.7         & 90.2         \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-3}
     \end{table}
 
 
-    \begin{figure}
-        \centerline{\includegraphics[width=0.35\columnwidth]{chart3}}
+    \begin{figure}[hbtp]
+        \centerline{\includegraphics[width=0.8\columnwidth]{chart3}}
         \caption{Benchmark~\ref{subsec:entity-creation-and-destruction}: Scatter plot detailing frame time per entity at varying entity rates.}
         \label{fig:chart3}
     \end{figure}
 
-    EnTT and the custom framework remained relatively consistent as the entity rate varied.
-    The custom framework exhibited frame times of approximately half that of EnTT\@.
+    EnTT and KAWA remained relatively consistent as the entity rate varied, KAWA exhibiting frame times at approximately half that of EnTT\@.
     At low entity rates, Bevy's frame times were several times higher than those of the other frameworks.
     As the entity rate increased, Bevy's performance improved as its constant overhead was amortized, but it did not reach comparable performance.
 
@@ -556,44 +530,44 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \begin{center}
             \begin{tabular}{|c|l|r|r|r|r|r|}
                 \hline
-                $N$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
+                \textbf{Entity} & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                & & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                \textbf{Count} & & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
                 100 & Bevy & 86.08 & 84.3 & 9.241 & 59.8 & 154.2 \\
                 & EnTT & 13.98 & 13.9 & 0.808 & 11.0 & 20.2 \\
-                & Custom & 13.03 & 13.0 & 0.513 & 11.0 & 16.5 \\
+                & KAWA & 13.03 & 13.0 & 0.513 & 11.0 & 16.5 \\
                 \hline
                 250 & Bevy & 186.8 & 181.2 & 29.70 & 140.6 & 464.5 \\
                 & EnTT & 36.12 & 35.3 & 3.538 & 28.7 & 71.7 \\
-                & Custom & 33.51 & 33.6 & 1.496 & 28.1 & 42.8 \\
+                & KAWA & 33.51 & 33.6 & 1.496 & 28.1 & 42.8 \\
                 \hline
                 500 & Bevy & 344.9 & 338.3 & 70.43 & 249.1 & 1515.2 \\
                 & EnTT & 59.55 & 58.4 & 6.255 & 46.4 & 111.6 \\
-                & Custom & 54.38 & 54.6 & 3.229 & 45.2 & 62.1 \\
+                & KAWA & 54.38 & 54.6 & 3.229 & 45.2 & 62.1 \\
                 \hline
                 1000 & Bevy & 613.1 & 591.3 & 110.8 & 450.8 & 1381.6 \\
                 & EnTT & 97.05 & 95.6 & 10.47 & 73.3 & 219.3 \\
-                & Custom & 85.57 & 85.1 & 7.750 & 74.2 & 166.4 \\
+                & KAWA & 85.57 & 85.1 & 7.750 & 74.2 & 166.4 \\
                 \hline
                 2000 & Bevy & 992.7 & 989.5 & 53.23 & 821.5 & 1212.4 \\
                 & EnTT & 164.8 & 163.8 & 15.79 & 125.8 & 290.8 \\
-                & Custom & 147.8 & 147.7 & 7.400 & 123.3 & 196.8 \\
+                & KAWA & 147.8 & 147.7 & 7.400 & 123.3 & 196.8 \\
                 \hline
                 4000 & Bevy & 1869 & 1865.4 & 83.47 & 1539.6 & 2472.5 \\
                 & EnTT & 287.9 & 286.1 & 39.52 & 205.1 & 1013.6 \\
-                & Custom & 255.1 & 251.8 & 28.27 & 203.3 & 513.7 \\
+                & KAWA & 255.1 & 251.8 & 28.27 & 203.3 & 513.7 \\
                 \hline
                 8000 & Bevy & 3653 & 3634.9 & 202.4 & 2989.7 & 5705.4 \\
                 & EnTT & 569.7 & 552.2 & 144.5 & 398.4 & 3425.9 \\
-                & Custom & 517.9 & 489.6 & 126.7 & 355.6 & 2547.8 \\
+                & KAWA & 517.9 & 489.6 & 126.7 & 355.6 & 2547.8 \\
                 \hline
             \end{tabular}
         \end{center}\label{tab:results-benchmark-4}
     \end{table}
 
-    \begin{figure}
-        \centerline{\includegraphics[width=0.35\columnwidth]{chart4}}
+    \begin{figure}[hbtp]
+        \centerline{\includegraphics[width=0.8\columnwidth]{chart4}}
         \caption{Benchmark~\ref{subsec:structural-changes}: Scatter plot detailing frame time per entity at varying entity count.}
         \label{fig:chart4}
     \end{figure}
@@ -601,7 +575,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     Unlike benchmark~\ref{subsec:entity-creation-and-destruction}, Bevy's performance did not improve relative to the other frameworks as the entity count increased.
     Rapid structural changes impose significant performance costs on archetype-based ECS frameworks due to archetype switching,
     as reflected in the more extreme performance degradation observed here.
-    EnTT and the custom implementation exhibited similar performance behavior for this benchmark.
+    EnTT and KAWA exhibited similar performance behavior for this benchmark.
 
     \paragraph*{Executable Size and Memory Usage}
     Tables~\ref{tab:results-executable-size} and~\ref{tab:results-memory-usage} show the executable size and memory usage of each framework under the given scenarios.
@@ -611,7 +585,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \begin{center}
             \begin{tabular}{|c|r|r|r|}
                 \hline
-                \textbf{Benchmark Scenario} & \textbf{Bevy} & \textbf{EnTT} & \textbf{Custom} \\
+                \textbf{Benchmark Scenario} & \textbf{Bevy} & \textbf{EnTT} & \textbf{KAWA} \\
                 \hline
                 \ref{subsec:entity-iteration} $N = 64000$ & 9819.5 & 74.0  & 51.5 \\
                 \hline
@@ -631,7 +605,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
         \begin{center}
             \begin{tabular}{|c|r|r|r|}
                 \hline
-                \textbf{Benchmark Scenario} & \textbf{Bevy} & \textbf{EnTT} & \textbf{Custom} \\
+                \textbf{Benchmark Scenario} & \textbf{Bevy} & \textbf{EnTT} & \textbf{KAWA} \\
                 \hline
                 \ref{subsec:entity-iteration} $N = 64000$ & 14.379 & 3.203 & 7.782 \\
                 \hline
@@ -647,31 +621,31 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{table}
 
     One configuration per scenario was chosen to evaluate executable size and memory usage.
-    The custom framework produced executables with approximately 69–75\% the size of equivalent EnTT executables.
+    KAWA produced executables with approximately 69–75\% the size of equivalent EnTT executables.
     Bevy executables were substantially larger, primarily because Bevy provides functionality beyond its ECS, including broader application-development features.
     Restricting Bevy to its ECS components would reduce this overhead, but likely not enough to match the other frameworks.
 
-    For memory usage, EnTT consumed the least, followed by the custom framework and then Bevy.
+    For memory usage, EnTT consumed the least, followed by KAWA and then Bevy.
     Bevy's broader engine infrastructure likely contributed to its larger memory footprint.
-    The custom framework's higher usage than EnTT may similarly result from its more complex data storage and temporary objects, such as structured query objects.
+    KAWA's higher usage than EnTT may similarly result from its more complex data storage and temporary objects, such as structured query objects.
 
     \section{Discussion and Conclusion}
     \label{sec:conclusion}
 
-    This paper investigated the extent to which compile-time specialization can improve the performance of ECS implementations.
-    A custom C++ ECS was developed using compile-time component storage, query construction, and system registration,
+    This paper investigated the extent to which compile-time specialization could improve the performance of ECS implementations.
+    KAWA, a custom C++ ECS, was developed using compile-time component storage, query construction, and system registration,
     and evaluated for performance against EnTT and Bevy with reference to synthesized ECS workloads.
     The results did not demonstrate a universal performance advantage but showed that extensive compile-time specialization
     can produce competitive performance for several ECS workloads.
 
-    The custom implementation performed particularly well for entity iteration and remained competitive for entity
+    KAWA performed particularly well for entity iteration and remained competitive for entity
     creation and destruction, but underperformed in sparse access.
     These results suggest that compile-time specialization can reduce overhead in type-dependent ECS operations
     but does not overcome the performance characteristics of the underlying storage architecture.
     In particular, sparse-set storage favored structural modification but was less effective for sparse component access,
     while Bevy's archetype storage provided an advantage for dense iteration at higher entity counts.
 
-    The custom implementation also produced substantially smaller executables than the evaluated frameworks,
+    KAWA also produced substantially smaller executables than the evaluated frameworks,
     although the comparison with Bevy is not directly equivalent because of its broader engine functionality.
     Its runtime memory usage was nevertheless higher than EnTT, indicating that compile-time specialization
     does not necessarily reduce all aspects of resource usage.
