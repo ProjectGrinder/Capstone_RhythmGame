@@ -387,33 +387,33 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \hline
                 $N$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                &  & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
-                1000  & Bevy ECS           & 5.269         & 4.8             & 2.361             & 2.2          & 60.6         \\
+                1000  & Bevy           & 5.269         & 4.8             & 2.361             & 2.2          & 60.6         \\
                 & EnTT               & 5.236         & 5.2             & 0.579             & 5.0          & 21.7         \\
                 & Custom             & 1.320         & 1.3             & 0.140             & 1.2          & 2.6          \\
                 \hline
-                2000  & Bevy ECS           & 6.418         & 6.8             & 1.859             & 3.0          & 28.3         \\
+                2000  & Bevy          & 6.418         & 6.8             & 1.859             & 3.0          & 28.3         \\
                 & EnTT               & 11.89         & 11.8            & 0.367             & 11.3         & 16.5         \\
                 & Custom             & 2.555         & 2.6             & 0.078             & 2.4          & 3.4          \\
                 \hline
-                4000  & Bevy ECS           & 8.616         & 8.8             & 1.213             & 6.0          & 21.2         \\
+                4000  & Bevy           & 8.616         & 8.8             & 1.213             & 6.0          & 21.2         \\
                 & EnTT               & 21.23         & 21.1            & 1.486             & 19.9         & 52.7         \\
                 & Custom             & 5.084         & 5.0             & 0.579             & 4.8          & 18.9         \\
                 \hline
-                8000  & Bevy ECS           & 13.25         & 13.6            & 1.693             & 10.1         & 33.4         \\
+                8000  & Bevy           & 13.25         & 13.6            & 1.693             & 10.1         & 33.4         \\
                 & EnTT               & 42.52         & 42.1            & 2.651             & 40.8         & 64.8         \\
                 & Custom             & 10.18         & 10.2            & 0.153             & 9.9          & 11.7         \\
                 \hline
-                16000 & Bevy ECS           & 19.81         & 20.5            & 2.106             & 15.9         & 40.1         \\
+                16000 & Bevy           & 19.81         & 20.5            & 2.106             & 15.9         & 40.1         \\
                 & EnTT               & 84.81         & 82.8            & 10.36             & 79.9         & 244.9        \\
                 & Custom             & 20.43         & 20.4            & 0.827             & 19.4         & 41.7         \\
                 \hline
-                32000 & Bevy ECS           & 33.45         & 33.2            & 5.106             & 27.5         & 73.5         \\
+                32000 & Bevy           & 33.45         & 33.2            & 5.106             & 27.5         & 73.5         \\
                 & EnTT               & 179.8         & 177.7           & 14.67             & 165.2        & 368.7        \\
                 & Custom             & 48.54         & 47.0            & 9.058             & 42.4         & 173.0        \\
                 \hline
-                64000 & Bevy ECS           & 58.81         & 58.2            & 4.914             & 51.2         & 94.5         \\
+                64000 & Bevy           & 58.81         & 58.2            & 4.914             & 51.2         & 94.5         \\
                 & EnTT               & 328.5         & 319.3           & 27.22             & 307.2        & 854.8        \\
                 & Custom             & 101.9         & 100.4           & 9.911             & 92.0         & 182.3        \\
                 \hline
@@ -422,8 +422,8 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{table}
 
 
-    \begin{figure}
-        \centerline{\includegraphics[width=0.4\textwidth]{chart1}}
+    \begin{figure}[t]
+        \centerline{\includegraphics[width=0.35\columnwidth]{chart1}}
         \caption{Benchmark~\ref{subsec:entity-iteration}: Scatter plot detailing frame time per entity as entity count increases.}
         \label{fig:chart1}
     \end{figure}
@@ -444,37 +444,37 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \hline
                 $R_s$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                & & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
-                1.00 & Bevy ECS           & 33.10         & 34.0            & 4.315             & 26.4         & 70.5         \\
+                1.00 & Bevy           & 33.10         & 34.0            & 4.315             & 26.4         & 70.5         \\
                 & EnTT               & 53.39         & 52.7            & 2.625             & 50.3         & 96.0         \\
                 & Custom             & 36.82         & 35.2            & 6.181             & 33.2         & 101.9        \\
                 \hline
-                0.90 & Bevy ECS           & 30.53         & 29.8            & 3.913             & 25.7         & 49.9         \\
+                0.90 & Bevy           & 30.53         & 29.8            & 3.913             & 25.7         & 49.9         \\
                 & EnTT               & 75.97         & 72.1            & 11.81             & 70.1         & 178.9        \\
                 & Custom             & 33.48         & 32.6            & 3.989             & 31.4         & 81.4         \\
                 \hline
-                0.75 & Bevy ECS           & 26.62         & 27.4            & 3.778             & 20.7         & 78.2         \\
+                0.75 & Bevy           & 26.62         & 27.4            & 3.778             & 20.7         & 78.2         \\
                 & EnTT               & 61.55         & 61.5            & 3.229             & 58.4         & 100.5        \\
                 & Custom             & 29.75         & 29.4            & 1.771             & 29.0         & 61.5         \\
                 \hline
-                0.50 & Bevy ECS           & 19.91         & 21.0            & 2.289             & 16.0         & 34.5         \\
+                0.50 & Bevy           & 19.91         & 21.0            & 2.289             & 16.0         & 34.5         \\
                 & EnTT               & 42.94         & 42.4            & 2.274             & 41.1         & 78.1         \\
                 & Custom             & 21.30         & 20.9            & 2.148             & 20.4         & 56.7         \\
                 \hline
-                0.30 & Bevy ECS           & 14.31         & 14.6            & 1.583             & 11.1         & 25.3         \\
+                0.30 & Bevy           & 14.31         & 14.6            & 1.583             & 11.1         & 25.3         \\
                 & EnTT               & 24.63         & 24.5            & 0.737             & 23.9         & 34.1         \\
                 & Custom             & 15.11         & 15.0            & 0.998             & 14.8         & 41.2         \\
                 \hline
-                0.20 & Bevy ECS           & 11.69         & 12.2            & 1.207             & 7.8          & 20.6         \\
+                0.20 & Bevy           & 11.69         & 12.2            & 1.207             & 7.8          & 20.6         \\
                 & EnTT               & 17.62         & 17.4            & 1.266             & 17.1         & 30.4         \\
                 & Custom             & 12.27         & 12.0            & 1.467             & 11.9         & 31.1         \\
                 \hline
-                0.10 & Bevy ECS           & 7.949         & 7.8             & 1.031             & 5.3          & 16.2         \\
+                0.10 & Bevy           & 7.949         & 7.8             & 1.031             & 5.3          & 16.2         \\
                 & EnTT               & 7.970         & 7.9             & 0.335             & 7.6          & 13.6         \\
                 & Custom             & 9.534         & 9.5             & 0.122             & 9.4          & 11.0         \\
                 \hline
-                0.00 & Bevy ECS           & 3.390         & 3.3             & 0.694             & 1.5          & 8.3          \\
+                0.00 & Bevy           & 3.390         & 3.3             & 0.694             & 1.5          & 8.3          \\
                 & EnTT               & 0.020         & 0.0             & 0.040             & 0.0          & 0.1          \\
                 & Custom             & 7.085         & 6.6             & 1.809             & 6.3          & 33.1         \\
                 \hline
@@ -483,7 +483,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{table}
 
     \begin{figure}
-        \centerline{\includegraphics[width=0.4\textwidth]{chart2}}
+        \centerline{\includegraphics[width=0.35\columnwidth]{chart2}}
         \caption{Benchmark~\ref{subsec:sparse-access}: Scatter plot detailing frame time at varying sparse ratios.}
         \label{fig:chart2}
     \end{figure}
@@ -502,33 +502,33 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \hline
                 $E$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                & & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
-                32   & Bevy ECS           & 15.26         & 14.7            & 4.600             & 9.3          & 84.6         \\
+                32   & Bevy           & 15.26         & 14.7            & 4.600             & 9.3          & 84.6         \\
                 & EnTT               & 1.628         & 1.6             & 0.173             & 1.5          & 3.4          \\
                 & Custom             & 0.978         & 0.9             & 0.236             & 0.8          & 6.6          \\
                 \hline
-                64   & Bevy ECS           & 20.52         & 20.5            & 5.988             & 14.6         & 133.1        \\
+                64   & Bevy           & 20.52         & 20.5            & 5.988             & 14.6         & 133.1        \\
                 & EnTT               & 3.516         & 3.5             & 0.255             & 3.3          & 5.8          \\
                 & Custom             & 1.540         & 1.5             & 0.057             & 1.4          & 2.4          \\
                 \hline
-                128  & Bevy ECS           & 32.65         & 31.9            & 6.382             & 19.7         & 116.7        \\
+                128  & Bevy           & 32.65         & 31.9            & 6.382             & 19.7         & 116.7        \\
                 & EnTT               & 6.750         & 6.6             & 0.892             & 6.3          & 23.5         \\
                 & Custom             & 2.783         & 2.8             & 0.100             & 2.7          & 4.2          \\
                 \hline
-                256  & Bevy ECS           & 38.94         & 36.2            & 6.973             & 32.0         & 124.0        \\
+                256  & Bevy           & 38.94         & 36.2            & 6.973             & 32.0         & 124.0        \\
                 & EnTT               & 13.59         & 13.5            & 0.388             & 12.5         & 18.2         \\
                 & Custom             & 5.451         & 5.4             & 0.278             & 5.2          & 8.4          \\
                 \hline
-                512  & Bevy ECS           & 70.33         & 65.1            & 14.30             & 53.7         & 183.3        \\
+                512  & Bevy           & 70.33         & 65.1            & 14.30             & 53.7         & 183.3        \\
                 & EnTT               & 25.63         & 25.5            & 1.569             & 23.6         & 48.9         \\
                 & Custom             & 10.52         & 10.4            & 0.466             & 9.8          & 17.0         \\
                 \hline
-                1024 & Bevy ECS           & 101.5         & 99.4            & 6.564             & 94.0         & 159.7        \\
+                1024 & Bevy           & 101.5         & 99.4            & 6.564             & 94.0         & 159.7        \\
                 & EnTT               & 53.03         & 52.1            & 4.709             & 49.7         & 102.4        \\
                 & Custom             & 33.00         & 32.2            & 13.71             & 21.4         & 437.2        \\
                 \hline
-                2048 & Bevy ECS           & 197.5         & 189.7           & 25.42             & 170.9        & 361.8        \\
+                2048 & Bevy           & 197.5         & 189.7           & 25.42             & 170.9        & 361.8        \\
                 & EnTT               & 108.4         & 108.4           & 5.609             & 101.1        & 193.6        \\
                 & Custom             & 42.7          & 42.5            & 2.808             & 40.7         & 90.2         \\
                 \hline
@@ -538,7 +538,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 
     \begin{figure}
-        \centerline{\includegraphics[width=0.4\textwidth]{chart3}}
+        \centerline{\includegraphics[width=0.35\columnwidth]{chart3}}
         \caption{Benchmark~\ref{subsec:entity-creation-and-destruction}: Scatter plot detailing frame time per entity at varying entity rates.}
         \label{fig:chart3}
     \end{figure}
@@ -558,33 +558,33 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
                 \hline
                 $N$ & \textbf{ECS} & \multicolumn{5}{|c|}{\textbf{Frame Time (microseconds)}} \\
                 \cline{3-7}
-                & \textbf{Framework} & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
+                & & \textbf{Mean} & \textbf{Median} & \textbf{Std.Dev.} & \textbf{Min} & \textbf{Max} \\
                 \hline
-                100 & Bevy ECS & 86.08 & 84.3 & 9.241 & 59.8 & 154.2 \\
+                100 & Bevy & 86.08 & 84.3 & 9.241 & 59.8 & 154.2 \\
                 & EnTT & 13.98 & 13.9 & 0.808 & 11.0 & 20.2 \\
                 & Custom & 13.03 & 13.0 & 0.513 & 11.0 & 16.5 \\
                 \hline
-                250 & Bevy ECS & 186.8 & 181.2 & 29.70 & 140.6 & 464.5 \\
+                250 & Bevy & 186.8 & 181.2 & 29.70 & 140.6 & 464.5 \\
                 & EnTT & 36.12 & 35.3 & 3.538 & 28.7 & 71.7 \\
                 & Custom & 33.51 & 33.6 & 1.496 & 28.1 & 42.8 \\
                 \hline
-                500 & Bevy ECS & 344.9 & 338.3 & 70.43 & 249.1 & 1515.2 \\
+                500 & Bevy & 344.9 & 338.3 & 70.43 & 249.1 & 1515.2 \\
                 & EnTT & 59.55 & 58.4 & 6.255 & 46.4 & 111.6 \\
                 & Custom & 54.38 & 54.6 & 3.229 & 45.2 & 62.1 \\
                 \hline
-                1000 & Bevy ECS & 613.1 & 591.3 & 110.8 & 450.8 & 1381.6 \\
+                1000 & Bevy & 613.1 & 591.3 & 110.8 & 450.8 & 1381.6 \\
                 & EnTT & 97.05 & 95.6 & 10.47 & 73.3 & 219.3 \\
                 & Custom & 85.57 & 85.1 & 7.750 & 74.2 & 166.4 \\
                 \hline
-                2000 & Bevy ECS & 992.7 & 989.5 & 53.23 & 821.5 & 1212.4 \\
+                2000 & Bevy & 992.7 & 989.5 & 53.23 & 821.5 & 1212.4 \\
                 & EnTT & 164.8 & 163.8 & 15.79 & 125.8 & 290.8 \\
                 & Custom & 147.8 & 147.7 & 7.400 & 123.3 & 196.8 \\
                 \hline
-                4000 & Bevy ECS & 1869 & 1865.4 & 83.47 & 1539.6 & 2472.5 \\
+                4000 & Bevy & 1869 & 1865.4 & 83.47 & 1539.6 & 2472.5 \\
                 & EnTT & 287.9 & 286.1 & 39.52 & 205.1 & 1013.6 \\
                 & Custom & 255.1 & 251.8 & 28.27 & 203.3 & 513.7 \\
                 \hline
-                8000 & Bevy ECS & 3653 & 3634.9 & 202.4 & 2989.7 & 5705.4 \\
+                8000 & Bevy & 3653 & 3634.9 & 202.4 & 2989.7 & 5705.4 \\
                 & EnTT & 569.7 & 552.2 & 144.5 & 398.4 & 3425.9 \\
                 & Custom & 517.9 & 489.6 & 126.7 & 355.6 & 2547.8 \\
                 \hline
@@ -593,7 +593,7 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     \end{table}
 
     \begin{figure}
-        \centerline{\includegraphics[width=0.4\textwidth]{chart4}}
+        \centerline{\includegraphics[width=0.35\columnwidth]{chart4}}
         \caption{Benchmark~\ref{subsec:structural-changes}: Scatter plot detailing frame time per entity at varying entity count.}
         \label{fig:chart4}
     \end{figure}
@@ -604,32 +604,46 @@ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
     EnTT and the custom implementation exhibited similar performance behavior for this benchmark.
 
     \paragraph*{Executable Size and Memory Usage}
-    Table~\ref{tab:results-size-and-memory} shows the executable size and memory usage of each framework under the given scenarios.
+    Tables~\ref{tab:results-executable-size} and~\ref{tab:results-memory-usage} show the executable size and memory usage of each framework under the given scenarios.
 
     \begin{table}
-        \caption{Executable Size and Memory Usage of Frameworks in Benchmark Scenarios}
+        \caption{Executable Size of Frameworks in Benchmark Scenarios}
         \begin{center}
-            \begin{tabular}{|c|r|r|r|r|r|r|}
+            \begin{tabular}{|c|r|r|r|}
                 \hline
-                \textbf{Benchmark} & \multicolumn{3}{|c|}{\textbf{Executable Size (KB)}} & \multicolumn{3}{|c|}{\textbf{Memory Usage (MB)}} \\
-                \cline{2-7}
-                \textbf{Scenario}                            & Bevy  & EnTT & Custom & Bevy & EnTT & Custom \\
+                \textbf{Benchmark Scenario} & \textbf{Bevy} & \textbf{EnTT} & \textbf{Custom} \\
                 \hline
-                \ref{subsec:entity-iteration}                & 9819.5 & 74.0  & 51.5     & 14.379  & 3.203  & 7.782    \\
-                $N = 64{,}000$                               &       &      &        &      &      &        \\
+                \ref{subsec:entity-iteration} $N = 64000$ & 9819.5 & 74.0  & 51.5 \\
                 \hline
-                \ref{subsec:sparse-access}                   & 9821.0 & 76.0  & 54.5     & 10.367  & 1.008  & 2.238    \\
-                $R_s = 0.20$                                 &       &      &        &      &      &        \\
+                \ref{subsec:sparse-access} $R_s = 0.20$ & 9821.0 & 76.0  & 54.5 \\
                 \hline
-                \ref{subsec:entity-creation-and-destruction} & 9815.5 & 67.5  & 49.0     & 7.363  & 0.133  & 0.223    \\
-                $E = 1000$                                   &       &      &        &      &      &        \\
+                \ref{subsec:entity-creation-and-destruction} $E = 1000$ & 9815.5 & 67.5  & 49.0 \\
                 \hline
-                \ref{subsec:structural-changes}              & 9842.0 & 94.0  & 70.5     & 9.637  & 0.266  & 0.508    \\
-                $N = 1000$                                   &       &      &        &      &      &        \\
+                \ref{subsec:structural-changes} $N = 1000$ & 9842.0 & 94.0  & 70.5 \\
                 \hline
             \end{tabular}
         \end{center}
-        \label{tab:results-size-and-memory}
+        \label{tab:results-executable-size}
+    \end{table}
+
+    \begin{table}
+        \caption{Memory Usage of Frameworks in Benchmark Scenarios}
+        \begin{center}
+            \begin{tabular}{|c|r|r|r|}
+                \hline
+                \textbf{Benchmark Scenario} & \textbf{Bevy} & \textbf{EnTT} & \textbf{Custom} \\
+                \hline
+                \ref{subsec:entity-iteration} $N = 64000$ & 14.379 & 3.203 & 7.782 \\
+                \hline
+                \ref{subsec:sparse-access} $R_s = 0.20$ & 10.367 & 1.008 & 2.238 \\
+                \hline
+                \ref{subsec:entity-creation-and-destruction} $E = 1000$ & 7.363 & 0.133 & 0.223 \\
+                \hline
+                \ref{subsec:structural-changes} $N = 1000$ & 9.637 & 0.266 & 0.508 \\
+                \hline
+            \end{tabular}
+        \end{center}
+        \label{tab:results-memory-usage}
     \end{table}
 
     One configuration per scenario was chosen to evaluate executable size and memory usage.
